@@ -3,9 +3,9 @@
 package hook
 
 import (
-	"gva/internal/ent"
 	"context"
 	"fmt"
+	"gva/internal/ent"
 )
 
 // The AdminFunc type is an adapter to allow the use of ordinary
@@ -30,30 +30,6 @@ func (f ArticleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleMutation", m)
-}
-
-// The TodoFunc type is an adapter to allow the use of ordinary
-// function as Todo mutator.
-type TodoFunc func(context.Context, *ent.TodoMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TodoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TodoMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TodoMutation", m)
-}
-
-// The Todo2Func type is an adapter to allow the use of ordinary
-// function as Todo2 mutator.
-type Todo2Func func(context.Context, *ent.Todo2Mutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f Todo2Func) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.Todo2Mutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.Todo2Mutation", m)
 }
 
 // Condition is a hook condition function.

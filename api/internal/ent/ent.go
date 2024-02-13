@@ -3,13 +3,11 @@
 package ent
 
 import (
-	"gva/internal/ent/admin"
-	"gva/internal/ent/article"
-	"gva/internal/ent/todo"
-	"gva/internal/ent/todo2"
 	"context"
 	"errors"
 	"fmt"
+	"gva/internal/ent/admin"
+	"gva/internal/ent/article"
 	"reflect"
 	"sync"
 
@@ -78,8 +76,6 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			admin.Table:   admin.ValidColumn,
 			article.Table: article.ValidColumn,
-			todo.Table:    todo.ValidColumn,
-			todo2.Table:   todo2.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

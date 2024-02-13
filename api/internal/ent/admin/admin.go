@@ -13,14 +13,14 @@ const (
 	Label = "admin"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldDisplayName holds the string denoting the display_name field in the database.
+	FieldDisplayName = "display_name"
 	// Table holds the table name of the admin in the database.
 	Table = "admins"
 )
@@ -28,10 +28,10 @@ const (
 // Columns holds all SQL columns for admin fields.
 var Columns = []string{
 	FieldID,
-	FieldName,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDeletedAt,
+	FieldName,
+	FieldDisplayName,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -61,11 +61,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
@@ -76,7 +71,12 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByDeletedAt orders the results by the deleted_at field.
-func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDisplayName orders the results by the display_name field.
+func ByDisplayName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDisplayName, opts...).ToFunc()
 }

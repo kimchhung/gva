@@ -3,10 +3,10 @@
 package ent
 
 import (
-	"gva/internal/ent/article"
 	"context"
 	"errors"
 	"fmt"
+	"gva/internal/ent/article"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -18,18 +18,6 @@ type ArticleCreate struct {
 	config
 	mutation *ArticleMutation
 	hooks    []Hook
-}
-
-// SetTitle sets the "title" field.
-func (ac *ArticleCreate) SetTitle(s string) *ArticleCreate {
-	ac.mutation.SetTitle(s)
-	return ac
-}
-
-// SetContent sets the "content" field.
-func (ac *ArticleCreate) SetContent(s string) *ArticleCreate {
-	ac.mutation.SetContent(s)
-	return ac
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -57,6 +45,18 @@ func (ac *ArticleCreate) SetNillableUpdatedAt(t *time.Time) *ArticleCreate {
 	if t != nil {
 		ac.SetUpdatedAt(*t)
 	}
+	return ac
+}
+
+// SetTitle sets the "title" field.
+func (ac *ArticleCreate) SetTitle(s string) *ArticleCreate {
+	ac.mutation.SetTitle(s)
+	return ac
+}
+
+// SetContent sets the "content" field.
+func (ac *ArticleCreate) SetContent(s string) *ArticleCreate {
+	ac.mutation.SetContent(s)
 	return ac
 }
 
@@ -107,17 +107,17 @@ func (ac *ArticleCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ac *ArticleCreate) check() error {
-	if _, ok := ac.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Article.title"`)}
-	}
-	if _, ok := ac.mutation.Content(); !ok {
-		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Article.content"`)}
-	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Article.created_at"`)}
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Article.updated_at"`)}
+	}
+	if _, ok := ac.mutation.Title(); !ok {
+		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Article.title"`)}
+	}
+	if _, ok := ac.mutation.Content(); !ok {
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Article.content"`)}
 	}
 	return nil
 }
@@ -145,14 +145,6 @@ func (ac *ArticleCreate) createSpec() (*Article, *sqlgraph.CreateSpec) {
 		_node = &Article{config: ac.config}
 		_spec = sqlgraph.NewCreateSpec(article.Table, sqlgraph.NewFieldSpec(article.FieldID, field.TypeInt))
 	)
-	if value, ok := ac.mutation.Title(); ok {
-		_spec.SetField(article.FieldTitle, field.TypeString, value)
-		_node.Title = value
-	}
-	if value, ok := ac.mutation.Content(); ok {
-		_spec.SetField(article.FieldContent, field.TypeString, value)
-		_node.Content = value
-	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(article.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -160,6 +152,14 @@ func (ac *ArticleCreate) createSpec() (*Article, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.UpdatedAt(); ok {
 		_spec.SetField(article.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := ac.mutation.Title(); ok {
+		_spec.SetField(article.FieldTitle, field.TypeString, value)
+		_node.Title = value
+	}
+	if value, ok := ac.mutation.Content(); ok {
+		_spec.SetField(article.FieldContent, field.TypeString, value)
+		_node.Content = value
 	}
 	return _node, _spec
 }

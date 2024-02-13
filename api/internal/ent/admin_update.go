@@ -3,12 +3,11 @@
 package ent
 
 import (
-	"gva/internal/ent/admin"
-	"gva/internal/ent/predicate"
 	"context"
 	"errors"
 	"fmt"
-	"time"
+	"gva/internal/ent/admin"
+	"gva/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -42,22 +41,16 @@ func (au *AdminUpdate) SetNillableName(s *string) *AdminUpdate {
 	return au
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (au *AdminUpdate) SetUpdatedAt(t time.Time) *AdminUpdate {
-	au.mutation.SetUpdatedAt(t)
+// SetDisplayName sets the "display_name" field.
+func (au *AdminUpdate) SetDisplayName(s string) *AdminUpdate {
+	au.mutation.SetDisplayName(s)
 	return au
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (au *AdminUpdate) SetDeletedAt(t time.Time) *AdminUpdate {
-	au.mutation.SetDeletedAt(t)
-	return au
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (au *AdminUpdate) SetNillableDeletedAt(t *time.Time) *AdminUpdate {
-	if t != nil {
-		au.SetDeletedAt(*t)
+// SetNillableDisplayName sets the "display_name" field if the given value is not nil.
+func (au *AdminUpdate) SetNillableDisplayName(s *string) *AdminUpdate {
+	if s != nil {
+		au.SetDisplayName(*s)
 	}
 	return au
 }
@@ -112,14 +105,14 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := au.mutation.Name(); ok {
-		_spec.SetField(admin.FieldName, field.TypeString, value)
-	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := au.mutation.DeletedAt(); ok {
-		_spec.SetField(admin.FieldDeletedAt, field.TypeTime, value)
+	if value, ok := au.mutation.Name(); ok {
+		_spec.SetField(admin.FieldName, field.TypeString, value)
+	}
+	if value, ok := au.mutation.DisplayName(); ok {
+		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -155,22 +148,16 @@ func (auo *AdminUpdateOne) SetNillableName(s *string) *AdminUpdateOne {
 	return auo
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (auo *AdminUpdateOne) SetUpdatedAt(t time.Time) *AdminUpdateOne {
-	auo.mutation.SetUpdatedAt(t)
+// SetDisplayName sets the "display_name" field.
+func (auo *AdminUpdateOne) SetDisplayName(s string) *AdminUpdateOne {
+	auo.mutation.SetDisplayName(s)
 	return auo
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (auo *AdminUpdateOne) SetDeletedAt(t time.Time) *AdminUpdateOne {
-	auo.mutation.SetDeletedAt(t)
-	return auo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (auo *AdminUpdateOne) SetNillableDeletedAt(t *time.Time) *AdminUpdateOne {
-	if t != nil {
-		auo.SetDeletedAt(*t)
+// SetNillableDisplayName sets the "display_name" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillableDisplayName(s *string) *AdminUpdateOne {
+	if s != nil {
+		auo.SetDisplayName(*s)
 	}
 	return auo
 }
@@ -255,14 +242,14 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 			}
 		}
 	}
-	if value, ok := auo.mutation.Name(); ok {
-		_spec.SetField(admin.FieldName, field.TypeString, value)
-	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := auo.mutation.DeletedAt(); ok {
-		_spec.SetField(admin.FieldDeletedAt, field.TypeTime, value)
+	if value, ok := auo.mutation.Name(); ok {
+		_spec.SetField(admin.FieldName, field.TypeString, value)
+	}
+	if value, ok := auo.mutation.DisplayName(); ok {
+		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)
 	}
 	_node = &Admin{config: auo.config}
 	_spec.Assign = _node.assignValues

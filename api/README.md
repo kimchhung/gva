@@ -21,16 +21,13 @@ Simple and scalable boilerplate to build powerful and organized REST projects wi
 │   │       ├── article_module.go
 │   │       ├── controller
 │   │       │   ├── article_controller.go
-│   │       │   ├── article_controller_mock.go
-│   │       │   └── controller.go
 │   │       ├── repository
 │   │       │   ├── article_repository.go
-│   │       │   └── article_repository_mock.go
-│   │       ├── request
+│   │       ├── dto
 │   │       │   └── article_request.go
-│   │       └── service
-│   │           ├── article_service.go
-│   │           └── article_service_mock.go
+│   │       ├── service
+│   │       │   └── article_service.go
+│   │       └── article_module.go
 │   └── router
 │       └── api.go
 ├── build
@@ -87,7 +84,7 @@ CUSTOM="Air" docker-compose up # Use with Air
 
 ## Tech Stack
 - [Go](https://go.dev)
-- [PostgreSQL](https://www.postgresql.org)
+- [Mysql](https://www.postgresql.org)
 - [Docker](https://www.docker.com/)
 - [Fiber](https://github.com/gofiber/fiber)
 - [Ent](https://github.com/ent/ent)
@@ -104,3 +101,24 @@ CUSTOM="Air" docker-compose up # Use with Air
 
 ## License
 api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).
+
+
+
+## migration
+
+
+## migration generate
+1. edit schema in "app/database/schema"
+2. genrate ent using ```make gen name="add table"```
+3. apply migrations ```make migrate.apply```
+
+## migration manual
+1. create migration files ```make migrate.new name="add_user_data"```
+2. generate hash  ```make migrate.hash```
+3. apply migrations ```make migrate.apply```
+
+## migration role back
+
+1. remove one or two latest migration files in "app/database/migrations"
+2. check different and apply ```make migrate.schema.apply```
+3. set version migration to match current version in folder ``` make migrate.apply ```

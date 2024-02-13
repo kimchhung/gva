@@ -54,11 +54,6 @@ func IDLTE(id int) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldID, id))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldName, v))
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldCreatedAt, v))
@@ -69,74 +64,14 @@ func UpdatedAt(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.Admin {
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldName, v))
 }
 
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldName, v))
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldName, vs...))
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldName, vs...))
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldName, v))
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldName, v))
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldName, v))
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldName, v))
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldContains(FieldName, v))
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldHasPrefix(FieldName, v))
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldHasSuffix(FieldName, v))
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEqualFold(FieldName, v))
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldContainsFold(FieldName, v))
+// DisplayName applies equality check predicate on the "display_name" field. It's identical to DisplayNameEQ.
+func DisplayName(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldDisplayName, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -219,44 +154,134 @@ func UpdatedAtLTE(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldDeletedAt, v))
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldName, v))
 }
 
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldDeletedAt, v))
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldName, v))
 }
 
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldDeletedAt, vs...))
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldName, vs...))
 }
 
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldDeletedAt, vs...))
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldName, vs...))
 }
 
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldDeletedAt, v))
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldName, v))
 }
 
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldDeletedAt, v))
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldName, v))
 }
 
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldDeletedAt, v))
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldName, v))
 }
 
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldDeletedAt, v))
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContainsFold(FieldName, v))
+}
+
+// DisplayNameEQ applies the EQ predicate on the "display_name" field.
+func DisplayNameEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldDisplayName, v))
+}
+
+// DisplayNameNEQ applies the NEQ predicate on the "display_name" field.
+func DisplayNameNEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldDisplayName, v))
+}
+
+// DisplayNameIn applies the In predicate on the "display_name" field.
+func DisplayNameIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldDisplayName, vs...))
+}
+
+// DisplayNameNotIn applies the NotIn predicate on the "display_name" field.
+func DisplayNameNotIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldDisplayName, vs...))
+}
+
+// DisplayNameGT applies the GT predicate on the "display_name" field.
+func DisplayNameGT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldDisplayName, v))
+}
+
+// DisplayNameGTE applies the GTE predicate on the "display_name" field.
+func DisplayNameGTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldDisplayName, v))
+}
+
+// DisplayNameLT applies the LT predicate on the "display_name" field.
+func DisplayNameLT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldDisplayName, v))
+}
+
+// DisplayNameLTE applies the LTE predicate on the "display_name" field.
+func DisplayNameLTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldDisplayName, v))
+}
+
+// DisplayNameContains applies the Contains predicate on the "display_name" field.
+func DisplayNameContains(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContains(FieldDisplayName, v))
+}
+
+// DisplayNameHasPrefix applies the HasPrefix predicate on the "display_name" field.
+func DisplayNameHasPrefix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasPrefix(FieldDisplayName, v))
+}
+
+// DisplayNameHasSuffix applies the HasSuffix predicate on the "display_name" field.
+func DisplayNameHasSuffix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasSuffix(FieldDisplayName, v))
+}
+
+// DisplayNameEqualFold applies the EqualFold predicate on the "display_name" field.
+func DisplayNameEqualFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEqualFold(FieldDisplayName, v))
+}
+
+// DisplayNameContainsFold applies the ContainsFold predicate on the "display_name" field.
+func DisplayNameContainsFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContainsFold(FieldDisplayName, v))
 }
 
 // And groups predicates with the AND operator between them.

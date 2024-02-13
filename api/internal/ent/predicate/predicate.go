@@ -11,9 +11,3 @@ type Admin func(*sql.Selector)
 
 // Article is the predicate function for article builders.
 type Article func(*sql.Selector)
-
-// Todo is the predicate function for todo builders.
-type Todo func(*sql.Selector)
-
-// Todo2 is the predicate function for todo2 builders.
-type Todo2 func(*sql.Selector)

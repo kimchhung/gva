@@ -3,12 +3,11 @@
 package ent
 
 import (
-	"gva/internal/ent/article"
-	"gva/internal/ent/predicate"
 	"context"
 	"errors"
 	"fmt"
-	"time"
+	"gva/internal/ent/article"
+	"gva/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -53,12 +52,6 @@ func (au *ArticleUpdate) SetNillableContent(s *string) *ArticleUpdate {
 	if s != nil {
 		au.SetContent(*s)
 	}
-	return au
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (au *ArticleUpdate) SetUpdatedAt(t time.Time) *ArticleUpdate {
-	au.mutation.SetUpdatedAt(t)
 	return au
 }
 
@@ -112,14 +105,14 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := au.mutation.UpdatedAt(); ok {
+		_spec.SetField(article.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := au.mutation.Title(); ok {
 		_spec.SetField(article.FieldTitle, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Content(); ok {
 		_spec.SetField(article.FieldContent, field.TypeString, value)
-	}
-	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.SetField(article.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -166,12 +159,6 @@ func (auo *ArticleUpdateOne) SetNillableContent(s *string) *ArticleUpdateOne {
 	if s != nil {
 		auo.SetContent(*s)
 	}
-	return auo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (auo *ArticleUpdateOne) SetUpdatedAt(t time.Time) *ArticleUpdateOne {
-	auo.mutation.SetUpdatedAt(t)
 	return auo
 }
 
@@ -255,14 +242,14 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			}
 		}
 	}
+	if value, ok := auo.mutation.UpdatedAt(); ok {
+		_spec.SetField(article.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := auo.mutation.Title(); ok {
 		_spec.SetField(article.FieldTitle, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Content(); ok {
 		_spec.SetField(article.FieldContent, field.TypeString, value)
-	}
-	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.SetField(article.FieldUpdatedAt, field.TypeTime, value)
 	}
 	_node = &Article{config: auo.config}
 	_spec.Assign = _node.assignValues

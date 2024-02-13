@@ -16,10 +16,6 @@ type Tx struct {
 	Admin *AdminClient
 	// Article is the client for interacting with the Article builders.
 	Article *ArticleClient
-	// Todo is the client for interacting with the Todo builders.
-	Todo *TodoClient
-	// Todo2 is the client for interacting with the Todo2 builders.
-	Todo2 *Todo2Client
 
 	// lazily loaded.
 	client     *Client
@@ -153,8 +149,6 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
 	tx.Article = NewArticleClient(tx.config)
-	tx.Todo = NewTodoClient(tx.config)
-	tx.Todo2 = NewTodo2Client(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

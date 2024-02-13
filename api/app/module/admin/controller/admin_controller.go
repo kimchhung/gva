@@ -3,8 +3,9 @@ package controller
 import (
 	"strconv"
 
-	"gva/app/module/admin/request"
+	"gva/app/module/admin/dto"
 	"gva/app/module/admin/service"
+
 	"gva/internal/control_route"
 	"gva/utils/response"
 
@@ -13,39 +14,39 @@ import (
 
 var _ interface {
 	control_route.FiberRouter
-} = &AdminController{}
+} = (*AdminController)(nil)
 
 type AdminController struct {
-	AdminService *service.AdminService
-}
-
-func NewAdminController(AdminService *service.AdminService) *AdminController {
-	return &AdminController{
-		AdminService: AdminService,
-	}
+	service *service.AdminService
 }
 
 func (con *AdminController) Routes(r fiber.Router) {
 	r.Route(
 		"/admins", func(router fiber.Router) {
-			router.Get("/", con.List)
-			router.Get("/:id", con.Get)
-			router.Post("/", con.Create)
-			router.Patch("/:id", con.Update)
-			router.Delete("/:id", con.Destroy)
+			router.Get("/", con.List).Name("get many admins")
+			router.Get("/:id", con.Get).Name("get one admin")
+			router.Post("/", con.Create).Name("create one admin")
+			router.Patch("/:id", con.Update).Name("update one admin")
+			router.Delete("/:id", con.Delete).Name("delete one admin")
 		},
 	)
 }
 
+func NewAdminController(service *service.AdminService) *AdminController {
+	return &AdminController{
+		service: service,
+	}
+}
+
 func (con *AdminController) List(c *fiber.Ctx) error {
-	Admins, err := con.AdminService.GetAdmins(c.UserContext())
+	list, err := con.service.GetAdmins(c.UserContext())
 	if err != nil {
 		return err
 	}
 
 	return response.Resp(c, response.Response{
 		Message: "Admin list retreived successfully!",
-		Data:    Admins,
+		Data:    list,
 	})
 }
 
@@ -55,31 +56,31 @@ func (con *AdminController) Get(c *fiber.Ctx) error {
 		return err
 	}
 
-	Admin, err := con.AdminService.GetAdminByID(c.UserContext(), id)
+	data, err := con.service.GetAdminByID(c.UserContext(), id)
 	if err != nil {
 		return err
 	}
 
 	return response.Resp(c, response.Response{
-		Message: "The Admin retrieved successfully!",
-		Data:    Admin,
+		Message: "The admin retrieved successfully!",
+		Data:    data,
 	})
 }
 
 func (con *AdminController) Create(c *fiber.Ctx) error {
-	req := new(request.AdminRequest)
+	req := new(dto.AdminRequest)
 	if err := response.ParseAndValidate(c, req); err != nil {
 		return err
 	}
 
-	Admin, err := con.AdminService.CreateAdmin(c.UserContext(), *req)
+	data, err := con.service.CreateAdmin(c.UserContext(), *req)
 	if err != nil {
 		return err
 	}
 
 	return response.Resp(c, response.Response{
-		Message: "The Admin was created successfully!",
-		Data:    Admin,
+		Message: "The admin was created successfully!",
+		Data:    data,
 	})
 }
 
@@ -89,33 +90,34 @@ func (con *AdminController) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	req := new(request.AdminRequest)
+	req := new(dto.AdminRequest)
 	if err := response.ParseAndValidate(c, req); err != nil {
 		return err
 	}
 
-	Admin, err := con.AdminService.UpdateAdmin(c.UserContext(), id, *req)
+	data, err := con.service.UpdateAdmin(c.UserContext(), id, *req)
 	if err != nil {
 		return err
 	}
 
 	return response.Resp(c, response.Response{
-		Message: "The Admin was updated successfully!",
-		Data:    Admin,
+		Message: "The admin was updated successfully!",
+		Data:    data,
 	})
 }
 
-func (con *AdminController) Destroy(c *fiber.Ctx) error {
+func (con *AdminController) Delete(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return err
 	}
 
-	if err = con.AdminService.DeleteAdmin(c.UserContext(), id); err != nil {
+	if err = con.service.DeleteAdmin(c.UserContext(), id); err != nil {
 		return err
 	}
 
 	return response.Resp(c, response.Response{
-		Message: "The Admin was deleted successfully!",
+		Message: "The admin was deleted successfully!",
 	})
 }
+

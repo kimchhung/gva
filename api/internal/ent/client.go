@@ -13,8 +13,6 @@ import (
 
 	"gva/internal/ent/admin"
 	"gva/internal/ent/article"
-	"gva/internal/ent/todo"
-	"gva/internal/ent/todo2"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -30,10 +28,6 @@ type Client struct {
 	Admin *AdminClient
 	// Article is the client for interacting with the Article builders.
 	Article *ArticleClient
-	// Todo is the client for interacting with the Todo builders.
-	Todo *TodoClient
-	// Todo2 is the client for interacting with the Todo2 builders.
-	Todo2 *Todo2Client
 }
 
 // NewClient creates a new client configured with the given options.
@@ -47,8 +41,6 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Admin = NewAdminClient(c.config)
 	c.Article = NewArticleClient(c.config)
-	c.Todo = NewTodoClient(c.config)
-	c.Todo2 = NewTodo2Client(c.config)
 }
 
 type (
@@ -143,8 +135,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:  cfg,
 		Admin:   NewAdminClient(cfg),
 		Article: NewArticleClient(cfg),
-		Todo:    NewTodoClient(cfg),
-		Todo2:   NewTodo2Client(cfg),
 	}, nil
 }
 
@@ -166,8 +156,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:  cfg,
 		Admin:   NewAdminClient(cfg),
 		Article: NewArticleClient(cfg),
-		Todo:    NewTodoClient(cfg),
-		Todo2:   NewTodo2Client(cfg),
 	}, nil
 }
 
@@ -198,8 +186,6 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Admin.Use(hooks...)
 	c.Article.Use(hooks...)
-	c.Todo.Use(hooks...)
-	c.Todo2.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
@@ -207,8 +193,6 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Admin.Intercept(interceptors...)
 	c.Article.Intercept(interceptors...)
-	c.Todo.Intercept(interceptors...)
-	c.Todo2.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -218,10 +202,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Admin.mutate(ctx, m)
 	case *ArticleMutation:
 		return c.Article.mutate(ctx, m)
-	case *TodoMutation:
-		return c.Todo.mutate(ctx, m)
-	case *Todo2Mutation:
-		return c.Todo2.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -493,278 +473,12 @@ func (c *ArticleClient) mutate(ctx context.Context, m *ArticleMutation) (Value, 
 	}
 }
 
-// TodoClient is a client for the Todo schema.
-type TodoClient struct {
-	config
-}
-
-// NewTodoClient returns a client for the Todo from the given config.
-func NewTodoClient(c config) *TodoClient {
-	return &TodoClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `todo.Hooks(f(g(h())))`.
-func (c *TodoClient) Use(hooks ...Hook) {
-	c.hooks.Todo = append(c.hooks.Todo, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `todo.Intercept(f(g(h())))`.
-func (c *TodoClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Todo = append(c.inters.Todo, interceptors...)
-}
-
-// Create returns a builder for creating a Todo entity.
-func (c *TodoClient) Create() *TodoCreate {
-	mutation := newTodoMutation(c.config, OpCreate)
-	return &TodoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Todo entities.
-func (c *TodoClient) CreateBulk(builders ...*TodoCreate) *TodoCreateBulk {
-	return &TodoCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *TodoClient) MapCreateBulk(slice any, setFunc func(*TodoCreate, int)) *TodoCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &TodoCreateBulk{err: fmt.Errorf("calling to TodoClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*TodoCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &TodoCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Todo.
-func (c *TodoClient) Update() *TodoUpdate {
-	mutation := newTodoMutation(c.config, OpUpdate)
-	return &TodoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *TodoClient) UpdateOne(t *Todo) *TodoUpdateOne {
-	mutation := newTodoMutation(c.config, OpUpdateOne, withTodo(t))
-	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *TodoClient) UpdateOneID(id int) *TodoUpdateOne {
-	mutation := newTodoMutation(c.config, OpUpdateOne, withTodoID(id))
-	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Todo.
-func (c *TodoClient) Delete() *TodoDelete {
-	mutation := newTodoMutation(c.config, OpDelete)
-	return &TodoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *TodoClient) DeleteOne(t *Todo) *TodoDeleteOne {
-	return c.DeleteOneID(t.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *TodoClient) DeleteOneID(id int) *TodoDeleteOne {
-	builder := c.Delete().Where(todo.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &TodoDeleteOne{builder}
-}
-
-// Query returns a query builder for Todo.
-func (c *TodoClient) Query() *TodoQuery {
-	return &TodoQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeTodo},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Todo entity by its id.
-func (c *TodoClient) Get(ctx context.Context, id int) (*Todo, error) {
-	return c.Query().Where(todo.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *TodoClient) GetX(ctx context.Context, id int) *Todo {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *TodoClient) Hooks() []Hook {
-	return c.hooks.Todo
-}
-
-// Interceptors returns the client interceptors.
-func (c *TodoClient) Interceptors() []Interceptor {
-	return c.inters.Todo
-}
-
-func (c *TodoClient) mutate(ctx context.Context, m *TodoMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&TodoCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&TodoUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&TodoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Todo mutation op: %q", m.Op())
-	}
-}
-
-// Todo2Client is a client for the Todo2 schema.
-type Todo2Client struct {
-	config
-}
-
-// NewTodo2Client returns a client for the Todo2 from the given config.
-func NewTodo2Client(c config) *Todo2Client {
-	return &Todo2Client{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `todo2.Hooks(f(g(h())))`.
-func (c *Todo2Client) Use(hooks ...Hook) {
-	c.hooks.Todo2 = append(c.hooks.Todo2, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `todo2.Intercept(f(g(h())))`.
-func (c *Todo2Client) Intercept(interceptors ...Interceptor) {
-	c.inters.Todo2 = append(c.inters.Todo2, interceptors...)
-}
-
-// Create returns a builder for creating a Todo2 entity.
-func (c *Todo2Client) Create() *Todo2Create {
-	mutation := newTodo2Mutation(c.config, OpCreate)
-	return &Todo2Create{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Todo2 entities.
-func (c *Todo2Client) CreateBulk(builders ...*Todo2Create) *Todo2CreateBulk {
-	return &Todo2CreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *Todo2Client) MapCreateBulk(slice any, setFunc func(*Todo2Create, int)) *Todo2CreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &Todo2CreateBulk{err: fmt.Errorf("calling to Todo2Client.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*Todo2Create, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &Todo2CreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Todo2.
-func (c *Todo2Client) Update() *Todo2Update {
-	mutation := newTodo2Mutation(c.config, OpUpdate)
-	return &Todo2Update{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *Todo2Client) UpdateOne(t *Todo2) *Todo2UpdateOne {
-	mutation := newTodo2Mutation(c.config, OpUpdateOne, withTodo2(t))
-	return &Todo2UpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *Todo2Client) UpdateOneID(id int) *Todo2UpdateOne {
-	mutation := newTodo2Mutation(c.config, OpUpdateOne, withTodo2ID(id))
-	return &Todo2UpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Todo2.
-func (c *Todo2Client) Delete() *Todo2Delete {
-	mutation := newTodo2Mutation(c.config, OpDelete)
-	return &Todo2Delete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *Todo2Client) DeleteOne(t *Todo2) *Todo2DeleteOne {
-	return c.DeleteOneID(t.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *Todo2Client) DeleteOneID(id int) *Todo2DeleteOne {
-	builder := c.Delete().Where(todo2.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &Todo2DeleteOne{builder}
-}
-
-// Query returns a query builder for Todo2.
-func (c *Todo2Client) Query() *Todo2Query {
-	return &Todo2Query{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeTodo2},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Todo2 entity by its id.
-func (c *Todo2Client) Get(ctx context.Context, id int) (*Todo2, error) {
-	return c.Query().Where(todo2.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *Todo2Client) GetX(ctx context.Context, id int) *Todo2 {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *Todo2Client) Hooks() []Hook {
-	return c.hooks.Todo2
-}
-
-// Interceptors returns the client interceptors.
-func (c *Todo2Client) Interceptors() []Interceptor {
-	return c.inters.Todo2
-}
-
-func (c *Todo2Client) mutate(ctx context.Context, m *Todo2Mutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&Todo2Create{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&Todo2Update{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&Todo2UpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&Todo2Delete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Todo2 mutation op: %q", m.Op())
-	}
-}
-
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Article, Todo, Todo2 []ent.Hook
+		Admin, Article []ent.Hook
 	}
 	inters struct {
-		Admin, Article, Todo, Todo2 []ent.Interceptor
+		Admin, Article []ent.Interceptor
 	}
 )

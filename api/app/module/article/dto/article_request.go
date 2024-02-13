@@ -1,4 +1,4 @@
-package request
+package dto
 
 // Requests & responses for ArticleController & ArticleService
 type ArticleRequest struct {

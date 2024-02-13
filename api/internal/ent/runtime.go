@@ -6,8 +6,6 @@ import (
 	"gva/app/database/schema"
 	"gva/internal/ent/admin"
 	"gva/internal/ent/article"
-	"gva/internal/ent/todo"
-	"gva/internal/ent/todo2"
 	"time"
 )
 
@@ -15,52 +13,34 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	adminMixin := schema.Admin{}.Mixin()
+	adminMixinFields0 := adminMixin[0].Fields()
+	_ = adminMixinFields0
 	adminFields := schema.Admin{}.Fields()
 	_ = adminFields
 	// adminDescCreatedAt is the schema descriptor for created_at field.
-	adminDescCreatedAt := adminFields[1].Descriptor()
+	adminDescCreatedAt := adminMixinFields0[0].Descriptor()
 	// admin.DefaultCreatedAt holds the default value on creation for the created_at field.
 	admin.DefaultCreatedAt = adminDescCreatedAt.Default.(func() time.Time)
 	// adminDescUpdatedAt is the schema descriptor for updated_at field.
-	adminDescUpdatedAt := adminFields[2].Descriptor()
+	adminDescUpdatedAt := adminMixinFields0[1].Descriptor()
 	// admin.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	admin.DefaultUpdatedAt = adminDescUpdatedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	admin.UpdateDefaultUpdatedAt = adminDescUpdatedAt.UpdateDefault.(func() time.Time)
+	articleMixin := schema.Article{}.Mixin()
+	articleMixinFields0 := articleMixin[0].Fields()
+	_ = articleMixinFields0
 	articleFields := schema.Article{}.Fields()
 	_ = articleFields
 	// articleDescCreatedAt is the schema descriptor for created_at field.
-	articleDescCreatedAt := articleFields[2].Descriptor()
+	articleDescCreatedAt := articleMixinFields0[0].Descriptor()
 	// article.DefaultCreatedAt holds the default value on creation for the created_at field.
 	article.DefaultCreatedAt = articleDescCreatedAt.Default.(func() time.Time)
 	// articleDescUpdatedAt is the schema descriptor for updated_at field.
-	articleDescUpdatedAt := articleFields[3].Descriptor()
+	articleDescUpdatedAt := articleMixinFields0[1].Descriptor()
 	// article.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	article.DefaultUpdatedAt = articleDescUpdatedAt.Default.(func() time.Time)
 	// article.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	article.UpdateDefaultUpdatedAt = articleDescUpdatedAt.UpdateDefault.(func() time.Time)
-	todoFields := schema.Todo{}.Fields()
-	_ = todoFields
-	// todoDescCreatedAt is the schema descriptor for created_at field.
-	todoDescCreatedAt := todoFields[0].Descriptor()
-	// todo.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todo.DefaultCreatedAt = todoDescCreatedAt.Default.(func() time.Time)
-	// todoDescUpdatedAt is the schema descriptor for updated_at field.
-	todoDescUpdatedAt := todoFields[1].Descriptor()
-	// todo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todo.DefaultUpdatedAt = todoDescUpdatedAt.Default.(func() time.Time)
-	// todo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todo.UpdateDefaultUpdatedAt = todoDescUpdatedAt.UpdateDefault.(func() time.Time)
-	todo2Fields := schema.Todo2{}.Fields()
-	_ = todo2Fields
-	// todo2DescCreatedAt is the schema descriptor for created_at field.
-	todo2DescCreatedAt := todo2Fields[0].Descriptor()
-	// todo2.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todo2.DefaultCreatedAt = todo2DescCreatedAt.Default.(func() time.Time)
-	// todo2DescUpdatedAt is the schema descriptor for updated_at field.
-	todo2DescUpdatedAt := todo2Fields[1].Descriptor()
-	// todo2.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todo2.DefaultUpdatedAt = todo2DescUpdatedAt.Default.(func() time.Time)
-	// todo2.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todo2.UpdateDefaultUpdatedAt = todo2DescUpdatedAt.UpdateDefault.(func() time.Time)
 }

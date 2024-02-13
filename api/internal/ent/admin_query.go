@@ -3,10 +3,10 @@
 package ent
 
 import (
-	"gva/internal/ent/admin"
-	"gva/internal/ent/predicate"
 	"context"
 	"fmt"
+	"gva/internal/ent/admin"
+	"gva/internal/ent/predicate"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
@@ -261,12 +261,12 @@ func (aq *AdminQuery) Clone() *AdminQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Admin.Query().
-//		GroupBy(admin.FieldName).
+//		GroupBy(admin.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AdminQuery) GroupBy(field string, fields ...string) *AdminGroupBy {
@@ -284,11 +284,11 @@ func (aq *AdminQuery) GroupBy(field string, fields ...string) *AdminGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Admin.Query().
-//		Select(admin.FieldName).
+//		Select(admin.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (aq *AdminQuery) Select(fields ...string) *AdminSelect {
 	aq.ctx.Fields = append(aq.ctx.Fields, fields...)

@@ -3,8 +3,8 @@
 name = "Go Vue Admin"
 port = ":8080"
 idle-timeout = 5      # As seconds
-print-routes = false
-prefork = true
+print-routes = true
+prefork = false
 production = false
 
 [app.tls]

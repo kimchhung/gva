@@ -2,6 +2,7 @@ package code_gen
 
 import (
 	"fmt"
+	module_template "gva/internal/code_gen/module"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -17,12 +18,12 @@ type CodeGenParams struct {
 }
 
 func GenerateCodes(params CodeGenParams) {
-	GenerateCodeByTemplate(params, "schema", "app/database/schema", schemaTemplate)
-	GenerateModuleByTemplate(params, "module", "app/module", moduleTemplate)
-	GenerateModuleInByTemplate(params, "request", "app/module", request_template)
-	GenerateModuleInByTemplate(params, "repo", "app/module", repo_template)
-	GenerateModuleInByTemplate(params, "service", "app/module", service_template)
-	GenerateModuleInByTemplate(params, "controller", "app/module", contoller_template)
+	GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
+	GenerateModule(params, "module", "app/module", module_template.Module)
+	GenerateModuleChild(params, "dto", "app/module", "request", module_template.Dto)
+	GenerateModuleChild(params, "repository", "app/module", "repository", module_template.Repository)
+	GenerateModuleChild(params, "service", "app/module", "service", module_template.Service)
+	GenerateModuleChild(params, "controller", "app/module", "controller", module_template.Controller)
 	Appends(params)
 }
 
@@ -52,7 +53,7 @@ func GenerateCodeByTemplate(params CodeGenParams, templateName string, directory
 	fmt.Println("Generated " + fullPath)
 }
 
-func GenerateModuleByTemplate(params CodeGenParams, templateName string, directory string, templateContent string) {
+func GenerateModule(params CodeGenParams, templateName string, directory string, templateContent string) {
 	tmpl, err := template.New(templateName).Parse(templateContent)
 	if err != nil {
 		panic(err)
@@ -71,13 +72,13 @@ func GenerateModuleByTemplate(params CodeGenParams, templateName string, directo
 	fmt.Println("Generated " + fullPath)
 }
 
-func GenerateModuleInByTemplate(params CodeGenParams, templateName string, directory string, templateContent string) {
+func GenerateModuleChild(params CodeGenParams, templateName, directory, suffix, templateContent string) {
 	tmpl, err := template.New(templateName).Parse(templateContent)
 	if err != nil {
 		panic(err)
 	}
 
-	fullPath := directory + "/" + params.EntitySnake + "/" + templateName + "/" + params.EntitySnake + ".go"
+	fullPath := directory + "/" + params.EntitySnake + "/" + templateName + "/" + params.EntitySnake + "_" + suffix + ".go"
 
 	file := createFullPathFile(fullPath)
 	defer file.Close()

@@ -2,9 +2,8 @@ package admin
 
 import (
 	"gva/app/module/admin/controller"
-	"gva/app/module/admin/repos"
+	"gva/app/module/admin/repository"
 	"gva/app/module/admin/service"
-
 	"gva/internal/control_route"
 
 	"github.com/gofiber/fiber/v2"
@@ -35,7 +34,7 @@ func (r *AdminRouter) Register() {
 // Register bulkly
 var NewAdminModule = fx.Module("AdminModule",
 	// Register Repository & Service
-	fx.Provide(repos.NewAdminRepository),
+	fx.Provide(repository.NewAdminRepository),
 	fx.Provide(service.NewAdminService),
 
 	// Regiser Controller
@@ -43,7 +42,9 @@ var NewAdminModule = fx.Module("AdminModule",
 
 	// Register Router
 	fx.Provide(NewAdminRouter),
-	fx.Invoke(func(r *AdminRouter) {
-		r.Register()
-	}),
+	fx.Provide(fx.Annotate(
+		NewAdminRouter,
+		fx.As(new(control_route.Router)),
+		fx.ResultTags(`group:"routers"`),
+	)),
 )

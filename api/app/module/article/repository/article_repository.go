@@ -1,4 +1,4 @@
-package repos
+package repository
 
 import (
 	"gva/internal/bootstrap/database"

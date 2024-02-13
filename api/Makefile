@@ -1,4 +1,8 @@
 # Makefile for some commands.
+include Makefile.migrate
+
+printdir:
+	@echo "Running migration with directory: $(devUrl) ${args}"
 
 # Generate Ent boilerplate
 gen:

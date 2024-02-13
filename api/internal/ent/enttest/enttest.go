@@ -3,8 +3,8 @@
 package enttest
 
 import (
-	"gva/internal/ent"
 	"context"
+	"gva/internal/ent"
 	// required by schema hooks.
 	_ "gva/internal/ent/runtime"
 

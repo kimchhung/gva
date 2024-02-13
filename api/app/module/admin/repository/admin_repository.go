@@ -15,6 +15,6 @@ func NewAdminRepository(database *database.Database) *AdminRepository {
 	}
 }
 
-func (repo *AdminRepository) Client() *ent.AdminClient {
-	return repo.DB.Ent.Admin
+func (r *AdminRepository) Client() *ent.AdminClient {
+	return r.DB.Ent.Admin
 }

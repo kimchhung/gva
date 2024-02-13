@@ -1,8 +1,8 @@
 package service
 
 import (
-	"gva/app/module/admin/repos"
-	"gva/app/module/admin/request"
+	"gva/app/module/admin/dto"
+	"gva/app/module/admin/repository"
 
 	"context"
 	"gva/internal/ent"
@@ -10,12 +10,12 @@ import (
 )
 
 type AdminService struct {
-	repo *repos.AdminRepository
+	repo *repository.AdminRepository
 }
 
-func NewAdminService(repo *repos.AdminRepository) *AdminService {
+func NewAdminService(repository *repository.AdminRepository) *AdminService {
 	return &AdminService{
-		repo: repo,
+		repo: repository,
 	}
 }
 
@@ -27,12 +27,12 @@ func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, er
 	return s.repo.Client().Query().Where(admin.IDEQ(id)).First(ctx)
 }
 
-func (s *AdminService) CreateAdmin(ctx context.Context, request request.AdminRequest) (*ent.Admin, error) {
+func (s *AdminService) CreateAdmin(ctx context.Context, request dto.AdminRequest) (*ent.Admin, error) {
 	return s.repo.Client().Create().
 		Save(ctx)
 }
 
-func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request request.AdminRequest) (*ent.Admin, error) {
+func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request dto.AdminRequest) (*ent.Admin, error) {
 	return s.repo.Client().UpdateOneID(id).
 		Save(ctx)
 }

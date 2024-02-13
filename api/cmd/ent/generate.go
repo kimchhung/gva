@@ -1,3 +1,3 @@
 package main
 
-//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --target=../../internal/ent ../../app/database/schema --feature sql/versioned-migration
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/versioned-migration --target=../../internal/ent ../../app/database/schema

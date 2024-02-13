@@ -1,10 +1,14 @@
-package code_gen
+package module_template
 
-var moduleTemplate = `package {{.EntitySnake}}
+import "fmt"
+
+var special = "`"
+var Module = fmt.Sprintf(
+	`package {{.EntitySnake}}
 
 import (
 	"gva/app/module/{{.EntitySnake}}/controller"
-	"gva/app/module/{{.EntitySnake}}/repo"
+	"gva/app/module/{{.EntitySnake}}/repository"
 	"gva/app/module/{{.EntitySnake}}/service"
 	"gva/internal/control_route"
 
@@ -36,7 +40,7 @@ func (r *{{.Entity}}Router) Register() {
 // Register bulkly
 var New{{.Entity}}Module = fx.Module("{{.Entity}}Module",
 	// Register Repository & Service
-	fx.Provide(repo.New{{.Entity}}Repository),
+	fx.Provide(repository.New{{.Entity}}Repository),
 	fx.Provide(service.New{{.Entity}}Service),
 
 	// Regiser Controller
@@ -44,9 +48,11 @@ var New{{.Entity}}Module = fx.Module("{{.Entity}}Module",
 
 	// Register Router
 	fx.Provide(New{{.Entity}}Router),
-	fx.Invoke(func(r *{{.Entity}}Router) {
-		r.Register()
-	}),
+	fx.Provide(fx.Annotate(
+		New{{.Entity}}Router,
+		fx.As(new(control_route.Router)),
+		fx.ResultTags(%sgroup:"routers"%s),
+	)),
 )
-
-`
+`, special, special,
+)

@@ -3,7 +3,7 @@ package controller
 import (
 	"strconv"
 
-	"gva/app/module/article/request"
+	"gva/app/module/article/dto"
 	"gva/app/module/article/service"
 
 	"gva/internal/control_route"
@@ -14,20 +14,21 @@ import (
 
 var _ interface {
 	control_route.FiberRouter
-} = &ArticleController{}
+} = (*ArticleController)(nil)
 
 type ArticleController struct {
 	service *service.ArticleService
 }
 
 func (con *ArticleController) Routes(r fiber.Router) {
+
 	r.Route(
 		"/articles", func(router fiber.Router) {
-			router.Get("/", con.List)
-			router.Get("/:id", con.Get)
-			router.Post("/", con.Create)
-			router.Patch("/:id", con.Update)
-			router.Delete("/:id", con.Destroy)
+			router.Get("/", con.List).Name("get many articles")
+			router.Get("/:id", con.Get).Name("get one article")
+			router.Post("/", con.Create).Name("create one article")
+			router.Patch("/:id", con.Update).Name("update one article")
+			router.Delete("/:id", con.Delete).Name("delete one article")
 		},
 	)
 }
@@ -68,7 +69,7 @@ func (con *ArticleController) Get(c *fiber.Ctx) error {
 }
 
 func (con *ArticleController) Create(c *fiber.Ctx) error {
-	req := new(request.ArticleRequest)
+	req := new(dto.ArticleRequest)
 	if err := response.ParseAndValidate(c, req); err != nil {
 		return err
 	}
@@ -90,7 +91,7 @@ func (con *ArticleController) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	req := new(request.ArticleRequest)
+	req := new(dto.ArticleRequest)
 	if err := response.ParseAndValidate(c, req); err != nil {
 		return err
 	}
@@ -106,7 +107,7 @@ func (con *ArticleController) Update(c *fiber.Ctx) error {
 	})
 }
 
-func (con *ArticleController) Destroy(c *fiber.Ctx) error {
+func (con *ArticleController) Delete(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return err

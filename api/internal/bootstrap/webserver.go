@@ -2,9 +2,11 @@ package bootstrap
 
 import (
 	"context"
+	"fmt"
 	"gva/app/middleware"
 	"gva/config"
 	"gva/internal/bootstrap/database"
+	"gva/internal/control_route"
 	"gva/utils/response"
 	"os"
 	"runtime"
@@ -35,13 +37,14 @@ func NewFiber(cfg *config.Config) *fiber.App {
 	return app
 }
 
-func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, middlewares *middleware.Middleware, database *database.Database, log zerolog.Logger) {
+func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, routers control_route.Router, middlewares *middleware.Middleware, database *database.Database, log zerolog.Logger) {
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(ctx context.Context) error {
 				// Register middlewares & routes
 				middlewares.Register()
-
+				routers.Register()
+				fmt.Print("register middlewares")
 				// Custom Startup Messages
 				host, port := config.ParseAddr(cfg.App.Port)
 				if host == "" {

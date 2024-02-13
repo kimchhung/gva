@@ -1,11 +1,11 @@
-package code_gen
+package module_template
 
-var contoller_template = `package controller
+var Controller = `package controller
 
 import (
 	"strconv"
 
-	"gva/app/module/{{.EntitySnake}}/request"
+	"gva/app/module/{{.EntitySnake}}/dto"
 	"gva/app/module/{{.EntitySnake}}/service"
 
 	"gva/internal/control_route"
@@ -16,7 +16,7 @@ import (
 
 var _ interface {
 	control_route.FiberRouter
-} = &{{.Entity}}Controller{}
+} = (*{{.Entity}}Controller)(nil)
 
 type {{.Entity}}Controller struct {
 	service *service.{{.Entity}}Service
@@ -25,11 +25,11 @@ type {{.Entity}}Controller struct {
 func (con *{{.Entity}}Controller) Routes(r fiber.Router) {
 	r.Route(
 		"/{{.EntityLower}}s", func(router fiber.Router) {
-			router.Get("/", con.List)
-			router.Get("/:id", con.Get)
-			router.Post("/", con.Create)
-			router.Patch("/:id", con.Update)
-			router.Delete("/:id", con.Destroy)
+			router.Get("/", con.List).Name("get many {{.EntityLower}}s")
+			router.Get("/:id", con.Get).Name("get one {{.EntityLower}}")
+			router.Post("/", con.Create).Name("create one {{.EntityLower}}")
+			router.Patch("/:id", con.Update).Name("update one {{.EntityLower}}")
+			router.Delete("/:id", con.Delete).Name("delete one {{.EntityLower}}")
 		},
 	)
 }
@@ -70,7 +70,7 @@ func (con *{{.Entity}}Controller) Get(c *fiber.Ctx) error {
 }
 
 func (con *{{.Entity}}Controller) Create(c *fiber.Ctx) error {
-	req := new(request.{{.Entity}}Request)
+	req := new(dto.{{.Entity}}Request)
 	if err := response.ParseAndValidate(c, req); err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (con *{{.Entity}}Controller) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	req := new(request.{{.Entity}}Request)
+	req := new(dto.{{.Entity}}Request)
 	if err := response.ParseAndValidate(c, req); err != nil {
 		return err
 	}
@@ -108,7 +108,7 @@ func (con *{{.Entity}}Controller) Update(c *fiber.Ctx) error {
 	})
 }
 
-func (con *{{.Entity}}Controller) Destroy(c *fiber.Ctx) error {
+func (con *{{.Entity}}Controller) Delete(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return err

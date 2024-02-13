@@ -1,6 +1,6 @@
-package code_gen
+package module_template
 
-var repo_template = `package repo
+var Repository = `package repository
 
 import (
 	"gva/internal/bootstrap/database"
@@ -17,8 +17,8 @@ func New{{.Entity}}Repository(database *database.Database) *{{.Entity}}Repositor
 	}
 }
 
-func (repo *{{.Entity}}Repository) Client() *ent.{{.Entity}}Client {
-	return repo.DB.Ent.{{.Entity}}
+func (r *{{.Entity}}Repository) Client() *ent.{{.Entity}}Client {
+	return r.DB.Ent.{{.Entity}}
 }
 
 `

@@ -11,10 +11,10 @@ var (
 	// AdminsColumns holds the columns for the "admins" table.
 	AdminsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "display_name", Type: field.TypeString},
 	}
 	// AdminsTable holds the schema information for the "admins" table.
 	AdminsTable = &schema.Table{
@@ -25,10 +25,10 @@ var (
 	// ArticlesColumns holds the columns for the "articles" table.
 	ArticlesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "title", Type: field.TypeString},
-		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "title", Type: field.TypeString},
+		{Name: "content", Type: field.TypeString, Size: 2147483647},
 	}
 	// ArticlesTable holds the schema information for the "articles" table.
 	ArticlesTable = &schema.Table{
@@ -36,38 +36,10 @@ var (
 		Columns:    ArticlesColumns,
 		PrimaryKey: []*schema.Column{ArticlesColumns[0]},
 	}
-	// TodosColumns holds the columns for the "todos" table.
-	TodosColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime},
-	}
-	// TodosTable holds the schema information for the "todos" table.
-	TodosTable = &schema.Table{
-		Name:       "todos",
-		Columns:    TodosColumns,
-		PrimaryKey: []*schema.Column{TodosColumns[0]},
-	}
-	// Todo2sColumns holds the columns for the "todo2s" table.
-	Todo2sColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime},
-	}
-	// Todo2sTable holds the schema information for the "todo2s" table.
-	Todo2sTable = &schema.Table{
-		Name:       "todo2s",
-		Columns:    Todo2sColumns,
-		PrimaryKey: []*schema.Column{Todo2sColumns[0]},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminsTable,
 		ArticlesTable,
-		TodosTable,
-		Todo2sTable,
 	}
 )
 

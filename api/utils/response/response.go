@@ -26,7 +26,7 @@ var ErrorHandler = func(c *fiber.Ctx, err error) error {
 	resp := Response{
 		Code:       app_err.ErrUnknownError.ErrorCode,
 		Message:    app_err.ErrUnknownError.Message,
-		HttpStatus: app_err.ErrUnauthenticated.HttpCode,
+		HttpStatus: app_err.ErrUnknownError.HttpCode,
 	}
 	// Handle errors
 	if e, ok := err.(validator.ValidationErrors); ok {
