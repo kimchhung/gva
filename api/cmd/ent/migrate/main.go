@@ -18,28 +18,17 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type SeedFunc = func(dir *atlas.LocalDir) error
-
-func runSeeds(dir *atlas.LocalDir, seedFuncs ...SeedFunc) {
-	for _, sf := range seedFuncs {
-		if err := sf(dir); err != nil {
-			log.Fatalf("failed to generate seed")
-		}
-	}
-}
-
 func main() {
 	if len(os.Args) < 2 {
 		return
 	}
 
-	mapConfig, err := godotenv.Read(fmt.Sprintf("app/database/%v.connection.env", os.Args[2]))
+	name, env := os.Args[1], os.Args[2]
+	mapConfig, err := godotenv.Read(fmt.Sprintf("app/database/%v.connection.env", env))
 	if err != nil {
 		log.Fatalf("failed to load connection config %v", err)
 	}
 
-	fmt.Printf("config :%v", os.Args[1])
-	ctx := context.Background()
 	// Create a local migration directory able to understand Atlas migration file format for replay.
 	dir, err := atlas.NewLocalDir(strings.Replace(mapConfig["dir"], "file://", "", 1))
 	if err != nil {
@@ -58,10 +47,10 @@ func main() {
 	}
 
 	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
-	err = migrate.NamedDiff(ctx, mapConfig["devUrl"], os.Args[1], opts...)
+	err = migrate.NamedDiff(context.Background(), mapConfig["devUrl"], name, opts...)
 	if err != nil {
 		log.Fatalf("failed generating migration file: %v", err)
 	}
 
-	runSeeds(dir, migratedata.SeedAdmin)
+	migratedata.GenerateSql(dir)
 }

@@ -8,15 +8,18 @@ Simple and scalable boilerplate to build powerful and organized REST projects wi
 ```
 ├── app
 │   ├── database
+│   │   ├── migrations 
 │   │   ├── schema
 │   │   │   └── article.go
-│   │   └── seeder
-│   │       └── article_seeder.go
+│   │   ├── seeder
+│   │   │    └── article_seeder.go
+│   │   └── local.connection.env  // migration connection
 │   ├── middleware
 │   │   ├── register.go
 │   │   └── token
 │   │       └── token.go
 │   ├── module
+│   │   └── router.go
 │   │   └── article
 │   │       ├── article_module.go
 │   │       ├── controller
@@ -28,17 +31,17 @@ Simple and scalable boilerplate to build powerful and organized REST projects wi
 │   │       ├── service
 │   │       │   └── article_service.go
 │   │       └── article_module.go
-│   └── router
-│       └── api.go
 ├── build
 │   ├── Dockerfile
 │   └── DockerfileAir
 ├── cmd
-│   └── example
+│   └── code_gen
+│   └── ent
 │       ├── generate.go
-│       └── main.go
+│       └── migrate
 ├── config
-│   └── example.toml
+│   │── config.go
+│   └── config.toml
 ├── docker-compose.yaml
 ├── go.mod
 ├── go.sum
@@ -50,7 +53,9 @@ Simple and scalable boilerplate to build powerful and organized REST projects wi
 │       └── webserver.go
 ├── LICENSE
 ├── Makefile
+├── migrate.mk
 ├── README.md
+├── tools.go
 ├── storage
 │   ├── ascii_art.txt
 │   ├── private
@@ -72,7 +77,7 @@ You can run that commands to run project:
 
 ```go mod download```
 
-```go run cmd/example/main.go``` or ```air -c .air.toml``` if you want to use air
+```go run main.go``` or ```air -c .air.toml``` if you want to use air
 
 ### Docker
 ```shell
@@ -84,41 +89,43 @@ CUSTOM="Air" docker-compose up # Use with Air
 
 ## Tech Stack
 - [Go](https://go.dev)
-- [Mysql](https://www.postgresql.org)
+- [Mysql](https://www.mysql.org)
 - [Docker](https://www.docker.com/)
 - [Fiber](https://github.com/gofiber/fiber)
 - [Ent](https://github.com/ent/ent)
+- [Atlas](https://atlasgo.io)
 - [Fx](https://github.com/uber-go/fx)
 - [Zerolog](https://github.com/rs/zerolog)
-- [GoMock](https://github.com/golang/mock)
-
-## To-Do List
-- [x] More error-free logging.
-- [x] Add makefile to make something shorter.
-- [x] Introduce repository pattern.
-- [ ] Add unit tests.
-- [x] Add mocking with GoMock.
+- [CodeGen](https://github.com/dolmen-go/codegen)
 
 ## License
 api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).
 
 
 
-## migration
+## Migration
+
+ - Install the Atlas CLI. You can find installation instructions here.
+run ```make migrate.hash``` whenever got error hash mismatched
 
 
-## migration generate
+### Migration generate
+
 1. edit schema in "app/database/schema"
 2. genrate ent using ```make gen name="add table"```
 3. apply migrations ```make migrate.apply```
 
-## migration manual
+### Create migration manual 
 1. create migration files ```make migrate.new name="add_user_data"```
 2. generate hash  ```make migrate.hash```
 3. apply migrations ```make migrate.apply```
 
-## migration role back
+### Migration role back
 
 1. remove one or two latest migration files in "app/database/migrations"
 2. check different and apply ```make migrate.schema.apply```
 3. set version migration to match current version in folder ``` make migrate.apply ```
+
+
+## Resources
+ - https://github.com/efectn/fiber-boilerplate
