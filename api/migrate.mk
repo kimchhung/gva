@@ -38,7 +38,7 @@ migrate.status:
 
 # generate migration sql diff from schema and db
 migrate.gen:
-	go run -mod=mod cmd/ent/migrate/main.go ${name}
+	go run -mod=mod cmd/ent/migrate/main.go ${name} ${env}
 
 # check If the migration directory and sum file are out-of-sync
 migrate.validate :

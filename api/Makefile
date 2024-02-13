@@ -1,10 +1,7 @@
 # Makefile for some commands.
-include Makefile.migrate
+include migrate.mk
 
-printdir:
-	@echo "Running migration with directory: $(devUrl) ${args}"
-
-# Generate Ent boilerplate
+# Generate Ent 
 gen:
 	go generate cmd/ent/generate.go
 
