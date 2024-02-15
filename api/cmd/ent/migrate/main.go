@@ -5,7 +5,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"gva/cmd/ent/migrate/migratedata"
 	"gva/internal/ent/migrate"
 	"log"
 	"os"
@@ -52,5 +51,6 @@ func main() {
 		log.Fatalf("failed generating migration file: %v", err)
 	}
 
-	migratedata.GenerateSql(dir)
+	// uncomment if want to generate sql for data migration
+	// migratedata.GenerateSql(dir)
 }

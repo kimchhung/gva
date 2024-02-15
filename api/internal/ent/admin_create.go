@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"gva/internal/ent/admin"
+	"gva/internal/ent/role"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -58,6 +59,21 @@ func (ac *AdminCreate) SetName(s string) *AdminCreate {
 func (ac *AdminCreate) SetDisplayName(s string) *AdminCreate {
 	ac.mutation.SetDisplayName(s)
 	return ac
+}
+
+// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
+func (ac *AdminCreate) AddRoleIDs(ids ...int) *AdminCreate {
+	ac.mutation.AddRoleIDs(ids...)
+	return ac
+}
+
+// AddRoles adds the "roles" edges to the Role entity.
+func (ac *AdminCreate) AddRoles(r ...*Role) *AdminCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ac.AddRoleIDs(ids...)
 }
 
 // Mutation returns the AdminMutation object of the builder.
@@ -160,6 +176,22 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)
 		_node.DisplayName = value
+	}
+	if nodes := ac.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   admin.RolesTable,
+			Columns: admin.RolesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

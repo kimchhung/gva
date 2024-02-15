@@ -15,9 +15,7 @@ type {{.Entity}} struct {
 
 func ({{.Entity}}) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		CreatedAtMixin{},
-		UpdatedAtMixin{},
-		DeletedAtMixin{},
+		TimetMixin{},
 	}
 }
 

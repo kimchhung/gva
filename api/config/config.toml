@@ -13,7 +13,7 @@ cert-file = "./storage/selfsigned.crt"
 key-file = "./storage/selfsigned.key"
 
 [db.mysql]
-dsn = "root:password@tcp(localhost:3306)/gva" # <username>:<password>@tcp(<host>:<port>)/<dbname>
+dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true" # <username>:<password>@tcp(<host>:<port>)/<dbname>
 
 [logger]
 time-format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10 

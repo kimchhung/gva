@@ -9,7 +9,7 @@ import (
 type SeedFunc = func(dir *atlas.LocalDir) error
 
 var Seeds = []SeedFunc{
-	SeedAdmin,
+	SeedSuperAdmin,
 }
 
 func GenerateSql(dir *atlas.LocalDir) {

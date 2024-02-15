@@ -7,7 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"gva/internal/ent/admin"
-	"gva/internal/ent/article"
+	"gva/internal/ent/permission"
+	"gva/internal/ent/role"
 	"reflect"
 	"sync"
 
@@ -74,8 +75,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			admin.Table:   admin.ValidColumn,
-			article.Table: article.ValidColumn,
+			admin.Table:      admin.ValidColumn,
+			permission.Table: permission.ValidColumn,
+			role.Table:       role.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

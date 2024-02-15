@@ -11,14 +11,15 @@ import (
 )
 
 // SeedUsers add the initial users to the database.
-func SeedAdmin(dir *migrate.LocalDir) error {
+func SeedSuperAdmin(dir *migrate.LocalDir) error {
 	w := &schema.DirWriter{Dir: dir}
 	client := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)), ent.Debug())
+	ctx := context.Background()
 
 	// The statement that generates the INSERT statement.
 	err := client.Admin.Create().
-		SetDisplayName("super admin").
-		SetName("admin").
+		SetDisplayName("ADMIN").
+		SetName("admin").AddRoles(client.Role.Create().SetName("Super Admin").SaveX(ctx)).
 		Exec(context.Background())
 
 	if err != nil {

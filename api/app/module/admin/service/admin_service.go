@@ -20,7 +20,7 @@ func NewAdminService(repository *repository.AdminRepository) *AdminService {
 }
 
 func (s *AdminService) GetAdmins(ctx context.Context) ([]*ent.Admin, error) {
-	return s.repo.Client().Query().Order(ent.Asc(admin.FieldID)).All(ctx)
+	return s.repo.Client().Query().WithRoles(func(rq *ent.RoleQuery) { rq.Limit(1) }).Order(ent.Asc(admin.FieldID)).All(ctx)
 }
 
 func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, error) {

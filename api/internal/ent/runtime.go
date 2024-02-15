@@ -5,7 +5,7 @@ package ent
 import (
 	"gva/app/database/schema"
 	"gva/internal/ent/admin"
-	"gva/internal/ent/article"
+	"gva/internal/ent/role"
 	"time"
 )
 
@@ -28,19 +28,19 @@ func init() {
 	admin.DefaultUpdatedAt = adminDescUpdatedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	admin.UpdateDefaultUpdatedAt = adminDescUpdatedAt.UpdateDefault.(func() time.Time)
-	articleMixin := schema.Article{}.Mixin()
-	articleMixinFields0 := articleMixin[0].Fields()
-	_ = articleMixinFields0
-	articleFields := schema.Article{}.Fields()
-	_ = articleFields
-	// articleDescCreatedAt is the schema descriptor for created_at field.
-	articleDescCreatedAt := articleMixinFields0[0].Descriptor()
-	// article.DefaultCreatedAt holds the default value on creation for the created_at field.
-	article.DefaultCreatedAt = articleDescCreatedAt.Default.(func() time.Time)
-	// articleDescUpdatedAt is the schema descriptor for updated_at field.
-	articleDescUpdatedAt := articleMixinFields0[1].Descriptor()
-	// article.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	article.DefaultUpdatedAt = articleDescUpdatedAt.Default.(func() time.Time)
-	// article.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	article.UpdateDefaultUpdatedAt = articleDescUpdatedAt.UpdateDefault.(func() time.Time)
+	roleMixin := schema.Role{}.Mixin()
+	roleMixinFields0 := roleMixin[0].Fields()
+	_ = roleMixinFields0
+	roleFields := schema.Role{}.Fields()
+	_ = roleFields
+	// roleDescCreatedAt is the schema descriptor for created_at field.
+	roleDescCreatedAt := roleMixinFields0[0].Descriptor()
+	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
+	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
+	// roleDescUpdatedAt is the schema descriptor for updated_at field.
+	roleDescUpdatedAt := roleMixinFields0[1].Descriptor()
+	// role.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
+	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

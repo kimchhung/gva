@@ -98,34 +98,60 @@ CUSTOM="Air" docker-compose up # Use with Air
 - [Zerolog](https://github.com/rs/zerolog)
 - [CodeGen](https://github.com/dolmen-go/codegen)
 
-## License
-api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).
 
+## CRUD generator
 
+```make crud name="todo" ```
+
+- example todo CRUD
+```
+│── app
+│   ├── database
+|   |   └── schema
+|   |         └── todo.go
+│   ├── module
+│   │   └── router.go
+│   │   └── todo
+│   │       ├── todo_module.go
+│   │       ├── controller
+│   │       │   ├── todo_controller.go
+│   │       ├── repository
+│   │       │   ├── todo_repository.go
+│   │       ├── dto
+│   │       │   └── todo_request.go
+│   │       ├── service
+│   │       │   └── todo_service.go
+│   │       └── todo_module.go
+```
 
 ## Migration
 
- - Install the Atlas CLI. You can find installation instructions here.
-run ```make migrate.hash``` whenever got error hash mismatched
+ - Install the Atlas CLI. You can find installation instructions [here](https://atlasgo.io/integrations/go-sdk).
+ - Run ```make migrate.hash``` whenever got error hash mismatched
+ - Check ```migrate.mk``` for more migration cli
 
 
 ### Migration generate
 
 1. edit schema in "app/database/schema"
-2. genrate ent using ```make gen name="add table"```
+2. genrate ent using ```make migrate.gen name="add_todo_index"```
 3. apply migrations ```make migrate.apply```
 
-### Create migration manual 
+### Create migration manually 
 1. create migration files ```make migrate.new name="add_user_data"```
 2. generate hash  ```make migrate.hash```
 3. apply migrations ```make migrate.apply```
 
-### Migration role back
+### Migration roleback or reverse
 
 1. remove one or two latest migration files in "app/database/migrations"
-2. check different and apply ```make migrate.schema.apply```
+2. check different and apply by ```make migrate.schema.apply```
 3. set version migration to match current version in folder ``` make migrate.apply ```
-
+4. check current version by ```make migrate.status```
 
 ## Resources
- - https://github.com/efectn/fiber-boilerplate
+ - https://github.com/efectn/fiber-boilerplate 
+
+
+## License
+api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).

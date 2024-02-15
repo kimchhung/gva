@@ -24,8 +24,29 @@ type Admin struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
-	DisplayName  string `json:"displayName,omitempty"`
+	DisplayName string `json:"displayName,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the AdminQuery when eager-loading is set.
+	Edges        AdminEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// AdminEdges holds the relations/edges for other nodes in the graph.
+type AdminEdges struct {
+	// Roles holds the value of the roles edge.
+	Roles []*Role `json:"roles,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// RolesOrErr returns the Roles value or an error if the edge
+// was not loaded in eager-loading.
+func (e AdminEdges) RolesOrErr() ([]*Role, error) {
+	if e.loadedTypes[0] {
+		return e.Roles, nil
+	}
+	return nil, &NotLoadedError{edge: "roles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -95,6 +116,11 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (a *Admin) Value(name string) (ent.Value, error) {
 	return a.selectValues.Get(name)
+}
+
+// QueryRoles queries the "roles" edge of the Admin entity.
+func (a *Admin) QueryRoles() *RoleQuery {
+	return NewAdminClient(a.config).QueryRoles(a)
 }
 
 // Update returns a builder for updating this Admin.

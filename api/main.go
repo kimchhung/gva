@@ -6,13 +6,15 @@ import (
 	"gva/app/middleware"
 	"gva/app/module"
 
-	"gva/app/module/article"
 	"gva/config"
 	"gva/internal/bootstrap"
 	"gva/internal/bootstrap/database"
 	"gva/internal/control_route"
 
 	"gva/app/module/admin"
+
+	"gva/app/module/permission"
+	"gva/app/module/role"
 
 	fxzerolog "github.com/efectn/fx-zerolog"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
@@ -33,8 +35,9 @@ func main() {
 			),
 		),
 
-		article.NewArticleModule,
 		admin.NewAdminModule,
+		permission.NewPermissionModule,
+		role.NewRoleModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Start Application
