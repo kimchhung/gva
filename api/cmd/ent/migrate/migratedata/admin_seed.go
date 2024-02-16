@@ -3,7 +3,8 @@ package migratedata
 import (
 	"context"
 	"fmt"
-	"gva/internal/ent"
+
+	"github.com/kimchhung/gva/internal/ent"
 
 	"ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"

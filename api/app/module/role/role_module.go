@@ -1,10 +1,10 @@
 package role
 
 import (
-	"gva/app/module/role/controller"
-	"gva/app/module/role/repository"
-	"gva/app/module/role/service"
-	"gva/internal/control_route"
+	"github.com/kimchhung/gva/app/module/role/controller"
+	"github.com/kimchhung/gva/app/module/role/repository"
+	"github.com/kimchhung/gva/app/module/role/service"
+	"github.com/kimchhung/gva/internal/control_route"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"

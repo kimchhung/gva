@@ -1,10 +1,10 @@
 package admin
 
 import (
-	"gva/app/module/admin/controller"
-	"gva/app/module/admin/repository"
-	"gva/app/module/admin/service"
-	"gva/internal/control_route"
+	"github.com/kimchhung/gva/app/module/admin/controller"
+	"github.com/kimchhung/gva/app/module/admin/repository"
+	"github.com/kimchhung/gva/app/module/admin/service"
+	"github.com/kimchhung/gva/internal/control_route"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -8,8 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/pelletier/go-toml/v2"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 type (
@@ -32,9 +31,9 @@ type (
 		}
 	}
 	logger = struct {
-		TimeFormat string        `toml:"time-format"`
-		Level      zerolog.Level `toml:"level"`
-		Prettier   bool          `toml:"prettier"`
+		TimeFormat string `toml:"time-format"`
+		Level      int    `toml:"level"`
+		Prettier   bool   `toml:"prettier"`
 	}
 	middleware = struct {
 		Compress struct {
@@ -62,6 +61,11 @@ type (
 			MaxAge int `toml:"max_age"`
 			Index  string
 			Root   string
+		}
+		Logger struct {
+			Enable         bool
+			Levels         []int
+			EnableRespBody bool
 		}
 	}
 )
@@ -96,7 +100,7 @@ func ParseConfig(name string, debug ...bool) (*Config, error) {
 func NewConfig() *Config {
 	config, err := ParseConfig("config")
 	if err != nil && !fiber.IsChild() {
-		log.Panic().Err(err).Msg("")
+		fmt.Printf("errrr %v : %v", err, config)
 	}
 
 	return config

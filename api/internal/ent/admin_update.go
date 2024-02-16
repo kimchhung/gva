@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gva/internal/ent/admin"
-	"gva/internal/ent/predicate"
-	"gva/internal/ent/role"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/role"
 	"time"
 
 	"entgo.io/ent/dialect/sql"

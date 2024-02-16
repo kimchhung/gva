@@ -9,11 +9,11 @@ import (
 	"log"
 	"reflect"
 
-	"gva/internal/ent/migrate"
+	"github.com/kimchhung/gva/internal/ent/migrate"
 
-	"gva/internal/ent/admin"
-	"gva/internal/ent/permission"
-	"gva/internal/ent/role"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/permission"
+	"github.com/kimchhung/gva/internal/ent/role"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"

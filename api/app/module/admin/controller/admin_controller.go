@@ -3,11 +3,11 @@ package controller
 import (
 	"strconv"
 
-	"gva/app/module/admin/dto"
-	"gva/app/module/admin/service"
+	"github.com/kimchhung/gva/app/module/admin/dto"
+	"github.com/kimchhung/gva/app/module/admin/service"
 
-	"gva/internal/control_route"
-	"gva/utils/response"
+	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/utils/response"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -120,4 +120,3 @@ func (con *AdminController) Delete(c *fiber.Ctx) error {
 		Message: "The admin was deleted successfully!",
 	})
 }
-

@@ -7,10 +7,10 @@ var Module = fmt.Sprintf(
 	`package {{.EntitySnake}}
 
 import (
-	"gva/app/module/{{.EntitySnake}}/controller"
-	"gva/app/module/{{.EntitySnake}}/repository"
-	"gva/app/module/{{.EntitySnake}}/service"
-	"gva/internal/control_route"
+	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/controller"
+	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/repository"
+	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/service"
+	"github.com/kimchhung/gva/internal/control_route"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"

@@ -3,11 +3,11 @@ package module_template
 var Service = `package service
 
 import (
-	"gva/app/module/{{.EntitySnake}}/repository"
-	"gva/app/module/{{.EntitySnake}}/dto"
+	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/repository"
+	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/dto"
 
-	"gva/internal/ent"
-	"gva/internal/ent/{{.EntityAllLower}}"
+	"github.com/kimchhung/gva/internal/ent"
+	"github.com/kimchhung/gva/internal/ent/{{.EntityAllLower}}"
 	"context"
 )
 

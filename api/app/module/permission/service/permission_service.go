@@ -1,12 +1,13 @@
 package service
 
 import (
-	"gva/app/module/permission/repository"
-	"gva/app/module/permission/dto"
+	"github.com/kimchhung/gva/app/module/permission/dto"
+	"github.com/kimchhung/gva/app/module/permission/repository"
 
-	"gva/internal/ent"
-	"gva/internal/ent/permission"
 	"context"
+
+	"github.com/kimchhung/gva/internal/ent"
+	"github.com/kimchhung/gva/internal/ent/permission"
 )
 
 type PermissionService struct {
@@ -40,4 +41,3 @@ func (s *PermissionService) UpdatePermission(ctx context.Context, id int, reques
 func (s *PermissionService) DeletePermission(ctx context.Context, id int) error {
 	return s.repo.Client().DeleteOneID(id).Exec(ctx)
 }
-

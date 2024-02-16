@@ -5,7 +5,7 @@ package hook
 import (
 	"context"
 	"fmt"
-	"gva/internal/ent"
+	"github.com/kimchhung/gva/internal/ent"
 )
 
 // The AdminFunc type is an adapter to allow the use of ordinary

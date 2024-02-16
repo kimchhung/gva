@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"gva/internal/bootstrap/database"
-	"gva/internal/ent"
+	"github.com/kimchhung/gva/internal/bootstrap/database"
+	"github.com/kimchhung/gva/internal/ent"
 )
 
 type RoleRepository struct {
@@ -18,4 +18,3 @@ func NewRoleRepository(database *database.Database) *RoleRepository {
 func (r *RoleRepository) Client() *ent.RoleClient {
 	return r.DB.Ent.Role
 }
-

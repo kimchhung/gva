@@ -3,20 +3,21 @@ package bootstrap
 import (
 	"context"
 	"fmt"
-	"gva/app/middleware"
-	"gva/config"
-	"gva/internal/bootstrap/database"
-	"gva/internal/control_route"
-	"gva/utils/response"
 	"os"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/kimchhung/gva/app/middleware"
+	"github.com/kimchhung/gva/config"
+	"github.com/kimchhung/gva/internal/bootstrap/database"
+	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/utils/response"
+
 	"github.com/gofiber/fiber/v2"
 	futils "github.com/gofiber/fiber/v2/utils"
-	"github.com/rs/zerolog"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 )
 
 func NewFiber(cfg *config.Config) *fiber.App {
@@ -37,7 +38,9 @@ func NewFiber(cfg *config.Config) *fiber.App {
 	return app
 }
 
-func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, routers control_route.Router, middlewares *middleware.Middleware, database *database.Database, log zerolog.Logger) {
+func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, routers control_route.Router, middlewares *middleware.Middleware, database *database.Database, log *zap.Logger) {
+	sugar := log.Sugar()
+
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(ctx context.Context) error {
@@ -58,15 +61,17 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, routers
 				// ASCII Art
 				ascii, err := os.ReadFile("./storage/ascii_art.txt")
 				if err != nil {
-					log.Debug().Err(err).Msg("An unknown error occurred when to print ASCII art!")
+					log.Error("An unknown error occurred when to print ASCII art!", zap.Error(err))
 				}
 
+				fmt.Println("")
 				for _, line := range strings.Split(futils.UnsafeString(ascii), "\n") {
-					log.Info().Msg(line)
+					fmt.Println(line)
 				}
+				fmt.Println("")
 
 				// Information message
-				log.Info().Msg(fiber.Config().AppName + " is running at the moment!")
+				sugar.Info(fiber.Config().AppName + " is running at the moment!")
 
 				// Debug informations
 				if !cfg.App.Production {
@@ -77,27 +82,27 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, routers
 						prefork = "Disabled"
 					}
 
-					log.Debug().Msgf("Version: %s", "-")
-					log.Debug().Msgf("Host: %s", host)
-					log.Debug().Msgf("Port: %s", port)
-					log.Debug().Msgf("Prefork: %s", prefork)
-					log.Debug().Msgf("Handlers: %d", fiber.HandlersCount())
-					log.Debug().Msgf("Processes: %d", procs)
-					log.Debug().Msgf("PID: %d", os.Getpid())
+					sugar.Debugln("Version: %s", "-")
+					sugar.Debugln("Host: %s", host)
+					sugar.Debugln("Port: %s", port)
+					sugar.Debugln("Prefork: %s", prefork)
+					sugar.Debugln("Handlers: %d", fiber.HandlersCount())
+					sugar.Debugln("Processes: %d", procs)
+					sugar.Debugln("PID: %d", os.Getpid())
 				}
 
 				// Listen the app (with TLS Support)
 				if cfg.App.TLS.Enable {
-					log.Debug().Msg("TLS support was enabled.")
+					log.Info("TLS support was enabled.")
 
 					if err := fiber.ListenTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil {
-						log.Error().Err(err).Msg("An unknown error occurred when to run server!")
+						log.Error("An unknown error occurred when to run server!", zap.Error(err))
 					}
 				}
 
 				go func() {
 					if err := fiber.Listen(cfg.App.Port); err != nil {
-						log.Error().Err(err).Msg("An unknown error occurred when to run server!")
+						log.Error("An unknown error occurred when to run server!", zap.Error(err))
 					}
 				}()
 
@@ -109,17 +114,15 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, fiber *fiber.App, routers
 				return nil
 			},
 			OnStop: func(ctx context.Context) error {
-				log.Info().Msg("Shutting down the app...")
+				log.Info("Shutting down the app...")
 				if err := fiber.Shutdown(); err != nil {
-					log.Panic().Err(err).Msg("")
+					log.Panic("fiber.Shutdown()", zap.Error(err))
 				}
 
-				log.Info().Msg("Running cleanup tasks...")
-				log.Info().Msg("1- Shutdown the database")
+				log.Info("Running cleanup tasks...")
+				log.Info("1- Shutdown the database")
 				database.ShutdownDatabase()
-				log.Info().Msgf("%s was successful shutdown.", cfg.App.Name)
-				log.Info().Msg("\u001b[96msee you again👋\u001b[0m")
-
+				log.Info("app was successful shutdown.", zap.String("app", cfg.App.Name))
 				return nil
 			},
 		},

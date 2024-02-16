@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"gva/internal/code_gen"
-	ustrings "gva/utils/strings"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/kimchhung/gva/internal/code_gen"
+	ustrings "github.com/kimchhung/gva/utils/strings"
 )
 
 func main() {

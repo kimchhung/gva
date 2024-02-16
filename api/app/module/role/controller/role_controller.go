@@ -3,11 +3,11 @@ package controller
 import (
 	"strconv"
 
-	"gva/app/module/role/dto"
-	"gva/app/module/role/service"
+	"github.com/kimchhung/gva/app/module/role/dto"
+	"github.com/kimchhung/gva/app/module/role/service"
 
-	"gva/internal/control_route"
-	"gva/utils/response"
+	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/utils/response"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -120,4 +120,3 @@ func (con *RoleController) Delete(c *fiber.Ctx) error {
 		Message: "The role was deleted successfully!",
 	})
 }
-

@@ -3,11 +3,11 @@ package controller
 import (
 	"strconv"
 
-	"gva/app/module/permission/dto"
-	"gva/app/module/permission/service"
+	"github.com/kimchhung/gva/app/module/permission/dto"
+	"github.com/kimchhung/gva/app/module/permission/service"
 
-	"gva/internal/control_route"
-	"gva/utils/response"
+	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/utils/response"
 
 	"github.com/gofiber/fiber/v2"
 )

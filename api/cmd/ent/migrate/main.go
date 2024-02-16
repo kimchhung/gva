@@ -5,10 +5,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"gva/internal/ent/migrate"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/kimchhung/gva/internal/ent/migrate"
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"

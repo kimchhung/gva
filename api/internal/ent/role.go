@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gva/internal/ent/role"
+	"github.com/kimchhung/gva/internal/ent/role"
 	"strings"
 	"time"
 

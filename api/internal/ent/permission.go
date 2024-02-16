@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gva/internal/ent/permission"
+	"github.com/kimchhung/gva/internal/ent/permission"
 	"strings"
 
 	"entgo.io/ent"

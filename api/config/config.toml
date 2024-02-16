@@ -39,6 +39,11 @@ enable = false
 max = 20
 expiration_seconds = 60
 
+[middleware.logger]
+enable = true
+enableRespBody = true
+levels = [2, 1, 0]
+
 [middleware.filesystem]
 enable = false
 browse = true

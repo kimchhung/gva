@@ -4,8 +4,8 @@ package ent
 
 import (
 	"context"
-	"gva/internal/ent/admin"
-	"gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

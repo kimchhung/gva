@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gva/internal/ent/permission"
-	"gva/internal/ent/role"
+	"github.com/kimchhung/gva/internal/ent/permission"
+	"github.com/kimchhung/gva/internal/ent/role"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"

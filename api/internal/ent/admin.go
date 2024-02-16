@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/admin"
 	"strings"
 	"time"
 

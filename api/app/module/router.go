@@ -1,7 +1,7 @@
 package module
 
 import (
-	"gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/control_route"
 )
 
 var _ interface {

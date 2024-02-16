@@ -1,12 +1,13 @@
 package service
 
 import (
-	"gva/app/module/admin/dto"
-	"gva/app/module/admin/repository"
+	"github.com/kimchhung/gva/app/module/admin/dto"
+	"github.com/kimchhung/gva/app/module/admin/repository"
 
 	"context"
-	"gva/internal/ent"
-	"gva/internal/ent/admin"
+
+	"github.com/kimchhung/gva/internal/ent"
+	"github.com/kimchhung/gva/internal/ent/admin"
 )
 
 type AdminService struct {

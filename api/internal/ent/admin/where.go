@@ -3,7 +3,7 @@
 package admin
 
 import (
-	"gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"

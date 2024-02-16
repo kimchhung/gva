@@ -3,7 +3,7 @@
 package permission
 
 import (
-	"gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

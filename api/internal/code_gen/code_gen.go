@@ -2,10 +2,11 @@ package code_gen
 
 import (
 	"fmt"
-	module_template "gva/internal/code_gen/module"
 	"os"
 	"path/filepath"
 	"text/template"
+
+	module_template "github.com/kimchhung/gva/internal/code_gen/module"
 )
 
 type CodeGenParams struct {
@@ -30,7 +31,7 @@ func GenerateCodes(params CodeGenParams) {
 func Appends(params CodeGenParams) {
 	InjectCodeToPos("main.go", map[string]string{
 		"// #inject:module ":      fmt.Sprintf("%v.New%vModule,\n", params.EntitySnake, params.Entity),
-		"// #inject:moduleImport": fmt.Sprintf(`"gva/app/module/%v"`+"\n", params.EntitySnake),
+		"// #inject:moduleImport": fmt.Sprintf(`"github.com/kimchhung/gva/app/module/%v"`+"\n", params.EntitySnake),
 	}, true)
 }
 

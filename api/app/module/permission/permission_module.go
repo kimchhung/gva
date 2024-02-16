@@ -1,10 +1,10 @@
 package permission
 
 import (
-	"gva/app/module/permission/controller"
-	"gva/app/module/permission/repository"
-	"gva/app/module/permission/service"
-	"gva/internal/control_route"
+	"github.com/kimchhung/gva/app/module/permission/controller"
+	"github.com/kimchhung/gva/app/module/permission/repository"
+	"github.com/kimchhung/gva/app/module/permission/service"
+	"github.com/kimchhung/gva/internal/control_route"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"

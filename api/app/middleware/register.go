@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"time"
 
-	"gva/config"
-	"gva/utils"
+	"github.com/kimchhung/gva/config"
+	"github.com/kimchhung/gva/utils"
+	"go.uber.org/zap"
 
+	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
@@ -19,17 +21,26 @@ import (
 type Middleware struct {
 	app *fiber.App
 	cfg *config.Config
+	log *zap.Logger
 }
 
-func NewMiddleware(app *fiber.App, cfg *config.Config) *Middleware {
+func NewMiddleware(app *fiber.App, cfg *config.Config, log *zap.Logger) *Middleware {
 	return &Middleware{
 		app: app,
 		cfg: cfg,
+		log: log,
 	}
 }
 
 func (m *Middleware) Register() {
 	// Add Extra Middlewares
+
+	m.app.Use(fiberzap.New(fiberzap.Config{
+		Logger:      m.log,
+		SkipResBody: utils.IsEnabled(m.cfg.Middleware.Logger.EnableRespBody),
+		Next:        utils.IsEnabled(m.cfg.Middleware.Limiter.Enable),
+	}))
+
 	m.app.Use(limiter.New(limiter.Config{
 		Next:       utils.IsEnabled(m.cfg.Middleware.Limiter.Enable),
 		Max:        m.cfg.Middleware.Limiter.Max,

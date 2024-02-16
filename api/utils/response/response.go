@@ -1,8 +1,9 @@
 package response
 
 import (
-	app_err "gva/app/error"
 	"strings"
+
+	app_err "github.com/kimchhung/gva/app/error"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"

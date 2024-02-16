@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"gva/app/database/schema"
-	"gva/internal/ent/admin"
-	"gva/internal/ent/role"
+	"github.com/kimchhung/gva/app/database/schema"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/role"
 	"time"
 )
 

@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"gva/internal/bootstrap/database"
-	"gva/internal/ent"
+	"github.com/kimchhung/gva/internal/bootstrap/database"
+	"github.com/kimchhung/gva/internal/ent"
 )
 
 type PermissionRepository struct {
@@ -18,4 +18,3 @@ func NewPermissionRepository(database *database.Database) *PermissionRepository 
 func (r *PermissionRepository) Client() *ent.PermissionClient {
 	return r.DB.Ent.Permission
 }
-

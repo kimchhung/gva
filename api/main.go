@@ -2,21 +2,21 @@ package main
 
 import (
 	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
+	"go.uber.org/zap"
 
-	"gva/app/middleware"
-	"gva/app/module"
+	"github.com/kimchhung/gva/app/middleware"
+	"github.com/kimchhung/gva/app/module"
 
-	"gva/config"
-	"gva/internal/bootstrap"
-	"gva/internal/bootstrap/database"
-	"gva/internal/control_route"
+	"github.com/kimchhung/gva/config"
+	"github.com/kimchhung/gva/internal/bootstrap"
+	"github.com/kimchhung/gva/internal/bootstrap/database"
+	"github.com/kimchhung/gva/internal/control_route"
 
-	"gva/app/module/admin"
+	"github.com/kimchhung/gva/app/module/admin"
 
-	"gva/app/module/permission"
-	"gva/app/module/role"
-
-	fxzerolog "github.com/efectn/fx-zerolog"
+	"github.com/kimchhung/gva/app/module/permission"
+	"github.com/kimchhung/gva/app/module/role"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )
 
@@ -44,6 +44,8 @@ func main() {
 		fx.Invoke(bootstrap.Start),
 
 		// Define logger
-		fx.WithLogger(fxzerolog.Init()),
+		fx.WithLogger((func(logger *zap.Logger) fxevent.Logger {
+			return &fxevent.ZapLogger{Logger: logger}
+		})),
 	).Run()
 }
