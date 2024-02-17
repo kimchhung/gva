@@ -2,47 +2,36 @@
 
 package token
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 type Config struct {
 	Next       func(c *fiber.Ctx) bool
-	Token      string
+	Secret     string
 	HeaderName string
+
+	VerifyFunc func(headerValue string) error
 }
 
-var ConfigDefault = Config{
-	Next:       nil,
-	Token:      "Default",
-	HeaderName: "X-Token-Middleware",
-}
+type Option func(*Config)
 
-func configDefault(config ...Config) Config {
-	// Return default config if nothing provided
-	if len(config) < 1 {
-		return ConfigDefault
+func NewConfig(config *Config) Option {
+	return func(_c *Config) {
+		*_c = *config
 	}
-
-	// Override default config
-	cfg := config[0]
-
-	// Set default values
-	if cfg.Next == nil {
-		cfg.Next = ConfigDefault.Next
-	}
-	if cfg.Token == "" {
-		cfg.Token = ConfigDefault.Token
-	}
-	if cfg.HeaderName == "" {
-		cfg.HeaderName = ConfigDefault.HeaderName
-	}
-
-	return cfg
 }
 
 // New creates a new middleware handler
-func New(config Config) fiber.Handler {
+func New(config Option, opts ...Option) fiber.Handler {
 	// Set default config
-	cfg := configDefault(config)
+	cfg := new(Config)
+	config(cfg)
+
+	// Override default config
+	for _, opt := range opts {
+		opt(cfg)
+	}
 
 	// Return new handler
 	return func(c *fiber.Ctx) error {
@@ -51,10 +40,10 @@ func New(config Config) fiber.Handler {
 			return c.Next()
 		}
 
-		if c.Get(cfg.HeaderName, "") == cfg.Token {
-			return c.Next()
+		if err := cfg.VerifyFunc(c.Get(cfg.HeaderName, "")); err != nil {
+			return err
 		}
 
-		return c.SendStatus(fiber.StatusUnauthorized)
+		return c.Next()
 	}
 }

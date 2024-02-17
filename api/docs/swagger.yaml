@@ -1,0 +1,139 @@
+basePath: /
+definitions:
+  dto.AdminRequest:
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      errors:
+        items: {}
+        type: array
+      messages:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: fiber@swagger.io
+    name: API Support
+  description: This is a sample swagger for Fiber
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Fiber Example API
+  version: "1.0"
+paths:
+  /admins:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                Data:
+                  items:
+                    type: object
+                  type: array
+              type: object
+      summary: List all admins
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Add a new admin to the system
+      parameters:
+      - description: Admin data
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new admin
+      tags:
+      - admin
+  /admins/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an admin by ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete an admin
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get details of an admin by ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get one admin by ID
+      tags:
+      - admin
+    patch:
+      consumes:
+      - application/json
+      description: Update the details of an admin by ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin data
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update an existing admin
+      tags:
+      - admin
+swagger: "2.0"

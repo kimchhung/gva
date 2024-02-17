@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/admin"
-	"github.com/kimchhung/gva/internal/ent/predicate"
-	"github.com/kimchhung/gva/internal/ent/role"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/role"
 )
 
 // AdminUpdate is the builder for updating Admin entities.
@@ -49,16 +49,30 @@ func (au *AdminUpdate) SetUpdatedAt(t time.Time) *AdminUpdate {
 	return au
 }
 
-// SetName sets the "name" field.
-func (au *AdminUpdate) SetName(s string) *AdminUpdate {
-	au.mutation.SetName(s)
+// SetUsername sets the "username" field.
+func (au *AdminUpdate) SetUsername(s string) *AdminUpdate {
+	au.mutation.SetUsername(s)
 	return au
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (au *AdminUpdate) SetNillableName(s *string) *AdminUpdate {
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (au *AdminUpdate) SetNillableUsername(s *string) *AdminUpdate {
 	if s != nil {
-		au.SetName(*s)
+		au.SetUsername(*s)
+	}
+	return au
+}
+
+// SetPassword sets the "password" field.
+func (au *AdminUpdate) SetPassword(s string) *AdminUpdate {
+	au.mutation.SetPassword(s)
+	return au
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (au *AdminUpdate) SetNillablePassword(s *string) *AdminUpdate {
+	if s != nil {
+		au.SetPassword(*s)
 	}
 	return au
 }
@@ -169,8 +183,11 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := au.mutation.Name(); ok {
-		_spec.SetField(admin.FieldName, field.TypeString, value)
+	if value, ok := au.mutation.Username(); ok {
+		_spec.SetField(admin.FieldUsername, field.TypeString, value)
+	}
+	if value, ok := au.mutation.Password(); ok {
+		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := au.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)
@@ -260,16 +277,30 @@ func (auo *AdminUpdateOne) SetUpdatedAt(t time.Time) *AdminUpdateOne {
 	return auo
 }
 
-// SetName sets the "name" field.
-func (auo *AdminUpdateOne) SetName(s string) *AdminUpdateOne {
-	auo.mutation.SetName(s)
+// SetUsername sets the "username" field.
+func (auo *AdminUpdateOne) SetUsername(s string) *AdminUpdateOne {
+	auo.mutation.SetUsername(s)
 	return auo
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (auo *AdminUpdateOne) SetNillableName(s *string) *AdminUpdateOne {
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillableUsername(s *string) *AdminUpdateOne {
 	if s != nil {
-		auo.SetName(*s)
+		auo.SetUsername(*s)
+	}
+	return auo
+}
+
+// SetPassword sets the "password" field.
+func (auo *AdminUpdateOne) SetPassword(s string) *AdminUpdateOne {
+	auo.mutation.SetPassword(s)
+	return auo
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillablePassword(s *string) *AdminUpdateOne {
+	if s != nil {
+		auo.SetPassword(*s)
 	}
 	return auo
 }
@@ -410,8 +441,11 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := auo.mutation.Name(); ok {
-		_spec.SetField(admin.FieldName, field.TypeString, value)
+	if value, ok := auo.mutation.Username(); ok {
+		_spec.SetField(admin.FieldUsername, field.TypeString, value)
+	}
+	if value, ok := auo.mutation.Password(); ok {
+		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)

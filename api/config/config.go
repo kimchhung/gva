@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/pelletier/go-toml/v2"
+	"github.com/rs/zerolog"
 )
 
 type (
@@ -31,9 +32,9 @@ type (
 		}
 	}
 	logger = struct {
-		TimeFormat string `toml:"time-format"`
-		Level      int    `toml:"level"`
-		Prettier   bool   `toml:"prettier"`
+		TimeFormat string        `toml:"time-format"`
+		Level      zerolog.Level `toml:"level"`
+		Prettier   bool          `toml:"prettier"`
 	}
 	middleware = struct {
 		Compress struct {
@@ -62,11 +63,10 @@ type (
 			Index  string
 			Root   string
 		}
-		Logger struct {
-			Enable         bool
-			Levels         []int
-			EnableRespBody bool
-		}
+	}
+
+	jwt struct {
+		Secret string
 	}
 )
 
@@ -75,6 +75,7 @@ type Config struct {
 	DB         db
 	Logger     logger
 	Middleware middleware
+	Jwt        jwt
 }
 
 func ParseConfig(name string, debug ...bool) (*Config, error) {

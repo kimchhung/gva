@@ -6,9 +6,9 @@ import (
 
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/utils"
-	"go.uber.org/zap"
+	"github.com/rs/zerolog"
 
-	"github.com/gofiber/contrib/fiberzap/v2"
+	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
@@ -21,10 +21,10 @@ import (
 type Middleware struct {
 	app *fiber.App
 	cfg *config.Config
-	log *zap.Logger
+	log *zerolog.Logger
 }
 
-func NewMiddleware(app *fiber.App, cfg *config.Config, log *zap.Logger) *Middleware {
+func NewMiddleware(app *fiber.App, cfg *config.Config, log *zerolog.Logger) *Middleware {
 	return &Middleware{
 		app: app,
 		cfg: cfg,
@@ -34,11 +34,12 @@ func NewMiddleware(app *fiber.App, cfg *config.Config, log *zap.Logger) *Middlew
 
 func (m *Middleware) Register() {
 	// Add Extra Middlewares
-
-	m.app.Use(fiberzap.New(fiberzap.Config{
-		Logger:      m.log,
-		SkipResBody: utils.IsEnabled(m.cfg.Middleware.Logger.EnableRespBody),
-		Next:        utils.IsEnabled(m.cfg.Middleware.Limiter.Enable),
+	m.app.Use(swagger.New(swagger.Config{
+		BasePath: "/",
+		FilePath: "./docs/swagger.json",
+		Path:     "swagger",
+		Title:    "Swagger API Docs",
+		CacheAge: 0,
 	}))
 
 	m.app.Use(limiter.New(limiter.Config{

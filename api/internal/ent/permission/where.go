@@ -3,10 +3,9 @@
 package permission
 
 import (
-	"github.com/kimchhung/gva/internal/ent/predicate"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/kimchhung/gva/internal/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

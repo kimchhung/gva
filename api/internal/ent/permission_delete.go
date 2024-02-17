@@ -4,12 +4,12 @@ package ent
 
 import (
 	"context"
-	"github.com/kimchhung/gva/internal/ent/permission"
-	"github.com/kimchhung/gva/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/internal/ent/permission"
+	"github.com/kimchhung/gva/internal/ent/predicate"
 )
 
 // PermissionDelete is the builder for deleting a Permission entity.

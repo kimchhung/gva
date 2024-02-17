@@ -26,10 +26,20 @@ func main() {
 
 		code_gen.GenerateCodes(params)
 
-		if _, err := exec.Command("go", "generate", "cmd/ent/generate.go").CombinedOutput(); err != nil {
+		output, err := exec.Command("go", "generate", "cmd/ent/generate.go").CombinedOutput()
+		if err != nil {
 			fmt.Printf("Failed to run command: %v\n", err)
 			return
 		}
+		fmt.Println(string(output))
+
+		output, err = exec.Command("swag", "init").CombinedOutput()
+		if err != nil {
+			fmt.Printf("Failed to run command: %v\n", err)
+			return
+		}
+		fmt.Println(string(output))
+
 	}
 }
 

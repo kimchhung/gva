@@ -4,12 +4,12 @@ package ent
 
 import (
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/role"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/kimchhung/gva/internal/ent/role"
 )
 
 // Role is the model entity for the Role schema.

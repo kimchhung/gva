@@ -5,6 +5,9 @@ include migrate.mk
 gen:
 	go generate cmd/ent/generate.go
 
+swag:
+	swag init
+
 crud:
 	go run cmd/code_gen/generate.go $(name)
 

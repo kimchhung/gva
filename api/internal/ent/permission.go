@@ -4,11 +4,11 @@ package ent
 
 import (
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/permission"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/kimchhung/gva/internal/ent/permission"
 )
 
 // Permission is the model entity for the Permission schema.

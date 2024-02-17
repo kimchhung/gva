@@ -3,11 +3,11 @@
 package admin
 
 import (
-	"github.com/kimchhung/gva/internal/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/kimchhung/gva/internal/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
@@ -65,9 +65,14 @@ func UpdatedAt(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldName, v))
+// Username applies equality check predicate on the "username" field. It's identical to UsernameEQ.
+func Username(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldUsername, v))
+}
+
+// Password applies equality check predicate on the "password" field. It's identical to PasswordEQ.
+func Password(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldPassword, v))
 }
 
 // DisplayName applies equality check predicate on the "display_name" field. It's identical to DisplayNameEQ.
@@ -155,69 +160,134 @@ func UpdatedAtLTE(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldName, v))
+// UsernameEQ applies the EQ predicate on the "username" field.
+func UsernameEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldUsername, v))
 }
 
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldName, v))
+// UsernameNEQ applies the NEQ predicate on the "username" field.
+func UsernameNEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldUsername, v))
 }
 
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldName, vs...))
+// UsernameIn applies the In predicate on the "username" field.
+func UsernameIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldUsername, vs...))
 }
 
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldName, vs...))
+// UsernameNotIn applies the NotIn predicate on the "username" field.
+func UsernameNotIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldUsername, vs...))
 }
 
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldName, v))
+// UsernameGT applies the GT predicate on the "username" field.
+func UsernameGT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldUsername, v))
 }
 
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldName, v))
+// UsernameGTE applies the GTE predicate on the "username" field.
+func UsernameGTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldUsername, v))
 }
 
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldName, v))
+// UsernameLT applies the LT predicate on the "username" field.
+func UsernameLT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldUsername, v))
 }
 
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldName, v))
+// UsernameLTE applies the LTE predicate on the "username" field.
+func UsernameLTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldUsername, v))
 }
 
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldContains(FieldName, v))
+// UsernameContains applies the Contains predicate on the "username" field.
+func UsernameContains(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContains(FieldUsername, v))
 }
 
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldHasPrefix(FieldName, v))
+// UsernameHasPrefix applies the HasPrefix predicate on the "username" field.
+func UsernameHasPrefix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasPrefix(FieldUsername, v))
 }
 
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldHasSuffix(FieldName, v))
+// UsernameHasSuffix applies the HasSuffix predicate on the "username" field.
+func UsernameHasSuffix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasSuffix(FieldUsername, v))
 }
 
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEqualFold(FieldName, v))
+// UsernameEqualFold applies the EqualFold predicate on the "username" field.
+func UsernameEqualFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEqualFold(FieldUsername, v))
 }
 
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldContainsFold(FieldName, v))
+// UsernameContainsFold applies the ContainsFold predicate on the "username" field.
+func UsernameContainsFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContainsFold(FieldUsername, v))
+}
+
+// PasswordEQ applies the EQ predicate on the "password" field.
+func PasswordEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldPassword, v))
+}
+
+// PasswordNEQ applies the NEQ predicate on the "password" field.
+func PasswordNEQ(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldPassword, v))
+}
+
+// PasswordIn applies the In predicate on the "password" field.
+func PasswordIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldPassword, vs...))
+}
+
+// PasswordNotIn applies the NotIn predicate on the "password" field.
+func PasswordNotIn(vs ...string) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldPassword, vs...))
+}
+
+// PasswordGT applies the GT predicate on the "password" field.
+func PasswordGT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldPassword, v))
+}
+
+// PasswordGTE applies the GTE predicate on the "password" field.
+func PasswordGTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldPassword, v))
+}
+
+// PasswordLT applies the LT predicate on the "password" field.
+func PasswordLT(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldPassword, v))
+}
+
+// PasswordLTE applies the LTE predicate on the "password" field.
+func PasswordLTE(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldPassword, v))
+}
+
+// PasswordContains applies the Contains predicate on the "password" field.
+func PasswordContains(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContains(FieldPassword, v))
+}
+
+// PasswordHasPrefix applies the HasPrefix predicate on the "password" field.
+func PasswordHasPrefix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasPrefix(FieldPassword, v))
+}
+
+// PasswordHasSuffix applies the HasSuffix predicate on the "password" field.
+func PasswordHasSuffix(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldHasSuffix(FieldPassword, v))
+}
+
+// PasswordEqualFold applies the EqualFold predicate on the "password" field.
+func PasswordEqualFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldEqualFold(FieldPassword, v))
+}
+
+// PasswordContainsFold applies the ContainsFold predicate on the "password" field.
+func PasswordContainsFold(v string) predicate.Admin {
+	return predicate.Admin(sql.FieldContainsFold(FieldPassword, v))
 }
 
 // DisplayNameEQ applies the EQ predicate on the "display_name" field.

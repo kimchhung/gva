@@ -4,12 +4,12 @@ package ent
 
 import (
 	"context"
-	"github.com/kimchhung/gva/internal/ent/predicate"
-	"github.com/kimchhung/gva/internal/ent/role"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/role"
 )
 
 // RoleDelete is the builder for deleting a Role entity.

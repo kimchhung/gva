@@ -36,9 +36,11 @@ var NewAdminModule = fx.Module("AdminModule",
 	// Register Repository & Service
 	fx.Provide(repository.NewAdminRepository),
 	fx.Provide(service.NewAdminService),
+	fx.Provide(service.NewJWTService),
 
 	// Regiser Controller
 	fx.Provide(controller.NewAdminController),
+	fx.Provide(controller.NewAuthController),
 
 	// Register Router
 	fx.Provide(NewAdminRouter),

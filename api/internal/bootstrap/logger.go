@@ -1,45 +1,34 @@
 package bootstrap
 
 import (
+	"os"
+
 	"github.com/kimchhung/gva/config"
-	zPretier "github.com/thessem/zap-prettyconsole"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
-func NewLogger(cfg *config.Config) (*zap.Logger, error) {
-	// Create a new zap logger based on the environment (development or production)
-	var config zap.Config
+func NewLogger(cfg *config.Config) *zerolog.Logger {
+	zerolog.TimeFieldFormat = cfg.Logger.TimeFormat
+
 	if cfg.Logger.Prettier {
-		config = zPretier.NewConfig()
-		// slow 3000%
-	} else {
-		config = zap.NewProductionConfig()
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 	}
 
-	logger, err := config.Build()
-	if err != nil {
-		return nil, err
-	}
+	zerolog.SetGlobalLevel(cfg.Logger.Level)
 
-	zap.ReplaceGlobals(logger)
-
-	// Set the log level
-	logger = logger.WithOptions(
-		zap.IncreaseLevel(zapcore.Level(cfg.Logger.Level)),
-	)
-
-	// Replace the default time encoder with a custom one if needed
-	// logger = logger.WithOptions(zap.AddCallerSkip(1))
-
-	return logger, nil
+	//Commented because of breaking logging in request when to use prefork.
+	log.Logger = log.Hook(PreforkHook{})
+	return &log.Logger
 }
 
 // Prefork hook for zerolog
-// type PreforkHook struct{}
+type PreforkHook struct{}
 
-// func (h PreforkHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
-// 	if fiber.IsChild() {
-// 		e.Discard()
-// 	}
-// }
+func (h PreforkHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
+	if fiber.IsChild() {
+		e.Discard()
+	}
+}

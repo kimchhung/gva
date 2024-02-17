@@ -18,7 +18,8 @@ func (Admin) Mixin() []ent.Mixin {
 
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").StructTag(`json:"name,omitempty"`),
+		field.String("username").StructTag(`json:"username,omitempty"`),
+		field.String("password").StructTag(`json:"-,omitempty"`),
 		field.String("display_name").StructTag(`json:"displayName,omitempty"`),
 	}
 }

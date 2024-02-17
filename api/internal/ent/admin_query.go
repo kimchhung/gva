@@ -6,14 +6,14 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/admin"
-	"github.com/kimchhung/gva/internal/ent/predicate"
-	"github.com/kimchhung/gva/internal/ent/role"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/predicate"
+	"github.com/kimchhung/gva/internal/ent/role"
 )
 
 // AdminQuery is the builder for querying Admin entities.

@@ -4,12 +4,12 @@ package ent
 
 import (
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/admin"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/kimchhung/gva/internal/ent/admin"
 )
 
 // Admin is the model entity for the Admin schema.
@@ -21,8 +21,10 @@ type Admin struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	// Username holds the value of the "username" field.
+	Username string `json:"username,omitempty"`
+	// Password holds the value of the "password" field.
+	Password string `json:"-,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"displayName,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -56,7 +58,7 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case admin.FieldID:
 			values[i] = new(sql.NullInt64)
-		case admin.FieldName, admin.FieldDisplayName:
+		case admin.FieldUsername, admin.FieldPassword, admin.FieldDisplayName:
 			values[i] = new(sql.NullString)
 		case admin.FieldCreatedAt, admin.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -93,11 +95,17 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.UpdatedAt = value.Time
 			}
-		case admin.FieldName:
+		case admin.FieldUsername:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
+				return fmt.Errorf("unexpected type %T for field username", values[i])
 			} else if value.Valid {
-				a.Name = value.String
+				a.Username = value.String
+			}
+		case admin.FieldPassword:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field password", values[i])
+			} else if value.Valid {
+				a.Password = value.String
 			}
 		case admin.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -152,8 +160,11 @@ func (a *Admin) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(a.Name)
+	builder.WriteString("username=")
+	builder.WriteString(a.Username)
+	builder.WriteString(", ")
+	builder.WriteString("password=")
+	builder.WriteString(a.Password)
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(a.DisplayName)

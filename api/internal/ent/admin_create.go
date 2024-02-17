@@ -6,12 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/admin"
-	"github.com/kimchhung/gva/internal/ent/role"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/internal/ent/admin"
+	"github.com/kimchhung/gva/internal/ent/role"
 )
 
 // AdminCreate is the builder for creating a Admin entity.
@@ -49,9 +49,15 @@ func (ac *AdminCreate) SetNillableUpdatedAt(t *time.Time) *AdminCreate {
 	return ac
 }
 
-// SetName sets the "name" field.
-func (ac *AdminCreate) SetName(s string) *AdminCreate {
-	ac.mutation.SetName(s)
+// SetUsername sets the "username" field.
+func (ac *AdminCreate) SetUsername(s string) *AdminCreate {
+	ac.mutation.SetUsername(s)
+	return ac
+}
+
+// SetPassword sets the "password" field.
+func (ac *AdminCreate) SetPassword(s string) *AdminCreate {
+	ac.mutation.SetPassword(s)
 	return ac
 }
 
@@ -129,8 +135,11 @@ func (ac *AdminCreate) check() error {
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Admin.updated_at"`)}
 	}
-	if _, ok := ac.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Admin.name"`)}
+	if _, ok := ac.mutation.Username(); !ok {
+		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "Admin.username"`)}
+	}
+	if _, ok := ac.mutation.Password(); !ok {
+		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Admin.password"`)}
 	}
 	if _, ok := ac.mutation.DisplayName(); !ok {
 		return &ValidationError{Name: "display_name", err: errors.New(`ent: missing required field "Admin.display_name"`)}
@@ -169,9 +178,13 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := ac.mutation.Name(); ok {
-		_spec.SetField(admin.FieldName, field.TypeString, value)
-		_node.Name = value
+	if value, ok := ac.mutation.Username(); ok {
+		_spec.SetField(admin.FieldUsername, field.TypeString, value)
+		_node.Username = value
+	}
+	if value, ok := ac.mutation.Password(); ok {
+		_spec.SetField(admin.FieldPassword, field.TypeString, value)
+		_node.Password = value
 	}
 	if value, ok := ac.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)

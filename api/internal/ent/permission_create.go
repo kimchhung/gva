@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kimchhung/gva/internal/ent/permission"
-	"github.com/kimchhung/gva/internal/ent/role"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/internal/ent/permission"
+	"github.com/kimchhung/gva/internal/ent/role"
 )
 
 // PermissionCreate is the builder for creating a Permission entity.

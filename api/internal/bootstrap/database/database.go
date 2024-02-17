@@ -3,7 +3,8 @@ package database
 import (
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/ent"
-	"go.uber.org/zap"
+
+	"github.com/rs/zerolog"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -13,7 +14,7 @@ import (
 
 type Database struct {
 	Ent *ent.Client
-	log *zap.Logger
+	Log *zerolog.Logger
 	Cfg *config.Config
 }
 
@@ -22,10 +23,10 @@ type Seeder interface {
 	Seed(conn *ent.Client) error
 }
 
-func NewDatabase(cfg *config.Config, log *zap.Logger) *Database {
+func NewDatabase(cfg *config.Config, log *zerolog.Logger) *Database {
 	db := &Database{
 		Cfg: cfg,
-		log: log,
+		Log: log,
 	}
 
 	return db
@@ -34,7 +35,7 @@ func NewDatabase(cfg *config.Config, log *zap.Logger) *Database {
 func (db *Database) ConnectDatabase() {
 	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
 	if err != nil {
-		db.log.Error("An unknown error occurred when to connect the database!", zap.Error(err))
+		db.Log.Error().Err(err).Msg("An unknown error occurred when to connect the database!")
 	}
 
 	db.Ent = ent.NewClient(ent.Driver(drv))
@@ -42,7 +43,7 @@ func (db *Database) ConnectDatabase() {
 
 func (db *Database) ShutdownDatabase() {
 	if err := db.Ent.Close(); err != nil {
-		db.log.Error("An unknown error occurred when to connect the database!", zap.Error(err))
+		db.Log.Error().Err(err).Msg("An unknown error occurred when to shutdown the database!")
 	}
 }
 
@@ -51,20 +52,20 @@ func (db *Database) SeedModels(seeder ...Seeder) {
 
 		count, err := v.Count(db.Ent)
 		if err != nil {
-			db.log.Panic("SeedModels", zap.Error(err))
+			db.Log.Panic().Err(err).Msg("")
 		}
 
 		if count == 0 {
 			err = v.Seed(db.Ent)
 			if err != nil {
-				db.log.Panic("SeedModels", zap.Error(err))
+				db.Log.Panic().Err(err).Msg("")
 			}
 
-			db.log.Debug("Table has seeded successfully.", zap.Error(err))
+			db.Log.Debug().Msg("Table has seeded successfully.")
 		} else {
-			db.log.Warn("Table has seeded already. Skipping!")
+			db.Log.Warn().Msg("Table has seeded already. Skipping!")
 		}
 	}
 
-	db.log.Info("Seeding was completed!")
+	db.Log.Info().Msg("Seeding was completed!")
 }

@@ -4,13 +4,13 @@ package enttest
 
 import (
 	"context"
+
 	"github.com/kimchhung/gva/internal/ent"
 	// required by schema hooks.
 	_ "github.com/kimchhung/gva/internal/ent/runtime"
 
-	"github.com/kimchhung/gva/internal/ent/migrate"
-
 	"entgo.io/ent/dialect/sql/schema"
+	"github.com/kimchhung/gva/internal/ent/migrate"
 )
 
 type (

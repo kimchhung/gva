@@ -40,6 +40,13 @@ func New{{.Entity}}Controller(service *service.{{.Entity}}Service) *{{.Entity}}C
 	}
 }
 
+// @Summary List all {{.Entity}}s
+// @Description Get a list of all {{.Entity}}s
+// @Tags {{.Entity}}
+// @Accept  json
+// @Produce  json
+// @Success  200 {object} response.Response{Data=[]any}
+// @Router /{{.Entity}}s [get]
 func (con *{{.Entity}}Controller) List(c *fiber.Ctx) error {
 	list, err := con.service.Get{{.Entity}}s(c.UserContext())
 	if err != nil {
@@ -52,6 +59,15 @@ func (con *{{.Entity}}Controller) List(c *fiber.Ctx) error {
 	})
 }
 
+// Get godoc
+// @Summary Get one {{.Entity}} by ID
+// @Description Get details of an {{.Entity}} by ID
+// @Tags {{.Entity}}
+// @Accept  json
+// @Produce  json
+// @Param id path int true "{{.Entity}} ID"
+// @Success  200 {object} response.Response{}
+// @Router /{{.Entity}}s/{id} [get]
 func (con *{{.Entity}}Controller) Get(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
@@ -69,6 +85,15 @@ func (con *{{.Entity}}Controller) Get(c *fiber.Ctx) error {
 	})
 }
 
+// Create godoc
+// @Summary Create a new {{.Entity}}
+// @Description Add a new {{.Entity}} to the system
+// @Tags {{.Entity}}
+// @Accept  json
+// @Produce  json
+// @Param {{.Entity}} body dto.{{.Entity}}Request true "{{.Entity}} data"
+// @Success  200 {object} response.Response{}
+// @Router /{{.Entity}}s [post]
 func (con *{{.Entity}}Controller) Create(c *fiber.Ctx) error {
 	req := new(dto.{{.Entity}}Request)
 	if err := response.ParseAndValidate(c, req); err != nil {
@@ -86,6 +111,16 @@ func (con *{{.Entity}}Controller) Create(c *fiber.Ctx) error {
 	})
 }
 
+// Update godoc
+// @Summary Update an existing {{.Entity}}
+// @Description Update the details of an {{.Entity}} by ID
+// @Tags {{.Entity}}
+// @Accept  json
+// @Produce  json
+// @Param id path int true "{{.Entity}} ID"
+// @Param {{.Entity}} body dto.{{.Entity}}Request true "{{.Entity}} data"
+// @Success  200 {object} response.Response{}
+// @Router /{{.Entity}}s/{id} [patch]
 func (con *{{.Entity}}Controller) Update(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
@@ -108,6 +143,15 @@ func (con *{{.Entity}}Controller) Update(c *fiber.Ctx) error {
 	})
 }
 
+// Delete godoc
+// @Summary Delete an {{.Entity}}
+// @Description Delete an {{.Entity}} by ID
+// @Tags {{.Entity}}
+// @Accept  json
+// @Produce  json
+// @Param id path int true "{{.Entity}} ID"
+// @Success  200 {object} response.Response{}
+// @Router /{{.Entity}}s/{id} [delete]
 func (con *{{.Entity}}Controller) Delete(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
@@ -122,5 +166,6 @@ func (con *{{.Entity}}Controller) Delete(c *fiber.Ctx) error {
 		Message: "The {{.EntitySnake}} was deleted successfully!",
 	})
 }
+
 
 `

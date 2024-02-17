@@ -97,6 +97,7 @@ CUSTOM="Air" docker-compose up # Use with Air
 - [Fx](https://github.com/uber-go/fx)
 - [Zerolog](https://github.com/rs/zerolog)
 - [CodeGen](https://github.com/dolmen-go/codegen)
+- [Swagger](https://github.com/gofiber/swagger)
 
 
 ## CRUD generator
@@ -105,6 +106,9 @@ CUSTOM="Air" docker-compose up # Use with Air
 
 - example todo CRUD
 ```
+│── docs
+│   ├── swagger.json
+│   └── swagger.yaml
 │── app
 │   ├── database
 |   |   └── schema
@@ -122,6 +126,26 @@ CUSTOM="Air" docker-compose up # Use with Air
 │   │       ├── service
 │   │       │   └── todo_service.go
 │   │       └── todo_module.go
+
+
+➜  api git:(main) ✗ make crud name=todo_you
+go run cmd/code_gen/generate.go todo_you
+Generated app/database/schema/todo_you.go
+Generated app/module/todo_you/todo_you_module.go
+Generated app/module/todo_you/dto/todo_you_request.go
+Generated app/module/todo_you/repository/todo_you_repository.go
+Generated app/module/todo_you/service/todo_you_service.go
+Generated app/module/todo_you/controller/todo_you_controller.go
+
+2024/02/17 04:44:01 Generate swagger docs....
+2024/02/17 04:44:01 Generate general API Info, search dir:./
+2024/02/17 04:44:01 Generating response.Response
+2024/02/17 04:44:01 Generating dto.AdminRequest
+2024/02/17 04:44:01 Generating dto.TodoYouRequest
+2024/02/17 04:44:01 create docs.go at docs/docs.go
+2024/02/17 04:44:01 create swagger.json at docs/swagger.json
+2024/02/17 04:44:01 create swagger.yaml at docs/swagger.yaml
+
 ```
 
 ## Migration
