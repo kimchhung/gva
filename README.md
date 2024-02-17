@@ -91,13 +91,13 @@ CUSTOM="Air" docker-compose up # Use with Air
 - [Go](https://go.dev)
 - [Mysql](https://www.mysql.org)
 - [Docker](https://www.docker.com/)
-- [Fiber](https://github.com/gofiber/fiber)
-- [Ent](https://github.com/ent/ent)
-- [Atlas](https://atlasgo.io)
-- [Fx](https://github.com/uber-go/fx)
+- [Fiber (REST API)](https://github.com/gofiber/fiber)
+- [Ent (DB ORM)](https://github.com/ent/ent)
+- [Atlas (DB safe migration)](https://atlasgo.io)
+- [Fx (Dependency Inject)](https://github.com/uber-go/fx)
 - [Zerolog](https://github.com/rs/zerolog)
-- [CodeGen](https://github.com/dolmen-go/codegen)
-- [Swagger](https://github.com/gofiber/swagger)
+- [CodeGen (make Crud generator)](https://github.com/dolmen-go/codegen)
+- [Swagger (REST API Docs)](https://github.com/gofiber/swagger)
 
 
 ## CRUD generator
