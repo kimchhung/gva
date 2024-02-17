@@ -37,6 +37,9 @@ type (
 		Prettier   bool          `toml:"prettier"`
 	}
 	middleware = struct {
+		Swagger struct {
+			Enable bool
+		}
 		Compress struct {
 			Enable bool
 			Level  compress.Level

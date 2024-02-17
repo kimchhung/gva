@@ -35,6 +35,7 @@ func NewMiddleware(app *fiber.App, cfg *config.Config, log *zerolog.Logger) *Mid
 func (m *Middleware) Register() {
 	// Add Extra Middlewares
 	m.app.Use(swagger.New(swagger.Config{
+		Next:     utils.IsEnabled(m.cfg.Middleware.Swagger.Enable),
 		BasePath: "/",
 		FilePath: "./docs/swagger.json",
 		Path:     "swagger",

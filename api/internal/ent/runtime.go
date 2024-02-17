@@ -8,10 +8,6 @@ import (
 	"github.com/kimchhung/gva/app/database/schema"
 	"github.com/kimchhung/gva/internal/ent/admin"
 	"github.com/kimchhung/gva/internal/ent/role"
-	"github.com/kimchhung/gva/internal/ent/todo"
-	"github.com/kimchhung/gva/internal/ent/todo2"
-	"github.com/kimchhung/gva/internal/ent/todome"
-	"github.com/kimchhung/gva/internal/ent/todoyou"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -48,64 +44,4 @@ func init() {
 	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
 	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
-	todoMixin := schema.Todo{}.Mixin()
-	todoMixinFields0 := todoMixin[0].Fields()
-	_ = todoMixinFields0
-	todoFields := schema.Todo{}.Fields()
-	_ = todoFields
-	// todoDescCreatedAt is the schema descriptor for created_at field.
-	todoDescCreatedAt := todoMixinFields0[0].Descriptor()
-	// todo.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todo.DefaultCreatedAt = todoDescCreatedAt.Default.(func() time.Time)
-	// todoDescUpdatedAt is the schema descriptor for updated_at field.
-	todoDescUpdatedAt := todoMixinFields0[1].Descriptor()
-	// todo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todo.DefaultUpdatedAt = todoDescUpdatedAt.Default.(func() time.Time)
-	// todo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todo.UpdateDefaultUpdatedAt = todoDescUpdatedAt.UpdateDefault.(func() time.Time)
-	todo2Mixin := schema.Todo2{}.Mixin()
-	todo2MixinFields0 := todo2Mixin[0].Fields()
-	_ = todo2MixinFields0
-	todo2Fields := schema.Todo2{}.Fields()
-	_ = todo2Fields
-	// todo2DescCreatedAt is the schema descriptor for created_at field.
-	todo2DescCreatedAt := todo2MixinFields0[0].Descriptor()
-	// todo2.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todo2.DefaultCreatedAt = todo2DescCreatedAt.Default.(func() time.Time)
-	// todo2DescUpdatedAt is the schema descriptor for updated_at field.
-	todo2DescUpdatedAt := todo2MixinFields0[1].Descriptor()
-	// todo2.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todo2.DefaultUpdatedAt = todo2DescUpdatedAt.Default.(func() time.Time)
-	// todo2.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todo2.UpdateDefaultUpdatedAt = todo2DescUpdatedAt.UpdateDefault.(func() time.Time)
-	todomeMixin := schema.TodoMe{}.Mixin()
-	todomeMixinFields0 := todomeMixin[0].Fields()
-	_ = todomeMixinFields0
-	todomeFields := schema.TodoMe{}.Fields()
-	_ = todomeFields
-	// todomeDescCreatedAt is the schema descriptor for created_at field.
-	todomeDescCreatedAt := todomeMixinFields0[0].Descriptor()
-	// todome.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todome.DefaultCreatedAt = todomeDescCreatedAt.Default.(func() time.Time)
-	// todomeDescUpdatedAt is the schema descriptor for updated_at field.
-	todomeDescUpdatedAt := todomeMixinFields0[1].Descriptor()
-	// todome.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todome.DefaultUpdatedAt = todomeDescUpdatedAt.Default.(func() time.Time)
-	// todome.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todome.UpdateDefaultUpdatedAt = todomeDescUpdatedAt.UpdateDefault.(func() time.Time)
-	todoyouMixin := schema.TodoYou{}.Mixin()
-	todoyouMixinFields0 := todoyouMixin[0].Fields()
-	_ = todoyouMixinFields0
-	todoyouFields := schema.TodoYou{}.Fields()
-	_ = todoyouFields
-	// todoyouDescCreatedAt is the schema descriptor for created_at field.
-	todoyouDescCreatedAt := todoyouMixinFields0[0].Descriptor()
-	// todoyou.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todoyou.DefaultCreatedAt = todoyouDescCreatedAt.Default.(func() time.Time)
-	// todoyouDescUpdatedAt is the schema descriptor for updated_at field.
-	todoyouDescUpdatedAt := todoyouMixinFields0[1].Descriptor()
-	// todoyou.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todoyou.DefaultUpdatedAt = todoyouDescUpdatedAt.Default.(func() time.Time)
-	// todoyou.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todoyou.UpdateDefaultUpdatedAt = todoyouDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

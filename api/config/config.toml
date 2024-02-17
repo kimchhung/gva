@@ -39,6 +39,9 @@ enable = false
 max = 20
 expiration_seconds = 60
 
+[middleware.swagger]
+enable = true
+
 [middleware.filesystem]
 enable = false
 browse = true

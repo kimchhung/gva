@@ -45,54 +45,6 @@ func (f RoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoleMutation", m)
 }
 
-// The TodoFunc type is an adapter to allow the use of ordinary
-// function as Todo mutator.
-type TodoFunc func(context.Context, *ent.TodoMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TodoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TodoMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TodoMutation", m)
-}
-
-// The Todo2Func type is an adapter to allow the use of ordinary
-// function as Todo2 mutator.
-type Todo2Func func(context.Context, *ent.Todo2Mutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f Todo2Func) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.Todo2Mutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.Todo2Mutation", m)
-}
-
-// The TodoMeFunc type is an adapter to allow the use of ordinary
-// function as TodoMe mutator.
-type TodoMeFunc func(context.Context, *ent.TodoMeMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TodoMeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TodoMeMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TodoMeMutation", m)
-}
-
-// The TodoYouFunc type is an adapter to allow the use of ordinary
-// function as TodoYou mutator.
-type TodoYouFunc func(context.Context, *ent.TodoYouMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TodoYouFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TodoYouMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TodoYouMutation", m)
-}
-
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 
