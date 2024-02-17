@@ -173,9 +173,19 @@ Generated app/module/todo_you/controller/todo_you_controller.go
 3. set version migration to match current version in folder ``` make migrate.apply ```
 4. check current version by ```make migrate.status```
 
+### Todo
+- [ ] Permission Admins
+- [ ] Rest Query Language
+    - [ ] Rest Query Parser in ts and go
+    - [ ] Rest Query Builder Component
+
+
+
 ## Resources
  - https://github.com/efectn/fiber-boilerplate 
+ - https://vue3-element-admin-site.midfar.com/guide
 
 
 ## License
 api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).
+
