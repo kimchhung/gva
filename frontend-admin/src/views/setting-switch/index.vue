@@ -13,8 +13,8 @@
           <el-switch v-model="settings.showNavbarTitle" />
         </div>
         <div class="mt-30px">
-          ShowDropDown：
-          <el-switch v-model="settings.ShowDropDown" />
+          showDropDown：
+          <el-switch v-model="settings.showDropDown" />
         </div>
         <div class="mt-30px">
           showHamburger：
@@ -45,6 +45,6 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const { settings } = storeToRefs(useBasicStore())
 </script>

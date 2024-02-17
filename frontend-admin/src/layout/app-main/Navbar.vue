@@ -14,7 +14,7 @@
     <!--导航标题-->
     <div v-if="settings.showNavbarTitle" class="heardCenterTitle">{{ settings.title }}</div>
     <!-- 下拉操作菜单 -->
-    <div v-if="settings.ShowDropDown" class="right-menu rowSC">
+    <div v-if="settings.showDropDown" class="right-menu rowSC">
       <el-dropdown trigger="click" size="medium">
         <div class="avatar-wrapper">
           <img src="https://github.jzfai.top/file/images/nav-right-logo.gif" class="user-avatar" />
@@ -47,7 +47,7 @@ import { resetState } from '@/hooks/use-permission'
 import { elMessage } from '@/hooks/use-element'
 import { useBasicStore } from '@/store/basic'
 import { langTitle } from '@/hooks/use-common'
-import {loginOutReq} from "@/api/user";
+import { loginOutReq } from '@/api/user'
 
 const basicStore = useBasicStore()
 const { settings, sidebar, setToggleSideBar } = basicStore
@@ -57,7 +57,7 @@ const toggleSideBar = () => {
 //退出登录
 const router = useRouter()
 const loginOut = () => {
-  loginOutReq().then(()=>{
+  loginOutReq().then(() => {
     elMessage('退出登录成功')
     router.push(`/login?redirect=/`)
     nextTick(() => {

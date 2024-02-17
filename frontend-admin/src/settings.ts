@@ -1,5 +1,6 @@
 import packageJson from '../package.json'
 import type { SettingsConfig } from '~/basic'
+
 export const settings: SettingsConfig = {
   title: packageJson.name,
   /**
@@ -16,7 +17,7 @@ export const settings: SettingsConfig = {
    * @type {boolean} true | false
    * @description Whether show the drop-down
    */
-  ShowDropDown: true,
+  showDropDown: true,
   /**
    * @type {boolean} true | false
    * @description Whether show Hamburger
