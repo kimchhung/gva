@@ -174,10 +174,15 @@ Generated app/module/todo_you/controller/todo_you_controller.go
 4. check current version by ```make migrate.status```
 
 ### Todo
-- [x] Migration Cli
+- [x] Migration CLI
 - [x] CRUD generator
-    - [x] module (controller,repo,service,schema)
-    - [x] swagger crud endpoint
+    - [X] API
+        - [x] module (controller,repo,service,schema)
+        - [x] swagger crud endpoint
+    - [X] Admin-Pannel
+        - [ ] Routers
+        - [ ] Table CRUD
+        - [ ] CRUD filter and RQL
 - [ ] Permission Admins
 - [ ] Rest Query Language
     - [ ] Rest Query Parser in ts and go
