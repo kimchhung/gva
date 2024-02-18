@@ -9,21 +9,15 @@ import (
 	"github.com/kimchhung/gva/app/module/admin"
 	"github.com/kimchhung/gva/app/module/permission"
 	"github.com/kimchhung/gva/app/module/role"
-	"github.com/kimchhung/gva/app/module/todo_you"
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )
 
-// @title Fiber Example API
+// @title GVA API
 // @version 1.0
-// @description This is a sample swagger for Fiber
-// @termsOfService http://swagger.io/terms/
-// @contact.name API Support
-// @contact.email fiber@swagger.io
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @description GO VUE ADMIN Boilerplate
 // @host localhost:8080
 // @BasePath /
 func main() {
@@ -43,7 +37,6 @@ func main() {
 		admin.NewAdminModule,
 		permission.NewPermissionModule,
 		role.NewRoleModule,
-		todo_you.NewTodoYouModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Start Application
