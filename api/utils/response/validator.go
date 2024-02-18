@@ -42,6 +42,12 @@ func ParseBody(c *fiber.Ctx, body any) error {
 	return nil
 }
 
+func MustParseBody(body any) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return ParseBody(c, body)
+	}
+}
+
 func ParseAndValidate(c *fiber.Ctx, body any) error {
 	v := reflect.ValueOf(body)
 
@@ -56,5 +62,11 @@ func ParseAndValidate(c *fiber.Ctx, body any) error {
 		return ValidateStruct(v)
 	default:
 		return nil
+	}
+}
+
+func MustParseAndValidate(body any) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return ParseAndValidate(c, body)
 	}
 }

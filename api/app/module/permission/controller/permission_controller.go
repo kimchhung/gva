@@ -3,31 +3,34 @@ package controller
 import (
 	"strconv"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/app/module/permission/dto"
 	"github.com/kimchhung/gva/app/module/permission/service"
-
-	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/rctrl"
 	"github.com/kimchhung/gva/utils/response"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 var _ interface {
-	control_route.FiberRouter
+	rctrl.FiberRouter
+	IPermissionController
 } = (*PermissionController)(nil)
+
+type IPermissionController interface {
+	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
+}
 
 type PermissionController struct {
 	service *service.PermissionService
 }
 
 func (con *PermissionController) Routes(r fiber.Router) {
-	r.Route(
-		"/permissions", func(router fiber.Router) {
-			router.Get("/", con.List).Name("get many permissions")
-			router.Get("/:id", con.Get).Name("get one permission")
-			router.Post("/", con.Create).Name("create one permission")
-			router.Patch("/:id", con.Update).Name("update one permission")
-			router.Delete("/:id", con.Delete).Name("delete one permission")
+	r.Route("permission",
+		func(router fiber.Router) {
+			rctrl.Register(router, con)
 		},
 	)
 }
@@ -38,85 +41,146 @@ func NewPermissionController(service *service.PermissionService) *PermissionCont
 	}
 }
 
-func (con *PermissionController) List(c *fiber.Ctx) error {
-	list, err := con.service.GetPermissions(c.UserContext())
-	if err != nil {
-		return err
-	}
+// @Tags Permission
+// @Summary List all Permissions
+// @Description Get a list of all Permissions
+// @ID list-all-Permissions
+// @Accept  json
+// @Produce  json
+// @Success  200 {object} response.Response{} "Successfully retrieved Permissions"
+// @Router /permission [get]
+func (con *PermissionController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Get("/").Name("get many Permissions").Do(func(c *fiber.Ctx) error {
+		list, err := con.service.GetPermissions(c.UserContext())
+		if err != nil {
+			return err
+		}
 
-	return response.Resp(c, response.Response{
-		Message: "Permission list retreived successfully!",
-		Data:    list,
+		return response.Resp(c, response.Response{
+			Message: "Permission list retreived successfully!",
+			Data:    list,
+		})
 	})
 }
 
-func (con *PermissionController) Get(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
+// @Tags Permission
+// @Summary Get a Permission
+// @Description Get a Permission by ID
+// @ID get-Permission-by-id
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @Param id path int true "Permission ID"
+// @Success   200 {object} response.Response{}
+// @Router /permission/{id} [get]
+func (con *PermissionController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Get("/:id").Name("get one Permission").Do(func(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return err
+		}
 
-	data, err := con.service.GetPermissionByID(c.UserContext(), id)
-	if err != nil {
-		return err
-	}
+		data, err := con.service.GetPermissionByID(c.UserContext(), id)
+		if err != nil {
+			return err
+		}
 
-	return response.Resp(c, response.Response{
-		Message: "The permission retrieved successfully!",
-		Data:    data,
+		return response.Resp(c, response.Response{
+			Message: "The permission retrieved successfully!",
+			Data:    data,
+		})
 	})
 }
 
-func (con *PermissionController) Create(c *fiber.Ctx) error {
-	req := new(dto.PermissionRequest)
-	if err := response.ParseAndValidate(c, req); err != nil {
-		return err
-	}
+// @Tags Permission
+// @Summary Create a Permission
+// @Description Create a new Permission with the provided details
+// @ID create-Permission
+// @Accept  json
+// @Produce  json
+// @Param Permission body dto.PermissionRequest true "Permission data"
+// @Success  200 {object} response.Response{} "Successfully created Permission"
+// @Router /permission [post]
+func (con *PermissionController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Post("/").Name("create one Permission").DoWithScope(func() []fiber.Handler {
+		req := new(dto.PermissionRequest)
 
-	data, err := con.service.CreatePermission(c.UserContext(), *req)
-	if err != nil {
-		return err
-	}
+		return []fiber.Handler{
+			response.MustParseAndValidate(&req),
 
-	return response.Resp(c, response.Response{
-		Message: "The permission was created successfully!",
-		Data:    data,
+			func(c *fiber.Ctx) error {
+				data, err := con.service.CreatePermission(c.UserContext(), *req)
+				if err != nil {
+					return err
+				}
+
+				return response.Resp(c, response.Response{
+					Message: "The permission was created successfully!",
+					Data:    data,
+				})
+			},
+		}
 	})
 }
 
-func (con *PermissionController) Update(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
+// @Tags Permission
+// @Summary Update a Permission
+// @Description Update a Permission by ID
+// @ID update-Permission-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Permission ID"
+// @Param Permission body dto.PermissionRequest true "Permission data"
+// @Success  200 {object} response.Response{} "Successfully updated Permission"
+// @Router /permission/{id} [patch]
+func (con *PermissionController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Patch("/:id").Name("update one Permission").DoWithScope(func() []fiber.Handler {
+		req := new(dto.PermissionRequest)
 
-	req := new(dto.PermissionRequest)
-	if err := response.ParseAndValidate(c, req); err != nil {
-		return err
-	}
+		return []fiber.Handler{
+			response.MustParseAndValidate(&req),
+			func(c *fiber.Ctx) error {
+				id, err := strconv.Atoi(c.Params("id"))
+				if err != nil {
+					return err
+				}
 
-	data, err := con.service.UpdatePermission(c.UserContext(), id, *req)
-	if err != nil {
-		return err
-	}
+				data, err := con.service.UpdatePermission(c.UserContext(), id, *req)
+				if err != nil {
+					return err
+				}
 
-	return response.Resp(c, response.Response{
-		Message: "The permission was updated successfully!",
-		Data:    data,
+				return response.Resp(c, response.Response{
+					Message: "The permission was updated successfully!",
+					Data:    data,
+				})
+			},
+		}
 	})
 }
 
-func (con *PermissionController) Delete(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
+// @Tags Permission
+// @Summary Delete a Permission
+// @Description Delete a Permission by ID
+// @ID delete-Permission-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Permission ID"
+// @Success  200 {object} response.Response{} "Successfully deleted Permission"
+// @Router /permission/{id} [delete]
+func (con *PermissionController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Delete("/:id").Name("delete one Permission").Do(func(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return err
+		}
 
-	if err = con.service.DeletePermission(c.UserContext(), id); err != nil {
-		return err
-	}
+		if err = con.service.DeletePermission(c.UserContext(), id); err != nil {
+			return err
+		}
 
-	return response.Resp(c, response.Response{
-		Message: "The permission was deleted successfully!",
+		return response.Resp(c, response.Response{
+			Message: "The Permission was deleted successfully!",
+		})
 	})
 }

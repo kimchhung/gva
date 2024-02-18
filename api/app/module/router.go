@@ -1,18 +1,16 @@
 package module
 
-import (
-	"github.com/kimchhung/gva/internal/control_route"
-)
+import "github.com/kimchhung/gva/internal/rctrl"
 
 var _ interface {
-	control_route.Router
+	rctrl.Router
 } = (*Router)(nil)
 
 type Router struct {
-	moduleRouters []control_route.Router
+	moduleRouters []rctrl.Router
 }
 
-func NewRouter(moduleRouters []control_route.Router) *Router {
+func NewRouter(moduleRouters []rctrl.Router) *Router {
 	return &Router{moduleRouters}
 }
 

@@ -1,4 +1,6 @@
-package control_route
+package rctrl
+
+// route control
 
 import "github.com/gofiber/fiber/v2"
 

@@ -7,18 +7,18 @@ import (
 	"github.com/kimchhung/gva/internal/ent"
 )
 
-type {{.Entity}}Repository struct {
+type {{.EntityPascal}}Repository struct {
 	DB *database.Database
 }
 
-func New{{.Entity}}Repository(database *database.Database) *{{.Entity}}Repository {
-	return &{{.Entity}}Repository{
+func New{{.EntityPascal}}Repository(database *database.Database) *{{.EntityPascal}}Repository {
+	return &{{.EntityPascal}}Repository{
 		database,
 	}
 }
 
-func (r *{{.Entity}}Repository) Client() *ent.{{.Entity}}Client {
-	return r.DB.Ent.{{.Entity}}
+func (r *{{.EntityPascal}}Repository) Client() *ent.{{.EntityPascal}}Client {
+	return r.DB.Ent.{{.EntityPascal}}
 }
 
 `

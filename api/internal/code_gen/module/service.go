@@ -11,35 +11,35 @@ import (
 	"context"
 )
 
-type {{.Entity}}Service struct {
-	repo *repository.{{.Entity}}Repository
+type {{.EntityPascal}}Service struct {
+	repo *repository.{{.EntityPascal}}Repository
 }
 
-func New{{.Entity}}Service(repository *repository.{{.Entity}}Repository) *{{.Entity}}Service {
-	return &{{.Entity}}Service{
+func New{{.EntityPascal}}Service(repository *repository.{{.EntityPascal}}Repository) *{{.EntityPascal}}Service {
+	return &{{.EntityPascal}}Service{
 		repo: repository,
 	}
 }
 
-func (s *{{.Entity}}Service) Get{{.Entity}}s(ctx context.Context) ([]*ent.{{.Entity}}, error) {
+func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context) ([]*ent.{{.EntityPascal}}, error) {
 	return s.repo.Client().Query().Order(ent.Asc({{.EntityAllLower}}.FieldID)).All(ctx)
 }
 
-func (s *{{.Entity}}Service) Get{{.Entity}}ByID(ctx context.Context, id int) (*ent.{{.Entity}}, error) {
+func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context, id int) (*ent.{{.EntityPascal}}, error) {
 	return s.repo.Client().Query().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
 }
 
-func (s *{{.Entity}}Service) Create{{.Entity}}(ctx context.Context, request dto.{{.Entity}}Request) (*ent.{{.Entity}}, error) {
+func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, request dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
 	return s.repo.Client().Create().
 		Save(ctx)
 }
 
-func (s *{{.Entity}}Service) Update{{.Entity}}(ctx context.Context, id int, request dto.{{.Entity}}Request) (*ent.{{.Entity}}, error) {
+func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id int, request dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
 	return s.repo.Client().UpdateOneID(id).
 		Save(ctx)
 }
 
-func (s *{{.Entity}}Service) Delete{{.Entity}}(ctx context.Context, id int) error {
+func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id int) error {
 	return s.repo.Client().DeleteOneID(id).Exec(ctx)
 }
 

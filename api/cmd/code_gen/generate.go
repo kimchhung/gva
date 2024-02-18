@@ -16,11 +16,12 @@ func main() {
 	if len(args) > 0 {
 		entity := ustrings.ToPascalCase(args[0])
 		params := code_gen.CodeGenParams{
-			Entity:           entity,
-			EntityLower:      ustrings.PascalToCamel(entity),
+			EntityPascal:     entity,
+			EntityCamel:      ustrings.PascalToCamel(entity),
 			EntityAllLower:   strings.ReplaceAll(ustrings.PascalToSnake(entity), "_", ""),
 			EntitySnake:      ustrings.PascalToSnake(entity),
 			EntityUpperSnake: strings.ToUpper(ustrings.PascalToSnake(entity)),
+			EntityKebab:      strings.ReplaceAll(ustrings.PascalToSnake(entity), "_", "-"),
 			Table:            ustrings.PascalToSnake(entity) + "s",
 		}
 

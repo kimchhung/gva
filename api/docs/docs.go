@@ -23,9 +23,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admins": {
+        "/admin": {
             "get": {
-                "description": "Get a list of all admins",
+                "description": "Get a list of all Admins",
                 "consumes": [
                     "application/json"
                 ],
@@ -33,35 +33,21 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "Admin"
                 ],
-                "summary": "List all admins",
+                "summary": "List all Admins",
+                "operationId": "list-all-Admins",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Successfully retrieved Admins",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "Data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Add a new admin to the system",
+                "description": "Create a new Admin with the provided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -69,13 +55,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "Admin"
                 ],
-                "summary": "Create a new admin",
+                "summary": "Create a Admin",
+                "operationId": "create-Admin",
                 "parameters": [
                     {
                         "description": "Admin data",
-                        "name": "admin",
+                        "name": "Admin",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -85,7 +72,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Successfully created Admin",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -93,9 +80,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/admins/{id}": {
+        "/admin/{id}": {
             "get": {
-                "description": "Get details of an admin by ID",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a Admin by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -103,9 +95,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "Admin"
                 ],
-                "summary": "Get one admin by ID",
+                "summary": "Get a Admin",
+                "operationId": "get-Admin-by-id",
                 "parameters": [
                     {
                         "type": "integer",
@@ -125,7 +118,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete an admin by ID",
+                "description": "Delete a Admin by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -133,13 +126,149 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "Admin"
                 ],
-                "summary": "Delete an admin",
+                "summary": "Delete a Admin",
+                "operationId": "delete-Admin-by-id",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted Admin",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update a Admin",
+                "operationId": "update-Admin-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Admin data",
+                        "name": "Admin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Admin",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/permission": {
+            "get": {
+                "description": "Get a list of all Permissions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "List all Permissions",
+                "operationId": "list-all-Permissions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Permissions",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new Permission with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Create a Permission",
+                "operationId": "create-Permission",
+                "parameters": [
+                    {
+                        "description": "Permission data",
+                        "name": "Permission",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PermissionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Permission",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/permission/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a Permission by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Get a Permission",
+                "operationId": "get-Permission-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Permission ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -154,8 +283,8 @@ const docTemplate = `{
                     }
                 }
             },
-            "patch": {
-                "description": "Update the details of an admin by ID",
+            "delete": {
+                "description": "Delete a Permission by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -163,25 +292,152 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "Permission"
                 ],
-                "summary": "Update an existing admin",
+                "summary": "Delete a Permission",
+                "operationId": "delete-Permission-by-id",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Admin ID",
+                        "description": "Permission ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted Permission",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a Permission by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Update a Permission",
+                "operationId": "update-Permission-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Permission ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Admin data",
-                        "name": "admin",
+                        "description": "Permission data",
+                        "name": "Permission",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.AdminRequest"
+                            "$ref": "#/definitions/dto.PermissionRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Permission",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/role": {
+            "get": {
+                "description": "Get a list of all Roles",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "List all Roles",
+                "operationId": "list-all-Roles",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Roles",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new Role with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Create a Role",
+                "operationId": "create-Role",
+                "parameters": [
+                    {
+                        "description": "Role data",
+                        "name": "Role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Role",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a Role by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Get a Role",
+                "operationId": "get-Role-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -192,11 +448,88 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Delete a Role by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Delete a Role",
+                "operationId": "delete-Role-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted Role",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a Role by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Update a Role",
+                "operationId": "update-Role-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Role data",
+                        "name": "Role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Role",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
         "dto.AdminRequest": {
+            "type": "object"
+        },
+        "dto.PermissionRequest": {
+            "type": "object"
+        },
+        "dto.RoleRequest": {
             "type": "object"
         },
         "response.Response": {

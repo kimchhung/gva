@@ -1,13 +1,12 @@
 package service
 
 import (
-	"github.com/kimchhung/gva/app/module/role/dto"
 	"github.com/kimchhung/gva/app/module/role/repository"
-
-	"context"
+	"github.com/kimchhung/gva/app/module/role/dto"
 
 	"github.com/kimchhung/gva/internal/ent"
 	"github.com/kimchhung/gva/internal/ent/role"
+	"context"
 )
 
 type RoleService struct {
@@ -41,3 +40,4 @@ func (s *RoleService) UpdateRole(ctx context.Context, id int, request dto.RoleRe
 func (s *RoleService) DeleteRole(ctx context.Context, id int) error {
 	return s.repo.Client().DeleteOneID(id).Exec(ctx)
 }
+

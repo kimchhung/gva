@@ -3,169 +3,184 @@ package controller
 import (
 	"strconv"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/app/module/admin/dto"
 	"github.com/kimchhung/gva/app/module/admin/service"
-
-	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/rctrl"
 	"github.com/kimchhung/gva/utils/response"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 var _ interface {
-	control_route.FiberRouter
+	rctrl.FiberRouter
+	IAdminController
 } = (*AdminController)(nil)
 
+type IAdminController interface {
+	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
+	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
+}
+
 type AdminController struct {
-	service    *service.AdminService
-	jwtService *service.JWTService
+	service *service.AdminService
 }
 
 func (con *AdminController) Routes(r fiber.Router) {
-	r.Route(
-		"/admins",
+	r.Route("admin",
 		func(router fiber.Router) {
-			// router.Use(con.jwtService.Protected())
-
-			router.Get("/", con.List).Name("get many admins")
-			router.Get("/:id", con.Get).Name("get one admin")
-			router.Post("/", con.Create).Name("create one admin")
-			router.Patch("/:id", con.Update).Name("update one admin")
-			router.Delete("/:id", con.Delete).Name("delete one admin")
+			rctrl.Register(router, con)
 		},
 	)
 }
 
-func NewAdminController(service *service.AdminService, jwtService *service.JWTService) *AdminController {
+func NewAdminController(service *service.AdminService) *AdminController {
 	return &AdminController{
-		service:    service,
-		jwtService: jwtService,
+		service: service,
 	}
 }
 
-// @Summary List all admins
-// @Description Get a list of all admins
-// @Tags admin
+// @Tags Admin
+// @Summary List all Admins
+// @Description Get a list of all Admins
+// @ID list-all-Admins
 // @Accept  json
 // @Produce  json
-// @Success  200 {object} response.Response{Data=[]any}
-// @Router /admins [get]
-func (con *AdminController) List(c *fiber.Ctx) error {
-	list, err := con.service.GetAdmins(c.UserContext())
-	if err != nil {
-		return err
-	}
+// @Success  200 {object} response.Response{} "Successfully retrieved Admins"
+// @Router /admin [get]
+func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Get("/").Name("get many Admins").Do(func(c *fiber.Ctx) error {
+		list, err := con.service.GetAdmins(c.UserContext())
+		if err != nil {
+			return err
+		}
 
-	return response.Resp(c, response.Response{
-		Message: "Admin list retreived successfully!",
-		Data:    list,
+		return response.Resp(c, response.Response{
+			Message: "Admin list retreived successfully!",
+			Data:    list,
+		})
 	})
 }
 
-// Get godoc
-// @Summary Get one admin by ID
-// @Description Get details of an admin by ID
-// @Tags admin
+// @Tags Admin
+// @Summary Get a Admin
+// @Description Get a Admin by ID
+// @ID get-Admin-by-id
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @Param id path int true "Admin ID"
+// @Success   200 {object} response.Response{}
+// @Router /admin/{id} [get]
+func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Get("/:id").Name("get one Admin").Do(func(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return err
+		}
+
+		data, err := con.service.GetAdminByID(c.UserContext(), id)
+		if err != nil {
+			return err
+		}
+
+		return response.Resp(c, response.Response{
+			Message: "The admin retrieved successfully!",
+			Data:    data,
+		})
+	})
+}
+
+// @Tags Admin
+// @Summary Create a Admin
+// @Description Create a new Admin with the provided details
+// @ID create-Admin
+// @Accept  json
+// @Produce  json
+// @Param Admin body dto.AdminRequest true "Admin data"
+// @Success  200 {object} response.Response{} "Successfully created Admin"
+// @Router /admin [post]
+func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Post("/").Name("create one Admin").DoWithScope(func() []fiber.Handler {
+		req := new(dto.AdminRequest)
+
+		return []fiber.Handler{
+			response.MustParseAndValidate(&req),
+
+			func(c *fiber.Ctx) error {
+				data, err := con.service.CreateAdmin(c.UserContext(), *req)
+				if err != nil {
+					return err
+				}
+
+				return response.Resp(c, response.Response{
+					Message: "The admin was created successfully!",
+					Data:    data,
+				})
+			},
+		}
+	})
+}
+
+// @Tags Admin
+// @Summary Update a Admin
+// @Description Update a Admin by ID
+// @ID update-Admin-by-id
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Admin ID"
-// @Success  200 {object} response.Response{}
-// @Router /admins/{id} [get]
-func (con *AdminController) Get(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
+// @Param Admin body dto.AdminRequest true "Admin data"
+// @Success  200 {object} response.Response{} "Successfully updated Admin"
+// @Router /admin/{id} [patch]
+func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Patch("/:id").Name("update one Admin").DoWithScope(func() []fiber.Handler {
+		req := new(dto.AdminRequest)
 
-	data, err := con.service.GetAdminByID(c.UserContext(), id)
-	if err != nil {
-		return err
-	}
+		return []fiber.Handler{
+			response.MustParseAndValidate(&req),
+			func(c *fiber.Ctx) error {
+				id, err := strconv.Atoi(c.Params("id"))
+				if err != nil {
+					return err
+				}
 
-	return response.Resp(c, response.Response{
-		Message: "The admin retrieved successfully!",
-		Data:    data,
+				data, err := con.service.UpdateAdmin(c.UserContext(), id, *req)
+				if err != nil {
+					return err
+				}
+
+				return response.Resp(c, response.Response{
+					Message: "The admin was updated successfully!",
+					Data:    data,
+				})
+			},
+		}
 	})
 }
 
-// Create godoc
-// @Summary Create a new admin
-// @Description Add a new admin to the system
-// @Tags admin
-// @Accept  json
-// @Produce  json
-// @Param admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} response.Response{}
-// @Router /admins [post]
-func (con *AdminController) Create(c *fiber.Ctx) error {
-	req := new(dto.AdminRequest)
-	if err := response.ParseAndValidate(c, req); err != nil {
-		return err
-	}
-
-	data, err := con.service.CreateAdmin(c.UserContext(), *req)
-	if err != nil {
-		return err
-	}
-
-	return response.Resp(c, response.Response{
-		Message: "The admin was created successfully!",
-		Data:    data,
-	})
-}
-
-// Update godoc
-// @Summary Update an existing admin
-// @Description Update the details of an admin by ID
-// @Tags admin
+// @Tags Admin
+// @Summary Delete a Admin
+// @Description Delete a Admin by ID
+// @ID delete-Admin-by-id
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Admin ID"
-// @Param admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} response.Response{}
-// @Router /admins/{id} [patch]
-func (con *AdminController) Update(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
+// @Success  200 {object} response.Response{} "Successfully deleted Admin"
+// @Router /admin/{id} [delete]
+func (con *AdminController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Delete("/:id").Name("delete one Admin").Do(func(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return err
+		}
 
-	req := new(dto.AdminRequest)
-	if err := response.ParseAndValidate(c, req); err != nil {
-		return err
-	}
+		if err = con.service.DeleteAdmin(c.UserContext(), id); err != nil {
+			return err
+		}
 
-	data, err := con.service.UpdateAdmin(c.UserContext(), id, *req)
-	if err != nil {
-		return err
-	}
-
-	return response.Resp(c, response.Response{
-		Message: "The admin was updated successfully!",
-		Data:    data,
-	})
-}
-
-// Delete godoc
-// @Summary Delete an admin
-// @Description Delete an admin by ID
-// @Tags admin
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Admin ID"
-// @Success  200 {object} response.Response{}
-// @Router /admins/{id} [delete]
-func (con *AdminController) Delete(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
-
-	if err = con.service.DeleteAdmin(c.UserContext(), id); err != nil {
-		return err
-	}
-
-	return response.Resp(c, response.Response{
-		Message: "The admin was deleted successfully!",
+		return response.Resp(c, response.Response{
+			Message: "The Admin was deleted successfully!",
+		})
 	})
 }

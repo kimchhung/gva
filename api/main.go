@@ -6,14 +6,12 @@ import (
 	"github.com/kimchhung/gva/app/module"
 	"go.uber.org/fx"
 
+	"github.com/kimchhung/gva/app/module/admin"
+	"github.com/kimchhung/gva/app/module/permission"
+	"github.com/kimchhung/gva/app/module/role"
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
-
-	"github.com/kimchhung/gva/app/module/admin"
-
-	"github.com/kimchhung/gva/app/module/permission"
-	"github.com/kimchhung/gva/app/module/role"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )
 

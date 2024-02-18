@@ -4,14 +4,14 @@ import (
 	"github.com/kimchhung/gva/app/module/role/controller"
 	"github.com/kimchhung/gva/app/module/role/repository"
 	"github.com/kimchhung/gva/app/module/role/service"
-	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/rctrl"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 )
 
 var _ interface {
-	control_route.Router
+	rctrl.Router
 } = &RoleRouter{}
 
 type RoleRouter struct {
@@ -44,7 +44,7 @@ var NewRoleModule = fx.Module("RoleModule",
 	fx.Provide(NewRoleRouter),
 	fx.Provide(fx.Annotate(
 		NewRoleRouter,
-		fx.As(new(control_route.Router)),
+		fx.As(new(rctrl.Router)),
 		fx.ResultTags(`group:"routers"`),
 	)),
 )

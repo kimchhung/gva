@@ -18,3 +18,4 @@ func NewAdminRepository(database *database.Database) *AdminRepository {
 func (r *AdminRepository) Client() *ent.AdminClient {
 	return r.DB.Ent.Admin
 }
+

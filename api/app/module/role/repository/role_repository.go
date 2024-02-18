@@ -18,3 +18,4 @@ func NewRoleRepository(database *database.Database) *RoleRepository {
 func (r *RoleRepository) Client() *ent.RoleClient {
 	return r.DB.Ent.Role
 }
+

@@ -10,11 +10,12 @@ import (
 )
 
 type CodeGenParams struct {
-	Entity           string
+	EntityPascal     string
 	EntityAllLower   string
-	EntityLower      string
+	EntityCamel      string
 	EntitySnake      string
 	EntityUpperSnake string
+	EntityKebab      string
 	Table            string
 }
 
@@ -30,7 +31,7 @@ func GenerateCodes(params CodeGenParams) {
 
 func Appends(params CodeGenParams) {
 	InjectCodeToPos("main.go", map[string]string{
-		"// #inject:module ":      fmt.Sprintf("%v.New%vModule,\n", params.EntitySnake, params.Entity),
+		"// #inject:module ":      fmt.Sprintf("%v.New%vModule,\n", params.EntitySnake, params.EntityPascal),
 		"// #inject:moduleImport": fmt.Sprintf(`"github.com/kimchhung/gva/app/module/%v"`+"\n", params.EntitySnake),
 	}, true)
 }

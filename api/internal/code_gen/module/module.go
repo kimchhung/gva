@@ -10,47 +10,47 @@ import (
 	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/controller"
 	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/repository"
 	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/service"
-	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/rctrl"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 )
 
 var _ interface {
-	control_route.Router
-} = &{{.Entity}}Router{}
+	rctrl.Router
+} = &{{.EntityPascal}}Router{}
 
-type {{.Entity}}Router struct {
+type {{.EntityPascal}}Router struct {
 	app        fiber.Router
-	controller *controller.{{.Entity}}Controller
+	controller *controller.{{.EntityPascal}}Controller
 }
 
 // Router methods
-func New{{.Entity}}Router(fiber *fiber.App, controller *controller.{{.Entity}}Controller) *{{.Entity}}Router {
-	return &{{.Entity}}Router{
+func New{{.EntityPascal}}Router(fiber *fiber.App, controller *controller.{{.EntityPascal}}Controller) *{{.EntityPascal}}Router {
+	return &{{.EntityPascal}}Router{
 		app:        fiber,
 		controller: controller,
 	}
 }
 
-func (r *{{.Entity}}Router) Register() {
+func (r *{{.EntityPascal}}Router) Register() {
 	r.controller.Routes(r.app)
 }
 
 // Register bulkly
-var New{{.Entity}}Module = fx.Module("{{.Entity}}Module",
+var New{{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	// Register Repository & Service
-	fx.Provide(repository.New{{.Entity}}Repository),
-	fx.Provide(service.New{{.Entity}}Service),
+	fx.Provide(repository.New{{.EntityPascal}}Repository),
+	fx.Provide(service.New{{.EntityPascal}}Service),
 
 	// Regiser Controller
-	fx.Provide(controller.New{{.Entity}}Controller),
+	fx.Provide(controller.New{{.EntityPascal}}Controller),
 
 	// Register Router
-	fx.Provide(New{{.Entity}}Router),
+	fx.Provide(New{{.EntityPascal}}Router),
 	fx.Provide(fx.Annotate(
-		New{{.Entity}}Router,
-		fx.As(new(control_route.Router)),
+		New{{.EntityPascal}}Router,
+		fx.As(new(rctrl.Router)),
 		fx.ResultTags(%sgroup:"routers"%s),
 	)),
 )

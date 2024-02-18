@@ -4,14 +4,14 @@ import (
 	"github.com/kimchhung/gva/app/module/admin/controller"
 	"github.com/kimchhung/gva/app/module/admin/repository"
 	"github.com/kimchhung/gva/app/module/admin/service"
-	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/rctrl"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 )
 
 var _ interface {
-	control_route.Router
+	rctrl.Router
 } = &AdminRouter{}
 
 type AdminRouter struct {
@@ -36,17 +36,15 @@ var NewAdminModule = fx.Module("AdminModule",
 	// Register Repository & Service
 	fx.Provide(repository.NewAdminRepository),
 	fx.Provide(service.NewAdminService),
-	fx.Provide(service.NewJWTService),
 
 	// Regiser Controller
 	fx.Provide(controller.NewAdminController),
-	fx.Provide(controller.NewAuthController),
 
 	// Register Router
 	fx.Provide(NewAdminRouter),
 	fx.Provide(fx.Annotate(
 		NewAdminRouter,
-		fx.As(new(control_route.Router)),
+		fx.As(new(rctrl.Router)),
 		fx.ResultTags(`group:"routers"`),
 	)),
 )

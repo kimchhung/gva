@@ -4,14 +4,14 @@ import (
 	"github.com/kimchhung/gva/app/module/permission/controller"
 	"github.com/kimchhung/gva/app/module/permission/repository"
 	"github.com/kimchhung/gva/app/module/permission/service"
-	"github.com/kimchhung/gva/internal/control_route"
+	"github.com/kimchhung/gva/internal/rctrl"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 )
 
 var _ interface {
-	control_route.Router
+	rctrl.Router
 } = &PermissionRouter{}
 
 type PermissionRouter struct {
@@ -44,7 +44,7 @@ var NewPermissionModule = fx.Module("PermissionModule",
 	fx.Provide(NewPermissionRouter),
 	fx.Provide(fx.Annotate(
 		NewPermissionRouter,
-		fx.As(new(control_route.Router)),
+		fx.As(new(rctrl.Router)),
 		fx.ResultTags(`group:"routers"`),
 	)),
 )

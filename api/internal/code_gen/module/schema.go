@@ -9,23 +9,23 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-type {{.Entity}} struct {
+type {{.EntityPascal}} struct {
 	ent.Schema
 }
 
-func ({{.Entity}}) Mixin() []ent.Mixin {
+func ({{.EntityPascal}}) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		TimetMixin{},
 	}
 }
 
-func ({{.Entity}}) Fields() []ent.Field {
+func ({{.EntityPascal}}) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").StructTag(%sjson:"name,omitempty"%s),
 	}
 }
 
-func ({{.Entity}}) Edges() []ent.Edge {
+func ({{.EntityPascal}}) Edges() []ent.Edge {
 	return nil
 }
 

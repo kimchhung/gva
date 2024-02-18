@@ -18,3 +18,4 @@ func NewPermissionRepository(database *database.Database) *PermissionRepository 
 func (r *PermissionRepository) Client() *ent.PermissionClient {
 	return r.DB.Ent.Permission
 }
+
