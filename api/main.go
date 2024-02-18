@@ -9,6 +9,7 @@ import (
 	"github.com/kimchhung/gva/app/module/admin"
 	"github.com/kimchhung/gva/app/module/permission"
 	"github.com/kimchhung/gva/app/module/role"
+	"github.com/kimchhung/gva/app/module/todo_you"
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
@@ -42,6 +43,7 @@ func main() {
 		admin.NewAdminModule,
 		permission.NewPermissionModule,
 		role.NewRoleModule,
+		todo_you.NewTodoYouModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Start Application
