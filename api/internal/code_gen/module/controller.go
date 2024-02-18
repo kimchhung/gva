@@ -49,7 +49,7 @@ func New{{.EntityPascal}}Controller(service *service.{{.EntityPascal}}Service) *
 // @ID list-all-{{.EntityPascal}}s
 // @Accept  json
 // @Produce  json
-// @Success  200 {object} response.Response{} "Successfully retrieved {{.EntityPascal}}s"
+// @Success  200 {object} response.Response{data=[]dto.{{.EntityPascal}}Response} "Successfully retrieved {{.EntityPascal}}s"
 // @Router /{{.EntityKebab}} [get]
 func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/").Name("get many {{.EntityPascal}}s").Do(func(c *fiber.Ctx) error {
@@ -73,7 +73,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHa
 // @Produce  json
 // @Security BearerAuth
 // @Param id path int true "{{.EntityPascal}} ID"
-// @Success   200 {object} response.Response{}
+// @Success   200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}}/{id} [get]
 func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one {{.EntityPascal}}").Do(func(c *fiber.Ctx) error {
@@ -101,7 +101,7 @@ func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHan
 // @Accept  json
 // @Produce  json
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
-// @Success  200 {object} response.Response{} "Successfully created {{.EntityPascal}}"
+// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully created {{.EntityPascal}}"
 // @Router /{{.EntityKebab}} [post]
 func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
@@ -133,7 +133,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
-// @Success  200 {object} response.Response{} "Successfully updated {{.EntityPascal}}"
+// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
 // @Router /{{.EntityKebab}}/{id} [patch]
 func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {

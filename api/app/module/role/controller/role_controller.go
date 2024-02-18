@@ -47,7 +47,7 @@ func NewRoleController(service *service.RoleService) *RoleController {
 // @ID list-all-Roles
 // @Accept  json
 // @Produce  json
-// @Success  200 {object} response.Response{} "Successfully retrieved Roles"
+// @Success  200 {object} response.Response{data=[]dto.RoleResponse} "Successfully retrieved Roles"
 // @Router /role [get]
 func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/").Name("get many Roles").Do(func(c *fiber.Ctx) error {
@@ -71,7 +71,7 @@ func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Security BearerAuth
 // @Param id path int true "Role ID"
-// @Success   200 {object} response.Response{}
+// @Success   200 {object} response.Response{data=dto.RoleResponse}
 // @Router /role/{id} [get]
 func (con *RoleController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one Role").Do(func(c *fiber.Ctx) error {
@@ -99,7 +99,7 @@ func (con *RoleController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Role body dto.RoleRequest true "Role data"
-// @Success  200 {object} response.Response{} "Successfully created Role"
+// @Success  200 {object} response.Response{data=dto.RoleResponse} "Successfully created Role"
 // @Router /role [post]
 func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one Role").DoWithScope(func() []fiber.Handler {
@@ -131,7 +131,7 @@ func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Param id path int true "Role ID"
 // @Param Role body dto.RoleRequest true "Role data"
-// @Success  200 {object} response.Response{} "Successfully updated Role"
+// @Success  200 {object} response.Response{data=dto.RoleResponse} "Successfully updated Role"
 // @Router /role/{id} [patch]
 func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one Role").DoWithScope(func() []fiber.Handler {

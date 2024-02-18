@@ -47,7 +47,7 @@ func NewAdminController(service *service.AdminService) *AdminController {
 // @ID list-all-Admins
 // @Accept  json
 // @Produce  json
-// @Success  200 {object} response.Response{} "Successfully retrieved Admins"
+// @Success  200 {object} response.Response{data=[]dto.AdminResponse} "Successfully retrieved Admins"
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/").Name("get many Admins").Do(func(c *fiber.Ctx) error {
@@ -71,7 +71,7 @@ func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Security BearerAuth
 // @Param id path int true "Admin ID"
-// @Success   200 {object} response.Response{}
+// @Success   200 {object} response.Response{data=dto.AdminResponse}
 // @Router /admin/{id} [get]
 func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one Admin").Do(func(c *fiber.Ctx) error {
@@ -99,7 +99,7 @@ func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} response.Response{} "Successfully created Admin"
+// @Success  200 {object} response.Response{data=dto.AdminResponse} "Successfully created Admin"
 // @Router /admin [post]
 func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one Admin").DoWithScope(func() []fiber.Handler {
@@ -131,7 +131,7 @@ func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Param id path int true "Admin ID"
 // @Param Admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} response.Response{} "Successfully updated Admin"
+// @Success  200 {object} response.Response{data=dto.AdminResponse} "Successfully updated Admin"
 // @Router /admin/{id} [patch]
 func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one Admin").DoWithScope(func() []fiber.Handler {

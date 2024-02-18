@@ -12,7 +12,7 @@ import (
 
 type Response struct {
 	Code    int    `json:"code"`
-	Message string `json:"messages,omitempty"`
+	Message string `json:"message,omitempty"`
 	Data    any    `json:"data,omitempty"`
 	Errors  []any  `json:"errors,omitempty"`
 
