@@ -15,12 +15,15 @@ import (
 
 type MyController struct{}
 
+// 743730	      1660 ns/op	    1465 B/op	      30 allocs/op
 func (con *MyController) Hello(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/hello").Name("get many roles").Do(func(c *fiber.Ctx) error {
 		return c.SendString(fmt.Sprintf("Hello, World! %v", con))
 	})
 }
 
+// BenchmarkRegisterRoutes-8   	 1921436	       603.7 ns/op	     981 B/op	      15 allocs/op
+// BenchmarkRegisterRoutes-8   	  712566	      1614 ns/op	    1469 B/op	      30 allocs/op
 func BenchmarkRegisterRoutes(b *testing.B) {
 	app := fiber.New()
 

@@ -12,18 +12,18 @@ import (
 	"github.com/kimchhung/gva/utils/response"
 )
 
-var _ interface {
-	rctrl.FiberRouter
-	I{{.EntityPascal}}Controller
-} = (*{{.EntityPascal}}Controller)(nil)
+// don't remove for runtime type checking
+var _ I{{.EntityPascal}}Controller = (*{{.EntityPascal}}Controller)(nil)
 
 type I{{.EntityPascal}}Controller interface {
+	rctrl.FiberRouter
 	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
 }
+
 
 type {{.EntityPascal}}Controller struct {
 	service *service.{{.EntityPascal}}Service

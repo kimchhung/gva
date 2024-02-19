@@ -226,6 +226,223 @@
                 }
             }
         },
+        "/my-todo": {
+            "get": {
+                "description": "Get a list of all MyTodos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MyTodo"
+                ],
+                "summary": "List all MyTodos",
+                "operationId": "list-all-MyTodos",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved MyTodos",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.MyTodoResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new MyTodo with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MyTodo"
+                ],
+                "summary": "Create a MyTodo",
+                "operationId": "create-MyTodo",
+                "parameters": [
+                    {
+                        "description": "MyTodo data",
+                        "name": "MyTodo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MyTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created MyTodo",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MyTodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/my-todo/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a MyTodo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MyTodo"
+                ],
+                "summary": "Get a MyTodo",
+                "operationId": "get-MyTodo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "MyTodo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MyTodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a MyTodo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MyTodo"
+                ],
+                "summary": "Delete a MyTodo",
+                "operationId": "delete-MyTodo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "MyTodo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted MyTodo",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a MyTodo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MyTodo"
+                ],
+                "summary": "Update a MyTodo",
+                "operationId": "update-MyTodo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "MyTodo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "MyTodo data",
+                        "name": "MyTodo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MyTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated MyTodo",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MyTodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/permission": {
             "get": {
                 "description": "Get a list of all Permissions",
@@ -675,11 +892,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.AdminEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.AdminEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -708,11 +921,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.AdminEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.AdminEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -728,16 +937,54 @@
                 }
             }
         },
+        "dto.MyTodoRequest": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.MyTodoResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.PermissionRequest": {
             "type": "object",
             "properties": {
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.PermissionEdges"
                 },
                 "group": {
                     "description": "Group holds the value of the \"group\" field.",
@@ -762,11 +1009,7 @@
             "properties": {
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.PermissionEdges"
                 },
                 "group": {
                     "description": "Group holds the value of the \"group\" field.",
@@ -795,11 +1038,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.RoleEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.RoleEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -824,11 +1063,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.RoleEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.RoleEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -857,11 +1092,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.AdminEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.AdminEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -894,11 +1125,7 @@
             "properties": {
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.PermissionEdges"
                 },
                 "group": {
                     "description": "Group holds the value of the \"group\" field.",
@@ -939,11 +1166,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.RoleEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.RoleEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",

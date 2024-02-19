@@ -10,12 +10,10 @@ import (
 	"github.com/kimchhung/gva/utils/response"
 )
 
-var _ interface {
-	rctrl.FiberRouter
-	IRoleController
-} = (*RoleController)(nil)
+var _ IRoleController = (*RoleController)(nil)
 
 type IRoleController interface {
+	rctrl.FiberRouter
 	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler

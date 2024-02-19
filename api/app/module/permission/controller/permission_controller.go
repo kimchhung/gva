@@ -10,12 +10,10 @@ import (
 	"github.com/kimchhung/gva/utils/response"
 )
 
-var _ interface {
-	rctrl.FiberRouter
-	IPermissionController
-} = (*PermissionController)(nil)
+var _ IPermissionController = (*PermissionController)(nil)
 
 type IPermissionController interface {
+	rctrl.FiberRouter
 	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
