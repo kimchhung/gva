@@ -14,7 +14,7 @@ import (
 	"github.com/kimchhung/gva/app/module"
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
-	"github.com/kimchhung/gva/utils/response"
+	"github.com/kimchhung/gva/utils/request"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
 )
@@ -25,14 +25,14 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		ServerHeader:          cfg.App.Name,
 		AppName:               cfg.App.Name,
 		Prefork:               cfg.App.Prefork,
-		ErrorHandler:          response.ErrorHandler,
+		ErrorHandler:          request.ErrorHandler,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
 		DisableStartupMessage: true,
 	})
 
 	// Pass production config to check it
-	response.IsProduction = cfg.App.Production
+	request.IsProduction = cfg.App.Production
 
 	return app
 }

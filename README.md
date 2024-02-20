@@ -67,7 +67,7 @@ Simple and scalable boilerplate to build powerful and organized REST projects wi
     ├── config
     │   └── config.go
     ├── response
-    │   ├── response.go
+    │   ├── request.go
     │   └── validator.go
     └── utils.go
 ```
@@ -139,7 +139,7 @@ Generated app/module/todo_you/controller/todo_you_controller.go
 
 2024/02/17 04:44:01 Generate swagger docs....
 2024/02/17 04:44:01 Generate general API Info, search dir:./
-2024/02/17 04:44:01 Generating response.Response
+2024/02/17 04:44:01 Generating request.Response
 2024/02/17 04:44:01 Generating dto.AdminRequest
 2024/02/17 04:44:01 Generating dto.TodoYouRequest
 2024/02/17 04:44:01 create docs.go at docs/docs.go

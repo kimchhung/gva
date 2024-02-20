@@ -227,7 +227,7 @@ definitions:
           $ref: '#/definitions/ent.Permission'
         type: array
     type: object
-  response.Response:
+  request.Response:
     properties:
       code:
         type: integer
@@ -258,7 +258,7 @@ paths:
           description: Successfully retrieved Admins
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   items:
@@ -287,7 +287,7 @@ paths:
           description: Successfully created Admin
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
@@ -313,7 +313,7 @@ paths:
         "200":
           description: Successfully deleted Admin
           schema:
-            $ref: '#/definitions/response.Response'
+            $ref: '#/definitions/request.Response'
       summary: Delete a Admin
       tags:
       - Admin
@@ -335,7 +335,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
@@ -369,7 +369,7 @@ paths:
           description: Successfully updated Admin
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
@@ -390,7 +390,7 @@ paths:
           description: Successfully retrieved Permissions
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   items:
@@ -419,7 +419,7 @@ paths:
           description: Successfully created Permission
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
@@ -445,7 +445,7 @@ paths:
         "200":
           description: Successfully deleted Permission
           schema:
-            $ref: '#/definitions/response.Response'
+            $ref: '#/definitions/request.Response'
       summary: Delete a Permission
       tags:
       - Permission
@@ -467,7 +467,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
@@ -501,7 +501,7 @@ paths:
           description: Successfully updated Permission
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
@@ -522,7 +522,7 @@ paths:
           description: Successfully retrieved Roles
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   items:
@@ -551,7 +551,7 @@ paths:
           description: Successfully created Role
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
@@ -577,7 +577,7 @@ paths:
         "200":
           description: Successfully deleted Role
           schema:
-            $ref: '#/definitions/response.Response'
+            $ref: '#/definitions/request.Response'
       summary: Delete a Role
       tags:
       - Role
@@ -599,7 +599,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
@@ -633,7 +633,7 @@ paths:
           description: Successfully updated Role
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/request.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'

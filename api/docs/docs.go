@@ -35,7 +35,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -83,7 +83,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -133,7 +133,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -174,7 +174,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully deleted Admin",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/request.Response"
                         }
                     }
                 }
@@ -216,7 +216,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -252,7 +252,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -300,7 +300,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -350,7 +350,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -391,7 +391,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully deleted Permission",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/request.Response"
                         }
                     }
                 }
@@ -433,7 +433,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -469,7 +469,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -517,7 +517,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -567,7 +567,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -608,7 +608,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully deleted Role",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/request.Response"
                         }
                     }
                 }
@@ -650,7 +650,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/request.Response"
                                 },
                                 {
                                     "type": "object",
@@ -984,7 +984,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.Response": {
+        "request.Response": {
             "type": "object",
             "properties": {
                 "code": {

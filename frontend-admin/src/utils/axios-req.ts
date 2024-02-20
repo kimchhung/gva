@@ -59,7 +59,7 @@ service.interceptors.request.use(
   }
 )
 //请求后拦截
-service.interceptors.response.use(
+service.interceptors.request.use(
   (res: any) => {
     //取消请求
     useBasicStore().remotePromiseArrByReqUrl(tempReqUrlSave)
@@ -67,12 +67,12 @@ service.interceptors.response.use(
       loadingInstance && loadingInstance.close()
     }
     //download file
-    if (res.data?.type?.includes("sheet")) {
+    if (res.data?.type?.includes('sheet')) {
       return res
     }
     const { code, msg } = res.data
-    const successCode = [0,200,20000]
-    const noAuthCode = [401,403]
+    const successCode = [0, 200, 20000]
+    const noAuthCode = [401, 403]
     if (successCode.includes(code)) {
       return res.data
     } else {
