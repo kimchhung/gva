@@ -147,6 +147,47 @@ Generated app/module/todo_you/controller/todo_you_controller.go
 2024/02/17 04:44:01 create swagger.yaml at docs/swagger.yaml
 
 ```
+- Generated Controller Method example
+
+```
+// @Tags Admin
+// @Summary Update a Admin
+// @Description Update a Admin by ID
+// @ID update-Admin-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Admin ID"
+// @Param Admin body dto.AdminRequest true "Admin data"
+// @Success  200 {object} request.Response{data=dto.AdminResponse} "Successfully updated Admin"
+// @Router /admin/{id} [patch]
+func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Patch("/:id").Name("update one Admin").DoWithScope(func() []fiber.Handler {
+		req := new(dto.AdminRequest)
+		param := &struct {
+			ID int `params:"id" validate:"gte=0"`
+		}{}
+
+		return []fiber.Handler{
+			request.Validate(
+				request.ParamsParser(param),
+				request.BodyParser(req),
+			),
+			func(c *fiber.Ctx) error {
+				data, err := con.service.UpdateAdmin(c.UserContext(), param.ID, *req)
+				if err != nil {
+					return err
+				}
+
+				return request.Resp(c, request.Response{
+					Message: "The admin was updated successfully!",
+					Data:    data,
+				})
+			},
+		}
+	})
+}
+
+```
 
 ## Migration
 
