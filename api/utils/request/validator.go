@@ -1,36 +1,9 @@
 package request
 
 import (
-	"github.com/rs/zerolog/log"
-
-	"github.com/go-playground/locales/en"
-	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
-
-	ent "github.com/go-playground/validator/v10/translations/en"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/utils/validator"
 )
-
-var (
-	validate *validator.Validate
-	uni      *ut.UniversalTranslator
-	trans    ut.Translator
-)
-
-func init() {
-	validate = validator.New()
-
-	uni = ut.New(en.New())
-	trans, _ = uni.GetTranslator("en")
-
-	if err := ent.RegisterDefaultTranslations(validate, trans); err != nil && !fiber.IsChild() {
-		log.Panic().Err(err).Msg("")
-	}
-}
-
-func ValidateStruct(input any) error {
-	return validate.Struct(input)
-}
 
 type Parser func(*fiber.Ctx) (any, error)
 
@@ -62,7 +35,7 @@ func Validate(parser Parser, parsers ...Parser) fiber.Handler {
 				return err
 			}
 
-			if err = ValidateStruct(data); err != nil {
+			if err = validator.ValidateStruct(data); err != nil {
 				return err
 			}
 		}

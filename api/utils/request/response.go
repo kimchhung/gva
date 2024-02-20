@@ -1,11 +1,10 @@
 package request
 
 import (
-	"strings"
-
-	app_err "github.com/kimchhung/gva/app/error"
-
 	"github.com/go-playground/validator/v10"
+	app_err "github.com/kimchhung/gva/app/error"
+	in_validator "github.com/kimchhung/gva/utils/validator"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
@@ -33,7 +32,7 @@ var ErrorHandler = func(c *fiber.Ctx, err error) error {
 	if e, ok := err.(validator.ValidationErrors); ok {
 		resp.Code = app_err.ErrForbidden.ErrorCode
 		resp.Message = app_err.ErrForbidden.Message
-		resp.Errors = []any{removeTopStruct(e.Translate(trans))}
+		resp.Errors = []any{in_validator.RemoveTopStruct(e.Translate(in_validator.Trans))}
 	} else if e, ok := err.(*app_err.Error); ok {
 		resp.Code = e.ErrorCode
 		resp.Message = e.Message
@@ -59,14 +58,4 @@ func Resp(c *fiber.Ctx, resp Response) error {
 
 	// Return JSON
 	return c.JSON(resp)
-}
-
-// Remove unnecessary fields from validator message
-func removeTopStruct(fields map[string]string) map[string]string {
-	res := map[string]string{}
-	for field, msg := range fields {
-		stripStruct := field[strings.Index(field, ".")+1:]
-		res[stripStruct] = msg
-	}
-	return res
 }
