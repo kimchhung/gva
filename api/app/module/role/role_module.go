@@ -16,11 +16,11 @@ var _ interface {
 
 type RoleRouter struct {
 	app        fiber.Router
-	controller *controller.RoleController
+	controller controller.IRoleController
 }
 
 // Router methods
-func NewRoleRouter(fiber *fiber.App, controller *controller.RoleController) *RoleRouter {
+func NewRoleRouter(fiber *fiber.App, controller controller.IRoleController) *RoleRouter {
 	return &RoleRouter{
 		app:        fiber,
 		controller: controller,
@@ -37,13 +37,14 @@ var NewRoleModule = fx.Module("RoleModule",
 	fx.Provide(repository.NewRoleRepository),
 	fx.Provide(service.NewRoleService),
 
-	// Regiser Controller
-	fx.Provide(controller.NewRoleController),
+	// Regiser IController
+	fx.Provide(fx.Annotate(
+		controller.NewRoleController,
+		fx.As(new(controller.IRoleController))),
+	),
 
 	// Register Router
-	fx.Provide(NewRoleRouter),
-	fx.Provide(fx.Annotate(
-		NewRoleRouter,
+	fx.Provide(fx.Annotate(NewRoleRouter,
 		fx.As(new(rctrl.Router)),
 		fx.ResultTags(`group:"routers"`),
 	)),

@@ -22,11 +22,11 @@ var _ interface {
 
 type {{.EntityPascal}}Router struct {
 	app        fiber.Router
-	controller *controller.{{.EntityPascal}}Controller
+	controller controller.I{{.EntityPascal}}Controller
 }
 
 // Router methods
-func New{{.EntityPascal}}Router(fiber *fiber.App, controller *controller.{{.EntityPascal}}Controller) *{{.EntityPascal}}Router {
+func New{{.EntityPascal}}Router(fiber *fiber.App, controller controller.I{{.EntityPascal}}Controller) *{{.EntityPascal}}Router {
 	return &{{.EntityPascal}}Router{
 		app:        fiber,
 		controller: controller,
@@ -44,10 +44,12 @@ var New{{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	fx.Provide(service.New{{.EntityPascal}}Service),
 
 	// Regiser Controller
-	fx.Provide(controller.New{{.EntityPascal}}Controller),
+	fx.Provide(fx.Annotate(
+		controller.New{{.EntityPascal}}Controller,
+		fx.As(new(controller.I{{.EntityPascal}}Controller))),
+	),
 
 	// Register Router
-	fx.Provide(New{{.EntityPascal}}Router),
 	fx.Provide(fx.Annotate(
 		New{{.EntityPascal}}Router,
 		fx.As(new(rctrl.Router)),

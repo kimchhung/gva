@@ -16,11 +16,11 @@ var _ interface {
 
 type AdminRouter struct {
 	app        fiber.Router
-	controller *controller.AdminController
+	controller controller.IAdminController
 }
 
 // Router methods
-func NewAdminRouter(fiber *fiber.App, controller *controller.AdminController) *AdminRouter {
+func NewAdminRouter(fiber *fiber.App, controller controller.IAdminController) *AdminRouter {
 	return &AdminRouter{
 		app:        fiber,
 		controller: controller,
@@ -38,10 +38,12 @@ var NewAdminModule = fx.Module("AdminModule",
 	fx.Provide(service.NewAdminService),
 
 	// Regiser Controller
-	fx.Provide(controller.NewAdminController),
+	fx.Provide(fx.Annotate(
+		controller.NewAdminController,
+		fx.As(new(controller.IAdminController)),
+	)),
 
 	// Register Router
-	fx.Provide(NewAdminRouter),
 	fx.Provide(fx.Annotate(
 		NewAdminRouter,
 		fx.As(new(rctrl.Router)),

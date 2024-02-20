@@ -1,6 +1,7 @@
 package rctrl
 
 import (
+	"log"
 	"net/http"
 	"reflect"
 
@@ -118,16 +119,18 @@ func NewRoute(app fiber.Router, metaFunc MetaFunc) fiber.Router {
 // Register registers routes defined by the controller methods.
 func Register(app fiber.Router, controller any) {
 	controllerType := reflect.TypeOf(controller)
+	controllerValue := reflect.ValueOf(controller)
 
-	// Iterate over the methods of the controller
 	for i := 0; i < controllerType.NumMethod(); i++ {
 		method := controllerType.Method(i)
-
 		if method.Type.NumOut() == 1 && method.Type.Out(0).ConvertibleTo(reflect.TypeOf((*MetaHandler)(nil)).Elem()) {
-			methodValue := reflect.ValueOf(controller).MethodByName(method.Name)
+
+			methodValue := controllerValue.MethodByName(method.Name)
 			metaHandler, ok := methodValue.Interface().(func(*RouteMeta) MetaHandler)
 			if !ok {
-				panic("controller method must be a func(*RouteMeta) MetaHandler")
+				// Log an error instead of panicking
+				log.Printf("controller method %s must be a func(*RouteMeta) MetaHandler", method.Name)
+				continue
 			}
 
 			// Create a new route using the MetaHandler

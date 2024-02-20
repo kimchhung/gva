@@ -10,12 +10,10 @@ import (
 	"github.com/kimchhung/gva/utils/request"
 )
 
-var _ interface {
-	rctrl.FiberRouter
-	IAdminController
-} = (*AdminController)(nil)
+var _ IAdminController = (*AdminController)(nil)
 
 type IAdminController interface {
+	rctrl.FiberRouter
 	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
 	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler

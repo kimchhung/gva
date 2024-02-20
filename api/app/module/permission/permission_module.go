@@ -16,11 +16,11 @@ var _ interface {
 
 type PermissionRouter struct {
 	app        fiber.Router
-	controller *controller.PermissionController
+	controller controller.IPermissionController
 }
 
 // Router methods
-func NewPermissionRouter(fiber *fiber.App, controller *controller.PermissionController) *PermissionRouter {
+func NewPermissionRouter(fiber *fiber.App, controller controller.IPermissionController) *PermissionRouter {
 	return &PermissionRouter{
 		app:        fiber,
 		controller: controller,
@@ -38,10 +38,12 @@ var NewPermissionModule = fx.Module("PermissionModule",
 	fx.Provide(service.NewPermissionService),
 
 	// Regiser Controller
-	fx.Provide(controller.NewPermissionController),
+	fx.Provide(fx.Annotate(
+		controller.NewPermissionController,
+		fx.As(new(controller.IPermissionController)),
+	)),
 
 	// Register Router
-	fx.Provide(NewPermissionRouter),
 	fx.Provide(fx.Annotate(
 		NewPermissionRouter,
 		fx.As(new(rctrl.Router)),
