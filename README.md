@@ -191,30 +191,33 @@ func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 
 ## Migration
 
- - Install the Atlas CLI. You can find installation instructions [here](https://atlasgo.io/integrations/go-sdk).
- - Run ```make migrate.hash``` whenever got error hash mismatched
- - Check ```migrate.mk``` for more migration cli
+### Getting Started
+- Install the Atlas CLI by following the instructions provided [here](https://atlasgo.io/integrations/go-sdk).
 
+### Resolving Hash Mismatches
+- If you encounter a hash mismatch error, run `make migrate.hash` to resolve it.
 
-### Migration generate
+### Additional Migration Commands
+- For more migration commands, refer to the `migrate.mk` file.
 
-1. edit schema in "app/database/schema"
-2. genrate ent using ```make migrate.gen name="add_todo_index"```
-3. apply migrations ```make migrate.apply```
+### Generating Migrations
+1. Edit the schema in the `app/database/schema` directory.
+2. Generate entities using `make migrate.gen name="add_todo_index"`.
+3. Apply the migrations with `make migrate.apply`.
 
-### Create migration manually 
-1. create migration files ```make migrate.new name="add_user_data"```
-2. generate hash  ```make migrate.hash```
-3. apply migrations ```make migrate.apply```
+### Creating Migrations Manually
+1. Create new migration files using `make migrate.new name="add_user_data"`.
+2. Generate a new hash with `make migrate.hash`.
+3. Apply the migrations using `make migrate.apply`.
 
-### Migration roleback or reverse
+### Rolling Back Migrations
+1. Remove the latest migration files from the `app/database/migrations` directory.
+2. Apply the changes by running `make migrate.schema.apply`.
+3. Set the migration version to match the current version in the folder using `make migrate.apply`.
+4. Check the current migration status with `make migrate.status`.
 
-1. remove one or two latest migration files in "app/database/migrations"
-2. check different and apply by ```make migrate.schema.apply```
-3. set version migration to match current version in folder ``` make migrate.apply ```
-4. check current version by ```make migrate.status```
+## Todo
 
-### Todo
 - [x] Migration CLI
 - [x] CRUD generator
     - [X] API
