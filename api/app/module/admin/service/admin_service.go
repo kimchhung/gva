@@ -1,12 +1,14 @@
 package service
 
 import (
-	"github.com/kimchhung/gva/app/module/admin/repository"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/kimchhung/gva/app/module/admin/dto"
+	"github.com/kimchhung/gva/app/module/admin/repository"
+
+	"context"
 
 	"github.com/kimchhung/gva/internal/ent"
 	"github.com/kimchhung/gva/internal/ent/admin"
-	"context"
 )
 
 type AdminService struct {
@@ -28,16 +30,23 @@ func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, er
 }
 
 func (s *AdminService) CreateAdmin(ctx context.Context, request dto.AdminRequest) (*ent.Admin, error) {
+
+	log.Debug(request)
+
 	return s.repo.Client().Create().
+		SetPassword(request.Password).
+		SetUsername(request.Username).
+		SetDisplayName(request.DisplayName).
 		Save(ctx)
 }
 
 func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request dto.AdminRequest) (*ent.Admin, error) {
 	return s.repo.Client().UpdateOneID(id).
+		SetDisplayName(request.DisplayName).
+		SetUsername(request.Username).
 		Save(ctx)
 }
 
 func (s *AdminService) DeleteAdmin(ctx context.Context, id int) error {
 	return s.repo.Client().DeleteOneID(id).Exec(ctx)
 }
-

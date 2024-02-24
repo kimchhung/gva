@@ -48,6 +48,36 @@ definitions:
         description: Username holds the value of the "username" field.
         type: string
     type: object
+  dto.AuthRequest:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.AuthResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
   dto.PermissionRequest:
     properties:
       edges:
@@ -122,6 +152,36 @@ definitions:
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RoleQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.TodoRequest:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.TodoResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
       id:
         description: ID of the ent.
         type: integer
@@ -245,6 +305,124 @@ info:
   title: GVA API
   version: "1.0"
 paths:
+  /Auth/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a Auth by ID
+      operationId: get-Auth-by-id
+      parameters:
+      - description: Auth ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AuthResponse'
+              type: object
+      summary: Get a Auth
+      tags:
+      - Auth
+    patch:
+      consumes:
+      - application/json
+      description: Update a Auth by ID
+      operationId: update-Auth-by-id
+      parameters:
+      - description: Auth ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Auth data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Auth
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AuthResponse'
+              type: object
+      summary: Update a Auth
+      tags:
+      - Auth
+  /Todo/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a Todo by ID
+      operationId: get-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      summary: Get a Todo
+      tags:
+      - Todo
+    patch:
+      consumes:
+      - application/json
+      description: Update a Todo by ID
+      operationId: update-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Todo
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      summary: Update a Todo
+      tags:
+      - Todo
   /admin:
     get:
       consumes:
@@ -377,6 +555,78 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
+  /auth:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Auths
+      operationId: list-all-Auths
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Auths
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AuthResponse'
+                  type: array
+              type: object
+      summary: List all Auths
+      tags:
+      - Auth
+    post:
+      consumes:
+      - application/json
+      description: Create a new Auth with the provided details
+      operationId: create-Auth
+      parameters:
+      - description: Auth data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Auth
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AuthResponse'
+              type: object
+      summary: Create a Auth
+      tags:
+      - Auth
+  /auth/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Auth by ID
+      operationId: delete-Auth-by-id
+      parameters:
+      - description: Auth ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Auth
+          schema:
+            $ref: '#/definitions/request.Response'
+      summary: Delete a Auth
+      tags:
+      - Auth
   /permission:
     get:
       consumes:
@@ -641,4 +891,76 @@ paths:
       summary: Update a Role
       tags:
       - Role
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Todos
+      operationId: list-all-Todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Todos
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.TodoResponse'
+                  type: array
+              type: object
+      summary: List all Todos
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create a new Todo with the provided details
+      operationId: create-Todo
+      parameters:
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Todo
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      summary: Create a Todo
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Todo by ID
+      operationId: delete-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Todo
+          schema:
+            $ref: '#/definitions/request.Response'
+      summary: Delete a Todo
+      tags:
+      - Todo
 swagger: "2.0"

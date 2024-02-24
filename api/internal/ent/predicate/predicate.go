@@ -15,5 +15,5 @@ type Permission func(*sql.Selector)
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
 
-// TodoYou is the predicate function for todoyou builders.
-type TodoYou func(*sql.Selector)
+// Todo is the predicate function for todo builders.
+type Todo func(*sql.Selector)

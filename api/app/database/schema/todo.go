@@ -5,23 +5,23 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-type TodoYou struct {
+type Todo struct {
 	ent.Schema
 }
 
-func (TodoYou) Mixin() []ent.Mixin {
+func (Todo) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		TimetMixin{},
 	}
 }
 
-func (TodoYou) Fields() []ent.Field {
+func (Todo) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").StructTag(`json:"name,omitempty"`),
 	}
 }
 
-func (TodoYou) Edges() []ent.Edge {
+func (Todo) Edges() []ent.Edge {
 	return nil
 }
 

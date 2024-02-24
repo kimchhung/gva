@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/app/module/admin/dto"
 	"github.com/kimchhung/gva/app/module/admin/service"
@@ -186,12 +184,7 @@ func (con *AdminController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				request.ParamsParser(param),
 			),
 			func(c *fiber.Ctx) error {
-				id, err := strconv.Atoi(c.Params("id"))
-				if err != nil {
-					return err
-				}
-
-				if err = con.service.DeleteAdmin(c.UserContext(), id); err != nil {
+				if err := con.service.DeleteAdmin(c.UserContext(), param.ID); err != nil {
 					return err
 				}
 

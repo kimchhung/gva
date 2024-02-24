@@ -1,10 +1,12 @@
 package module_template
 
-var Controller = `package controller
+import (
+	"strings"
+)
+
+var Controller = strings.ReplaceAll(`package controller
 
 import (
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/dto"
 	"github.com/kimchhung/gva/app/module/{{.EntitySnake}}/service"
@@ -71,26 +73,31 @@ func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHa
 // @ID get-{{.EntityPascal}}-by-id
 // @Accept  json
 // @Produce  json
-// @Security BearerAuth
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success   200 {object} request.Response{data=dto.{{.EntityPascal}}Response}
-// @Router /{{.EntityKebab}}/{id} [get]
+// @Router /{{.EntityPascal}}/{id} [get]
 func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/:id").Name("get one {{.EntityPascal}}").Do(func(c *fiber.Ctx) error {
-		id, err := strconv.Atoi(c.Params("id"))
-		if err != nil {
-			return err
-		}
+	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
+		param := &struct {
+			ID int %sparams:"id" validate:"gte=0"%s
+		}{}
 
-		data, err := con.service.Get{{.EntityPascal}}ByID(c.UserContext(), id)
-		if err != nil {
-			return err
-		}
+		return []fiber.Handler{
+			request.Validate(
+				request.ParamsParser(param),
+			),
+			func(c *fiber.Ctx) error {
+				data, err := con.service.Get{{.EntityPascal}}ByID(c.UserContext(), param.ID)
+				if err != nil {
+					return err
+				}
 
-		return request.Resp(c, request.Response{
-			Message: "The {{.EntityCamel}} retrieved successfully!",
-			Data:    data,
-		})
+				return request.Resp(c, request.Response{
+					Message: "The {{.EntityAllLower}} retrieved successfully!",
+					Data:    data,
+				})
+			},
+		}
 	})
 }
 
@@ -105,13 +112,15 @@ func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHan
 // @Router /{{.EntityKebab}} [post]
 func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
-		req := new(dto.{{.EntityPascal}}Request)
+		body := new(dto.{{.EntityPascal}}Request)
 
 		return []fiber.Handler{
-			request.Validate(request.BodyParser(&req)),
+			request.Validate(
+				request.BodyParser(body),
+			),
 
 			func(c *fiber.Ctx) error {
-				data, err := con.service.Create{{.EntityPascal}}(c.UserContext(), *req)
+				data, err := con.service.Create{{.EntityPascal}}(c.UserContext(),body)
 				if err != nil {
 					return err
 				}
@@ -125,6 +134,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 	})
 }
 
+
 // @Tags {{.EntityPascal}}
 // @Summary Update a {{.EntityPascal}}
 // @Description Update a {{.EntityPascal}} by ID
@@ -134,26 +144,27 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
 // @Success  200 {object} request.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
-// @Router /{{.EntityKebab}}/{id} [patch]
+// @Router /{{.EntityPascal}}/{id} [patch]
 func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
-		req := new(dto.{{.EntityPascal}}Request)
+		body := new(dto.{{.EntityPascal}}Request)
+		param := &struct {
+			ID int %sparams:"id" validate:"gte=0"%s
+		}{}
 
 		return []fiber.Handler{
-			request.Validate(request.BodyParser(&req)),
+			request.Validate(
+				request.ParamsParser(param),
+				request.BodyParser(body),
+			),
 			func(c *fiber.Ctx) error {
-				id, err := strconv.Atoi(c.Params("id"))
-				if err != nil {
-					return err
-				}
-
-				data, err := con.service.Update{{.EntityPascal}}(c.UserContext(), id, *req)
+				data, err := con.service.Update{{.EntityPascal}}(c.UserContext(), param.ID,body)
 				if err != nil {
 					return err
 				}
 
 				return request.Resp(c, request.Response{
-					Message: "The {{.EntityCamel}} was updated successfully!",
+					Message: "The {{.EntityAllLower}} was updated successfully!",
 					Data:    data,
 				})
 			},
@@ -170,20 +181,28 @@ func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.Meta
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success  200 {object} request.Response{} "Successfully deleted {{.EntityPascal}}"
 // @Router /{{.EntityKebab}}/{id} [delete]
-func (con *{{.EntityPascal}}Controller) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").Do(func(c *fiber.Ctx) error {
-		id, err := strconv.Atoi(c.Params("id"))
-		if err != nil {
-			return err
-		}
+func (con  *{{.EntityPascal}}Controller) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
+		param := &struct {
+			ID int %sparams:"id" validate:"gte=0"%s
+		}{}
 
-		if err = con.service.Delete{{.EntityPascal}}(c.UserContext(), id); err != nil {
-			return err
-		}
+		return []fiber.Handler{
+			request.Validate(
+				request.ParamsParser(param),
+			),
+			func(c *fiber.Ctx) error {
+				if err := con.service.Delete{{.EntityPascal}}(c.UserContext(), param.ID); err != nil {
+					return err
+				}
 
-		return request.Resp(c, request.Response{
-			Message: "The {{.EntityPascal}} was deleted successfully!",
-		})
+				return request.Resp(c, request.Response{
+					Message: "The {{.EntityPascal}} was deleted successfully!",
+				})
+			},
+		}
 	})
 }
-`
+`,
+	"%s", special,
+)

@@ -9,11 +9,11 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/internal/ent/todoyou"
+	"github.com/kimchhung/gva/internal/ent/todo"
 )
 
-// TodoYou is the model entity for the TodoYou schema.
-type TodoYou struct {
+// Todo is the model entity for the Todo schema.
+type Todo struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -27,15 +27,15 @@ type TodoYou struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*TodoYou) scanValues(columns []string) ([]any, error) {
+func (*Todo) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case todoyou.FieldID:
+		case todo.FieldID:
 			values[i] = new(sql.NullInt64)
-		case todoyou.FieldName:
+		case todo.FieldName:
 			values[i] = new(sql.NullString)
-		case todoyou.FieldCreatedAt, todoyou.FieldUpdatedAt:
+		case todo.FieldCreatedAt, todo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -45,84 +45,84 @@ func (*TodoYou) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the TodoYou fields.
-func (ty *TodoYou) assignValues(columns []string, values []any) error {
+// to the Todo fields.
+func (t *Todo) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case todoyou.FieldID:
+		case todo.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			ty.ID = int(value.Int64)
-		case todoyou.FieldCreatedAt:
+			t.ID = int(value.Int64)
+		case todo.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				ty.CreatedAt = value.Time
+				t.CreatedAt = value.Time
 			}
-		case todoyou.FieldUpdatedAt:
+		case todo.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				ty.UpdatedAt = value.Time
+				t.UpdatedAt = value.Time
 			}
-		case todoyou.FieldName:
+		case todo.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				ty.Name = value.String
+				t.Name = value.String
 			}
 		default:
-			ty.selectValues.Set(columns[i], values[i])
+			t.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the TodoYou.
+// Value returns the ent.Value that was dynamically selected and assigned to the Todo.
 // This includes values selected through modifiers, order, etc.
-func (ty *TodoYou) Value(name string) (ent.Value, error) {
-	return ty.selectValues.Get(name)
+func (t *Todo) Value(name string) (ent.Value, error) {
+	return t.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this TodoYou.
-// Note that you need to call TodoYou.Unwrap() before calling this method if this TodoYou
+// Update returns a builder for updating this Todo.
+// Note that you need to call Todo.Unwrap() before calling this method if this Todo
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (ty *TodoYou) Update() *TodoYouUpdateOne {
-	return NewTodoYouClient(ty.config).UpdateOne(ty)
+func (t *Todo) Update() *TodoUpdateOne {
+	return NewTodoClient(t.config).UpdateOne(t)
 }
 
-// Unwrap unwraps the TodoYou entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Todo entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (ty *TodoYou) Unwrap() *TodoYou {
-	_tx, ok := ty.config.driver.(*txDriver)
+func (t *Todo) Unwrap() *Todo {
+	_tx, ok := t.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: TodoYou is not a transactional entity")
+		panic("ent: Todo is not a transactional entity")
 	}
-	ty.config.driver = _tx.drv
-	return ty
+	t.config.driver = _tx.drv
+	return t
 }
 
 // String implements the fmt.Stringer.
-func (ty *TodoYou) String() string {
+func (t *Todo) String() string {
 	var builder strings.Builder
-	builder.WriteString("TodoYou(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", ty.ID))
+	builder.WriteString("Todo(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(ty.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(ty.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
-	builder.WriteString(ty.Name)
+	builder.WriteString(t.Name)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// TodoYous is a parsable slice of TodoYou.
-type TodoYous []*TodoYou
+// Todos is a parsable slice of Todo.
+type Todos []*Todo

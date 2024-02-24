@@ -29,12 +29,12 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context,
 	return s.repo.Client().Query().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
 }
 
-func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, request dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
+func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, payload *dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
 	return s.repo.Client().Create().
 		Save(ctx)
 }
 
-func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id int, request dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
+func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id int, payload *dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
 	return s.repo.Client().UpdateOneID(id).
 		Save(ctx)
 }

@@ -8,10 +8,8 @@ import (
 
 type Config struct {
 	Next       func(c *fiber.Ctx) bool
-	Secret     string
 	HeaderName string
-
-	VerifyFunc func(headerValue string) error
+	VerifyFunc func(c *fiber.Ctx, headerValue string) error
 }
 
 type Option func(*Config)
@@ -40,7 +38,7 @@ func New(config Option, opts ...Option) fiber.Handler {
 			return c.Next()
 		}
 
-		if err := cfg.VerifyFunc(c.Get(cfg.HeaderName, "")); err != nil {
+		if err := cfg.VerifyFunc(c, c.Get(cfg.HeaderName, "")); err != nil {
 			return err
 		}
 
