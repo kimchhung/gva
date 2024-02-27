@@ -23,6 +23,19 @@ var (
 		Columns:    AdminsColumns,
 		PrimaryKey: []*schema.Column{AdminsColumns[0]},
 	}
+	// MyTodosColumns holds the columns for the "my_todos" table.
+	MyTodosColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+	}
+	// MyTodosTable holds the schema information for the "my_todos" table.
+	MyTodosTable = &schema.Table{
+		Name:       "my_todos",
+		Columns:    MyTodosColumns,
+		PrimaryKey: []*schema.Column{MyTodosColumns[0]},
+	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -115,6 +128,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminsTable,
+		MyTodosTable,
 		PermissionsTable,
 		RolesTable,
 		TodosTable,

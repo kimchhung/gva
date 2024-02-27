@@ -75,7 +75,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHa
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success   200 {object} request.Response{data=dto.{{.EntityPascal}}Response}
-// @Router /{{.EntityPascal}}/{id} [get]
+// @Router /{{.EntityKebab}}/{id} [get]
 func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
 		param := &struct {
@@ -144,7 +144,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
 // @Success  200 {object} request.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
-// @Router /{{.EntityPascal}}/{id} [patch]
+// @Router /{{.EntityKebab}}/{id} [patch]
 func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
 		body := new(dto.{{.EntityPascal}}Request)

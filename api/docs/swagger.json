@@ -9,103 +9,6 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/Auth/{id}": {
-            "get": {
-                "description": "Get a Auth by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Get a Auth",
-                "operationId": "get-Auth-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Auth ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.AuthResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Update a Auth by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Update a Auth",
-                "operationId": "update-Auth-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Auth ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Auth data",
-                        "name": "Auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.AuthRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully updated Auth",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.AuthResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/Todo/{id}": {
             "get": {
                 "description": "Get a Todo by ID",
@@ -421,45 +324,8 @@
             }
         },
         "/auth": {
-            "get": {
-                "description": "Get a list of all Auths",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "List all Auths",
-                "operationId": "list-all-Auths",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved Auths",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.AuthResponse"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "post": {
-                "description": "Create a new Auth with the provided details",
+                "description": "Authenticate a admin with the provided credentials",
                 "consumes": [
                     "application/json"
                 ],
@@ -469,7 +335,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Create a Auth",
+                "summary": "Authenticate a admin",
                 "operationId": "create-Auth",
                 "parameters": [
                     {
@@ -478,7 +344,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.AuthRequest"
+                            "$ref": "#/definitions/dto.LoginRequest"
                         }
                     }
                 ],
@@ -494,44 +360,11 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.AuthResponse"
+                                            "$ref": "#/definitions/dto.LoginResponse"
                                         }
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/{id}": {
-            "delete": {
-                "description": "Delete a Auth by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Delete a Auth",
-                "operationId": "delete-Auth-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Auth ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully deleted Auth",
-                        "schema": {
-                            "$ref": "#/definitions/request.Response"
                         }
                     }
                 }
@@ -1103,11 +936,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.AdminEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.AdminEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -1136,11 +965,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.AdminEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.AdminEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -1156,46 +981,24 @@
                 }
             }
         },
-        "dto.AuthRequest": {
+        "dto.LoginRequest": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                "password": {
                     "type": "string"
                 },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                "username": {
                     "type": "string"
                 }
             }
         },
-        "dto.AuthResponse": {
+        "dto.LoginResponse": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                "token": {
                     "type": "string"
                 },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
+                "user": {}
             }
         },
         "dto.PermissionRequest": {
@@ -1203,11 +1006,7 @@
             "properties": {
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.PermissionEdges"
                 },
                 "group": {
                     "description": "Group holds the value of the \"group\" field.",
@@ -1232,11 +1031,7 @@
             "properties": {
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.PermissionEdges"
                 },
                 "group": {
                     "description": "Group holds the value of the \"group\" field.",
@@ -1265,11 +1060,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.RoleEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.RoleEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -1294,11 +1085,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.RoleEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.RoleEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -1369,11 +1156,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.AdminEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.AdminEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -1406,11 +1189,7 @@
             "properties": {
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.PermissionEdges"
                 },
                 "group": {
                     "description": "Group holds the value of the \"group\" field.",
@@ -1451,11 +1230,7 @@
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.RoleEdges"
-                        }
-                    ]
+                    "$ref": "#/definitions/ent.RoleEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
