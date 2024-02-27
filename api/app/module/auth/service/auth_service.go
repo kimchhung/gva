@@ -53,7 +53,7 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, username, password stri
 
 // LoginUser authenticates a user and returns a JWT token if successful.
 func (s *AuthService) LoginAdmin(ctx context.Context, username string, password string) (string, *ent.Admin, error) {
-	admin, err := s.adminRepo.Client().Query().Where(admin.Username(username)).First(ctx)
+	admin, err := s.adminRepo.Client().Query().Where(admin.Username(username)).WithRoles().First(ctx)
 
 	if err != nil {
 		return "", nil, err

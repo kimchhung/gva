@@ -303,6 +303,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "get admin data by token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "query your self after login",
+                "operationId": "create-Auth-me",
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/ent.Admin"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "description": "Register a new admin with the provided credentials",
@@ -1243,7 +1284,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "GO VUE ADMIN Boilerplate",
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -1253,12 +1294,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:8080",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "GVA API",
-	Description:      "",
+	Description:      "GO VUE ADMIN Boilerplate",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

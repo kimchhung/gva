@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   dto.AdminRequest:
     properties:
@@ -309,9 +310,12 @@ definitions:
       message:
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: GO VUE ADMIN Boilerplate
   title: GVA API
+  version: "1.0"
 paths:
   /admin:
     get:
@@ -480,6 +484,29 @@ paths:
                   $ref: '#/definitions/dto.LoginResponse'
               type: object
       summary: Authenticate a admin
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: get admin data by token
+      operationId: create-Auth-me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/ent.Admin'
+              type: object
+      security:
+      - Bearer: []
+      summary: query your self after login
       tags:
       - Auth
   /auth/register:
@@ -794,7 +821,7 @@ paths:
       - Role
 securityDefinitions:
   Bearer:
-    description: GO VUE ADMIN Boilerplate
+    description: Type "Bearer" followed by a space and JWT token.
     in: header
     name: Authorization
     type: apiKey

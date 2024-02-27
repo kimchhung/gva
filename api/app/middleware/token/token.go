@@ -27,9 +27,9 @@ func WithHeaderName(headerName string) Option {
 	}
 }
 
-func WithSkip(next func(c *fiber.Ctx) bool) Option {
+func WithSkip(isSkip func(c *fiber.Ctx) bool) Option {
 	return func(c *Config) {
-		c.Next = next
+		c.Next = isSkip
 	}
 }
 

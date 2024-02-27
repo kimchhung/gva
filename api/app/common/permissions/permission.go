@@ -13,7 +13,7 @@ type PermissionKey string
 func RequireAny(permissions ...PermissionKey) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		adminCtx := contexts.MustAdminContext(c.UserContext())
-		if slices.Contains(adminCtx.RoleNames(), "Super Admin") {
+		if adminCtx.IsSuperAdmin() {
 			return c.Next()
 		}
 

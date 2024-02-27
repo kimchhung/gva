@@ -1,9 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
+        "description": "GO VUE ADMIN Boilerplate",
         "title": "GVA API",
-        "contact": {}
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/",
     "paths": {
         "/admin": {
             "get": {
@@ -283,6 +287,47 @@
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/dto.LoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "get admin data by token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "query your self after login",
+                "operationId": "create-Auth-me",
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/ent.Admin"
                                         }
                                     }
                                 }
@@ -1232,7 +1277,7 @@
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "GO VUE ADMIN Boilerplate",
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

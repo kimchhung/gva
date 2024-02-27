@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/app/common/contexts"
+	"github.com/kimchhung/gva/app/common/services"
 	"github.com/kimchhung/gva/app/module/auth/dto"
 	"github.com/kimchhung/gva/app/module/auth/service"
 	"github.com/kimchhung/gva/internal/rctrl"
@@ -17,7 +19,8 @@ type IAuthController interface {
 }
 
 type AuthController struct {
-	service *service.AuthService
+	service    *service.AuthService
+	jwtService *services.JwtService
 }
 
 func (con *AuthController) Routes(r fiber.Router) {
@@ -25,9 +28,10 @@ func (con *AuthController) Routes(r fiber.Router) {
 	rctrl.Register(auth, con)
 }
 
-func NewAuthController(service *service.AuthService) *AuthController {
+func NewAuthController(service *service.AuthService, jwtService *services.JwtService) *AuthController {
 	return &AuthController{
-		service: service,
+		service:    service,
+		jwtService: jwtService,
 	}
 }
 
@@ -102,6 +106,38 @@ func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				return request.Resp(c, request.Response{
 					Message: "The admin was registered successfully!",
 					Data:    data, // Adjust this based on what you want to return
+				})
+			},
+		}
+	})
+}
+
+// @Tags Auth
+// @Security Bearer
+// @Summary query your self after login
+// @Description get admin data by token
+// @ID create-Auth-me
+// @Accept  json
+// @Produce  json
+// @Success  200 {object} request.Response{data=ent.Admin} "Successfully registered admin"
+// @Router /auth/me [get]
+func (con *AuthController) Me(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	meta.Use(
+		con.jwtService.ProtectAdmin(),
+	)
+
+	return meta.Get("/me").Name("retrieved admin by token").DoWithScope(func() []fiber.Handler {
+		return []fiber.Handler{
+			func(c *fiber.Ctx) error {
+				// log.Debug("query me")
+				adminCtx, err := contexts.GetAdminContext(c.UserContext())
+				if err != nil {
+					return err
+				}
+
+				return request.Resp(c, request.Response{
+					Message: "The me was retrieved successfully!",
+					Data:    adminCtx.Admin, // Adjust this based on what you want to return
 				})
 			},
 		}

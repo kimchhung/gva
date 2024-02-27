@@ -13,11 +13,19 @@ type (
 		method string
 		path   string
 		name   string
+
+		middlewares []fiber.Handler
 	}
 
 	MetaHandler = func() []fiber.Handler
 	MetaFunc    = func(meta *RouteMeta) MetaHandler
 )
+
+// Set add middlewares to current route
+func (r *RouteMeta) Use(middlewares ...fiber.Handler) *RouteMeta {
+	r.middlewares = append(r.middlewares, middlewares...)
+	return r
+}
 
 // Set Method to current route
 func (r *RouteMeta) Method(method string) *RouteMeta {
@@ -80,7 +88,7 @@ provide a scope to store middleware data and reuse
 		// * middlewares safe storage
 		var ip string
 		return []fiber.Handler{
-			ParseIp(&ip), // middlewares
+			ParseIp(&ip), // parsers
 
 			func(c *fiber.Ctx) error { // handler
 				return c.SendString(ip)
@@ -93,22 +101,21 @@ func (r *RouteMeta) DoWithScope(handler MetaHandler) MetaHandler {
 }
 
 func defineRoute(app fiber.Router, r *RouteMeta, defineMeta func(meta *RouteMeta) MetaHandler) fiber.Router {
-	getHandlers := defineMeta(r)
-	fn := func(c *fiber.Ctx) error {
-		var err error
-		for _, handler := range getHandlers() {
-			if err = handler(c); err != nil {
+	handlers := defineMeta(r)()
+	handler := func(c *fiber.Ctx) error {
+		for _, handler := range handlers {
+			if err := handler(c); err != nil {
 				return err
 			}
 		}
-		return err
+		return nil
 	}
 
 	if r.method == http.MethodGet {
-		return app.Get(r.path, fn).Name(r.name)
+		return app.Get(r.path, append(r.middlewares, handler)...).Name(r.name)
 	}
 
-	return app.Add(r.method, r.path, fn).Name(r.name)
+	return app.Add(r.method, r.path, append(r.middlewares, handler)...).Name(r.name)
 }
 
 // default path is "/" and method is "GET"

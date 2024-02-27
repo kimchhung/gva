@@ -19,14 +19,14 @@ import (
 )
 
 // @title GVA API
-// @securityDefinitions.apikey Bearer
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
 // @version 1.0
 // @description GO VUE ADMIN Boilerplate
 // @host localhost:8080
 // @BasePath /
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	fx.New(
 		// Provide patterns
