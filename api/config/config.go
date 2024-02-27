@@ -71,6 +71,9 @@ type (
 	jwt struct {
 		Secret string
 	}
+	password struct {
+		HashCost int `toml:"hash_cost"`
+	}
 )
 
 type Config struct {
@@ -79,6 +82,7 @@ type Config struct {
 	Logger     logger
 	Middleware middleware
 	Jwt        jwt
+	Password   password
 }
 
 func ParseConfig(name string, debug ...bool) (*Config, error) {

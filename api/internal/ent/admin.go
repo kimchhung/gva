@@ -24,7 +24,7 @@ type Admin struct {
 	// Username holds the value of the "username" field.
 	Username string `json:"username,omitempty"`
 	// Password holds the value of the "password" field.
-	Password string `json:"-,omitempty"`
+	Password string `json:"-"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"displayName,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.

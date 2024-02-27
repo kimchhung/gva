@@ -2,7 +2,7 @@ package request
 
 import (
 	"github.com/go-playground/validator/v10"
-	app_err "github.com/kimchhung/gva/app/error"
+	app_err "github.com/kimchhung/gva/app/common/error"
 	in_validator "github.com/kimchhung/gva/utils/validator"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,9 +30,10 @@ var ErrorHandler = func(c *fiber.Ctx, err error) error {
 	}
 	// Handle errors
 	if e, ok := err.(validator.ValidationErrors); ok {
-		resp.Code = app_err.ErrForbidden.ErrorCode
-		resp.Message = app_err.ErrForbidden.Message
+		resp.Code = app_err.ErrValidationError.ErrorCode
+		resp.Message = app_err.ErrValidationError.Message
 		resp.Errors = []any{in_validator.RemoveTopStruct(e.Translate(in_validator.Trans))}
+		resp.HttpStatus = app_err.ErrForbidden.HttpCode
 	} else if e, ok := err.(*app_err.Error); ok {
 		resp.Code = e.ErrorCode
 		resp.Message = e.Message

@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/app/common/permissions"
+	"github.com/kimchhung/gva/app/common/services"
 	"github.com/kimchhung/gva/app/module/admin/dto"
 	"github.com/kimchhung/gva/app/module/admin/service"
 	"github.com/kimchhung/gva/internal/rctrl"
@@ -20,20 +22,22 @@ type IAdminController interface {
 }
 
 type AdminController struct {
-	service *service.AdminService
+	service    *service.AdminService
+	jwtService *services.JwtService
 }
 
 func (con *AdminController) Routes(r fiber.Router) {
-	r.Route("admin",
-		func(router fiber.Router) {
-			rctrl.Register(router, con)
-		},
+	group := r.Group("admin")
+	group.Use(
+		con.jwtService.ProtectAdmin(),
 	)
+	rctrl.Register(group, con)
 }
 
-func NewAdminController(service *service.AdminService) *AdminController {
+func NewAdminController(service *service.AdminService, jwtService *services.JwtService) *AdminController {
 	return &AdminController{
-		service: service,
+		service:    service,
+		jwtService: jwtService,
 	}
 }
 
@@ -46,17 +50,23 @@ func NewAdminController(service *service.AdminService) *AdminController {
 // @Success  200 {object} request.Response{data=[]dto.AdminResponse} "Successfully retrieved Admins"
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").Name("get many Admins").Do(func(c *fiber.Ctx) error {
-		list, err := con.service.GetAdmins(c.UserContext())
-		if err != nil {
-			return err
-		}
+	return meta.Get("/").Name("get many Admins").Do(
+		permissions.RequireAny(
+			permissions.AdminView,
+			permissions.AdminSuper,
+		),
+		func(c *fiber.Ctx) error {
+			list, err := con.service.GetAdmins(c.UserContext())
+			if err != nil {
+				return err
+			}
 
-		return request.Resp(c, request.Response{
-			Message: "Admin list retreived successfully!",
-			Data:    list,
-		})
-	})
+			return request.Resp(c, request.Response{
+				Message: "Admin list retreived successfully!",
+				Data:    list,
+			})
+		},
+	)
 }
 
 // @Tags Admin
@@ -76,6 +86,10 @@ func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		}{}
 
 		return []fiber.Handler{
+			permissions.RequireAny(
+				permissions.AdminView,
+				permissions.AdminSuper,
+			),
 			request.Validate(
 				request.ParamsParser(param),
 			),
@@ -108,10 +122,13 @@ func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		req := new(dto.AdminRequest)
 
 		return []fiber.Handler{
+			permissions.RequireAny(
+				permissions.AdminModify,
+				permissions.AdminSuper,
+			),
 			request.Validate(
 				request.BodyParser(req),
 			),
-
 			func(c *fiber.Ctx) error {
 				data, err := con.service.CreateAdmin(c.UserContext(), *req)
 				if err != nil {
@@ -145,6 +162,10 @@ func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		}{}
 
 		return []fiber.Handler{
+			permissions.RequireAny(
+				permissions.AdminModify,
+				permissions.AdminSuper,
+			),
 			request.Validate(
 				request.ParamsParser(param),
 				request.BodyParser(req),
@@ -180,6 +201,10 @@ func (con *AdminController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		}{}
 
 		return []fiber.Handler{
+			permissions.RequireAny(
+				permissions.AdminDelete,
+				permissions.AdminSuper,
+			),
 			request.Validate(
 				request.ParamsParser(param),
 			),

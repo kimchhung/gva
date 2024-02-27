@@ -7,7 +7,6 @@ import (
 
 	"github.com/kimchhung/gva/app/database/schema"
 	"github.com/kimchhung/gva/internal/ent/admin"
-	"github.com/kimchhung/gva/internal/ent/mytodo"
 	"github.com/kimchhung/gva/internal/ent/role"
 	"github.com/kimchhung/gva/internal/ent/todo"
 )
@@ -31,21 +30,6 @@ func init() {
 	admin.DefaultUpdatedAt = adminDescUpdatedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	admin.UpdateDefaultUpdatedAt = adminDescUpdatedAt.UpdateDefault.(func() time.Time)
-	mytodoMixin := schema.MyTodo{}.Mixin()
-	mytodoMixinFields0 := mytodoMixin[0].Fields()
-	_ = mytodoMixinFields0
-	mytodoFields := schema.MyTodo{}.Fields()
-	_ = mytodoFields
-	// mytodoDescCreatedAt is the schema descriptor for created_at field.
-	mytodoDescCreatedAt := mytodoMixinFields0[0].Descriptor()
-	// mytodo.DefaultCreatedAt holds the default value on creation for the created_at field.
-	mytodo.DefaultCreatedAt = mytodoDescCreatedAt.Default.(func() time.Time)
-	// mytodoDescUpdatedAt is the schema descriptor for updated_at field.
-	mytodoDescUpdatedAt := mytodoMixinFields0[1].Descriptor()
-	// mytodo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	mytodo.DefaultUpdatedAt = mytodoDescUpdatedAt.Default.(func() time.Time)
-	// mytodo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	mytodo.UpdateDefaultUpdatedAt = mytodoDescUpdatedAt.UpdateDefault.(func() time.Time)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0

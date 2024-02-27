@@ -2,6 +2,7 @@ package main
 
 import (
 	fxzerolog "github.com/efectn/fx-zerolog"
+	"github.com/kimchhung/gva/app/common"
 	"github.com/kimchhung/gva/app/middleware"
 	"github.com/kimchhung/gva/app/module"
 	"go.uber.org/fx"
@@ -36,6 +37,7 @@ func main() {
 			),
 		),
 
+		common.NewCommonModule,
 		admin.NewAdminModule,
 		permission.NewPermissionModule,
 		role.NewRoleModule,

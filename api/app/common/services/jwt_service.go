@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"context"
@@ -9,7 +9,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	app_err "github.com/kimchhung/gva/app/error"
+	"github.com/kimchhung/gva/app/common/contexts"
+	app_err "github.com/kimchhung/gva/app/common/error"
 	"github.com/kimchhung/gva/app/middleware/token"
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
@@ -18,23 +19,18 @@ import (
 )
 
 type JwtService struct {
-	secret string
-	db     *database.Database
+	cfg *config.Config
+	db  *database.Database
 }
 
-func NewJwtService(cfg *config.Config, db *database.Database) (*JwtService, error) {
-	secret := cfg.Jwt.Secret
-	if secret == "" {
-		return nil, fmt.Errorf("cfg.Jwt.Secret is required %v", cfg.Jwt)
-	}
-
+func NewJwtService(cfg *config.Config, db *database.Database) *JwtService {
 	return &JwtService{
-		secret: secret,
-		db:     db,
-	}, nil
+		cfg: cfg,
+		db:  db,
+	}
 }
 
-func (s *JwtService) Protect(opts ...ClaimValidator) fiber.Handler {
+func (s *JwtService) ProtectAdmin() fiber.Handler {
 	return token.New(token.NewConfig(
 		&token.Config{
 			Next:       nil,
@@ -42,19 +38,25 @@ func (s *JwtService) Protect(opts ...ClaimValidator) fiber.Handler {
 			VerifyFunc: func(c *fiber.Ctx, headerValue string) error {
 				token := strings.Replace(headerValue, "Bearer ", "", 1)
 
-				if len(opts) == 0 {
-					defautValidator := s.AdminValidator(c.UserContext(), new(ent.Admin))
-					opts = append(opts, defautValidator)
+				admin := new(ent.Admin)
+				if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
+					return err
 				}
 
-				_, err := s.ValidateToken(token, opts...)
-				return err
+				c.SetUserContext(
+					contexts.NewAdminContext(
+						c.UserContext(),
+						contexts.WithAdmin(admin),
+					),
+				)
+
+				return nil
 			},
 		},
 	))
 }
 
-func (s *JwtService) AdminValidator(ctx context.Context, out *ent.Admin) ClaimValidator {
+func (s *JwtService) AdminValidator(out *ent.Admin) ClaimValidator {
 	return func(claims jwt.MapClaims) error {
 		idStr, ok := claims["id"].(string)
 		if !ok {
@@ -66,11 +68,16 @@ func (s *JwtService) AdminValidator(ctx context.Context, out *ent.Admin) ClaimVa
 			return app_err.ErrUnauthorized
 		}
 
-		admin, err := s.db.Ent.Admin.Query().Where(admin.IDEQ(id)).First(ctx)
+		admin, err := s.db.Ent.Admin.Query().Where(admin.IDEQ(id)).
+			WithRoles(func(rq *ent.RoleQuery) {
+				rq.WithPermissions()
+			}).First(context.Background())
+
 		if err != nil {
 			// Handle error, for example, if the admin is not found
 			return app_err.ErrUnauthorized // or return a more specific error
 		}
+
 		*out = *admin
 		return nil
 	}
@@ -86,9 +93,9 @@ func (s *JwtService) GenerateToken(opt ClaimOption, opts ...ClaimOption) (string
 		op(claims)
 	}
 
-	// Create the token using the claims and the secret
+	// Create the token using the claims and the.cfg.Jwt.Secret
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(s.secret))
+	tokenString, err := token.SignedString([]byte(s.cfg.Jwt.Secret))
 	if err != nil {
 		return "", err
 	}
@@ -106,7 +113,7 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte(s.secret), nil
+			return []byte(s.cfg.Jwt.Secret), nil
 		},
 		jwt.WithExpirationRequired(),
 	)
@@ -118,7 +125,9 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 	// Check if the token is valid
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		for _, opt := range opts {
-			opt(claims)
+			if err := opt(claims); err != nil {
+				return nil, err
+			}
 		}
 		return claims, nil
 	}
@@ -126,13 +135,13 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 	return nil, fmt.Errorf("invalid token")
 }
 
-func AddPayload(key string, value string) ClaimOption {
+func AddTokenPayload(key string, value string) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims[key] = value
 	}
 }
 
-func AddExpiredAt(deadline time.Time) ClaimOption {
+func AddTokenExpiredAt(deadline time.Time) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims["exp"] = deadline.Unix()
 	}

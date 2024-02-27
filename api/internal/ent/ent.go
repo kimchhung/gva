@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/kimchhung/gva/internal/ent/admin"
-	"github.com/kimchhung/gva/internal/ent/mytodo"
 	"github.com/kimchhung/gva/internal/ent/permission"
 	"github.com/kimchhung/gva/internal/ent/role"
 	"github.com/kimchhung/gva/internal/ent/todo"
@@ -78,7 +77,6 @@ func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			admin.Table:      admin.ValidColumn,
-			mytodo.Table:     mytodo.ValidColumn,
 			permission.Table: permission.ValidColumn,
 			role.Table:       role.ValidColumn,
 			todo.Table:       todo.ValidColumn,

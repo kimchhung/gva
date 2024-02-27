@@ -55,9 +55,10 @@ definitions:
     type: object
   dto.LoginResponse:
     properties:
+      admin:
+        $ref: '#/definitions/ent.Admin'
       token:
         type: string
-      user: {}
     type: object
   dto.PermissionRequest:
     properties:
@@ -97,6 +98,22 @@ definitions:
         type: string
       name:
         description: Name holds the value of the "name" field.
+        type: string
+    type: object
+  dto.RegisterRequest:
+    properties:
+      displayName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.RegisterResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/ent.Admin'
+      token:
         type: string
     type: object
   dto.RoleRequest:
@@ -470,7 +487,7 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
-  /auth:
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -496,6 +513,34 @@ paths:
                   $ref: '#/definitions/dto.LoginResponse'
               type: object
       summary: Authenticate a admin
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new admin with the provided credentials
+      operationId: create-Auth-register
+      parameters:
+      - description: Registration data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RegisterResponse'
+              type: object
+      summary: Register a new admin
       tags:
       - Auth
   /permission:

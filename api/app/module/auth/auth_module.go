@@ -33,7 +33,6 @@ func (r *AuthRouter) Register() {
 // Register bulkly
 var NewAuthModule = fx.Module("AuthModule",
 	fx.Provide(service.NewAuthService),
-	fx.Provide(service.NewJwtService),
 
 	// Regiser Controller
 	fx.Provide(fx.Annotate(

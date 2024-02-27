@@ -323,7 +323,7 @@
                 }
             }
         },
-        "/auth": {
+        "/auth/login": {
             "post": {
                 "description": "Authenticate a admin with the provided credentials",
                 "consumes": [
@@ -361,6 +361,53 @@
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/dto.LoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register a new admin with the provided credentials",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new admin",
+                "operationId": "create-Auth-register",
+                "parameters": [
+                    {
+                        "description": "Registration data",
+                        "name": "Auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.RegisterResponse"
                                         }
                                     }
                                 }
@@ -995,10 +1042,12 @@
         "dto.LoginResponse": {
             "type": "object",
             "properties": {
+                "admin": {
+                    "$ref": "#/definitions/ent.Admin"
+                },
                 "token": {
                     "type": "string"
-                },
-                "user": {}
+                }
             }
         },
         "dto.PermissionRequest": {
@@ -1047,6 +1096,31 @@
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "$ref": "#/definitions/ent.Admin"
+                },
+                "token": {
                     "type": "string"
                 }
             }

@@ -21,11 +21,8 @@ type AuthController struct {
 }
 
 func (con *AuthController) Routes(r fiber.Router) {
-	r.Route("auth",
-		func(router fiber.Router) {
-			rctrl.Register(router, con)
-		},
-	)
+	auth := r.Group("auth")
+	rctrl.Register(auth, con)
 }
 
 func NewAuthController(service *service.AuthService) *AuthController {
@@ -42,9 +39,9 @@ func NewAuthController(service *service.AuthService) *AuthController {
 // @Produce  json
 // @Param Auth body dto.LoginRequest true "Auth data"
 // @Success  200 {object} request.Response{data=dto.LoginResponse} "Successfully created Auth"
-// @Router /auth [post]
+// @Router /auth/login [post]
 func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Post("/admin-login").Name("admin login").DoWithScope(func() []fiber.Handler {
+	return meta.Post("/login").Name("admin login").DoWithScope(func() []fiber.Handler {
 		body := new(dto.LoginRequest)
 
 		return []fiber.Handler{
@@ -53,10 +50,59 @@ func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 			),
 
 			func(c *fiber.Ctx) error {
+				token, admin, err := con.service.LoginAdmin(c.UserContext(), body.Username, body.Password)
+				if err != nil {
+					return err
+				}
+
+				res := dto.LoginResponse{
+					Token: token,
+					Admin: admin,
+				}
 
 				return request.Resp(c, request.Response{
-					Message: "The auth was created successfully!",
-					Data:    "",
+					Message: "The admin was logined successfully!",
+					Data:    res,
+				})
+			},
+		}
+	})
+}
+
+// @Tags Auth
+// @Summary Register a new admin
+// @Description Register a new admin with the provided credentials
+// @ID create-Auth-register
+// @Accept  json
+// @Produce  json
+// @Param Auth body dto.RegisterRequest true "Registration data"
+// @Success  200 {object} request.Response{data=dto.RegisterResponse} "Successfully registered admin"
+// @Router /auth/register [post]
+func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Post("/register").Name("admin register").DoWithScope(func() []fiber.Handler {
+		body := new(dto.RegisterRequest)
+
+		return []fiber.Handler{
+			request.Validate(
+				request.BodyParser(body),
+			),
+
+			func(c *fiber.Ctx) error {
+				// Assuming RegisterAdmin returns a user object and an error
+				token, admin, err := con.service.RegisterAdmin(c.UserContext(), body.Username, body.Password, body.DisplayName)
+				if err != nil {
+					return err
+				}
+
+				data := dto.RegisterResponse{
+					Token: token,
+					Admin: admin,
+				}
+
+				// Assuming you want to return some user data in the response
+				return request.Resp(c, request.Response{
+					Message: "The admin was registered successfully!",
+					Data:    data, // Adjust this based on what you want to return
 				})
 			},
 		}
