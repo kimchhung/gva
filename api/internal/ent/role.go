@@ -23,6 +23,10 @@ type Role struct {
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// IsActive holds the value of the "is_active" field.
+	IsActive bool `json:"isActive,omitempty"`
+	// IsChangeable holds the value of the "is_changeable" field.
+	IsChangeable bool `json:"isChangeable,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RoleQuery when eager-loading is set.
 	Edges        RoleEdges `json:"edges"`
@@ -63,6 +67,8 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case role.FieldIsActive, role.FieldIsChangeable:
+			values[i] = new(sql.NullBool)
 		case role.FieldID:
 			values[i] = new(sql.NullInt64)
 		case role.FieldName:
@@ -107,6 +113,18 @@ func (r *Role) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				r.Name = value.String
+			}
+		case role.FieldIsActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_active", values[i])
+			} else if value.Valid {
+				r.IsActive = value.Bool
+			}
+		case role.FieldIsChangeable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_changeable", values[i])
+			} else if value.Valid {
+				r.IsChangeable = value.Bool
 			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
@@ -162,6 +180,12 @@ func (r *Role) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(r.Name)
+	builder.WriteString(", ")
+	builder.WriteString("is_active=")
+	builder.WriteString(fmt.Sprintf("%v", r.IsActive))
+	builder.WriteString(", ")
+	builder.WriteString("is_changeable=")
+	builder.WriteString(fmt.Sprintf("%v", r.IsChangeable))
 	builder.WriteByte(')')
 	return builder.String()
 }

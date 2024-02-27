@@ -75,6 +75,11 @@ func Password(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldPassword, v))
 }
 
+// IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldIsActive, v))
+}
+
 // DisplayName applies equality check predicate on the "display_name" field. It's identical to DisplayNameEQ.
 func DisplayName(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldDisplayName, v))
@@ -290,6 +295,16 @@ func PasswordContainsFold(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldContainsFold(FieldPassword, v))
 }
 
+// IsActiveEQ applies the EQ predicate on the "is_active" field.
+func IsActiveEQ(v bool) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsActiveNEQ applies the NEQ predicate on the "is_active" field.
+func IsActiveNEQ(v bool) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldIsActive, v))
+}
+
 // DisplayNameEQ applies the EQ predicate on the "display_name" field.
 func DisplayNameEQ(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldDisplayName, v))
@@ -343,6 +358,16 @@ func DisplayNameHasPrefix(v string) predicate.Admin {
 // DisplayNameHasSuffix applies the HasSuffix predicate on the "display_name" field.
 func DisplayNameHasSuffix(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldHasSuffix(FieldDisplayName, v))
+}
+
+// DisplayNameIsNil applies the IsNil predicate on the "display_name" field.
+func DisplayNameIsNil() predicate.Admin {
+	return predicate.Admin(sql.FieldIsNull(FieldDisplayName))
+}
+
+// DisplayNameNotNil applies the NotNil predicate on the "display_name" field.
+func DisplayNameNotNil() predicate.Admin {
+	return predicate.Admin(sql.FieldNotNull(FieldDisplayName))
 }
 
 // DisplayNameEqualFold applies the EqualFold predicate on the "display_name" field.

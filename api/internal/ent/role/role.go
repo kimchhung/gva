@@ -20,6 +20,10 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldIsActive holds the string denoting the is_active field in the database.
+	FieldIsActive = "is_active"
+	// FieldIsChangeable holds the string denoting the is_changeable field in the database.
+	FieldIsChangeable = "is_changeable"
 	// EdgeAdmins holds the string denoting the admins edge name in mutations.
 	EdgeAdmins = "admins"
 	// EdgePermissions holds the string denoting the permissions edge name in mutations.
@@ -44,6 +48,8 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldName,
+	FieldIsActive,
+	FieldIsChangeable,
 }
 
 var (
@@ -95,6 +101,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByIsActive orders the results by the is_active field.
+func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByIsChangeable orders the results by the is_changeable field.
+func ByIsChangeable(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsChangeable, opts...).ToFunc()
 }
 
 // ByAdminsCount orders the results by admins count.

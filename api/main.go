@@ -11,7 +11,7 @@ import (
 	"github.com/kimchhung/gva/app/module/auth"
 	"github.com/kimchhung/gva/app/module/permission"
 	"github.com/kimchhung/gva/app/module/role"
-	"github.com/kimchhung/gva/app/module/todo"
+
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
@@ -19,6 +19,10 @@ import (
 )
 
 // @title GVA API
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 // @version 1.0
 // @description GO VUE ADMIN Boilerplate
 // @host localhost:8080
@@ -41,7 +45,6 @@ func main() {
 		admin.NewAdminModule,
 		permission.NewPermissionModule,
 		role.NewRoleModule,
-		todo.NewTodoModule,
 		auth.NewAuthModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 

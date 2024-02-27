@@ -86,7 +86,6 @@ func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 			request.Validate(
 				request.BodyParser(body),
 			),
-
 			func(c *fiber.Ctx) error {
 				// Assuming RegisterAdmin returns a user object and an error
 				token, admin, err := con.service.RegisterAdmin(c.UserContext(), body.Username, body.Password, body.DisplayName)

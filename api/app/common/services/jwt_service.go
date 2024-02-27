@@ -31,29 +31,28 @@ func NewJwtService(cfg *config.Config, db *database.Database) *JwtService {
 }
 
 func (s *JwtService) ProtectAdmin() fiber.Handler {
-	return token.New(token.NewConfig(
-		&token.Config{
-			Next:       nil,
-			HeaderName: "authorization",
-			VerifyFunc: func(c *fiber.Ctx, headerValue string) error {
-				token := strings.Replace(headerValue, "Bearer ", "", 1)
+	return token.New(
+		token.VerifyFunc(func(c *fiber.Ctx, headerValue string) error {
+			token := strings.Replace(headerValue, "Bearer ", "", 1)
+			if token == "" {
+				return app_err.ErrUnauthorized
+			}
 
-				admin := new(ent.Admin)
-				if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
-					return err
-				}
+			admin := new(ent.Admin)
+			if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
+				return err
+			}
 
-				c.SetUserContext(
-					contexts.NewAdminContext(
-						c.UserContext(),
-						contexts.WithAdmin(admin),
-					),
-				)
+			c.SetUserContext(
+				contexts.NewAdminContext(
+					c.UserContext(),
+					contexts.WithAdmin(admin),
+				),
+			)
 
-				return nil
-			},
-		},
-	))
+			return nil
+		}),
+	)
 }
 
 func (s *JwtService) AdminValidator(out *ent.Admin) ClaimValidator {

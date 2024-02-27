@@ -72,4 +72,5 @@ func (m *Middleware) Register() {
 	m.app.Get(m.cfg.Middleware.Monitor.Path, monitor.New(monitor.Config{
 		Next: utils.IsEnabled(m.cfg.Middleware.Monitor.Enable),
 	}))
+
 }

@@ -16,105 +16,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/Todo/{id}": {
-            "get": {
-                "description": "Get a Todo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Get a Todo",
-                "operationId": "get-Todo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.TodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Update a Todo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Update a Todo",
-                "operationId": "update-Todo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Todo data",
-                        "name": "Todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.TodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully updated Todo",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.TodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/admin": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all Admins",
                 "consumes": [
                     "application/json"
@@ -152,6 +60,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new Admin with the provided details",
                 "consumes": [
                     "application/json"
@@ -201,7 +114,10 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Get a Admin by ID",
@@ -247,6 +163,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a Admin by ID",
                 "consumes": [
                     "application/json"
@@ -278,6 +199,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a Admin by ID",
                 "consumes": [
                     "application/json"
@@ -426,6 +352,11 @@ const docTemplate = `{
         },
         "/permission": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all Permissions",
                 "consumes": [
                     "application/json"
@@ -463,6 +394,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new Permission with the provided details",
                 "consumes": [
                     "application/json"
@@ -512,7 +448,10 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Get a Permission by ID",
@@ -558,6 +497,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a Permission by ID",
                 "consumes": [
                     "application/json"
@@ -589,6 +533,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a Permission by ID",
                 "consumes": [
                     "application/json"
@@ -643,6 +592,11 @@ const docTemplate = `{
         },
         "/role": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all Roles",
                 "consumes": [
                     "application/json"
@@ -680,6 +634,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new Role with the provided details",
                 "consumes": [
                     "application/json"
@@ -729,7 +688,10 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Get a Role by ID",
@@ -775,6 +737,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a Role by ID",
                 "consumes": [
                     "application/json"
@@ -806,6 +773,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a Role by ID",
                 "consumes": [
                     "application/json"
@@ -857,123 +829,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/todo": {
-            "get": {
-                "description": "Get a list of all Todos",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "List all Todos",
-                "operationId": "list-all-Todos",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved Todos",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.TodoResponse"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new Todo with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Create a Todo",
-                "operationId": "create-Todo",
-                "parameters": [
-                    {
-                        "description": "Todo data",
-                        "name": "Todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.TodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully created Todo",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.TodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/todo/{id}": {
-            "delete": {
-                "description": "Delete a Todo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Delete a Todo",
-                "operationId": "delete-Todo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully deleted Todo",
-                        "schema": {
-                            "$ref": "#/definitions/request.Response"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -995,6 +850,10 @@ const docTemplate = `{
                 "id": {
                     "description": "ID of the ent.",
                     "type": "integer"
+                },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
                 },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
@@ -1025,6 +884,10 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
+                },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
                     "type": "string"
@@ -1037,12 +900,20 @@ const docTemplate = `{
         },
         "dto.LoginRequest": {
             "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 5
                 }
             }
         },
@@ -1079,6 +950,10 @@ const docTemplate = `{
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
                 }
             }
         },
@@ -1104,20 +979,33 @@ const docTemplate = `{
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
                 }
             }
         },
         "dto.RegisterRequest": {
             "type": "object",
+            "required": [
+                "displayName",
+                "password",
+                "username"
+            ],
             "properties": {
                 "displayName": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 5
                 }
             }
         },
@@ -1147,6 +1035,14 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
+                },
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
+                },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
@@ -1172,47 +1068,13 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
                 },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
-            }
-        },
-        "dto.TodoRequest": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
-            }
-        },
-        "dto.TodoResponse": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -1242,6 +1104,10 @@ const docTemplate = `{
                 "id": {
                     "description": "ID of the ent.",
                     "type": "integer"
+                },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
                 },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
@@ -1287,6 +1153,10 @@ const docTemplate = `{
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
                 }
             }
         },
@@ -1316,6 +1186,14 @@ const docTemplate = `{
                 "id": {
                     "description": "ID of the ent.",
                     "type": "integer"
+                },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
+                },
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -1362,17 +1240,25 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "GO VUE ADMIN Boilerplate",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "GVA API",
-	Description:      "GO VUE ADMIN Boilerplate",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

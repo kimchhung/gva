@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/internal/ent/admin"
 	"github.com/kimchhung/gva/internal/ent/predicate"
@@ -77,6 +78,32 @@ func (au *AdminUpdate) SetNillablePassword(s *string) *AdminUpdate {
 	return au
 }
 
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (au *AdminUpdate) SetWhitelistIps(s []string) *AdminUpdate {
+	au.mutation.SetWhitelistIps(s)
+	return au
+}
+
+// AppendWhitelistIps appends s to the "whitelist_ips" field.
+func (au *AdminUpdate) AppendWhitelistIps(s []string) *AdminUpdate {
+	au.mutation.AppendWhitelistIps(s)
+	return au
+}
+
+// SetIsActive sets the "is_active" field.
+func (au *AdminUpdate) SetIsActive(b bool) *AdminUpdate {
+	au.mutation.SetIsActive(b)
+	return au
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (au *AdminUpdate) SetNillableIsActive(b *bool) *AdminUpdate {
+	if b != nil {
+		au.SetIsActive(*b)
+	}
+	return au
+}
+
 // SetDisplayName sets the "display_name" field.
 func (au *AdminUpdate) SetDisplayName(s string) *AdminUpdate {
 	au.mutation.SetDisplayName(s)
@@ -88,6 +115,12 @@ func (au *AdminUpdate) SetNillableDisplayName(s *string) *AdminUpdate {
 	if s != nil {
 		au.SetDisplayName(*s)
 	}
+	return au
+}
+
+// ClearDisplayName clears the value of the "display_name" field.
+func (au *AdminUpdate) ClearDisplayName() *AdminUpdate {
+	au.mutation.ClearDisplayName()
 	return au
 }
 
@@ -189,8 +222,22 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.Password(); ok {
 		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 	}
+	if value, ok := au.mutation.WhitelistIps(); ok {
+		_spec.SetField(admin.FieldWhitelistIps, field.TypeJSON, value)
+	}
+	if value, ok := au.mutation.AppendedWhitelistIps(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, admin.FieldWhitelistIps, value)
+		})
+	}
+	if value, ok := au.mutation.IsActive(); ok {
+		_spec.SetField(admin.FieldIsActive, field.TypeBool, value)
+	}
 	if value, ok := au.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)
+	}
+	if au.mutation.DisplayNameCleared() {
+		_spec.ClearField(admin.FieldDisplayName, field.TypeString)
 	}
 	if au.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -305,6 +352,32 @@ func (auo *AdminUpdateOne) SetNillablePassword(s *string) *AdminUpdateOne {
 	return auo
 }
 
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (auo *AdminUpdateOne) SetWhitelistIps(s []string) *AdminUpdateOne {
+	auo.mutation.SetWhitelistIps(s)
+	return auo
+}
+
+// AppendWhitelistIps appends s to the "whitelist_ips" field.
+func (auo *AdminUpdateOne) AppendWhitelistIps(s []string) *AdminUpdateOne {
+	auo.mutation.AppendWhitelistIps(s)
+	return auo
+}
+
+// SetIsActive sets the "is_active" field.
+func (auo *AdminUpdateOne) SetIsActive(b bool) *AdminUpdateOne {
+	auo.mutation.SetIsActive(b)
+	return auo
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillableIsActive(b *bool) *AdminUpdateOne {
+	if b != nil {
+		auo.SetIsActive(*b)
+	}
+	return auo
+}
+
 // SetDisplayName sets the "display_name" field.
 func (auo *AdminUpdateOne) SetDisplayName(s string) *AdminUpdateOne {
 	auo.mutation.SetDisplayName(s)
@@ -316,6 +389,12 @@ func (auo *AdminUpdateOne) SetNillableDisplayName(s *string) *AdminUpdateOne {
 	if s != nil {
 		auo.SetDisplayName(*s)
 	}
+	return auo
+}
+
+// ClearDisplayName clears the value of the "display_name" field.
+func (auo *AdminUpdateOne) ClearDisplayName() *AdminUpdateOne {
+	auo.mutation.ClearDisplayName()
 	return auo
 }
 
@@ -447,8 +526,22 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 	if value, ok := auo.mutation.Password(); ok {
 		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 	}
+	if value, ok := auo.mutation.WhitelistIps(); ok {
+		_spec.SetField(admin.FieldWhitelistIps, field.TypeJSON, value)
+	}
+	if value, ok := auo.mutation.AppendedWhitelistIps(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, admin.FieldWhitelistIps, value)
+		})
+	}
+	if value, ok := auo.mutation.IsActive(); ok {
+		_spec.SetField(admin.FieldIsActive, field.TypeBool, value)
+	}
 	if value, ok := auo.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)
+	}
+	if auo.mutation.DisplayNameCleared() {
+		_spec.ClearField(admin.FieldDisplayName, field.TypeString)
 	}
 	if auo.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{

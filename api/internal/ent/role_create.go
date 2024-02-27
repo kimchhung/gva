@@ -56,6 +56,18 @@ func (rc *RoleCreate) SetName(s string) *RoleCreate {
 	return rc
 }
 
+// SetIsActive sets the "is_active" field.
+func (rc *RoleCreate) SetIsActive(b bool) *RoleCreate {
+	rc.mutation.SetIsActive(b)
+	return rc
+}
+
+// SetIsChangeable sets the "is_changeable" field.
+func (rc *RoleCreate) SetIsChangeable(b bool) *RoleCreate {
+	rc.mutation.SetIsChangeable(b)
+	return rc
+}
+
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
 func (rc *RoleCreate) AddAdminIDs(ids ...int) *RoleCreate {
 	rc.mutation.AddAdminIDs(ids...)
@@ -142,6 +154,12 @@ func (rc *RoleCreate) check() error {
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Role.name"`)}
 	}
+	if _, ok := rc.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "Role.is_active"`)}
+	}
+	if _, ok := rc.mutation.IsChangeable(); !ok {
+		return &ValidationError{Name: "is_changeable", err: errors.New(`ent: missing required field "Role.is_changeable"`)}
+	}
 	return nil
 }
 
@@ -179,6 +197,14 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := rc.mutation.IsActive(); ok {
+		_spec.SetField(role.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
+	}
+	if value, ok := rc.mutation.IsChangeable(); ok {
+		_spec.SetField(role.FieldIsChangeable, field.TypeBool, value)
+		_node.IsChangeable = value
 	}
 	if nodes := rc.mutation.AdminsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -15,7 +15,9 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
-		{Name: "display_name", Type: field.TypeString},
+		{Name: "whitelist_ips", Type: field.TypeJSON},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+		{Name: "display_name", Type: field.TypeString, Nullable: true},
 	}
 	// AdminsTable holds the schema information for the "admins" table.
 	AdminsTable = &schema.Table{
@@ -26,9 +28,10 @@ var (
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "group", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "key", Type: field.TypeString},
-		{Name: "group", Type: field.TypeString},
+		{Name: "order", Type: field.TypeInt},
 	}
 	// PermissionsTable holds the schema information for the "permissions" table.
 	PermissionsTable = &schema.Table{
@@ -42,25 +45,14 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
+		{Name: "is_active", Type: field.TypeBool},
+		{Name: "is_changeable", Type: field.TypeBool},
 	}
 	// RolesTable holds the schema information for the "roles" table.
 	RolesTable = &schema.Table{
 		Name:       "roles",
 		Columns:    RolesColumns,
 		PrimaryKey: []*schema.Column{RolesColumns[0]},
-	}
-	// TodosColumns holds the columns for the "todos" table.
-	TodosColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "name", Type: field.TypeString},
-	}
-	// TodosTable holds the schema information for the "todos" table.
-	TodosTable = &schema.Table{
-		Name:       "todos",
-		Columns:    TodosColumns,
-		PrimaryKey: []*schema.Column{TodosColumns[0]},
 	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
@@ -117,7 +109,6 @@ var (
 		AdminsTable,
 		PermissionsTable,
 		RolesTable,
-		TodosTable,
 		AdminRolesTable,
 		RolePermissionsTable,
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/kimchhung/gva/app/database/schema"
 	"github.com/kimchhung/gva/internal/ent/admin"
 	"github.com/kimchhung/gva/internal/ent/role"
-	"github.com/kimchhung/gva/internal/ent/todo"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -30,6 +29,10 @@ func init() {
 	admin.DefaultUpdatedAt = adminDescUpdatedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	admin.UpdateDefaultUpdatedAt = adminDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// adminDescIsActive is the schema descriptor for is_active field.
+	adminDescIsActive := adminFields[3].Descriptor()
+	// admin.DefaultIsActive holds the default value on creation for the is_active field.
+	admin.DefaultIsActive = adminDescIsActive.Default.(bool)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0
@@ -45,19 +48,4 @@ func init() {
 	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
 	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
-	todoMixin := schema.Todo{}.Mixin()
-	todoMixinFields0 := todoMixin[0].Fields()
-	_ = todoMixinFields0
-	todoFields := schema.Todo{}.Fields()
-	_ = todoFields
-	// todoDescCreatedAt is the schema descriptor for created_at field.
-	todoDescCreatedAt := todoMixinFields0[0].Descriptor()
-	// todo.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todo.DefaultCreatedAt = todoDescCreatedAt.Default.(func() time.Time)
-	// todoDescUpdatedAt is the schema descriptor for updated_at field.
-	todoDescUpdatedAt := todoMixinFields0[1].Descriptor()
-	// todo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todo.DefaultUpdatedAt = todoDescUpdatedAt.Default.(func() time.Time)
-	// todo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todo.UpdateDefaultUpdatedAt = todoDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

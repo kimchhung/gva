@@ -20,6 +20,12 @@ type PermissionCreate struct {
 	hooks    []Hook
 }
 
+// SetGroup sets the "group" field.
+func (pc *PermissionCreate) SetGroup(s string) *PermissionCreate {
+	pc.mutation.SetGroup(s)
+	return pc
+}
+
 // SetName sets the "name" field.
 func (pc *PermissionCreate) SetName(s string) *PermissionCreate {
 	pc.mutation.SetName(s)
@@ -32,9 +38,9 @@ func (pc *PermissionCreate) SetKey(s string) *PermissionCreate {
 	return pc
 }
 
-// SetGroup sets the "group" field.
-func (pc *PermissionCreate) SetGroup(s string) *PermissionCreate {
-	pc.mutation.SetGroup(s)
+// SetOrder sets the "order" field.
+func (pc *PermissionCreate) SetOrder(i int) *PermissionCreate {
+	pc.mutation.SetOrder(i)
 	return pc
 }
 
@@ -87,14 +93,17 @@ func (pc *PermissionCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (pc *PermissionCreate) check() error {
+	if _, ok := pc.mutation.Group(); !ok {
+		return &ValidationError{Name: "group", err: errors.New(`ent: missing required field "Permission.group"`)}
+	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Permission.name"`)}
 	}
 	if _, ok := pc.mutation.Key(); !ok {
 		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Permission.key"`)}
 	}
-	if _, ok := pc.mutation.Group(); !ok {
-		return &ValidationError{Name: "group", err: errors.New(`ent: missing required field "Permission.group"`)}
+	if _, ok := pc.mutation.Order(); !ok {
+		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "Permission.order"`)}
 	}
 	return nil
 }
@@ -122,6 +131,10 @@ func (pc *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 		_node = &Permission{config: pc.config}
 		_spec = sqlgraph.NewCreateSpec(permission.Table, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt))
 	)
+	if value, ok := pc.mutation.Group(); ok {
+		_spec.SetField(permission.FieldGroup, field.TypeString, value)
+		_node.Group = value
+	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -130,9 +143,9 @@ func (pc *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 		_spec.SetField(permission.FieldKey, field.TypeString, value)
 		_node.Key = value
 	}
-	if value, ok := pc.mutation.Group(); ok {
-		_spec.SetField(permission.FieldGroup, field.TypeString, value)
-		_node.Group = value
+	if value, ok := pc.mutation.Order(); ok {
+		_spec.SetField(permission.FieldOrder, field.TypeInt, value)
+		_node.Order = value
 	}
 	if nodes := pc.mutation.RolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

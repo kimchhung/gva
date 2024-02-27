@@ -15,7 +15,6 @@ import (
 	"github.com/kimchhung/gva/internal/ent/permission"
 	"github.com/kimchhung/gva/internal/ent/predicate"
 	"github.com/kimchhung/gva/internal/ent/role"
-	"github.com/kimchhung/gva/internal/ent/todo"
 )
 
 const (
@@ -30,27 +29,29 @@ const (
 	TypeAdmin      = "Admin"
 	TypePermission = "Permission"
 	TypeRole       = "Role"
-	TypeTodo       = "Todo"
 )
 
 // AdminMutation represents an operation that mutates the Admin nodes in the graph.
 type AdminMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	username      *string
-	password      *string
-	display_name  *string
-	clearedFields map[string]struct{}
-	roles         map[int]struct{}
-	removedroles  map[int]struct{}
-	clearedroles  bool
-	done          bool
-	oldValue      func(context.Context) (*Admin, error)
-	predicates    []predicate.Admin
+	op                  Op
+	typ                 string
+	id                  *int
+	created_at          *time.Time
+	updated_at          *time.Time
+	username            *string
+	password            *string
+	whitelist_ips       *[]string
+	appendwhitelist_ips []string
+	is_active           *bool
+	display_name        *string
+	clearedFields       map[string]struct{}
+	roles               map[int]struct{}
+	removedroles        map[int]struct{}
+	clearedroles        bool
+	done                bool
+	oldValue            func(context.Context) (*Admin, error)
+	predicates          []predicate.Admin
 }
 
 var _ ent.Mutation = (*AdminMutation)(nil)
@@ -295,6 +296,93 @@ func (m *AdminMutation) ResetPassword() {
 	m.password = nil
 }
 
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (m *AdminMutation) SetWhitelistIps(s []string) {
+	m.whitelist_ips = &s
+	m.appendwhitelist_ips = nil
+}
+
+// WhitelistIps returns the value of the "whitelist_ips" field in the mutation.
+func (m *AdminMutation) WhitelistIps() (r []string, exists bool) {
+	v := m.whitelist_ips
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWhitelistIps returns the old "whitelist_ips" field's value of the Admin entity.
+// If the Admin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdminMutation) OldWhitelistIps(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWhitelistIps is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWhitelistIps requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWhitelistIps: %w", err)
+	}
+	return oldValue.WhitelistIps, nil
+}
+
+// AppendWhitelistIps adds s to the "whitelist_ips" field.
+func (m *AdminMutation) AppendWhitelistIps(s []string) {
+	m.appendwhitelist_ips = append(m.appendwhitelist_ips, s...)
+}
+
+// AppendedWhitelistIps returns the list of values that were appended to the "whitelist_ips" field in this mutation.
+func (m *AdminMutation) AppendedWhitelistIps() ([]string, bool) {
+	if len(m.appendwhitelist_ips) == 0 {
+		return nil, false
+	}
+	return m.appendwhitelist_ips, true
+}
+
+// ResetWhitelistIps resets all changes to the "whitelist_ips" field.
+func (m *AdminMutation) ResetWhitelistIps() {
+	m.whitelist_ips = nil
+	m.appendwhitelist_ips = nil
+}
+
+// SetIsActive sets the "is_active" field.
+func (m *AdminMutation) SetIsActive(b bool) {
+	m.is_active = &b
+}
+
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *AdminMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_active" field's value of the Admin entity.
+// If the Admin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdminMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *AdminMutation) ResetIsActive() {
+	m.is_active = nil
+}
+
 // SetDisplayName sets the "display_name" field.
 func (m *AdminMutation) SetDisplayName(s string) {
 	m.display_name = &s
@@ -326,9 +414,22 @@ func (m *AdminMutation) OldDisplayName(ctx context.Context) (v string, err error
 	return oldValue.DisplayName, nil
 }
 
+// ClearDisplayName clears the value of the "display_name" field.
+func (m *AdminMutation) ClearDisplayName() {
+	m.display_name = nil
+	m.clearedFields[admin.FieldDisplayName] = struct{}{}
+}
+
+// DisplayNameCleared returns if the "display_name" field was cleared in this mutation.
+func (m *AdminMutation) DisplayNameCleared() bool {
+	_, ok := m.clearedFields[admin.FieldDisplayName]
+	return ok
+}
+
 // ResetDisplayName resets all changes to the "display_name" field.
 func (m *AdminMutation) ResetDisplayName() {
 	m.display_name = nil
+	delete(m.clearedFields, admin.FieldDisplayName)
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by ids.
@@ -419,7 +520,7 @@ func (m *AdminMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AdminMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, admin.FieldCreatedAt)
 	}
@@ -431,6 +532,12 @@ func (m *AdminMutation) Fields() []string {
 	}
 	if m.password != nil {
 		fields = append(fields, admin.FieldPassword)
+	}
+	if m.whitelist_ips != nil {
+		fields = append(fields, admin.FieldWhitelistIps)
+	}
+	if m.is_active != nil {
+		fields = append(fields, admin.FieldIsActive)
 	}
 	if m.display_name != nil {
 		fields = append(fields, admin.FieldDisplayName)
@@ -451,6 +558,10 @@ func (m *AdminMutation) Field(name string) (ent.Value, bool) {
 		return m.Username()
 	case admin.FieldPassword:
 		return m.Password()
+	case admin.FieldWhitelistIps:
+		return m.WhitelistIps()
+	case admin.FieldIsActive:
+		return m.IsActive()
 	case admin.FieldDisplayName:
 		return m.DisplayName()
 	}
@@ -470,6 +581,10 @@ func (m *AdminMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUsername(ctx)
 	case admin.FieldPassword:
 		return m.OldPassword(ctx)
+	case admin.FieldWhitelistIps:
+		return m.OldWhitelistIps(ctx)
+	case admin.FieldIsActive:
+		return m.OldIsActive(ctx)
 	case admin.FieldDisplayName:
 		return m.OldDisplayName(ctx)
 	}
@@ -509,6 +624,20 @@ func (m *AdminMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPassword(v)
 		return nil
+	case admin.FieldWhitelistIps:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWhitelistIps(v)
+		return nil
+	case admin.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
+		return nil
 	case admin.FieldDisplayName:
 		v, ok := value.(string)
 		if !ok {
@@ -545,7 +674,11 @@ func (m *AdminMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AdminMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(admin.FieldDisplayName) {
+		fields = append(fields, admin.FieldDisplayName)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -558,6 +691,11 @@ func (m *AdminMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AdminMutation) ClearField(name string) error {
+	switch name {
+	case admin.FieldDisplayName:
+		m.ClearDisplayName()
+		return nil
+	}
 	return fmt.Errorf("unknown Admin nullable field %s", name)
 }
 
@@ -576,6 +714,12 @@ func (m *AdminMutation) ResetField(name string) error {
 		return nil
 	case admin.FieldPassword:
 		m.ResetPassword()
+		return nil
+	case admin.FieldWhitelistIps:
+		m.ResetWhitelistIps()
+		return nil
+	case admin.FieldIsActive:
+		m.ResetIsActive()
 		return nil
 	case admin.FieldDisplayName:
 		m.ResetDisplayName()
@@ -674,9 +818,11 @@ type PermissionMutation struct {
 	op            Op
 	typ           string
 	id            *int
+	group         *string
 	name          *string
 	key           *string
-	group         *string
+	_order        *int
+	add_order     *int
 	clearedFields map[string]struct{}
 	roles         map[int]struct{}
 	removedroles  map[int]struct{}
@@ -784,6 +930,42 @@ func (m *PermissionMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
+// SetGroup sets the "group" field.
+func (m *PermissionMutation) SetGroup(s string) {
+	m.group = &s
+}
+
+// Group returns the value of the "group" field in the mutation.
+func (m *PermissionMutation) Group() (r string, exists bool) {
+	v := m.group
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroup returns the old "group" field's value of the Permission entity.
+// If the Permission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionMutation) OldGroup(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroup is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroup requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroup: %w", err)
+	}
+	return oldValue.Group, nil
+}
+
+// ResetGroup resets all changes to the "group" field.
+func (m *PermissionMutation) ResetGroup() {
+	m.group = nil
+}
+
 // SetName sets the "name" field.
 func (m *PermissionMutation) SetName(s string) {
 	m.name = &s
@@ -856,40 +1038,60 @@ func (m *PermissionMutation) ResetKey() {
 	m.key = nil
 }
 
-// SetGroup sets the "group" field.
-func (m *PermissionMutation) SetGroup(s string) {
-	m.group = &s
+// SetOrder sets the "order" field.
+func (m *PermissionMutation) SetOrder(i int) {
+	m._order = &i
+	m.add_order = nil
 }
 
-// Group returns the value of the "group" field in the mutation.
-func (m *PermissionMutation) Group() (r string, exists bool) {
-	v := m.group
+// Order returns the value of the "order" field in the mutation.
+func (m *PermissionMutation) Order() (r int, exists bool) {
+	v := m._order
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldGroup returns the old "group" field's value of the Permission entity.
+// OldOrder returns the old "order" field's value of the Permission entity.
 // If the Permission object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionMutation) OldGroup(ctx context.Context) (v string, err error) {
+func (m *PermissionMutation) OldOrder(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldGroup is only allowed on UpdateOne operations")
+		return v, errors.New("OldOrder is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldGroup requires an ID field in the mutation")
+		return v, errors.New("OldOrder requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldGroup: %w", err)
+		return v, fmt.Errorf("querying old value for OldOrder: %w", err)
 	}
-	return oldValue.Group, nil
+	return oldValue.Order, nil
 }
 
-// ResetGroup resets all changes to the "group" field.
-func (m *PermissionMutation) ResetGroup() {
-	m.group = nil
+// AddOrder adds i to the "order" field.
+func (m *PermissionMutation) AddOrder(i int) {
+	if m.add_order != nil {
+		*m.add_order += i
+	} else {
+		m.add_order = &i
+	}
+}
+
+// AddedOrder returns the value that was added to the "order" field in this mutation.
+func (m *PermissionMutation) AddedOrder() (r int, exists bool) {
+	v := m.add_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrder resets all changes to the "order" field.
+func (m *PermissionMutation) ResetOrder() {
+	m._order = nil
+	m.add_order = nil
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by ids.
@@ -980,15 +1182,18 @@ func (m *PermissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
+	if m.group != nil {
+		fields = append(fields, permission.FieldGroup)
+	}
 	if m.name != nil {
 		fields = append(fields, permission.FieldName)
 	}
 	if m.key != nil {
 		fields = append(fields, permission.FieldKey)
 	}
-	if m.group != nil {
-		fields = append(fields, permission.FieldGroup)
+	if m._order != nil {
+		fields = append(fields, permission.FieldOrder)
 	}
 	return fields
 }
@@ -998,12 +1203,14 @@ func (m *PermissionMutation) Fields() []string {
 // schema.
 func (m *PermissionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case permission.FieldGroup:
+		return m.Group()
 	case permission.FieldName:
 		return m.Name()
 	case permission.FieldKey:
 		return m.Key()
-	case permission.FieldGroup:
-		return m.Group()
+	case permission.FieldOrder:
+		return m.Order()
 	}
 	return nil, false
 }
@@ -1013,12 +1220,14 @@ func (m *PermissionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *PermissionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case permission.FieldGroup:
+		return m.OldGroup(ctx)
 	case permission.FieldName:
 		return m.OldName(ctx)
 	case permission.FieldKey:
 		return m.OldKey(ctx)
-	case permission.FieldGroup:
-		return m.OldGroup(ctx)
+	case permission.FieldOrder:
+		return m.OldOrder(ctx)
 	}
 	return nil, fmt.Errorf("unknown Permission field %s", name)
 }
@@ -1028,6 +1237,13 @@ func (m *PermissionMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case permission.FieldGroup:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroup(v)
+		return nil
 	case permission.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -1042,12 +1258,12 @@ func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetKey(v)
 		return nil
-	case permission.FieldGroup:
-		v, ok := value.(string)
+	case permission.FieldOrder:
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetGroup(v)
+		m.SetOrder(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Permission field %s", name)
@@ -1056,13 +1272,21 @@ func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *PermissionMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.add_order != nil {
+		fields = append(fields, permission.FieldOrder)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *PermissionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case permission.FieldOrder:
+		return m.AddedOrder()
+	}
 	return nil, false
 }
 
@@ -1071,6 +1295,13 @@ func (m *PermissionMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PermissionMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case permission.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrder(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Permission numeric field %s", name)
 }
@@ -1098,14 +1329,17 @@ func (m *PermissionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *PermissionMutation) ResetField(name string) error {
 	switch name {
+	case permission.FieldGroup:
+		m.ResetGroup()
+		return nil
 	case permission.FieldName:
 		m.ResetName()
 		return nil
 	case permission.FieldKey:
 		m.ResetKey()
 		return nil
-	case permission.FieldGroup:
-		m.ResetGroup()
+	case permission.FieldOrder:
+		m.ResetOrder()
 		return nil
 	}
 	return fmt.Errorf("unknown Permission field %s", name)
@@ -1204,6 +1438,8 @@ type RoleMutation struct {
 	created_at         *time.Time
 	updated_at         *time.Time
 	name               *string
+	is_active          *bool
+	is_changeable      *bool
 	clearedFields      map[string]struct{}
 	admins             map[int]struct{}
 	removedadmins      map[int]struct{}
@@ -1422,6 +1658,78 @@ func (m *RoleMutation) ResetName() {
 	m.name = nil
 }
 
+// SetIsActive sets the "is_active" field.
+func (m *RoleMutation) SetIsActive(b bool) {
+	m.is_active = &b
+}
+
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *RoleMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_active" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *RoleMutation) ResetIsActive() {
+	m.is_active = nil
+}
+
+// SetIsChangeable sets the "is_changeable" field.
+func (m *RoleMutation) SetIsChangeable(b bool) {
+	m.is_changeable = &b
+}
+
+// IsChangeable returns the value of the "is_changeable" field in the mutation.
+func (m *RoleMutation) IsChangeable() (r bool, exists bool) {
+	v := m.is_changeable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsChangeable returns the old "is_changeable" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldIsChangeable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsChangeable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsChangeable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsChangeable: %w", err)
+	}
+	return oldValue.IsChangeable, nil
+}
+
+// ResetIsChangeable resets all changes to the "is_changeable" field.
+func (m *RoleMutation) ResetIsChangeable() {
+	m.is_changeable = nil
+}
+
 // AddAdminIDs adds the "admins" edge to the Admin entity by ids.
 func (m *RoleMutation) AddAdminIDs(ids ...int) {
 	if m.admins == nil {
@@ -1564,7 +1872,7 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, role.FieldCreatedAt)
 	}
@@ -1573,6 +1881,12 @@ func (m *RoleMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, role.FieldName)
+	}
+	if m.is_active != nil {
+		fields = append(fields, role.FieldIsActive)
+	}
+	if m.is_changeable != nil {
+		fields = append(fields, role.FieldIsChangeable)
 	}
 	return fields
 }
@@ -1588,6 +1902,10 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case role.FieldName:
 		return m.Name()
+	case role.FieldIsActive:
+		return m.IsActive()
+	case role.FieldIsChangeable:
+		return m.IsChangeable()
 	}
 	return nil, false
 }
@@ -1603,6 +1921,10 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case role.FieldName:
 		return m.OldName(ctx)
+	case role.FieldIsActive:
+		return m.OldIsActive(ctx)
+	case role.FieldIsChangeable:
+		return m.OldIsChangeable(ctx)
 	}
 	return nil, fmt.Errorf("unknown Role field %s", name)
 }
@@ -1632,6 +1954,20 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case role.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
+		return nil
+	case role.FieldIsChangeable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsChangeable(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
@@ -1690,6 +2026,12 @@ func (m *RoleMutation) ResetField(name string) error {
 		return nil
 	case role.FieldName:
 		m.ResetName()
+		return nil
+	case role.FieldIsActive:
+		m.ResetIsActive()
+		return nil
+	case role.FieldIsChangeable:
+		m.ResetIsChangeable()
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
@@ -1803,438 +2145,4 @@ func (m *RoleMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Role edge %s", name)
-}
-
-// TodoMutation represents an operation that mutates the Todo nodes in the graph.
-type TodoMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	name          *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Todo, error)
-	predicates    []predicate.Todo
-}
-
-var _ ent.Mutation = (*TodoMutation)(nil)
-
-// todoOption allows management of the mutation configuration using functional options.
-type todoOption func(*TodoMutation)
-
-// newTodoMutation creates new mutation for the Todo entity.
-func newTodoMutation(c config, op Op, opts ...todoOption) *TodoMutation {
-	m := &TodoMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeTodo,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withTodoID sets the ID field of the mutation.
-func withTodoID(id int) todoOption {
-	return func(m *TodoMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Todo
-		)
-		m.oldValue = func(ctx context.Context) (*Todo, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Todo.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withTodo sets the old Todo of the mutation.
-func withTodo(node *Todo) todoOption {
-	return func(m *TodoMutation) {
-		m.oldValue = func(context.Context) (*Todo, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m TodoMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m TodoMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *TodoMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *TodoMutation) IDs(ctx context.Context) ([]int, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []int{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Todo.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *TodoMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *TodoMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *TodoMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *TodoMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *TodoMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *TodoMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetName sets the "name" field.
-func (m *TodoMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *TodoMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *TodoMutation) ResetName() {
-	m.name = nil
-}
-
-// Where appends a list predicates to the TodoMutation builder.
-func (m *TodoMutation) Where(ps ...predicate.Todo) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the TodoMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *TodoMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Todo, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *TodoMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *TodoMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (Todo).
-func (m *TodoMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *TodoMutation) Fields() []string {
-	fields := make([]string, 0, 3)
-	if m.created_at != nil {
-		fields = append(fields, todo.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, todo.FieldUpdatedAt)
-	}
-	if m.name != nil {
-		fields = append(fields, todo.FieldName)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *TodoMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case todo.FieldCreatedAt:
-		return m.CreatedAt()
-	case todo.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case todo.FieldName:
-		return m.Name()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *TodoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case todo.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case todo.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case todo.FieldName:
-		return m.OldName(ctx)
-	}
-	return nil, fmt.Errorf("unknown Todo field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *TodoMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case todo.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case todo.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case todo.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Todo field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *TodoMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *TodoMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *TodoMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Todo numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *TodoMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *TodoMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *TodoMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Todo nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *TodoMutation) ResetField(name string) error {
-	switch name {
-	case todo.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case todo.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case todo.FieldName:
-		m.ResetName()
-		return nil
-	}
-	return fmt.Errorf("unknown Todo field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *TodoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *TodoMutation) AddedIDs(name string) []ent.Value {
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *TodoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *TodoMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *TodoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *TodoMutation) EdgeCleared(name string) bool {
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *TodoMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Todo unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *TodoMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Todo edge %s", name)
 }

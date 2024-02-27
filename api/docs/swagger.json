@@ -1,113 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "GO VUE ADMIN Boilerplate",
         "title": "GVA API",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/",
     "paths": {
-        "/Todo/{id}": {
-            "get": {
-                "description": "Get a Todo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Get a Todo",
-                "operationId": "get-Todo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.TodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Update a Todo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Update a Todo",
-                "operationId": "update-Todo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Todo data",
-                        "name": "Todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.TodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully updated Todo",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.TodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/admin": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all Admins",
                 "consumes": [
                     "application/json"
@@ -145,6 +49,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new Admin with the provided details",
                 "consumes": [
                     "application/json"
@@ -194,7 +103,10 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Get a Admin by ID",
@@ -240,6 +152,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a Admin by ID",
                 "consumes": [
                     "application/json"
@@ -271,6 +188,11 @@
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a Admin by ID",
                 "consumes": [
                     "application/json"
@@ -419,6 +341,11 @@
         },
         "/permission": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all Permissions",
                 "consumes": [
                     "application/json"
@@ -456,6 +383,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new Permission with the provided details",
                 "consumes": [
                     "application/json"
@@ -505,7 +437,10 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Get a Permission by ID",
@@ -551,6 +486,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a Permission by ID",
                 "consumes": [
                     "application/json"
@@ -582,6 +522,11 @@
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a Permission by ID",
                 "consumes": [
                     "application/json"
@@ -636,6 +581,11 @@
         },
         "/role": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all Roles",
                 "consumes": [
                     "application/json"
@@ -673,6 +623,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new Role with the provided details",
                 "consumes": [
                     "application/json"
@@ -722,7 +677,10 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Get a Role by ID",
@@ -768,6 +726,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a Role by ID",
                 "consumes": [
                     "application/json"
@@ -799,6 +762,11 @@
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a Role by ID",
                 "consumes": [
                     "application/json"
@@ -850,123 +818,6 @@
                     }
                 }
             }
-        },
-        "/todo": {
-            "get": {
-                "description": "Get a list of all Todos",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "List all Todos",
-                "operationId": "list-all-Todos",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved Todos",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.TodoResponse"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new Todo with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Create a Todo",
-                "operationId": "create-Todo",
-                "parameters": [
-                    {
-                        "description": "Todo data",
-                        "name": "Todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.TodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully created Todo",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/request.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.TodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/todo/{id}": {
-            "delete": {
-                "description": "Delete a Todo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Todo"
-                ],
-                "summary": "Delete a Todo",
-                "operationId": "delete-Todo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully deleted Todo",
-                        "schema": {
-                            "$ref": "#/definitions/request.Response"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -988,6 +839,10 @@
                 "id": {
                     "description": "ID of the ent.",
                     "type": "integer"
+                },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
                 },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
@@ -1018,6 +873,10 @@
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
+                },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
                     "type": "string"
@@ -1030,12 +889,20 @@
         },
         "dto.LoginRequest": {
             "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 5
                 }
             }
         },
@@ -1072,6 +939,10 @@
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
                 }
             }
         },
@@ -1097,20 +968,33 @@
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
                 }
             }
         },
         "dto.RegisterRequest": {
             "type": "object",
+            "required": [
+                "displayName",
+                "password",
+                "username"
+            ],
             "properties": {
                 "displayName": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 5
                 }
             }
         },
@@ -1140,6 +1024,14 @@
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
+                },
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
+                },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
@@ -1165,47 +1057,13 @@
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
                 },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
-            }
-        },
-        "dto.TodoRequest": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
-            }
-        },
-        "dto.TodoResponse": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -1235,6 +1093,10 @@
                 "id": {
                     "description": "ID of the ent.",
                     "type": "integer"
+                },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
                 },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
@@ -1280,6 +1142,10 @@
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
                 }
             }
         },
@@ -1309,6 +1175,14 @@
                 "id": {
                     "description": "ID of the ent.",
                     "type": "integer"
+                },
+                "isActive": {
+                    "description": "IsActive holds the value of the \"is_active\" field.",
+                    "type": "boolean"
+                },
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -1354,6 +1228,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "GO VUE ADMIN Boilerplate",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

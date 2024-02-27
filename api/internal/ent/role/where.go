@@ -70,6 +70,16 @@ func Name(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldName, v))
 }
 
+// IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsChangeable applies equality check predicate on the "is_changeable" field. It's identical to IsChangeableEQ.
+func IsChangeable(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsChangeable, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedAt, v))
@@ -213,6 +223,26 @@ func NameEqualFold(v string) predicate.Role {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldName, v))
+}
+
+// IsActiveEQ applies the EQ predicate on the "is_active" field.
+func IsActiveEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsActiveNEQ applies the NEQ predicate on the "is_active" field.
+func IsActiveNEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// IsChangeableEQ applies the EQ predicate on the "is_changeable" field.
+func IsChangeableEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsChangeable, v))
+}
+
+// IsChangeableNEQ applies the NEQ predicate on the "is_changeable" field.
+func IsChangeableNEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldIsChangeable, v))
 }
 
 // HasAdmins applies the HasEdge predicate on the "admins" edge.

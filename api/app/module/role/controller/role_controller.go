@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/app/common/services"
 	"github.com/kimchhung/gva/app/module/role/dto"
 	"github.com/kimchhung/gva/app/module/role/service"
 	"github.com/kimchhung/gva/internal/rctrl"
@@ -22,24 +23,25 @@ type IRoleController interface {
 }
 
 type RoleController struct {
-	service *service.RoleService
+	service    *service.RoleService
+	jwtService *services.JwtService
 }
 
 func (con *RoleController) Routes(r fiber.Router) {
-	r.Route("role",
-		func(router fiber.Router) {
-			rctrl.Register(router, con)
-		},
-	)
+	role := r.Group("role")
+	role.Use(con.jwtService.ProtectAdmin())
+	rctrl.Register(role, con)
 }
 
-func NewRoleController(service *service.RoleService) *RoleController {
+func NewRoleController(service *service.RoleService, jwtService *services.JwtService) *RoleController {
 	return &RoleController{
-		service: service,
+		service:    service,
+		jwtService: jwtService,
 	}
 }
 
 // @Tags Role
+// @Security Bearer
 // @Summary List all Roles
 // @Description Get a list of all Roles
 // @ID list-all-Roles
@@ -62,12 +64,13 @@ func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Role
+// @Security Bearer
 // @Summary Get a Role
 // @Description Get a Role by ID
 // @ID get-Role-by-id
 // @Accept  json
 // @Produce  json
-// @Security BearerAuth
+// @Security Bearer
 // @Param id path int true "Role ID"
 // @Success   200 {object} request.Response{data=dto.RoleResponse}
 // @Router /role/{id} [get]
@@ -91,6 +94,7 @@ func (con *RoleController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Role
+// @Security Bearer
 // @Summary Create a Role
 // @Description Create a new Role with the provided details
 // @ID create-Role
@@ -122,6 +126,7 @@ func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Role
+// @Security Bearer
 // @Summary Update a Role
 // @Description Update a Role by ID
 // @ID update-Role-by-id
@@ -158,6 +163,7 @@ func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Role
+// @Security Bearer
 // @Summary Delete a Role
 // @Description Delete a Role by ID
 // @ID delete-Role-by-id

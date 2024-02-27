@@ -64,6 +64,34 @@ func (ru *RoleUpdate) SetNillableName(s *string) *RoleUpdate {
 	return ru
 }
 
+// SetIsActive sets the "is_active" field.
+func (ru *RoleUpdate) SetIsActive(b bool) *RoleUpdate {
+	ru.mutation.SetIsActive(b)
+	return ru
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (ru *RoleUpdate) SetNillableIsActive(b *bool) *RoleUpdate {
+	if b != nil {
+		ru.SetIsActive(*b)
+	}
+	return ru
+}
+
+// SetIsChangeable sets the "is_changeable" field.
+func (ru *RoleUpdate) SetIsChangeable(b bool) *RoleUpdate {
+	ru.mutation.SetIsChangeable(b)
+	return ru
+}
+
+// SetNillableIsChangeable sets the "is_changeable" field if the given value is not nil.
+func (ru *RoleUpdate) SetNillableIsChangeable(b *bool) *RoleUpdate {
+	if b != nil {
+		ru.SetIsChangeable(*b)
+	}
+	return ru
+}
+
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
 func (ru *RoleUpdate) AddAdminIDs(ids ...int) *RoleUpdate {
 	ru.mutation.AddAdminIDs(ids...)
@@ -194,6 +222,12 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)
+	}
+	if value, ok := ru.mutation.IsActive(); ok {
+		_spec.SetField(role.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := ru.mutation.IsChangeable(); ok {
+		_spec.SetField(role.FieldIsChangeable, field.TypeBool, value)
 	}
 	if ru.mutation.AdminsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -335,6 +369,34 @@ func (ruo *RoleUpdateOne) SetName(s string) *RoleUpdateOne {
 func (ruo *RoleUpdateOne) SetNillableName(s *string) *RoleUpdateOne {
 	if s != nil {
 		ruo.SetName(*s)
+	}
+	return ruo
+}
+
+// SetIsActive sets the "is_active" field.
+func (ruo *RoleUpdateOne) SetIsActive(b bool) *RoleUpdateOne {
+	ruo.mutation.SetIsActive(b)
+	return ruo
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (ruo *RoleUpdateOne) SetNillableIsActive(b *bool) *RoleUpdateOne {
+	if b != nil {
+		ruo.SetIsActive(*b)
+	}
+	return ruo
+}
+
+// SetIsChangeable sets the "is_changeable" field.
+func (ruo *RoleUpdateOne) SetIsChangeable(b bool) *RoleUpdateOne {
+	ruo.mutation.SetIsChangeable(b)
+	return ruo
+}
+
+// SetNillableIsChangeable sets the "is_changeable" field if the given value is not nil.
+func (ruo *RoleUpdateOne) SetNillableIsChangeable(b *bool) *RoleUpdateOne {
+	if b != nil {
+		ruo.SetIsChangeable(*b)
 	}
 	return ruo
 }
@@ -499,6 +561,12 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 	}
 	if value, ok := ruo.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)
+	}
+	if value, ok := ruo.mutation.IsActive(); ok {
+		_spec.SetField(role.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := ruo.mutation.IsChangeable(); ok {
+		_spec.SetField(role.FieldIsChangeable, field.TypeBool, value)
 	}
 	if ruo.mutation.AdminsCleared() {
 		edge := &sqlgraph.EdgeSpec{

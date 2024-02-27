@@ -53,6 +53,11 @@ func IDLTE(id int) predicate.Permission {
 	return predicate.Permission(sql.FieldLTE(FieldID, id))
 }
 
+// Group applies equality check predicate on the "group" field. It's identical to GroupEQ.
+func Group(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldGroup, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldName, v))
@@ -63,9 +68,74 @@ func Key(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldKey, v))
 }
 
-// Group applies equality check predicate on the "group" field. It's identical to GroupEQ.
-func Group(v string) predicate.Permission {
+// Order applies equality check predicate on the "order" field. It's identical to OrderEQ.
+func Order(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldOrder, v))
+}
+
+// GroupEQ applies the EQ predicate on the "group" field.
+func GroupEQ(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldGroup, v))
+}
+
+// GroupNEQ applies the NEQ predicate on the "group" field.
+func GroupNEQ(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldNEQ(FieldGroup, v))
+}
+
+// GroupIn applies the In predicate on the "group" field.
+func GroupIn(vs ...string) predicate.Permission {
+	return predicate.Permission(sql.FieldIn(FieldGroup, vs...))
+}
+
+// GroupNotIn applies the NotIn predicate on the "group" field.
+func GroupNotIn(vs ...string) predicate.Permission {
+	return predicate.Permission(sql.FieldNotIn(FieldGroup, vs...))
+}
+
+// GroupGT applies the GT predicate on the "group" field.
+func GroupGT(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldGT(FieldGroup, v))
+}
+
+// GroupGTE applies the GTE predicate on the "group" field.
+func GroupGTE(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldGTE(FieldGroup, v))
+}
+
+// GroupLT applies the LT predicate on the "group" field.
+func GroupLT(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldLT(FieldGroup, v))
+}
+
+// GroupLTE applies the LTE predicate on the "group" field.
+func GroupLTE(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldLTE(FieldGroup, v))
+}
+
+// GroupContains applies the Contains predicate on the "group" field.
+func GroupContains(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldContains(FieldGroup, v))
+}
+
+// GroupHasPrefix applies the HasPrefix predicate on the "group" field.
+func GroupHasPrefix(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldHasPrefix(FieldGroup, v))
+}
+
+// GroupHasSuffix applies the HasSuffix predicate on the "group" field.
+func GroupHasSuffix(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldHasSuffix(FieldGroup, v))
+}
+
+// GroupEqualFold applies the EqualFold predicate on the "group" field.
+func GroupEqualFold(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldEqualFold(FieldGroup, v))
+}
+
+// GroupContainsFold applies the ContainsFold predicate on the "group" field.
+func GroupContainsFold(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldContainsFold(FieldGroup, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -198,69 +268,44 @@ func KeyContainsFold(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldContainsFold(FieldKey, v))
 }
 
-// GroupEQ applies the EQ predicate on the "group" field.
-func GroupEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldGroup, v))
+// OrderEQ applies the EQ predicate on the "order" field.
+func OrderEQ(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldOrder, v))
 }
 
-// GroupNEQ applies the NEQ predicate on the "group" field.
-func GroupNEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldGroup, v))
+// OrderNEQ applies the NEQ predicate on the "order" field.
+func OrderNEQ(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldNEQ(FieldOrder, v))
 }
 
-// GroupIn applies the In predicate on the "group" field.
-func GroupIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldGroup, vs...))
+// OrderIn applies the In predicate on the "order" field.
+func OrderIn(vs ...int) predicate.Permission {
+	return predicate.Permission(sql.FieldIn(FieldOrder, vs...))
 }
 
-// GroupNotIn applies the NotIn predicate on the "group" field.
-func GroupNotIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldGroup, vs...))
+// OrderNotIn applies the NotIn predicate on the "order" field.
+func OrderNotIn(vs ...int) predicate.Permission {
+	return predicate.Permission(sql.FieldNotIn(FieldOrder, vs...))
 }
 
-// GroupGT applies the GT predicate on the "group" field.
-func GroupGT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGT(FieldGroup, v))
+// OrderGT applies the GT predicate on the "order" field.
+func OrderGT(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldGT(FieldOrder, v))
 }
 
-// GroupGTE applies the GTE predicate on the "group" field.
-func GroupGTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGTE(FieldGroup, v))
+// OrderGTE applies the GTE predicate on the "order" field.
+func OrderGTE(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldGTE(FieldOrder, v))
 }
 
-// GroupLT applies the LT predicate on the "group" field.
-func GroupLT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLT(FieldGroup, v))
+// OrderLT applies the LT predicate on the "order" field.
+func OrderLT(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldLT(FieldOrder, v))
 }
 
-// GroupLTE applies the LTE predicate on the "group" field.
-func GroupLTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLTE(FieldGroup, v))
-}
-
-// GroupContains applies the Contains predicate on the "group" field.
-func GroupContains(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContains(FieldGroup, v))
-}
-
-// GroupHasPrefix applies the HasPrefix predicate on the "group" field.
-func GroupHasPrefix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasPrefix(FieldGroup, v))
-}
-
-// GroupHasSuffix applies the HasSuffix predicate on the "group" field.
-func GroupHasSuffix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasSuffix(FieldGroup, v))
-}
-
-// GroupEqualFold applies the EqualFold predicate on the "group" field.
-func GroupEqualFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEqualFold(FieldGroup, v))
-}
-
-// GroupContainsFold applies the ContainsFold predicate on the "group" field.
-func GroupContainsFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContainsFold(FieldGroup, v))
+// OrderLTE applies the LTE predicate on the "order" field.
+func OrderLTE(v int) predicate.Permission {
+	return predicate.Permission(sql.FieldLTE(FieldOrder, v))
 }
 
 // HasRoles applies the HasEdge predicate on the "roles" edge.

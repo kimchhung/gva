@@ -16,12 +16,14 @@ type Permission struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// Group holds the value of the "group" field.
+	Group string `json:"group,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Key holds the value of the "key" field.
 	Key string `json:"key,omitempty"`
-	// Group holds the value of the "group" field.
-	Group string `json:"group,omitempty"`
+	// Order holds the value of the "order" field.
+	Order int `json:"order,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PermissionQuery when eager-loading is set.
 	Edges        PermissionEdges `json:"edges"`
@@ -51,9 +53,9 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permission.FieldID:
+		case permission.FieldID, permission.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case permission.FieldName, permission.FieldKey, permission.FieldGroup:
+		case permission.FieldGroup, permission.FieldName, permission.FieldKey:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -76,6 +78,12 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			pe.ID = int(value.Int64)
+		case permission.FieldGroup:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field group", values[i])
+			} else if value.Valid {
+				pe.Group = value.String
+			}
 		case permission.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -88,11 +96,11 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pe.Key = value.String
 			}
-		case permission.FieldGroup:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field group", values[i])
+		case permission.FieldOrder:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field order", values[i])
 			} else if value.Valid {
-				pe.Group = value.String
+				pe.Order = int(value.Int64)
 			}
 		default:
 			pe.selectValues.Set(columns[i], values[i])
@@ -135,14 +143,17 @@ func (pe *Permission) String() string {
 	var builder strings.Builder
 	builder.WriteString("Permission(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pe.ID))
+	builder.WriteString("group=")
+	builder.WriteString(pe.Group)
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(pe.Name)
 	builder.WriteString(", ")
 	builder.WriteString("key=")
 	builder.WriteString(pe.Key)
 	builder.WriteString(", ")
-	builder.WriteString("group=")
-	builder.WriteString(pe.Group)
+	builder.WriteString("order=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Order))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -12,12 +12,14 @@ const (
 	Label = "permission"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldGroup holds the string denoting the group field in the database.
+	FieldGroup = "group"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldKey holds the string denoting the key field in the database.
 	FieldKey = "key"
-	// FieldGroup holds the string denoting the group field in the database.
-	FieldGroup = "group"
+	// FieldOrder holds the string denoting the order field in the database.
+	FieldOrder = "order"
 	// EdgeRoles holds the string denoting the roles edge name in mutations.
 	EdgeRoles = "roles"
 	// Table holds the table name of the permission in the database.
@@ -32,9 +34,10 @@ const (
 // Columns holds all SQL columns for permission fields.
 var Columns = []string{
 	FieldID,
+	FieldGroup,
 	FieldName,
 	FieldKey,
-	FieldGroup,
+	FieldOrder,
 }
 
 var (
@@ -61,6 +64,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByGroup orders the results by the group field.
+func ByGroup(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGroup, opts...).ToFunc()
+}
+
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -71,9 +79,9 @@ func ByKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKey, opts...).ToFunc()
 }
 
-// ByGroup orders the results by the group field.
-func ByGroup(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldGroup, opts...).ToFunc()
+// ByOrder orders the results by the order field.
+func ByOrder(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrder, opts...).ToFunc()
 }
 
 // ByRolesCount orders the results by roles count.

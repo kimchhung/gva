@@ -50,6 +50,7 @@ func New{{.EntityPascal}}Controller(service *service.{{.EntityPascal}}Service) *
 // @Produce  json
 // @Success  200 {object} request.Response{data=[]dto.{{.EntityPascal}}Response} "Successfully retrieved {{.EntityPascal}}s"
 // @Router /{{.EntityKebab}} [get]
+// @Security Bearer
 func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/").Name("get many {{.EntityPascal}}s").Do(func(c *fiber.Ctx) error {
 		list, err := con.service.Get{{.EntityPascal}}s(c.UserContext())
@@ -65,6 +66,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHa
 }
 
 // @Tags {{.EntityPascal}}
+// @Security Bearer
 // @Summary Get a {{.EntityPascal}}
 // @Description Get a {{.EntityPascal}} by ID
 // @ID get-{{.EntityPascal}}-by-id
@@ -99,6 +101,7 @@ func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHan
 }
 
 // @Tags {{.EntityPascal}}
+// @Security Bearer
 // @Summary Create a {{.EntityPascal}}
 // @Description Create a new {{.EntityPascal}} with the provided details
 // @ID create-{{.EntityPascal}}
@@ -133,6 +136,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 
 
 // @Tags {{.EntityPascal}}
+// @Security Bearer
 // @Summary Update a {{.EntityPascal}}
 // @Description Update a {{.EntityPascal}} by ID
 // @ID update-{{.EntityPascal}}-by-id
@@ -170,6 +174,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.Meta
 }
 
 // @Tags {{.EntityPascal}}
+// @Security Bearer
 // @Summary Delete a {{.EntityPascal}}
 // @Description Delete a {{.EntityPascal}} by ID
 // @ID delete-{{.EntityPascal}}-by-id

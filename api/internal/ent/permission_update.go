@@ -28,6 +28,20 @@ func (pu *PermissionUpdate) Where(ps ...predicate.Permission) *PermissionUpdate 
 	return pu
 }
 
+// SetGroup sets the "group" field.
+func (pu *PermissionUpdate) SetGroup(s string) *PermissionUpdate {
+	pu.mutation.SetGroup(s)
+	return pu
+}
+
+// SetNillableGroup sets the "group" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableGroup(s *string) *PermissionUpdate {
+	if s != nil {
+		pu.SetGroup(*s)
+	}
+	return pu
+}
+
 // SetName sets the "name" field.
 func (pu *PermissionUpdate) SetName(s string) *PermissionUpdate {
 	pu.mutation.SetName(s)
@@ -56,17 +70,24 @@ func (pu *PermissionUpdate) SetNillableKey(s *string) *PermissionUpdate {
 	return pu
 }
 
-// SetGroup sets the "group" field.
-func (pu *PermissionUpdate) SetGroup(s string) *PermissionUpdate {
-	pu.mutation.SetGroup(s)
+// SetOrder sets the "order" field.
+func (pu *PermissionUpdate) SetOrder(i int) *PermissionUpdate {
+	pu.mutation.ResetOrder()
+	pu.mutation.SetOrder(i)
 	return pu
 }
 
-// SetNillableGroup sets the "group" field if the given value is not nil.
-func (pu *PermissionUpdate) SetNillableGroup(s *string) *PermissionUpdate {
-	if s != nil {
-		pu.SetGroup(*s)
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableOrder(i *int) *PermissionUpdate {
+	if i != nil {
+		pu.SetOrder(*i)
 	}
+	return pu
+}
+
+// AddOrder adds i to the "order" field.
+func (pu *PermissionUpdate) AddOrder(i int) *PermissionUpdate {
+	pu.mutation.AddOrder(i)
 	return pu
 }
 
@@ -147,14 +168,20 @@ func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := pu.mutation.Group(); ok {
+		_spec.SetField(permission.FieldGroup, field.TypeString, value)
+	}
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
 	}
 	if value, ok := pu.mutation.Key(); ok {
 		_spec.SetField(permission.FieldKey, field.TypeString, value)
 	}
-	if value, ok := pu.mutation.Group(); ok {
-		_spec.SetField(permission.FieldGroup, field.TypeString, value)
+	if value, ok := pu.mutation.Order(); ok {
+		_spec.SetField(permission.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedOrder(); ok {
+		_spec.AddField(permission.FieldOrder, field.TypeInt, value)
 	}
 	if pu.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -221,6 +248,20 @@ type PermissionUpdateOne struct {
 	mutation *PermissionMutation
 }
 
+// SetGroup sets the "group" field.
+func (puo *PermissionUpdateOne) SetGroup(s string) *PermissionUpdateOne {
+	puo.mutation.SetGroup(s)
+	return puo
+}
+
+// SetNillableGroup sets the "group" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableGroup(s *string) *PermissionUpdateOne {
+	if s != nil {
+		puo.SetGroup(*s)
+	}
+	return puo
+}
+
 // SetName sets the "name" field.
 func (puo *PermissionUpdateOne) SetName(s string) *PermissionUpdateOne {
 	puo.mutation.SetName(s)
@@ -249,17 +290,24 @@ func (puo *PermissionUpdateOne) SetNillableKey(s *string) *PermissionUpdateOne {
 	return puo
 }
 
-// SetGroup sets the "group" field.
-func (puo *PermissionUpdateOne) SetGroup(s string) *PermissionUpdateOne {
-	puo.mutation.SetGroup(s)
+// SetOrder sets the "order" field.
+func (puo *PermissionUpdateOne) SetOrder(i int) *PermissionUpdateOne {
+	puo.mutation.ResetOrder()
+	puo.mutation.SetOrder(i)
 	return puo
 }
 
-// SetNillableGroup sets the "group" field if the given value is not nil.
-func (puo *PermissionUpdateOne) SetNillableGroup(s *string) *PermissionUpdateOne {
-	if s != nil {
-		puo.SetGroup(*s)
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableOrder(i *int) *PermissionUpdateOne {
+	if i != nil {
+		puo.SetOrder(*i)
 	}
+	return puo
+}
+
+// AddOrder adds i to the "order" field.
+func (puo *PermissionUpdateOne) AddOrder(i int) *PermissionUpdateOne {
+	puo.mutation.AddOrder(i)
 	return puo
 }
 
@@ -370,14 +418,20 @@ func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission,
 			}
 		}
 	}
+	if value, ok := puo.mutation.Group(); ok {
+		_spec.SetField(permission.FieldGroup, field.TypeString, value)
+	}
 	if value, ok := puo.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
 	}
 	if value, ok := puo.mutation.Key(); ok {
 		_spec.SetField(permission.FieldKey, field.TypeString, value)
 	}
-	if value, ok := puo.mutation.Group(); ok {
-		_spec.SetField(permission.FieldGroup, field.TypeString, value)
+	if value, ok := puo.mutation.Order(); ok {
+		_spec.SetField(permission.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedOrder(); ok {
+		_spec.AddField(permission.FieldOrder, field.TypeInt, value)
 	}
 	if puo.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{

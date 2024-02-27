@@ -61,9 +61,37 @@ func (ac *AdminCreate) SetPassword(s string) *AdminCreate {
 	return ac
 }
 
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (ac *AdminCreate) SetWhitelistIps(s []string) *AdminCreate {
+	ac.mutation.SetWhitelistIps(s)
+	return ac
+}
+
+// SetIsActive sets the "is_active" field.
+func (ac *AdminCreate) SetIsActive(b bool) *AdminCreate {
+	ac.mutation.SetIsActive(b)
+	return ac
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (ac *AdminCreate) SetNillableIsActive(b *bool) *AdminCreate {
+	if b != nil {
+		ac.SetIsActive(*b)
+	}
+	return ac
+}
+
 // SetDisplayName sets the "display_name" field.
 func (ac *AdminCreate) SetDisplayName(s string) *AdminCreate {
 	ac.mutation.SetDisplayName(s)
+	return ac
+}
+
+// SetNillableDisplayName sets the "display_name" field if the given value is not nil.
+func (ac *AdminCreate) SetNillableDisplayName(s *string) *AdminCreate {
+	if s != nil {
+		ac.SetDisplayName(*s)
+	}
 	return ac
 }
 
@@ -125,6 +153,10 @@ func (ac *AdminCreate) defaults() {
 		v := admin.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ac.mutation.IsActive(); !ok {
+		v := admin.DefaultIsActive
+		ac.mutation.SetIsActive(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -141,8 +173,11 @@ func (ac *AdminCreate) check() error {
 	if _, ok := ac.mutation.Password(); !ok {
 		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Admin.password"`)}
 	}
-	if _, ok := ac.mutation.DisplayName(); !ok {
-		return &ValidationError{Name: "display_name", err: errors.New(`ent: missing required field "Admin.display_name"`)}
+	if _, ok := ac.mutation.WhitelistIps(); !ok {
+		return &ValidationError{Name: "whitelist_ips", err: errors.New(`ent: missing required field "Admin.whitelist_ips"`)}
+	}
+	if _, ok := ac.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "Admin.is_active"`)}
 	}
 	return nil
 }
@@ -185,6 +220,14 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Password(); ok {
 		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 		_node.Password = value
+	}
+	if value, ok := ac.mutation.WhitelistIps(); ok {
+		_spec.SetField(admin.FieldWhitelistIps, field.TypeJSON, value)
+		_node.WhitelistIps = value
+	}
+	if value, ok := ac.mutation.IsActive(); ok {
+		_spec.SetField(admin.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
 	}
 	if value, ok := ac.mutation.DisplayName(); ok {
 		_spec.SetField(admin.FieldDisplayName, field.TypeString, value)

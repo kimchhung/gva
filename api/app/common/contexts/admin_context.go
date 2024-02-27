@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	RoleNameSuperAdmin = "Super Admin"
+	RoleNameSuperAdmin = "SUPER_ADMIN"
 )
 
 type (

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -25,6 +26,10 @@ type Admin struct {
 	Username string `json:"username,omitempty"`
 	// Password holds the value of the "password" field.
 	Password string `json:"-"`
+	// WhitelistIps holds the value of the "whitelist_ips" field.
+	WhitelistIps []string `json:"-"`
+	// IsActive holds the value of the "is_active" field.
+	IsActive bool `json:"isActive"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"displayName,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -56,6 +61,10 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case admin.FieldWhitelistIps:
+			values[i] = new([]byte)
+		case admin.FieldIsActive:
+			values[i] = new(sql.NullBool)
 		case admin.FieldID:
 			values[i] = new(sql.NullInt64)
 		case admin.FieldUsername, admin.FieldPassword, admin.FieldDisplayName:
@@ -106,6 +115,20 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
 				a.Password = value.String
+			}
+		case admin.FieldWhitelistIps:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field whitelist_ips", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &a.WhitelistIps); err != nil {
+					return fmt.Errorf("unmarshal field whitelist_ips: %w", err)
+				}
+			}
+		case admin.FieldIsActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_active", values[i])
+			} else if value.Valid {
+				a.IsActive = value.Bool
 			}
 		case admin.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -163,8 +186,13 @@ func (a *Admin) String() string {
 	builder.WriteString("username=")
 	builder.WriteString(a.Username)
 	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(a.Password)
+	builder.WriteString("password=<sensitive>")
+	builder.WriteString(", ")
+	builder.WriteString("whitelist_ips=")
+	builder.WriteString(fmt.Sprintf("%v", a.WhitelistIps))
+	builder.WriteString(", ")
+	builder.WriteString("is_active=")
+	builder.WriteString(fmt.Sprintf("%v", a.IsActive))
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(a.DisplayName)

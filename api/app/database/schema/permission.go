@@ -12,9 +12,10 @@ type Permission struct {
 
 func (Permission) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("group").StructTag(`json:"group,omitempty"`),
 		field.String("name").StructTag(`json:"name,omitempty"`),
 		field.String("key").StructTag(`json:"key,omitempty"`),
-		field.String("group").StructTag(`json:"group,omitempty"`),
+		field.Int("order").StructTag(`json:"order,omitempty"`),
 	}
 }
 

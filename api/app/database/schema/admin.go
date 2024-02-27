@@ -18,9 +18,11 @@ func (Admin) Mixin() []ent.Mixin {
 
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("username").StructTag(`json:"username,omitempty"`).Unique(),
-		field.String("password").StructTag(`json:"-"`),
-		field.String("display_name").StructTag(`json:"displayName,omitempty"`),
+		field.String("username").Unique(),
+		field.String("password").Sensitive(),
+		field.JSON("whitelist_ips", []string{}).StructTag(`json:"-"`),
+		field.Bool("is_active").Default(true).StructTag(`json:"isActive"`),
+		field.String("display_name").StructTag(`json:"displayName,omitempty"`).Optional(),
 	}
 }
 

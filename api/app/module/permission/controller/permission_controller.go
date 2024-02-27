@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/app/common/services"
 	"github.com/kimchhung/gva/app/module/permission/dto"
 	"github.com/kimchhung/gva/app/module/permission/service"
 	"github.com/kimchhung/gva/internal/rctrl"
@@ -22,24 +23,25 @@ type IPermissionController interface {
 }
 
 type PermissionController struct {
-	service *service.PermissionService
+	service    *service.PermissionService
+	jwtService *services.JwtService
 }
 
 func (con *PermissionController) Routes(r fiber.Router) {
-	r.Route("permission",
-		func(router fiber.Router) {
-			rctrl.Register(router, con)
-		},
-	)
+	permission := r.Group("permission")
+	permission.Use(con.jwtService.ProtectAdmin())
+	rctrl.Register(permission, con)
 }
 
-func NewPermissionController(service *service.PermissionService) *PermissionController {
+func NewPermissionController(service *service.PermissionService, jwtService *services.JwtService) *PermissionController {
 	return &PermissionController{
-		service: service,
+		service:    service,
+		jwtService: jwtService,
 	}
 }
 
 // @Tags Permission
+// @Security Bearer
 // @Summary List all Permissions
 // @Description Get a list of all Permissions
 // @ID list-all-Permissions
@@ -62,12 +64,13 @@ func (con *PermissionController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Permission
+// @Security Bearer
 // @Summary Get a Permission
 // @Description Get a Permission by ID
 // @ID get-Permission-by-id
 // @Accept  json
 // @Produce  json
-// @Security BearerAuth
+// @Security Bearer
 // @Param id path int true "Permission ID"
 // @Success   200 {object} request.Response{data=dto.PermissionResponse}
 // @Router /permission/{id} [get]
@@ -91,6 +94,7 @@ func (con *PermissionController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Permission
+// @Security Bearer
 // @Summary Create a Permission
 // @Description Create a new Permission with the provided details
 // @ID create-Permission
@@ -122,6 +126,7 @@ func (con *PermissionController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 }
 
 // @Tags Permission
+// @Security Bearer
 // @Summary Update a Permission
 // @Description Update a Permission by ID
 // @ID update-Permission-by-id
@@ -158,6 +163,7 @@ func (con *PermissionController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
 }
 
 // @Tags Permission
+// @Security Bearer
 // @Summary Delete a Permission
 // @Description Delete a Permission by ID
 // @ID delete-Permission-by-id

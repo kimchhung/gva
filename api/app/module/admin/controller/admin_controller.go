@@ -27,11 +27,9 @@ type AdminController struct {
 }
 
 func (con *AdminController) Routes(r fiber.Router) {
-	group := r.Group("admin")
-	group.Use(
-		con.jwtService.ProtectAdmin(),
-	)
-	rctrl.Register(group, con)
+	admin := r.Group("admin")
+	admin.Use(con.jwtService.ProtectAdmin())
+	rctrl.Register(admin, con)
 }
 
 func NewAdminController(service *service.AdminService, jwtService *services.JwtService) *AdminController {
@@ -42,6 +40,7 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 }
 
 // @Tags Admin
+// @Security Bearer
 // @Summary List all Admins
 // @Description Get a list of all Admins
 // @ID list-all-Admins
@@ -70,12 +69,13 @@ func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Admin
+// @Security Bearer
 // @Summary Get a Admin
 // @Description Get a Admin by ID
 // @ID get-Admin-by-id
 // @Accept  json
 // @Produce  json
-// @Security BearerAuth
+// @Security Bearer
 // @Param id path int true "Admin ID"
 // @Success   200 {object} request.Response{data=dto.AdminResponse}
 // @Router /admin/{id} [get]
@@ -109,6 +109,7 @@ func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Admin
+// @Security Bearer
 // @Summary Create a Admin
 // @Description Create a new Admin with the provided details
 // @ID create-Admin
@@ -145,6 +146,7 @@ func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Admin
+// @Security Bearer
 // @Summary Update a Admin
 // @Description Update a Admin by ID
 // @ID update-Admin-by-id
@@ -186,6 +188,7 @@ func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags Admin
+// @Security Bearer
 // @Summary Delete a Admin
 // @Description Delete a Admin by ID
 // @ID delete-Admin-by-id

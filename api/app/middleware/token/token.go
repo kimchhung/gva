@@ -13,6 +13,7 @@ type Config struct {
 }
 
 type Option func(*Config)
+type JwtKey struct{}
 
 func NewConfig(config *Config) Option {
 	return func(_c *Config) {
@@ -20,12 +21,32 @@ func NewConfig(config *Config) Option {
 	}
 }
 
+func WithHeaderName(headerName string) Option {
+	return func(c *Config) {
+		c.HeaderName = headerName
+	}
+}
+
+func WithSkip(next func(c *fiber.Ctx) bool) Option {
+	return func(c *Config) {
+		c.Next = next
+	}
+}
+
+func VerifyFunc(VerifyFunc func(c *fiber.Ctx, headerValue string) error) Option {
+	return func(c *Config) {
+		c.VerifyFunc = VerifyFunc
+	}
+}
+
 // New creates a new middleware handler
 func New(config Option, opts ...Option) fiber.Handler {
 	// Set default config
-	cfg := new(Config)
-	config(cfg)
+	cfg := &Config{
+		HeaderName: "authorization",
+	}
 
+	config(cfg)
 	// Override default config
 	for _, opt := range opts {
 		opt(cfg)

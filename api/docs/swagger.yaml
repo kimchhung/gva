@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   dto.AdminRequest:
     properties:
@@ -16,6 +15,9 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
+      isActive:
+        description: IsActive holds the value of the "is_active" field.
+        type: boolean
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -39,6 +41,9 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
+      isActive:
+        description: IsActive holds the value of the "is_active" field.
+        type: boolean
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -49,9 +54,16 @@ definitions:
   dto.LoginRequest:
     properties:
       password:
+        maxLength: 30
+        minLength: 6
         type: string
       username:
+        maxLength: 30
+        minLength: 5
         type: string
+    required:
+    - password
+    - username
     type: object
   dto.LoginResponse:
     properties:
@@ -79,6 +91,9 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
     type: object
   dto.PermissionResponse:
     properties:
@@ -99,15 +114,26 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
     type: object
   dto.RegisterRequest:
     properties:
       displayName:
         type: string
       password:
+        maxLength: 30
+        minLength: 6
         type: string
       username:
+        maxLength: 30
+        minLength: 5
         type: string
+    required:
+    - displayName
+    - password
+    - username
     type: object
   dto.RegisterResponse:
     properties:
@@ -129,6 +155,12 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
+      isActive:
+        description: IsActive holds the value of the "is_active" field.
+        type: boolean
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -149,36 +181,12 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  dto.TodoRequest:
-    properties:
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: integer
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  dto.TodoResponse:
-    properties:
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: integer
+      isActive:
+        description: IsActive holds the value of the "is_active" field.
+        type: boolean
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -202,6 +210,9 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
+      isActive:
+        description: IsActive holds the value of the "is_active" field.
+        type: boolean
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -236,6 +247,9 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
     type: object
   ent.PermissionEdges:
     properties:
@@ -258,6 +272,12 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
+      isActive:
+        description: IsActive holds the value of the "is_active" field.
+        type: boolean
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -289,72 +309,10 @@ definitions:
       message:
         type: string
     type: object
-host: localhost:8080
 info:
   contact: {}
-  description: GO VUE ADMIN Boilerplate
   title: GVA API
-  version: "1.0"
 paths:
-  /Todo/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get a Todo by ID
-      operationId: get-Todo-by-id
-      parameters:
-      - description: Todo ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/request.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.TodoResponse'
-              type: object
-      summary: Get a Todo
-      tags:
-      - Todo
-    patch:
-      consumes:
-      - application/json
-      description: Update a Todo by ID
-      operationId: update-Todo-by-id
-      parameters:
-      - description: Todo ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Todo data
-        in: body
-        name: Todo
-        required: true
-        schema:
-          $ref: '#/definitions/dto.TodoRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully updated Todo
-          schema:
-            allOf:
-            - $ref: '#/definitions/request.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.TodoResponse'
-              type: object
-      summary: Update a Todo
-      tags:
-      - Todo
   /admin:
     get:
       consumes:
@@ -375,6 +333,8 @@ paths:
                     $ref: '#/definitions/dto.AdminResponse'
                   type: array
               type: object
+      security:
+      - Bearer: []
       summary: List all Admins
       tags:
       - Admin
@@ -402,6 +362,8 @@ paths:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
               type: object
+      security:
+      - Bearer: []
       summary: Create a Admin
       tags:
       - Admin
@@ -424,6 +386,8 @@ paths:
           description: Successfully deleted Admin
           schema:
             $ref: '#/definitions/request.Response'
+      security:
+      - Bearer: []
       summary: Delete a Admin
       tags:
       - Admin
@@ -451,7 +415,8 @@ paths:
                   $ref: '#/definitions/dto.AdminResponse'
               type: object
       security:
-      - BearerAuth: []
+      - Bearer: []
+      - Bearer: []
       summary: Get a Admin
       tags:
       - Admin
@@ -484,6 +449,8 @@ paths:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
               type: object
+      security:
+      - Bearer: []
       summary: Update a Admin
       tags:
       - Admin
@@ -563,6 +530,8 @@ paths:
                     $ref: '#/definitions/dto.PermissionResponse'
                   type: array
               type: object
+      security:
+      - Bearer: []
       summary: List all Permissions
       tags:
       - Permission
@@ -590,6 +559,8 @@ paths:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
               type: object
+      security:
+      - Bearer: []
       summary: Create a Permission
       tags:
       - Permission
@@ -612,6 +583,8 @@ paths:
           description: Successfully deleted Permission
           schema:
             $ref: '#/definitions/request.Response'
+      security:
+      - Bearer: []
       summary: Delete a Permission
       tags:
       - Permission
@@ -639,7 +612,8 @@ paths:
                   $ref: '#/definitions/dto.PermissionResponse'
               type: object
       security:
-      - BearerAuth: []
+      - Bearer: []
+      - Bearer: []
       summary: Get a Permission
       tags:
       - Permission
@@ -672,6 +646,8 @@ paths:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
               type: object
+      security:
+      - Bearer: []
       summary: Update a Permission
       tags:
       - Permission
@@ -695,6 +671,8 @@ paths:
                     $ref: '#/definitions/dto.RoleResponse'
                   type: array
               type: object
+      security:
+      - Bearer: []
       summary: List all Roles
       tags:
       - Role
@@ -722,6 +700,8 @@ paths:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
               type: object
+      security:
+      - Bearer: []
       summary: Create a Role
       tags:
       - Role
@@ -744,6 +724,8 @@ paths:
           description: Successfully deleted Role
           schema:
             $ref: '#/definitions/request.Response'
+      security:
+      - Bearer: []
       summary: Delete a Role
       tags:
       - Role
@@ -771,7 +753,8 @@ paths:
                   $ref: '#/definitions/dto.RoleResponse'
               type: object
       security:
-      - BearerAuth: []
+      - Bearer: []
+      - Bearer: []
       summary: Get a Role
       tags:
       - Role
@@ -804,79 +787,15 @@ paths:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
               type: object
+      security:
+      - Bearer: []
       summary: Update a Role
       tags:
       - Role
-  /todo:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all Todos
-      operationId: list-all-Todos
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Todos
-          schema:
-            allOf:
-            - $ref: '#/definitions/request.Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.TodoResponse'
-                  type: array
-              type: object
-      summary: List all Todos
-      tags:
-      - Todo
-    post:
-      consumes:
-      - application/json
-      description: Create a new Todo with the provided details
-      operationId: create-Todo
-      parameters:
-      - description: Todo data
-        in: body
-        name: Todo
-        required: true
-        schema:
-          $ref: '#/definitions/dto.TodoRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully created Todo
-          schema:
-            allOf:
-            - $ref: '#/definitions/request.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.TodoResponse'
-              type: object
-      summary: Create a Todo
-      tags:
-      - Todo
-  /todo/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a Todo by ID
-      operationId: delete-Todo-by-id
-      parameters:
-      - description: Todo ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully deleted Todo
-          schema:
-            $ref: '#/definitions/request.Response'
-      summary: Delete a Todo
-      tags:
-      - Todo
+securityDefinitions:
+  Bearer:
+    description: GO VUE ADMIN Boilerplate
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
