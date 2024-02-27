@@ -125,21 +125,15 @@ func (con *AuthController) Me(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	meta.Use(
 		con.jwtService.ProtectAdmin(),
 	)
-
-	return meta.Get("/me").Name("retrieved admin by token").DoWithScope(func() []fiber.Handler {
-		return []fiber.Handler{
-			func(c *fiber.Ctx) error {
-				// log.Debug("query me")
-				adminCtx, err := contexts.GetAdminContext(c.UserContext())
-				if err != nil {
-					return err
-				}
-
-				return request.Resp(c, request.Response{
-					Message: "The me was retrieved successfully!",
-					Data:    adminCtx.Admin, // Adjust this based on what you want to return
-				})
-			},
+	return meta.Get("/me").Name("retrieved admin by token").Do(func(c *fiber.Ctx) error {
+		adminCtx, err := contexts.GetAdminContext(c.UserContext())
+		if err != nil {
+			return err
 		}
+
+		return request.Resp(c, request.Response{
+			Message: "The me was retrieved successfully!",
+			Data:    adminCtx.Admin, // Adjust this based on what you want to return
+		})
 	})
 }
