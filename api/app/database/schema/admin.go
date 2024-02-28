@@ -4,7 +4,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/index"
 	"github.com/kimchhung/gva/app/database/schema/softdelete"
 )
 
@@ -31,7 +30,7 @@ func (Admin) Fields() []ent.Field {
 
 func (Admin) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("username", (&softdelete.SoftDeleteMixin{}).Fields()[0].Descriptor().Name).Unique(),
+		softdelete.Index("username").Unique(),
 	}
 }
 

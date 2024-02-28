@@ -18,6 +18,15 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
+const (
+	deletedAtColumn = "deleted_at"
+)
+
+func Index(fields ...string) *index.Builder {
+	fields = append(fields, deletedAtColumn)
+	return index.Fields(fields...)
+}
+
 type SoftDeleteMixin struct {
 	mixin.Schema
 }
