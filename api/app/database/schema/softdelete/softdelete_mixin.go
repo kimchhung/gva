@@ -33,6 +33,8 @@ type SoftDeleteMixin struct {
 
 func (SoftDeleteMixin) Fields() []ent.Field {
 	return []ent.Field{
+		// mysql doesn't support partial index yet!, uniq(col1,null_column) will be ignore so we need default value
+		// if want nullable fields to support uniq index, required expr like this,  expr = "(CASE WHEN deleted_at IS NULL THEN CONCAT(user_id, payment_method_id, payment_identifier) END)"
 		field.Int("deleted_at").Annotations(entsql.Default("0")).StructTag(`json:"-"`).Default(0),
 	}
 }
