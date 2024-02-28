@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/kimchhung/gva/app/database/schema/softdelete"
 )
 
@@ -25,6 +26,12 @@ func (Admin) Fields() []ent.Field {
 		field.JSON("whitelist_ips", []string{}).StructTag(`json:"-"`),
 		field.Bool("is_active").Default(true).StructTag(`json:"isActive"`),
 		field.String("display_name").StructTag(`json:"displayName,omitempty"`).Optional(),
+	}
+}
+
+func (Admin) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("username", (&softdelete.SoftDeleteMixin{}).Fields()[0].Descriptor().Name).Unique(),
 	}
 }
 

@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"time"
 
-	gen "github.com/kimchhung/gva/internal/ent"
-	"github.com/kimchhung/gva/internal/ent/hook"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql"
+
+	gen "github.com/kimchhung/gva/internal/ent"
+	"github.com/kimchhung/gva/internal/ent/hook"
+	"github.com/kimchhung/gva/internal/ent/intercept"
+
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 )
 
@@ -25,6 +28,12 @@ func (SoftDeleteMixin) Fields() []ent.Field {
 	}
 }
 
+func (SoftDeleteMixin) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("deleted_at"),
+	}
+}
+
 type softDeleteKey struct{}
 
 // SkipSoftDelete returns a new context that skips the soft-delete interceptor/mutators.
@@ -33,21 +42,16 @@ func SkipSoftDelete(parent context.Context) context.Context {
 }
 
 func (d SoftDeleteMixin) Interceptors() []ent.Interceptor {
-	fn := func(ctx context.Context, q ent.Query) error {
-		// Skip soft-delete, means include soft-deleted entities.
-		if skip, _ := ctx.Value(softDeleteKey{}).(bool); skip {
-			return nil
-		}
-
-		if qq, ok := q.(interface{ WhereP(...func(*sql.Selector)) }); ok {
-			d.P(qq)
-		}
-
-		return nil
-	}
-
 	return []ent.Interceptor{
-		ent.TraverseFunc(fn),
+		intercept.TraverseFunc(func(ctx context.Context, q intercept.Query) error {
+			// Skip soft-delete, means include soft-deleted entities.
+			if skip, _ := ctx.Value(softDeleteKey{}).(bool); skip {
+				return nil
+			}
+
+			d.P(q)
+			return nil
+		}),
 	}
 }
 
@@ -80,6 +84,7 @@ func (d SoftDeleteMixin) Hooks() []ent.Hook {
 	}
 }
 
+// P adds a storage-level predicate to the queries and mutations.
 func (d SoftDeleteMixin) P(w interface{ WhereP(...func(*sql.Selector)) }) {
 	w.WhereP(
 		sql.FieldEQ(d.Fields()[0].Descriptor().Name, 0),

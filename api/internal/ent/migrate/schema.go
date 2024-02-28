@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeInt, Default: 0},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
 		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
 		{Name: "whitelist_ips", Type: field.TypeJSON},
@@ -25,6 +25,18 @@ var (
 		Name:       "admins",
 		Columns:    AdminsColumns,
 		PrimaryKey: []*schema.Column{AdminsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "admin_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AdminsColumns[3]},
+			},
+			{
+				Name:    "admin_username_deleted_at",
+				Unique:  true,
+				Columns: []*schema.Column{AdminsColumns[4], AdminsColumns[3]},
+			},
+		},
 	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
@@ -45,7 +57,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeInt, Default: 0},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
 		{Name: "name", Type: field.TypeString},
 		{Name: "is_active", Type: field.TypeBool},
 		{Name: "is_changeable", Type: field.TypeBool},
@@ -55,6 +67,13 @@ var (
 		Name:       "roles",
 		Columns:    RolesColumns,
 		PrimaryKey: []*schema.Column{RolesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "role_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{RolesColumns[3]},
+			},
+		},
 	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
