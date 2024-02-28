@@ -1,7 +1,6 @@
 package rctrl_test
 
 import (
-	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -17,8 +16,8 @@ type MyController struct{}
 
 // 743730	      1660 ns/op	    1465 B/op	      30 allocs/op
 func (con *MyController) Hello(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/hello").Name("get many roles").Do(func(c *fiber.Ctx) error {
-		return c.SendString(fmt.Sprintf("Hello, World! %v", con))
+	return meta.Get("/hello").Do(func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
 	})
 }
 
@@ -33,7 +32,7 @@ func BenchmarkRegisterRoutes(b *testing.B) {
 	}
 }
 
-// BenchmarkHandleRequestCtr-16    	   39570	     30687 ns/op	    5843 B/op	      27 allocs/op
+// BenchmarkHandleRequestCtr-8   	  228070	      5311 ns/op	    5779 B/op	      25 allocs/op
 func BenchmarkHandleRequestCtr(b *testing.B) {
 	app := fiber.New()
 	rctrl.Register(app, &MyController{})
@@ -47,11 +46,13 @@ func BenchmarkHandleRequestCtr(b *testing.B) {
 	}
 }
 
-// BenchmarkHandleRequest-16    	   30840	     33726 ns/op	    5828 B/op	      25 allocs/op
+// BenchmarkHandleRequest-8   	  229569	      5311 ns/op	    5776 B/op	      25 allocs/op
 func BenchmarkHandleRequest(b *testing.B) {
 	app := fiber.New()
-	app.Get("/hello", func(c *fiber.Ctx) error {
-		return c.SendString(fmt.Sprintf("Hello, World! %v", &MyController{}))
+
+	g := app.Group("/hello")
+	g.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
 	})
 
 	// Create a new HTTP request with the route from the test case

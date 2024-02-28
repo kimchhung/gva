@@ -22,6 +22,8 @@ type Admin struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt int `json:"-"`
 	// Username holds the value of the "username" field.
 	Username string `json:"username,omitempty"`
 	// Password holds the value of the "password" field.
@@ -65,7 +67,7 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case admin.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case admin.FieldID:
+		case admin.FieldID, admin.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case admin.FieldUsername, admin.FieldPassword, admin.FieldDisplayName:
 			values[i] = new(sql.NullString)
@@ -103,6 +105,12 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				a.UpdatedAt = value.Time
+			}
+		case admin.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				a.DeletedAt = int(value.Int64)
 			}
 		case admin.FieldUsername:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -182,6 +190,9 @@ func (a *Admin) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("deleted_at=")
+	builder.WriteString(fmt.Sprintf("%v", a.DeletedAt))
 	builder.WriteString(", ")
 	builder.WriteString("username=")
 	builder.WriteString(a.Username)

@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/app/database/schema/softdelete"
 )
 
 type Admin struct {
@@ -12,7 +13,8 @@ type Admin struct {
 
 func (Admin) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		TimetMixin{},
+		TimeMixin{},
+		softdelete.SoftDeleteMixin{},
 	}
 }
 

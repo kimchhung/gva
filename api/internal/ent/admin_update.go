@@ -50,6 +50,27 @@ func (au *AdminUpdate) SetUpdatedAt(t time.Time) *AdminUpdate {
 	return au
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (au *AdminUpdate) SetDeletedAt(i int) *AdminUpdate {
+	au.mutation.ResetDeletedAt()
+	au.mutation.SetDeletedAt(i)
+	return au
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (au *AdminUpdate) SetNillableDeletedAt(i *int) *AdminUpdate {
+	if i != nil {
+		au.SetDeletedAt(*i)
+	}
+	return au
+}
+
+// AddDeletedAt adds i to the "deleted_at" field.
+func (au *AdminUpdate) AddDeletedAt(i int) *AdminUpdate {
+	au.mutation.AddDeletedAt(i)
+	return au
+}
+
 // SetUsername sets the "username" field.
 func (au *AdminUpdate) SetUsername(s string) *AdminUpdate {
 	au.mutation.SetUsername(s)
@@ -167,7 +188,9 @@ func (au *AdminUpdate) RemoveRoles(r ...*Role) *AdminUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AdminUpdate) Save(ctx context.Context) (int, error) {
-	au.defaults()
+	if err := au.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
@@ -194,11 +217,15 @@ func (au *AdminUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (au *AdminUpdate) defaults() {
+func (au *AdminUpdate) defaults() error {
 	if _, ok := au.mutation.UpdatedAt(); !ok {
+		if admin.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized admin.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := admin.UpdateDefaultUpdatedAt()
 		au.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -215,6 +242,12 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := au.mutation.DeletedAt(); ok {
+		_spec.SetField(admin.FieldDeletedAt, field.TypeInt, value)
+	}
+	if value, ok := au.mutation.AddedDeletedAt(); ok {
+		_spec.AddField(admin.FieldDeletedAt, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.Username(); ok {
 		_spec.SetField(admin.FieldUsername, field.TypeString, value)
@@ -321,6 +354,27 @@ func (auo *AdminUpdateOne) SetNillableCreatedAt(t *time.Time) *AdminUpdateOne {
 // SetUpdatedAt sets the "updated_at" field.
 func (auo *AdminUpdateOne) SetUpdatedAt(t time.Time) *AdminUpdateOne {
 	auo.mutation.SetUpdatedAt(t)
+	return auo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (auo *AdminUpdateOne) SetDeletedAt(i int) *AdminUpdateOne {
+	auo.mutation.ResetDeletedAt()
+	auo.mutation.SetDeletedAt(i)
+	return auo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillableDeletedAt(i *int) *AdminUpdateOne {
+	if i != nil {
+		auo.SetDeletedAt(*i)
+	}
+	return auo
+}
+
+// AddDeletedAt adds i to the "deleted_at" field.
+func (auo *AdminUpdateOne) AddDeletedAt(i int) *AdminUpdateOne {
+	auo.mutation.AddDeletedAt(i)
 	return auo
 }
 
@@ -454,7 +508,9 @@ func (auo *AdminUpdateOne) Select(field string, fields ...string) *AdminUpdateOn
 
 // Save executes the query and returns the updated Admin entity.
 func (auo *AdminUpdateOne) Save(ctx context.Context) (*Admin, error) {
-	auo.defaults()
+	if err := auo.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
@@ -481,11 +537,15 @@ func (auo *AdminUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *AdminUpdateOne) defaults() {
+func (auo *AdminUpdateOne) defaults() error {
 	if _, ok := auo.mutation.UpdatedAt(); !ok {
+		if admin.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized admin.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := admin.UpdateDefaultUpdatedAt()
 		auo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error) {
@@ -519,6 +579,12 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := auo.mutation.DeletedAt(); ok {
+		_spec.SetField(admin.FieldDeletedAt, field.TypeInt, value)
+	}
+	if value, ok := auo.mutation.AddedDeletedAt(); ok {
+		_spec.AddField(admin.FieldDeletedAt, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.Username(); ok {
 		_spec.SetField(admin.FieldUsername, field.TypeString, value)

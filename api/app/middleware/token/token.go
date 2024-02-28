@@ -46,9 +46,8 @@ func New(config Option, opts ...Option) fiber.Handler {
 		HeaderName: "authorization",
 	}
 
-	config(cfg)
 	// Override default config
-	for _, opt := range opts {
+	for _, opt := range append(opts, config) {
 		opt(cfg)
 	}
 

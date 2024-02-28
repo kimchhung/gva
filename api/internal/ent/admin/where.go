@@ -65,6 +65,11 @@ func UpdatedAt(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldDeletedAt, v))
+}
+
 // Username applies equality check predicate on the "username" field. It's identical to UsernameEQ.
 func Username(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldUsername, v))
@@ -163,6 +168,46 @@ func UpdatedAtLT(v time.Time) predicate.Admin {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...int) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...int) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v int) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // UsernameEQ applies the EQ predicate on the "username" field.

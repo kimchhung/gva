@@ -1,8 +1,6 @@
 package permissions
 
 import (
-	"slices"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/app/common/contexts"
 	app_err "github.com/kimchhung/gva/app/common/error"
@@ -10,47 +8,56 @@ import (
 
 type PermissionKey string
 
-func RequireAny(permissions ...PermissionKey) func(*fiber.Ctx) error {
+func RequireAny(permissions ...PermissionKey) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		adminCtx := contexts.MustAdminContext(c.UserContext())
+		adminCtx, err := contexts.GetAdminContext(c.UserContext())
+		if err != nil {
+			return err
+		}
+
 		if adminCtx.IsSuperAdmin() {
-			return c.Next()
+			return nil
 		}
 
-		required := make(map[string]struct{})
-		for _, p := range permissions {
-			required[string(p)] = struct{}{}
-		}
-
+		rolePermissionsSet := make(map[string]struct{})
 		for _, rolePermission := range adminCtx.PermissionNames() {
-			if _, ok := required[rolePermission]; ok {
-				return c.Next()
+			rolePermissionsSet[rolePermission] = struct{}{}
+		}
+
+		for _, p := range permissions {
+			if _, exists := rolePermissionsSet[string(p)]; exists {
+				return nil // Found a matching permission, no need to check further
+			}
+		}
+
+		return app_err.ErrUnauthorized // None of the required permissions were found
+	}
+}
+
+func RequireAll(permissions ...PermissionKey) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		adminCtx, err := contexts.GetAdminContext(c.UserContext())
+		if err != nil {
+			return err
+		}
+
+		if adminCtx.IsSuperAdmin() {
+			return nil
+		}
+
+		requireds := make(map[string]struct{})
+		for _, p := range permissions {
+			requireds[string(p)] = struct{}{}
+		}
+
+		for _, adminPermssion := range adminCtx.PermissionNames() {
+			delete(requireds, adminPermssion)
+
+			if len(requireds) == 0 {
+				return nil
 			}
 		}
 
 		return app_err.ErrUnauthorized
-	}
-}
-
-func RequireAll(permissions ...PermissionKey) func(*fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		adminCtx := contexts.MustAdminContext(c.UserContext())
-		if adminCtx.IsSuperAdmin() {
-			return c.Next()
-		}
-
-		required := make(map[string]struct{})
-		for _, p := range permissions {
-			required[string(p)] = struct{}{}
-		}
-
-		// Check if all required permissions are present.
-		for key := range required {
-			if !slices.Contains(adminCtx.PermissionNames(), key) {
-				return app_err.ErrUnauthorized
-			}
-		}
-
-		return c.Next()
 	}
 }

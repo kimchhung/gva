@@ -15,7 +15,9 @@ import (
 	"github.com/kimchhung/gva/config"
 	"github.com/kimchhung/gva/internal/bootstrap"
 	"github.com/kimchhung/gva/internal/bootstrap/database"
+
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
+	_ "github.com/kimchhung/gva/internal/ent/runtime"
 )
 
 // @title GVA API

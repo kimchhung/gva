@@ -343,12 +343,14 @@ func (c *AdminClient) QueryRoles(a *Admin) *RoleQuery {
 
 // Hooks returns the client hooks.
 func (c *AdminClient) Hooks() []Hook {
-	return c.hooks.Admin
+	hooks := c.hooks.Admin
+	return append(hooks[:len(hooks):len(hooks)], admin.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *AdminClient) Interceptors() []Interceptor {
-	return c.inters.Admin
+	inters := c.inters.Admin
+	return append(inters[:len(inters):len(inters)], admin.Interceptors[:]...)
 }
 
 func (c *AdminClient) mutate(ctx context.Context, m *AdminMutation) (Value, error) {
@@ -657,12 +659,14 @@ func (c *RoleClient) QueryPermissions(r *Role) *PermissionQuery {
 
 // Hooks returns the client hooks.
 func (c *RoleClient) Hooks() []Hook {
-	return c.hooks.Role
+	hooks := c.hooks.Role
+	return append(hooks[:len(hooks):len(hooks)], role.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *RoleClient) Interceptors() []Interceptor {
-	return c.inters.Role
+	inters := c.inters.Role
+	return append(inters[:len(inters):len(inters)], role.Interceptors[:]...)
 }
 
 func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error) {
