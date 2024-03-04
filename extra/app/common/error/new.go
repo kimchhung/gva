@@ -6,8 +6,6 @@ type Error struct {
 	HttpCode  int
 	ErrorCode int
 	Message   string
-
-	Bypass *bool
 }
 
 type Option func(*Error)
@@ -26,14 +24,6 @@ func WithMessageFunc(fn func(previous string) string) Option {
 func WithMessage(msg string) Option {
 	return func(err *Error) {
 		err.Message = msg
-	}
-}
-
-// Bypass Error check at recover level
-func WithBypass(any) Option {
-	return func(err *Error) {
-		bool := true
-		err.Bypass = &bool
 	}
 }
 

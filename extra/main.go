@@ -16,8 +16,6 @@ import (
 
 	"github.com/kimchhung/gva/extra/app/module/permission"
 	"github.com/kimchhung/gva/extra/app/module/role"
-	"github.com/kimchhung/gva/extra/app/module/route"
-	"github.com/kimchhung/gva/extra/app/module/router"
 
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 	_ "github.com/kimchhung/gva/extra/internal/ent/runtime"
@@ -49,13 +47,8 @@ func main() {
 		common.NewCommonModule,
 		admin.NewAdminModule,
 		auth.NewAuthModule,
-
-		role.NewRoleModule,
 		role.NewRoleModule,
 		permission.NewPermissionModule,
-		router.NewRouterModule,
-		route.NewRouteModule,
-		route.NewRouteModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Start Application

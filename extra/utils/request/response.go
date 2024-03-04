@@ -47,6 +47,7 @@ var ErrorHandler = func(c *fiber.Ctx, err error) error {
 		resErr = e
 	} else {
 		resErr = app_err.NewError(app_err.ErrUnknownError,
+			// * count as server error can send message to webhook chat or save as log
 			app_err.WithMessage(err.Error()),
 		)
 	}
