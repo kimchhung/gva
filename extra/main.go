@@ -49,6 +49,7 @@ func main() {
 		route.NewRouteModule,
 		todo.NewTodoModule,
 		todo.NewTodoModule,
+		todo.NewTodoModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Add Router

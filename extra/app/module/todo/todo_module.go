@@ -16,9 +16,11 @@ var NewTodoModule = fx.Module("TodoModule",
 	fx.Provide(service.NewTodoService),
 
 	// Regiser Controller
-	fx.Annotate(
-		controller.NewTodoController,
-		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"controllers"`),
+	fx.Provide(
+		fx.Annotate(
+			controller.NewTodoController,
+			fx.As(new(rctrl.Controller)),
+			fx.ResultTags(`group:"controllers"`),
+		),
 	),
 )

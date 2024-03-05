@@ -22,10 +22,12 @@ var New{{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	fx.Provide(service.New{{.EntityPascal}}Service),
 
 	// Regiser Controller
-	fx.Annotate(
-		controller.New{{.EntityPascal}}Controller,
-		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(%sgroup:"controllers"%s),
+	fx.Provide(
+		fx.Annotate(
+			controller.NewTodoController,
+			fx.As(new(rctrl.Controller)),
+			fx.ResultTags(%sgroup:"controllers"%s),
+		),
 	),
 )
 `, special, special,
