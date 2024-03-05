@@ -1,12 +1,13 @@
 package service
 
 import (
-	"github.com/kimchhung/gva/extra/app/module/route/repository"
 	"github.com/kimchhung/gva/extra/app/module/route/dto"
+	"github.com/kimchhung/gva/extra/app/module/route/repository"
+
+	"context"
 
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
-	"context"
 )
 
 type RouteService struct {
@@ -40,4 +41,3 @@ func (s *RouteService) UpdateRoute(ctx context.Context, id int, payload *dto.Rou
 func (s *RouteService) DeleteRoute(ctx context.Context, id int) error {
 	return s.repo.Client().DeleteOneID(id).Exec(ctx)
 }
-

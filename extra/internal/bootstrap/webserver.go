@@ -14,7 +14,7 @@ import (
 	"github.com/kimchhung/gva/extra/app/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
 )

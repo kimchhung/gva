@@ -491,7 +491,7 @@ definitions:
           $ref: '#/definitions/ent.Role'
         type: array
     type: object
-  request.Response:
+  response.Response:
     properties:
       code:
         type: integer
@@ -519,7 +519,7 @@ paths:
           description: Successfully retrieved Admins
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   items:
@@ -550,7 +550,7 @@ paths:
           description: Successfully created Admin
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
@@ -578,7 +578,7 @@ paths:
         "200":
           description: Successfully deleted Admin
           schema:
-            $ref: '#/definitions/request.Response'
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
       summary: Delete a Admin
@@ -602,7 +602,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
@@ -637,7 +637,7 @@ paths:
           description: Successfully updated Admin
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.AdminResponse'
@@ -645,6 +645,24 @@ paths:
       security:
       - Bearer: []
       summary: Update a Admin
+      tags:
+      - Admin
+  /admin/route:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of permissions for an Admin by ID
+      operationId: get-Admin-permissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admin permissions
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Admin permissions
       tags:
       - Admin
   /auth/login:
@@ -667,7 +685,7 @@ paths:
           description: Successfully created Auth
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   additionalProperties:
@@ -697,7 +715,7 @@ paths:
           description: Successfully registered admin
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/ent.Admin'
@@ -727,7 +745,7 @@ paths:
           description: Successfully registered admin
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RegisterResponse'
@@ -748,7 +766,7 @@ paths:
           description: Successfully retrieved Permissions
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   additionalProperties:
@@ -786,7 +804,7 @@ paths:
           description: Successfully created Permission
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
@@ -814,7 +832,7 @@ paths:
         "200":
           description: Successfully deleted Permission
           schema:
-            $ref: '#/definitions/request.Response'
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
       summary: Delete a Permission
@@ -838,7 +856,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
@@ -872,7 +890,7 @@ paths:
           description: Successfully updated Permission
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.PermissionResponse'
@@ -895,7 +913,7 @@ paths:
           description: Successfully retrieved Roles
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   additionalProperties:
@@ -933,7 +951,7 @@ paths:
           description: Successfully created Role
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
@@ -961,7 +979,7 @@ paths:
         "200":
           description: Successfully deleted Role
           schema:
-            $ref: '#/definitions/request.Response'
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
       summary: Delete a Role
@@ -985,7 +1003,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
@@ -1019,7 +1037,7 @@ paths:
           description: Successfully updated Role
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RoleResponse'
@@ -1042,7 +1060,7 @@ paths:
           description: Successfully retrieved Routes
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   additionalProperties:
@@ -1080,7 +1098,7 @@ paths:
           description: Successfully created Route
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RouteResponse'
@@ -1108,7 +1126,7 @@ paths:
         "200":
           description: Successfully deleted Route
           schema:
-            $ref: '#/definitions/request.Response'
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
       summary: Delete a Route
@@ -1132,7 +1150,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RouteResponse'
@@ -1166,7 +1184,7 @@ paths:
           description: Successfully updated Route
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.RouteResponse'
@@ -1189,7 +1207,7 @@ paths:
           description: Successfully retrieved Todos
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   additionalProperties:
@@ -1227,7 +1245,7 @@ paths:
           description: Successfully created Todo
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.TodoResponse'
@@ -1255,7 +1273,7 @@ paths:
         "200":
           description: Successfully deleted Todo
           schema:
-            $ref: '#/definitions/request.Response'
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
       summary: Delete a Todo
@@ -1279,7 +1297,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.TodoResponse'
@@ -1313,7 +1331,7 @@ paths:
           description: Successfully updated Todo
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 data:
                   $ref: '#/definitions/dto.TodoResponse'

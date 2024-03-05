@@ -2,6 +2,8 @@ package request
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/extra/app/common/contexts"
+	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/utils/validator"
 )
 
@@ -33,6 +35,14 @@ func Parse(parser Parser, parsers ...Parser) fiber.Handler {
 			}
 		}
 
+		return nil
+	}
+}
+
+// required middleware jwtService.ProtectAdmin()
+func Admin(out *ent.Admin) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		out = contexts.MustAdminContext(c.UserContext()).Admin
 		return nil
 	}
 }

@@ -3,17 +3,20 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/extra/app/common/mock"
+	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/module/route/dto"
 	"github.com/kimchhung/gva/extra/app/module/route/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 // don't remove for runtime type checking
 var _ interface{ rctrl.Controller } = (*RouteController)(nil)
 
 type RouteController struct {
-	service *service.RouteService
+	service    *service.RouteService
+	jwtService *services.JwtService
 }
 
 func (con *RouteController) Routes(r fiber.Router) {
@@ -21,9 +24,10 @@ func (con *RouteController) Routes(r fiber.Router) {
 	rctrl.Register(route, con)
 }
 
-func NewRouteController(service *service.RouteService) *RouteController {
+func NewRouteController(service *service.RouteService, jwtService *services.JwtService) *RouteController {
 	return &RouteController{
-		service: service,
+		service:    service,
+		jwtService: jwtService,
 	}
 }
 
@@ -33,7 +37,7 @@ func NewRouteController(service *service.RouteService) *RouteController {
 // @ID list-all-Routes
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} request.Response{data=map[string]dto.RouteResponse{list=[]dto.RouteResponse}} "Successfully retrieved Routes"
+// @Success 200 {object} response.Response{data=map[string]dto.RouteResponse{list=[]dto.RouteResponse}} "Successfully retrieved Routes"
 // @Router /route [get]
 // @Security Bearer
 func (con *RouteController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
@@ -43,11 +47,11 @@ func (con *RouteController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		// 	return err
 		// }
 
-		return request.Resp(c,
-			request.Data(map[string]any{
+		return request.Response(c,
+			response.Data(map[string]any{
 				"list": mock.ROUTE_LIST,
 			}),
-			request.Message("Route list retreived successfully!"),
+			response.Message("Route list retreived successfully!"),
 		)
 	})
 }
@@ -60,7 +64,7 @@ func (con *RouteController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Route ID"
-// @Success   200 {object} request.Response{data=dto.RouteResponse}
+// @Success   200 {object} response.Response{data=dto.RouteResponse}
 // @Router /route/{id} [get]
 func (con *RouteController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one Route").DoWithScope(func() []fiber.Handler {
@@ -78,9 +82,9 @@ func (con *RouteController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The route retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The route retrieved successfully!"),
 				)
 			},
 		}
@@ -95,7 +99,7 @@ func (con *RouteController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Route body dto.RouteRequest true "Route data"
-// @Success  200 {object} request.Response{data=dto.RouteResponse} "Successfully created Route"
+// @Success  200 {object} response.Response{data=dto.RouteResponse} "Successfully created Route"
 // @Router /route [post]
 func (con *RouteController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one Route").DoWithScope(func() []fiber.Handler {
@@ -112,9 +116,9 @@ func (con *RouteController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The route retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The route retrieved successfully!"),
 				)
 			},
 		}
@@ -130,7 +134,7 @@ func (con *RouteController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Param id path int true "Route ID"
 // @Param Route body dto.RouteRequest true "Route data"
-// @Success  200 {object} request.Response{data=dto.RouteResponse} "Successfully updated Route"
+// @Success  200 {object} response.Response{data=dto.RouteResponse} "Successfully updated Route"
 // @Router /route/{id} [patch]
 func (con *RouteController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one Route").DoWithScope(func() []fiber.Handler {
@@ -150,9 +154,9 @@ func (con *RouteController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The route retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The route retrieved successfully!"),
 				)
 			},
 		}
@@ -167,7 +171,7 @@ func (con *RouteController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Route ID"
-// @Success  200 {object} request.Response{} "Successfully deleted Route"
+// @Success  200 {object} response.Response{} "Successfully deleted Route"
 // @Router /route/{id} [delete]
 func (con *RouteController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Route").DoWithScope(func() []fiber.Handler {
@@ -184,8 +188,8 @@ func (con *RouteController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Message("The route retrieved successfully!"),
+				return request.Response(c,
+					response.Message("The route retrieved successfully!"),
 				)
 			},
 		}

@@ -6,8 +6,10 @@ import (
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/module/admin/dto"
 	"github.com/kimchhung/gva/extra/app/module/admin/service"
+	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 var _ interface{ rctrl.Controller } = (*AdminController)(nil)
@@ -37,7 +39,7 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @ID list-all-Admins
 // @Accept  json
 // @Produce  json
-// @Success  200 {object} request.Response{data=[]dto.AdminResponse} "Successfully retrieved Admins"
+// @Success  200 {object} response.Response{data=[]dto.AdminResponse} "Successfully retrieved Admins"
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/").Name("get many Admins").Do(
@@ -51,9 +53,9 @@ func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				return err
 			}
 
-			return request.Resp(c,
-				request.Data(list),
-				request.Message("Admin list retreived successfully!"),
+			return request.Response(c,
+				response.Data(list),
+				response.Message("Admin list retreived successfully!"),
 			)
 		},
 	)
@@ -68,7 +70,7 @@ func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Security Bearer
 // @Param id path int true "Admin ID"
-// @Success   200 {object} request.Response{data=dto.AdminResponse}
+// @Success   200 {object} response.Response{data=dto.AdminResponse}
 // @Router /admin/{id} [get]
 func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one Admin").DoWithScope(func() []fiber.Handler {
@@ -90,9 +92,9 @@ func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The admin retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The admin retrieved successfully!"),
 				)
 			},
 		}
@@ -107,7 +109,7 @@ func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} request.Response{data=dto.AdminResponse} "Successfully created Admin"
+// @Success  200 {object} response.Response{data=dto.AdminResponse} "Successfully created Admin"
 // @Router /admin [post]
 func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one Admin").DoWithScope(func() []fiber.Handler {
@@ -127,9 +129,9 @@ func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The admin was created successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The admin was created successfully!"),
 				)
 			},
 		}
@@ -145,13 +147,13 @@ func (con *AdminController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Param id path int true "Admin ID"
 // @Param Admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} request.Response{data=dto.AdminResponse} "Successfully updated Admin"
+// @Success  200 {object} response.Response{data=dto.AdminResponse} "Successfully updated Admin"
 // @Router /admin/{id} [patch]
 func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one Admin").DoWithScope(func() []fiber.Handler {
 		req := new(dto.AdminRequest)
 		param := &struct {
-			ID int `params:"id" validate:"gte=0"`
+			ID int `params:"id" validate:"gt=0"`
 		}{}
 
 		return []fiber.Handler{
@@ -169,9 +171,9 @@ func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The admin was updated successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The admin was updated successfully!"),
 				)
 			},
 		}
@@ -186,7 +188,7 @@ func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Admin ID"
-// @Success  200 {object} request.Response{} "Successfully deleted Admin"
+// @Success  200 {object} response.Response{} "Successfully deleted Admin"
 // @Router /admin/{id} [delete]
 func (con *AdminController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Admin").DoWithScope(func() []fiber.Handler {
@@ -207,9 +209,68 @@ func (con *AdminController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
+				return request.Response(c,
+					response.Message("The Admin was deleted successfully!"),
+				)
+			},
+		}
+	})
+}
 
-					request.Message("The Admin was deleted successfully!"),
+// @Tags Admin
+// @Security Bearer
+// @Summary Get Admin Routes
+// @Description Get a list of routes for an Admin by ID
+// @ID get-Admin-routes
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response{} "Successfully retrieved Admin routes"
+// @Router /admin/route [get]
+func (con *AdminController) AdminRoutes(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Get("/route").Name("get many admin routes").DoWithScope(func() []fiber.Handler {
+		var admin *ent.Admin
+
+		return []fiber.Handler{
+			request.Admin(admin),
+			func(c *fiber.Ctx) error {
+				routes, err := con.service.GetAdminNestedRouteById(c.UserContext(), admin.ID)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(routes),
+					response.Message("Admin routes list retreived successfully!"),
+				)
+			},
+		}
+	})
+}
+
+// @Tags Admin
+// @Security Bearer
+// @Summary Get Admin permissions
+// @Description Get a list of permissions for an Admin by ID
+// @ID get-Admin-permissions
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response{} "Successfully retrieved Admin permissions"
+// @Router /admin/route [get]
+func (con *AdminController) AdminPermissions(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Get("/permission").Name("get many admin permissions").DoWithScope(func() []fiber.Handler {
+		var admin *ent.Admin
+
+		return []fiber.Handler{
+			request.Admin(admin),
+			func(c *fiber.Ctx) error {
+				permissions, err := con.service.GetAdminPermissionById(c.UserContext(), admin.ID)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(permissions),
+					response.Message("Admin permissions list retreived successfully!"),
 				)
 			},
 		}

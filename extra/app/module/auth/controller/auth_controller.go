@@ -7,7 +7,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/module/auth/dto"
 	"github.com/kimchhung/gva/extra/app/module/auth/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 /*
@@ -43,7 +44,7 @@ func NewAuthController(service *service.AuthService, jwtService *services.JwtSer
 // @Accept  json
 // @Produce  json
 // @Param Auth body dto.LoginRequest true "Auth data"
-// @Success 200 {object} request.Response{data=map[string]dto.LoginResponse{list=[]dto.LoginResponse}} "Successfully created Auth"
+// @Success 200 {object} response.Response{data=map[string]dto.LoginResponse{list=[]dto.LoginResponse}} "Successfully created Auth"
 // @Router /auth/login [post]
 func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/login").Name("admin login").DoWithScope(func() []fiber.Handler {
@@ -65,9 +66,9 @@ func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					Admin: admin,
 				}
 
-				return request.Resp(c,
-					request.Data(res),
-					request.Message("The admin was logined successfully!"),
+				return request.Response(c,
+					response.Data(res),
+					response.Message("The admin was logined successfully!"),
 				)
 			},
 		}
@@ -81,7 +82,7 @@ func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Auth body dto.RegisterRequest true "Registration data"
-// @Success  200 {object} request.Response{data=dto.RegisterResponse} "Successfully registered admin"
+// @Success  200 {object} response.Response{data=dto.RegisterResponse} "Successfully registered admin"
 // @Router /auth/register [post]
 func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/register").Name("admin register").DoWithScope(func() []fiber.Handler {
@@ -104,9 +105,9 @@ func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				}
 
 				// Assuming you want to return some user data in the response
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The admin was registered successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The admin was registered successfully!"),
 				)
 			},
 		}
@@ -120,7 +121,7 @@ func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @ID create-Auth-me
 // @Accept  json
 // @Produce  json
-// @Success  200 {object} request.Response{data=ent.Admin} "Successfully registered admin"
+// @Success  200 {object} response.Response{data=ent.Admin} "Successfully registered admin"
 // @Router /auth/me [get]
 func (con *AuthController) Me(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	meta.Use(
@@ -132,9 +133,9 @@ func (con *AuthController) Me(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 			return err
 		}
 
-		return request.Resp(c,
-			request.Data(adminCtx.Admin),
-			request.Message("The me was retrieved successfully!"),
+		return request.Response(c,
+			response.Data(adminCtx.Admin),
+			response.Message("The me was retrieved successfully!"),
 		)
 	})
 }

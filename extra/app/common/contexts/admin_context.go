@@ -13,9 +13,11 @@ const (
 )
 
 type (
+	AdminContextKey    struct{}
 	AdminContextOption func(*AdminContext)
 	AdminContext       struct {
 		context.Context
+		cancel context.CancelFunc
 
 		Admin *ent.Admin
 
@@ -92,9 +94,8 @@ func WithAdmin(admin *ent.Admin) AdminContextOption {
 }
 
 func NewAdminContext(parentCtx context.Context, opts ...AdminContextOption) *AdminContext {
-	ctx := &AdminContext{
-		Context: parentCtx,
-	}
+	ctx := &AdminContext{}
+	ctx.Context = context.WithValue(parentCtx, AdminContextKey{}, ctx)
 
 	for _, opt := range opts {
 		opt(ctx)
@@ -104,12 +105,17 @@ func NewAdminContext(parentCtx context.Context, opts ...AdminContextOption) *Adm
 }
 
 func GetAdminContext(ctx context.Context) (*AdminContext, error) {
-	actx, ok := ctx.(*AdminContext)
-	if !ok {
-		return nil, errors.New("context is not adminContext")
+	v, ok := ctx.(*AdminContext)
+	if ok {
+		return v, nil
 	}
 
-	return actx, nil
+	v, ok = ctx.Value(AdminContextKey{}).(*AdminContext)
+	if ok {
+		return v, nil
+	}
+
+	return nil, errors.New("context does not contain AdminContext")
 }
 
 func MustAdminContext(ctx context.Context) *AdminContext {

@@ -11,7 +11,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/module/{{.EntitySnake}}/dto"
 	"github.com/kimchhung/gva/extra/app/module/{{.EntitySnake}}/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 // don't remove for runtime type checking
@@ -39,7 +40,7 @@ func New{{.EntityPascal}}Controller(service *service.{{.EntityPascal}}Service) *
 // @ID list-all-{{.EntityPascal}}s
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} request.Response{data=map[string]dto.{{.EntityPascal}}Response{list=[]dto.{{.EntityPascal}}Response}} "Successfully retrieved {{.EntityPascal}}s"
+// @Success 200 {object} response.Response{data=map[string]dto.{{.EntityPascal}}Response{list=[]dto.{{.EntityPascal}}Response}} "Successfully retrieved {{.EntityPascal}}s"
 // @Router /{{.EntityKebab}} [get]
 // @Security Bearer
 func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
@@ -49,9 +50,9 @@ func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHa
 			return err
 		}
 
-		return request.Resp(c,
-			request.Data(list),
-			request.Message("{{.EntityPascal}} list retreived successfully!"),
+		return request.Response(c,
+			response.Data(list),
+			response.Message("{{.EntityPascal}} list retreived successfully!"),
 		)
 	})
 }
@@ -64,7 +65,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *rctrl.RouteMeta) rctrl.MetaHa
 // @Accept  json
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
-// @Success   200 {object} request.Response{data=dto.{{.EntityPascal}}Response}
+// @Success   200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}}/{id} [get]
 func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
@@ -82,9 +83,9 @@ func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHan
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The {{.EntityAllLower}} retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}
@@ -99,7 +100,7 @@ func (con *{{.EntityPascal}}Controller) Get(meta *rctrl.RouteMeta) rctrl.MetaHan
 // @Accept  json
 // @Produce  json
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
-// @Success  200 {object} request.Response{data=dto.{{.EntityPascal}}Response} "Successfully created {{.EntityPascal}}"
+// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully created {{.EntityPascal}}"
 // @Router /{{.EntityKebab}} [post]
 func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
@@ -116,9 +117,9 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The {{.EntityAllLower}} retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}
@@ -135,7 +136,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *rctrl.RouteMeta) rctrl.Meta
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
-// @Success  200 {object} request.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
+// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
 // @Router /{{.EntityKebab}}/{id} [patch]
 func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
@@ -155,9 +156,9 @@ func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.Meta
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The {{.EntityAllLower}} retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}
@@ -172,7 +173,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *rctrl.RouteMeta) rctrl.Meta
 // @Accept  json
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
-// @Success  200 {object} request.Response{} "Successfully deleted {{.EntityPascal}}"
+// @Success  200 {object} response.Response{} "Successfully deleted {{.EntityPascal}}"
 // @Router /{{.EntityKebab}}/{id} [delete]
 func (con  *{{.EntityPascal}}Controller) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []fiber.Handler {
@@ -189,8 +190,8 @@ func (con  *{{.EntityPascal}}Controller) Delete(meta *rctrl.RouteMeta) rctrl.Met
 					return err
 				}
 
-				return request.Resp(c,
-					request.Message("The {{.EntityAllLower}} retrieved successfully!"),
+				return request.Response(c,
+					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}

@@ -1,16 +1,11 @@
-package request
+package response
 
 import (
 	"encoding/json"
 	"net/http"
 	"reflect"
 
-	"github.com/go-playground/validator/v10"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
-	in_validator "github.com/kimchhung/gva/extra/utils/validator"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -30,55 +25,6 @@ type (
 		HttpStatus int `json:"-"`
 	}
 )
-
-// Nothing to describe this fucking variable.
-var IsProduction bool
-
-// Default error handler
-var ErrorHandler = func(c *fiber.Ctx, err error) error {
-	var resErr *app_err.Error
-
-	if e, ok := err.(validator.ValidationErrors); ok {
-		resErr = app_err.NewError(
-			app_err.ErrValidationError,
-			app_err.WithMessage(in_validator.RemoveTopStruct(e.Translate(in_validator.Trans))),
-		)
-	} else if e, ok := err.(*app_err.Error); ok {
-		resErr = e
-	} else {
-		resErr = app_err.NewError(app_err.ErrUnknownError,
-			// * count as server error can send message to webhook chat or save as log
-			app_err.WithMessage(err.Error()),
-		)
-	}
-
-	if !IsProduction {
-		log.Error().Err(err).Msg("From: Fiber's error handler")
-	}
-
-	return Resp(c, Error(resErr))
-}
-
-func defaultReponse() *Response {
-	return &Response{
-		Code:       SuccessCode,
-		Message:    SuccessMessage,
-		HttpStatus: SuccessHttpCode,
-		Data:       map[string]any{},
-	}
-}
-
-// A fuction to return beautiful responses.
-func Resp(c *fiber.Ctx, opt ReponseOption, opts ...ReponseOption) error {
-	resp := defaultReponse()
-	opt(resp)
-
-	for _, op := range opts {
-		op(resp)
-	}
-
-	return c.Status(resp.HttpStatus).JSON(resp)
-}
 
 /*
 return as data in format
@@ -118,7 +64,7 @@ func Data(data any, keyValues ...map[string]any) ReponseOption {
 				}
 			}
 
-			resp.Data = data
+			resp.Data = obj
 			return
 		}
 
@@ -140,7 +86,7 @@ func Data(data any, keyValues ...map[string]any) ReponseOption {
 				}
 			}
 
-			resp.Data = data
+			resp.Data = obj
 			return
 		}
 

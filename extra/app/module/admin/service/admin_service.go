@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/kimchhung/gva/extra/app/module/admin/dto"
 	"github.com/kimchhung/gva/extra/app/module/admin/repository"
 
@@ -9,6 +8,7 @@ import (
 
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/ent/admin"
+	"github.com/kimchhung/gva/extra/internal/ent/role"
 )
 
 type AdminService struct {
@@ -30,9 +30,6 @@ func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, er
 }
 
 func (s *AdminService) CreateAdmin(ctx context.Context, request dto.AdminRequest) (*ent.Admin, error) {
-
-	log.Debug(request)
-
 	return s.repo.Client().Create().
 		SetPassword(request.Password).
 		SetUsername(request.Username).
@@ -49,4 +46,30 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request dto.Admi
 
 func (s *AdminService) DeleteAdmin(ctx context.Context, id int) error {
 	return s.repo.Client().DeleteOneID(id).Exec(ctx)
+}
+
+func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int) ([]*ent.Route, error) {
+	routes, err := s.repo.DB.Ent.Role.Query().
+		Where(role.HasAdminsWith(admin.ID(adminId))).
+		QueryRoutes().All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return groupRouteToNested(routes), nil
+}
+
+func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId int) ([]*ent.Permission, error) {
+	routes, err := s.repo.DB.Ent.Role.Query().
+		Where(
+			role.HasAdminsWith(admin.ID(adminId)),
+		).
+		QueryPermissions().All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return routes, nil
 }

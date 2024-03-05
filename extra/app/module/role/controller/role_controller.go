@@ -6,7 +6,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/module/role/dto"
 	"github.com/kimchhung/gva/extra/app/module/role/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 // don't remove for runtime type checking
@@ -33,7 +34,7 @@ func NewRoleController(service *service.RoleService) *RoleController {
 // @ID list-all-Roles
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} request.Response{data=map[string]dto.RoleResponse{list=[]dto.RoleResponse}} "Successfully retrieved Roles"
+// @Success 200 {object} response.Response{data=map[string]dto.RoleResponse{list=[]dto.RoleResponse}} "Successfully retrieved Roles"
 // @Router /role [get]
 // @Security Bearer
 func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
@@ -43,11 +44,11 @@ func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		// 	return err
 		// }
 
-		return request.Resp(c,
-			request.Data(map[string]any{
+		return request.Response(c,
+			response.Data(map[string]any{
 				"list": mock.GetRoutes(),
 			}),
-			request.Message("Role list retreived successfully!"),
+			response.Message("Role list retreived successfully!"),
 		)
 	})
 }
@@ -60,7 +61,7 @@ func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Role ID"
-// @Success   200 {object} request.Response{data=dto.RoleResponse}
+// @Success   200 {object} response.Response{data=dto.RoleResponse}
 // @Router /role/{id} [get]
 func (con *RoleController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one Role").DoWithScope(func() []fiber.Handler {
@@ -78,9 +79,9 @@ func (con *RoleController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The role retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The role retrieved successfully!"),
 				)
 			},
 		}
@@ -95,7 +96,7 @@ func (con *RoleController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Role body dto.RoleRequest true "Role data"
-// @Success  200 {object} request.Response{data=dto.RoleResponse} "Successfully created Role"
+// @Success  200 {object} response.Response{data=dto.RoleResponse} "Successfully created Role"
 // @Router /role [post]
 func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one Role").DoWithScope(func() []fiber.Handler {
@@ -112,9 +113,9 @@ func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The role retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The role retrieved successfully!"),
 				)
 			},
 		}
@@ -130,7 +131,7 @@ func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Param id path int true "Role ID"
 // @Param Role body dto.RoleRequest true "Role data"
-// @Success  200 {object} request.Response{data=dto.RoleResponse} "Successfully updated Role"
+// @Success  200 {object} response.Response{data=dto.RoleResponse} "Successfully updated Role"
 // @Router /role/{id} [patch]
 func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one Role").DoWithScope(func() []fiber.Handler {
@@ -150,9 +151,9 @@ func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The role retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The role retrieved successfully!"),
 				)
 			},
 		}
@@ -167,7 +168,7 @@ func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Role ID"
-// @Success  200 {object} request.Response{} "Successfully deleted Role"
+// @Success  200 {object} response.Response{} "Successfully deleted Role"
 // @Router /role/{id} [delete]
 func (con *RoleController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Role").DoWithScope(func() []fiber.Handler {
@@ -184,8 +185,8 @@ func (con *RoleController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Message("The role retrieved successfully!"),
+				return request.Response(c,
+					response.Message("The role retrieved successfully!"),
 				)
 			},
 		}

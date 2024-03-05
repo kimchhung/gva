@@ -43,13 +43,12 @@ func (s *JwtService) ProtectAdmin() fiber.Handler {
 				return err
 			}
 
-			c.SetUserContext(
-				contexts.NewAdminContext(
-					c.UserContext(),
-					contexts.WithAdmin(admin),
-				),
+			adminCtx := contexts.NewAdminContext(
+				c.UserContext(),
+				contexts.WithAdmin(admin),
 			)
 
+			c.SetUserContext(adminCtx)
 			return nil
 		}),
 	)

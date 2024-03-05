@@ -5,7 +5,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/module/todo/dto"
 	"github.com/kimchhung/gva/extra/app/module/todo/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
-	"github.com/kimchhung/gva/extra/utils/request"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 // don't remove for runtime type checking
@@ -33,7 +34,7 @@ func NewTodoController(service *service.TodoService) *TodoController {
 // @ID list-all-Todos
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} request.Response{data=map[string]dto.TodoResponse{list=[]dto.TodoResponse}} "Successfully retrieved Todos"
+// @Success 200 {object} response.Response{data=map[string]dto.TodoResponse{list=[]dto.TodoResponse}} "Successfully retrieved Todos"
 // @Router /todo [get]
 // @Security Bearer
 func (con *TodoController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
@@ -43,9 +44,9 @@ func (con *TodoController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 			return err
 		}
 
-		return request.Resp(c,
-			request.Data(list),
-			request.Message("Todo list retreived successfully!"),
+		return request.Response(c,
+			response.Data(list),
+			response.Message("Todo list retreived successfully!"),
 		)
 	})
 }
@@ -58,7 +59,7 @@ func (con *TodoController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Todo ID"
-// @Success   200 {object} request.Response{data=dto.TodoResponse}
+// @Success   200 {object} response.Response{data=dto.TodoResponse}
 // @Router /todo/{id} [get]
 func (con *TodoController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/:id").Name("get one Todo").DoWithScope(func() []fiber.Handler {
@@ -76,9 +77,9 @@ func (con *TodoController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The todo retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
@@ -93,7 +94,7 @@ func (con *TodoController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Todo body dto.TodoRequest true "Todo data"
-// @Success  200 {object} request.Response{data=dto.TodoResponse} "Successfully created Todo"
+// @Success  200 {object} response.Response{data=dto.TodoResponse} "Successfully created Todo"
 // @Router /todo [post]
 func (con *TodoController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/").Name("create one Todo").DoWithScope(func() []fiber.Handler {
@@ -110,9 +111,9 @@ func (con *TodoController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The todo retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
@@ -129,7 +130,7 @@ func (con *TodoController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce  json
 // @Param id path int true "Todo ID"
 // @Param Todo body dto.TodoRequest true "Todo data"
-// @Success  200 {object} request.Response{data=dto.TodoResponse} "Successfully updated Todo"
+// @Success  200 {object} response.Response{data=dto.TodoResponse} "Successfully updated Todo"
 // @Router /todo/{id} [patch]
 func (con *TodoController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Patch("/:id").Name("update one Todo").DoWithScope(func() []fiber.Handler {
@@ -149,9 +150,9 @@ func (con *TodoController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Data(data),
-					request.Message("The todo retrieved successfully!"),
+				return request.Response(c,
+					response.Data(data),
+					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
@@ -166,7 +167,7 @@ func (con *TodoController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Todo ID"
-// @Success  200 {object} request.Response{} "Successfully deleted Todo"
+// @Success  200 {object} response.Response{} "Successfully deleted Todo"
 // @Router /todo/{id} [delete]
 func (con  *TodoController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Todo").DoWithScope(func() []fiber.Handler {
@@ -183,8 +184,8 @@ func (con  *TodoController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 					return err
 				}
 
-				return request.Resp(c,
-					request.Message("The todo retrieved successfully!"),
+				return request.Response(c,
+					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
