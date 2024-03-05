@@ -114,6 +114,17 @@ var (
 			},
 		},
 	}
+	// TodosColumns holds the columns for the "todos" table.
+	TodosColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+	}
+	// TodosTable holds the schema information for the "todos" table.
+	TodosTable = &schema.Table{
+		Name:       "todos",
+		Columns:    TodosColumns,
+		PrimaryKey: []*schema.Column{TodosColumns[0]},
+	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
 		{Name: "admin_id", Type: field.TypeInt},
@@ -195,6 +206,7 @@ var (
 		PermissionsTable,
 		RolesTable,
 		RoutesTable,
+		TodosTable,
 		AdminRolesTable,
 		RolePermissionsTable,
 		RoleRoutesTable,

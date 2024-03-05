@@ -40,5 +40,6 @@ func NewError(err *Error, opts ...Option) *Error {
 	for _, opt := range opts {
 		opt(nErr)
 	}
+
 	return nErr
 }

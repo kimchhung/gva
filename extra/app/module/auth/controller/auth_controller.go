@@ -10,13 +10,14 @@ import (
 	"github.com/kimchhung/gva/extra/utils/request"
 )
 
-// don't remove for runtime type checking
-var _ IAuthController = (*AuthController)(nil)
+/*
+runtime check, don't remove
 
-type IAuthController interface {
-	rctrl.FiberRouter
-	Login(meta *rctrl.RouteMeta) rctrl.MetaHandler
-}
+route method:
+
+func (con *Controller) Name(meta *rctrl.RouteMeta) rctrl.MetaHandler
+*/
+var _ interface{ rctrl.Controller } = (*AuthController)(nil)
 
 type AuthController struct {
 	service    *service.AuthService

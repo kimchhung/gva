@@ -14,9 +14,7 @@ type {{.EntityPascal}} struct {
 }
 
 func ({{.EntityPascal}}) Mixin() []ent.Mixin {
-	return []ent.Mixin{
-		TimetMixin{},
-	}
+	return []ent.Mixin{}
 }
 
 func ({{.EntityPascal}}) Fields() []ent.Field {

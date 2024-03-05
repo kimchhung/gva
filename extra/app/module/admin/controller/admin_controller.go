@@ -10,16 +10,7 @@ import (
 	"github.com/kimchhung/gva/extra/utils/request"
 )
 
-var _ IAdminController = (*AdminController)(nil)
-
-type IAdminController interface {
-	rctrl.FiberRouter
-	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
-}
+var _ interface{ rctrl.Controller } = (*AdminController)(nil)
 
 type AdminController struct {
 	service    *service.AdminService

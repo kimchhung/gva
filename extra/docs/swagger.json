@@ -1157,6 +1157,258 @@
                     }
                 }
             }
+        },
+        "/todo": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all Todos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "List all Todos",
+                "operationId": "list-all-Todos",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Todos",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/dto.TodoResponse"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "list": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/definitions/dto.TodoResponse"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new Todo with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Create a Todo",
+                "operationId": "create-Todo",
+                "parameters": [
+                    {
+                        "description": "Todo data",
+                        "name": "Todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Todo",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/todo/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a Todo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Get a Todo",
+                "operationId": "get-Todo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Todo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a Todo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Delete a Todo",
+                "operationId": "delete-Todo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Todo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted Todo",
+                        "schema": {
+                            "$ref": "#/definitions/request.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a Todo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Update a Todo",
+                "operationId": "update-Todo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Todo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Todo data",
+                        "name": "Todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Todo",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/request.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1542,6 +1794,32 @@
                 },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TodoRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TodoResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
                 }
             }

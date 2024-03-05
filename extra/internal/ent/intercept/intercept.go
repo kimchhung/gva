@@ -13,6 +13,7 @@ import (
 	"github.com/kimchhung/gva/extra/internal/ent/predicate"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
+	"github.com/kimchhung/gva/extra/internal/ent/todo"
 )
 
 // The Query interface represents an operation that queries a graph.
@@ -179,6 +180,33 @@ func (f TraverseRoute) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.RouteQuery", q)
 }
 
+// The TodoFunc type is an adapter to allow the use of ordinary function as a Querier.
+type TodoFunc func(context.Context, *ent.TodoQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f TodoFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.TodoQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.TodoQuery", q)
+}
+
+// The TraverseTodo type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseTodo func(context.Context, *ent.TodoQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseTodo) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseTodo) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.TodoQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.TodoQuery", q)
+}
+
 // NewQuery returns the generic Query interface for the given typed query.
 func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
@@ -190,6 +218,8 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.RoleQuery, predicate.Role, role.OrderOption]{typ: ent.TypeRole, tq: q}, nil
 	case *ent.RouteQuery:
 		return &query[*ent.RouteQuery, predicate.Route, route.OrderOption]{typ: ent.TypeRoute, tq: q}, nil
+	case *ent.TodoQuery:
+		return &query[*ent.TodoQuery, predicate.Todo, todo.OrderOption]{typ: ent.TypeTodo, tq: q}, nil
 	default:
 		return nil, fmt.Errorf("unknown query type %T", q)
 	}

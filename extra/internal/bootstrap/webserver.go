@@ -43,7 +43,7 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, routers *module.Router, f
 			OnStart: func(ctx context.Context) error {
 				// Register middlewares & routes
 				middlewares.Register()
-				routers.Register()
+				routers.Register(fiber)
 
 				// Custom Startup Messages
 				host, port := config.ParseAddr(cfg.App.Port)
@@ -116,7 +116,9 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, routers *module.Router, f
 
 				log.Info().Msg("Running cleanup tasks...")
 				log.Info().Msg("1- Shutdown the database")
-				// database.ShutdownDatabase()
+
+				database.ShutdownDatabase()
+
 				log.Info().Msgf("%s was successful shutdown.", cfg.App.Name)
 				log.Info().Msg("\u001b[96msee you again👋\u001b[0m")
 

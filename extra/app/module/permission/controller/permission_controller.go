@@ -9,17 +9,7 @@ import (
 )
 
 // don't remove for runtime type checking
-var _ IPermissionController = (*PermissionController)(nil)
-
-type IPermissionController interface {
-	rctrl.FiberRouter
-	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
-}
-
+var _ interface{ rctrl.Controller } = (*PermissionController)(nil)
 
 type PermissionController struct {
 	service *service.PermissionService
@@ -114,7 +104,7 @@ func (con *PermissionController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 			),
 
 			func(c *fiber.Ctx) error {
-				data, err := con.service.CreatePermission(c.UserContext(),body)
+				data, err := con.service.CreatePermission(c.UserContext(), body)
 				if err != nil {
 					return err
 				}
@@ -127,7 +117,6 @@ func (con *PermissionController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
 		}
 	})
 }
-
 
 // @Tags Permission
 // @Security Bearer
@@ -153,7 +142,7 @@ func (con *PermissionController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
 				request.BodyParser(body),
 			),
 			func(c *fiber.Ctx) error {
-				data, err := con.service.UpdatePermission(c.UserContext(), param.ID,body)
+				data, err := con.service.UpdatePermission(c.UserContext(), param.ID, body)
 				if err != nil {
 					return err
 				}
@@ -177,7 +166,7 @@ func (con *PermissionController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
 // @Param id path int true "Permission ID"
 // @Success  200 {object} request.Response{} "Successfully deleted Permission"
 // @Router /permission/{id} [delete]
-func (con  *PermissionController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+func (con *PermissionController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Permission").DoWithScope(func() []fiber.Handler {
 		param := &struct {
 			ID int `params:"id" validate:"gt=0"`

@@ -9,14 +9,15 @@ import (
 
 	"github.com/kimchhung/gva/extra/app/module/admin"
 	"github.com/kimchhung/gva/extra/app/module/auth"
+	"github.com/kimchhung/gva/extra/app/module/permission"
+	"github.com/kimchhung/gva/extra/app/module/role"
+	"github.com/kimchhung/gva/extra/app/module/route"
 
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 
-	"github.com/kimchhung/gva/extra/app/module/permission"
-	"github.com/kimchhung/gva/extra/app/module/role"
-
+	"github.com/kimchhung/gva/extra/app/module/todo"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 	_ "github.com/kimchhung/gva/extra/internal/ent/runtime"
 )
@@ -31,6 +32,7 @@ import (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
+
 	fx.New(
 		// Provide patterns
 		fx.Provide(config.NewConfig),
@@ -38,18 +40,23 @@ func main() {
 		fx.Provide(bootstrap.NewFiber),
 		fx.Provide(database.NewDatabase),
 		fx.Provide(middleware.NewMiddleware),
-		fx.Provide(
-			fx.Annotate(module.NewRouter,
-				fx.ParamTags(`group:"routers"`),
-			),
-		),
 
 		common.NewCommonModule,
 		admin.NewAdminModule,
 		auth.NewAuthModule,
 		role.NewRoleModule,
 		permission.NewPermissionModule,
+		route.NewRouteModule,
+		todo.NewTodoModule,
+		todo.NewTodoModule,
 		// #inject:module (do not remove this comment, it is used by the code generator)
+
+		// Add Router
+		fx.Provide(
+			fx.Annotate(module.NewRouter,
+				fx.ParamTags(`group:"controllers"`),
+			),
+		),
 
 		// Start Application
 		fx.Invoke(bootstrap.Start),

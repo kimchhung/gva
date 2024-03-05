@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
+	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/module/admin/repository"
 	"github.com/kimchhung/gva/extra/internal/ent"
@@ -62,7 +62,7 @@ func (s *AuthService) LoginAdmin(ctx context.Context, username string, password 
 	if username != "admin" {
 		// Verify the password (assuming you have a method to do this)
 		if err := s.passwordService.VerifyPassword(admin.Password, password); err != nil {
-			return "", admin, errors.New("invalid credentials")
+			return "", admin, app_err.ErrPasswordValidationError
 		}
 	}
 

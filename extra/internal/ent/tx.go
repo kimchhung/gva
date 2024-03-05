@@ -20,6 +20,8 @@ type Tx struct {
 	Role *RoleClient
 	// Route is the client for interacting with the Route builders.
 	Route *RouteClient
+	// Todo is the client for interacting with the Todo builders.
+	Todo *TodoClient
 
 	// lazily loaded.
 	client     *Client
@@ -155,6 +157,7 @@ func (tx *Tx) init() {
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Route = NewRouteClient(tx.config)
+	tx.Todo = NewTodoClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -1,21 +1,22 @@
 package module
 
-import "github.com/kimchhung/gva/extra/internal/rctrl"
-
-var _ interface {
-	rctrl.Router
-} = (*Router)(nil)
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/extra/internal/rctrl"
+)
 
 type Router struct {
-	moduleRouters []rctrl.Router
+	controllers []rctrl.Controller
 }
 
-func NewRouter(moduleRouters []rctrl.Router) *Router {
-	return &Router{moduleRouters}
+func NewRouter(controllers ...rctrl.Controller) *Router {
+	return &Router{
+		controllers,
+	}
 }
 
-func (r *Router) Register() {
-	for _, mr := range r.moduleRouters {
-		mr.Register()
+func (r *Router) Register(app fiber.Router) {
+	for _, controller := range r.controllers {
+		controller.Routes(app)
 	}
 }

@@ -6,30 +6,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/module/permission/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 
-	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 )
-
-var _ interface {
-	rctrl.Router
-} = &PermissionRouter{}
-
-type PermissionRouter struct {
-	app        fiber.Router
-	controller controller.IPermissionController
-}
-
-// Router methods
-func NewPermissionRouter(fiber *fiber.App, controller controller.IPermissionController) *PermissionRouter {
-	return &PermissionRouter{
-		app:        fiber,
-		controller: controller,
-	}
-}
-
-func (r *PermissionRouter) Register() {
-	r.controller.Routes(r.app)
-}
 
 // Register bulkly
 var NewPermissionModule = fx.Module("PermissionModule",
@@ -40,13 +18,7 @@ var NewPermissionModule = fx.Module("PermissionModule",
 	// Regiser Controller
 	fx.Provide(fx.Annotate(
 		controller.NewPermissionController,
-		fx.As(new(controller.IPermissionController))),
-	),
-
-	// Register Router
-	fx.Provide(fx.Annotate(
-		NewPermissionRouter,
-		fx.As(new(rctrl.Router)),
-		fx.ResultTags(`group:"routers"`),
+		fx.As(new(rctrl.Controller)),
+		fx.ResultTags(`group:"controllers"`),
 	)),
 )

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/extra/app/common/mock"
 	"github.com/kimchhung/gva/extra/app/module/role/dto"
 	"github.com/kimchhung/gva/extra/app/module/role/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
@@ -9,17 +10,7 @@ import (
 )
 
 // don't remove for runtime type checking
-var _ IRoleController = (*RoleController)(nil)
-
-type IRoleController interface {
-	rctrl.FiberRouter
-	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
-}
-
+var _ interface{ rctrl.Controller } = (*RoleController)(nil)
 
 type RoleController struct {
 	service *service.RoleService
@@ -47,13 +38,15 @@ func NewRoleController(service *service.RoleService) *RoleController {
 // @Security Bearer
 func (con *RoleController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/").Name("get many Roles").Do(func(c *fiber.Ctx) error {
-		list, err := con.service.GetRoles(c.UserContext())
-		if err != nil {
-			return err
-		}
+		// list, err := con.service.GetRoles(c.UserContext())
+		// if err != nil {
+		// 	return err
+		// }
 
 		return request.Resp(c,
-			request.Data(list),
+			request.Data(map[string]any{
+				"list": mock.GetRoutes(),
+			}),
 			request.Message("Role list retreived successfully!"),
 		)
 	})
@@ -114,7 +107,7 @@ func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 			),
 
 			func(c *fiber.Ctx) error {
-				data, err := con.service.CreateRole(c.UserContext(),body)
+				data, err := con.service.CreateRole(c.UserContext(), body)
 				if err != nil {
 					return err
 				}
@@ -127,7 +120,6 @@ func (con *RoleController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		}
 	})
 }
-
 
 // @Tags Role
 // @Security Bearer
@@ -153,7 +145,7 @@ func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				request.BodyParser(body),
 			),
 			func(c *fiber.Ctx) error {
-				data, err := con.service.UpdateRole(c.UserContext(), param.ID,body)
+				data, err := con.service.UpdateRole(c.UserContext(), param.ID, body)
 				if err != nil {
 					return err
 				}
@@ -177,7 +169,7 @@ func (con *RoleController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Param id path int true "Role ID"
 // @Success  200 {object} request.Response{} "Successfully deleted Role"
 // @Router /role/{id} [delete]
-func (con  *RoleController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+func (con *RoleController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Role").DoWithScope(func() []fiber.Handler {
 		param := &struct {
 			ID int `params:"id" validate:"gt=0"`

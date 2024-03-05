@@ -15,16 +15,7 @@ import (
 )
 
 // don't remove for runtime type checking
-var _ I{{.EntityPascal}}Controller = (*{{.EntityPascal}}Controller)(nil)
-
-type I{{.EntityPascal}}Controller interface {
-	rctrl.FiberRouter
-	Create(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	List(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Get(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Update(meta *rctrl.RouteMeta) rctrl.MetaHandler
-	Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler
-}
+var _ interface{ rctrl.Controller } = (*{{.EntityPascal}}Controller)(nil)
 
 
 type {{.EntityPascal}}Controller struct {

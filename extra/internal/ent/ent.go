@@ -16,6 +16,7 @@ import (
 	"github.com/kimchhung/gva/extra/internal/ent/permission"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
+	"github.com/kimchhung/gva/extra/internal/ent/todo"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -80,6 +81,7 @@ func checkColumn(table, column string) error {
 			permission.Table: permission.ValidColumn,
 			role.Table:       role.ValidColumn,
 			route.Table:      route.ValidColumn,
+			todo.Table:       todo.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

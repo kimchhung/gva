@@ -14,7 +14,7 @@ Redirection messages (300 – 399)
 Client error responses (400 – 499)
 Server error responses (500 – 599)
 */
-func New(httpCode int, errorCode int, message string) *Error {
+func newError(httpCode int, errorCode int, message string) *Error {
 	if _, exists := errorByCode[errorCode]; exists {
 		// If the error code already exists, return an error.
 		panic(fmt.Sprintf("[ErrorByCode]: error code %d is not unique", errorCode))
@@ -39,26 +39,26 @@ func ErrorByCode(code int) (*Error, error) {
 }
 
 var (
-	// map to check uniq error code
+	// map to check uniqness for error code
 	errorByCode = map[int]*Error{}
 
 	// general
-	ErrUnknownError    = New(http.StatusInternalServerError, -1, "unknown error")
-	ErrValidationError = New(http.StatusBadRequest, -2, "validation error")
-	ErrUnauthorized    = New(http.StatusForbidden, -3, "unauthorized")
-	ErrLoginError      = New(http.StatusBadRequest, -4, "login error")
-	ErrUnauthenticated = New(http.StatusUnauthorized, -5, "unauthenticated")
-	ErrForbidden       = New(http.StatusForbidden, -6, "access denied")
-	ErrRecordNotFound  = New(http.StatusNotFound, -7, "record not found")
-	ErrInvalidTOTP     = New(http.StatusForbidden, -8, "invalid otp code")
-	ErrNotFound        = New(http.StatusNotFound, -9, "not found")
-	ErrInvalidToken    = New(http.StatusForbidden, -10, "invalid token")
-	ErrTooManyRetries  = New(http.StatusForbidden, -11, "too many retries")
+	ErrUnknownError    = newError(http.StatusInternalServerError, -1, "unknown error")
+	ErrValidationError = newError(http.StatusBadRequest, -2, "validation error")
+	ErrUnauthorized    = newError(http.StatusForbidden, -3, "unauthorized")
+	ErrLoginError      = newError(http.StatusBadRequest, -4, "login error")
+	ErrUnauthenticated = newError(http.StatusUnauthorized, -5, "unauthenticated")
+	ErrForbidden       = newError(http.StatusForbidden, -6, "access denied")
+	ErrRecordNotFound  = newError(http.StatusNotFound, -7, "record not found")
+	ErrInvalidTOTP     = newError(http.StatusForbidden, -8, "invalid otp code")
+	ErrNotFound        = newError(http.StatusNotFound, -9, "not found")
+	ErrInvalidToken    = newError(http.StatusForbidden, -10, "invalid token")
+	ErrTooManyRetries  = newError(http.StatusForbidden, -11, "too many retries")
 
 	// users
-	ErrPasswordValidationError  = New(http.StatusBadRequest, -501, "wrong password")
-	ErrUserNotFound             = New(http.StatusNotFound, -502, "user not found")
-	ErrPhoneNumberAlreadyExists = New(http.StatusConflict, -503, "phone number already exists")
-	ErrWrongVerifyCode          = New(http.StatusBadRequest, -504, "wrong verify code")
-	ErrUsernameExists           = New(http.StatusConflict, -507, "username already exists")
+	ErrPasswordValidationError  = newError(http.StatusBadRequest, -501, "wrong password")
+	ErrUserNotFound             = newError(http.StatusNotFound, -502, "user not found")
+	ErrPhoneNumberAlreadyExists = newError(http.StatusConflict, -503, "phone number already exists")
+	ErrWrongVerifyCode          = newError(http.StatusBadRequest, -504, "wrong verify code")
+	ErrUsernameExists           = newError(http.StatusConflict, -505, "username already exists")
 )

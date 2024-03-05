@@ -4,10 +4,6 @@ package rctrl
 
 import "github.com/gofiber/fiber/v2"
 
-type FiberRouter interface {
+type Controller interface {
 	Routes(router fiber.Router)
-}
-
-type Router interface {
-	Register()
 }

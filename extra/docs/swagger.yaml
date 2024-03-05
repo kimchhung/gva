@@ -297,6 +297,24 @@ definitions:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
     type: object
+  dto.TodoRequest:
+    properties:
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+    type: object
+  dto.TodoResponse:
+    properties:
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+    type: object
   ent.Admin:
     properties:
       createdAt:
@@ -1158,6 +1176,153 @@ paths:
       summary: Update a Route
       tags:
       - Route
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Todos
+      operationId: list-all-Todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Todos
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.TodoResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.TodoResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Todos
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create a new Todo with the provided details
+      operationId: create-Todo
+      parameters:
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Todo
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Todo
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Todo by ID
+      operationId: delete-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Todo
+          schema:
+            $ref: '#/definitions/request.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Todo
+      tags:
+      - Todo
+    get:
+      consumes:
+      - application/json
+      description: Get a Todo by ID
+      operationId: get-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Todo
+      tags:
+      - Todo
+    patch:
+      consumes:
+      - application/json
+      description: Update a Todo by ID
+      operationId: update-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Todo
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Todo
+      tags:
+      - Todo
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.
