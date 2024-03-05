@@ -48,9 +48,7 @@ func (con *RouteController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		// }
 
 		return request.Response(c,
-			response.Data(map[string]any{
-				"list": mock.ROUTE_LIST,
-			}),
+			response.Data(mock.GetRoutes()),
 			response.Message("Route list retreived successfully!"),
 		)
 	})

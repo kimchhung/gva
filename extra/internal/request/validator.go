@@ -40,9 +40,17 @@ func Parse(parser Parser, parsers ...Parser) fiber.Handler {
 }
 
 // required middleware jwtService.ProtectAdmin()
+func AdminContext(out *contexts.AdminContext) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		*out = *contexts.MustAdminContext(c.UserContext())
+		return nil
+	}
+}
+
+// required middleware jwtService.ProtectAdmin()
 func Admin(out *ent.Admin) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		out = contexts.MustAdminContext(c.UserContext()).Admin
+		*out = *contexts.MustAdminContext(c.UserContext()).Admin
 		return nil
 	}
 }

@@ -59,7 +59,8 @@ func (m *Middleware) Register() {
 	}))
 
 	m.app.Use(recover.New(recover.Config{
-		Next: utils.IsEnabled(m.cfg.Middleware.Recover.Enable),
+		Next:             utils.IsEnabled(m.cfg.Middleware.Recover.Enable),
+		EnableStackTrace: true,
 	}))
 
 	m.app.Use(pprof.New(pprof.Config{
