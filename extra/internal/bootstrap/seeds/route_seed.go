@@ -3,6 +3,7 @@ package seeds
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/kimchhung/gva/extra/app/common/mock"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
@@ -31,7 +32,16 @@ func (RouterSeeder) Seed(conn *ent.Client) error {
 	tx, _ := conn.Tx(ctx)
 
 	for _, r := range flats {
-		saved, err := tx.Route.Create().SetID(r.ID).
+		routeType := 0
+		if r.ParentID != nil {
+			childToParent[r.ID] = *r.ParentID
+		}
+
+		if !strings.Contains(r.Component, "#") {
+			routeType = 1
+		}
+
+		_, err := tx.Route.Create().SetID(r.ID).
 			SetTitle(r.Title).
 			SetComponent(r.Component).
 			SetPath(r.Path).
@@ -39,15 +49,12 @@ func (RouterSeeder) Seed(conn *ent.Client) error {
 			SetMeta(r.Meta).
 			SetName(r.Name).
 			SetRedirect(r.Redirect).
-			SetType(r.Type).Save(context.Background())
+			SetType(routeType).Save(context.Background())
 
 		if err != nil {
 			return fmt.Errorf("create  routers: %w", err)
 		}
 
-		if r.ParentID != nil {
-			childToParent[saved.ID] = *r.ParentID
-		}
 	}
 
 	for cid, pid := range childToParent {
