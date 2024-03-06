@@ -19,7 +19,7 @@ type (
 		PrintRoutes bool          `toml:"print-routes"`
 		Prefork     bool          `toml:"prefork"`
 		Production  bool          `toml:"production"`
-		IdleTimeout time.Duration `toml:"idle-timeout"`
+		IdleTimeout time.Duration `toml:"idle_timeout"`
 		TLS         struct {
 			Enable   bool
 			CertFile string `toml:"cert-file"`
@@ -30,9 +30,10 @@ type (
 		Mysql struct {
 			DSN string `toml:"dsn"`
 		}
+		EnableSeed bool `toml:"enable_seed"`
 	}
 	logger = struct {
-		TimeFormat string        `toml:"time-format"`
+		TimeFormat string        `toml:"time_format"`
 		Level      zerolog.Level `toml:"level"`
 		Prettier   bool          `toml:"prettier"`
 	}

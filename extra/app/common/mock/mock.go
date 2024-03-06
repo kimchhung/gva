@@ -9,9 +9,10 @@ import (
 
 var ROUTE_LIST = `[
 	{
+	   "id":1,
 	   "path": "/dashboard",
 	   "component": "#",
-	   "redirect": "/dashboard/analysis",
+	   "redirect": "/dashboard/",
 	   "name": "Dashboard",
 	   "meta": {
 		 "title": "router.dashboard",
@@ -21,11 +22,13 @@ var ROUTE_LIST = `[
 	   "edges": {
 		 "children": [
 		   {
-			 "path": "analysis",
-			 "component": "views/Dashboard/Analysis",
-			 "name": "Analysis",
+			 "id":2,
+			 "parentId":1,
+			 "path": "/",
+			 "component": "views/Dashboard/Welcome",
+			 "name": "Welcome",
 			 "meta": {
-			   "title": "router.analysis",
+			   "title": "router.welcome",
 			   "noCache": true,
 			   "affix": true
 			 }
@@ -34,6 +37,7 @@ var ROUTE_LIST = `[
 	   }
 	},
 	{
+	   "id":3,
 	   "path": "/authorization",
 	   "component": "#",
 	   "redirect": "/authorization/admin",
@@ -46,6 +50,8 @@ var ROUTE_LIST = `[
 	   "edges": {
 		 "children": [
 		   {
+			"id":4,
+			"parentId":3,
 			 "path": "admin",
 			 "component": "views/Authorization/Admin/Admin",
 			 "name": "User",
@@ -54,6 +60,8 @@ var ROUTE_LIST = `[
 			 }
 		   },
 		   {
+			"id":5,
+			"parentId":3,
 			 "path": "menu",
 			 "component": "views/Authorization/Menu/Menu",
 			 "name": "Menu",
@@ -62,6 +70,8 @@ var ROUTE_LIST = `[
 			 }
 		   },
 		   {
+			"id":6,
+			"parentId":3,
 			 "path": "role",
 			 "component": "views/Authorization/Role/Role",
 			 "name": "Role",
@@ -75,8 +85,8 @@ var ROUTE_LIST = `[
 ]
 `
 
-func GetRoutes() []ent.Route {
-	var routes []ent.Route
+func GetRoutes() []*ent.Route {
+	var routes []*ent.Route
 	err := json.Unmarshal([]byte(ROUTE_LIST), &routes)
 	if err != nil {
 		fmt.Println(err)

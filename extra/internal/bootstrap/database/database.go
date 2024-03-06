@@ -48,6 +48,10 @@ func (db *Database) ShutdownDatabase() {
 }
 
 func (db *Database) SeedModels(seeder ...Seeder) {
+	if !db.Cfg.DB.EnableSeed {
+		return
+	}
+
 	for _, v := range seeder {
 
 		count, err := v.Count(db.Ent)
@@ -58,7 +62,7 @@ func (db *Database) SeedModels(seeder ...Seeder) {
 		if count == 0 {
 			err = v.Seed(db.Ent)
 			if err != nil {
-				db.Log.Panic().Err(err).Msg("")
+				db.Log.Panic().Err(err).Msg("Error")
 			}
 
 			db.Log.Debug().Msg("Table has seeded successfully.")

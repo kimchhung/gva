@@ -2,7 +2,7 @@
 [app]
 name = "Go Vue Admin"
 port = ":8080"
-idle-timeout = 5      # As seconds
+idle_timeout = 5      # As seconds
 print-routes = true
 prefork = false
 production = false
@@ -14,9 +14,11 @@ key-file = "./storage/selfsigned.key"
 
 [db.mysql]
 dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true" # <username>:<password>@tcp(<host>:<port>)/<dbname>
+[db]
+enable_seed = true
 
 [logger]
-time-format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10
+time_format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10
 level = 0        # panic -> 5, fatal -> 4, error -> 3, warn -> 2, info -> 1, debug -> 0, trace -> -1
 prettier = true
 

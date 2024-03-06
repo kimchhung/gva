@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/kimchhung/gva/extra/app/module/admin/dto"
 	"github.com/kimchhung/gva/extra/app/module/admin/repository"
+	"github.com/kimchhung/gva/extra/utils/routeutil"
 
 	"context"
 
@@ -57,7 +58,7 @@ func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int)
 		return nil, err
 	}
 
-	return groupRouteToNested(routes), nil
+	return routeutil.GroupRouteToNested(routes), nil
 }
 
 func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId int) ([]*ent.Permission, error) {

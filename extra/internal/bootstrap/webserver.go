@@ -14,6 +14,7 @@ import (
 	"github.com/kimchhung/gva/extra/app/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
+	"github.com/kimchhung/gva/extra/internal/bootstrap/database/seeds"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
@@ -27,7 +28,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		Prefork:               cfg.App.Prefork,
 		ErrorHandler:          request.ErrorHandler,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
-		EnablePrintRoutes:     cfg.App.PrintRoutes,
+		EnablePrintRoutes:     !cfg.App.PrintRoutes,
 		DisableStartupMessage: true,
 	})
 
@@ -102,9 +103,7 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, routers *module.Router, f
 				}()
 
 				database.ConnectDatabase()
-
-				// database.MigrateModels()
-				// database.SeedModels(seeds.ArticleSeed)
+				database.SeedModels(seeds.RouterSeeder{})
 
 				return nil
 			},
