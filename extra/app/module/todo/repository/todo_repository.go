@@ -6,7 +6,7 @@ import (
 )
 
 type TodoRepository struct {
-	DB *database.Database
+	db *database.Database
 }
 
 func NewTodoRepository(database *database.Database) *TodoRepository {
@@ -15,7 +15,11 @@ func NewTodoRepository(database *database.Database) *TodoRepository {
 	}
 }
 
-func (r *TodoRepository) Client() *ent.TodoClient {
-	return r.DB.Ent.Todo
+func (r *TodoRepository) C() *ent.TodoClient {
+	return r.db.Todo
+}
+
+func (r *TodoRepository) DB() *database.Database {
+	return r.db
 }
 

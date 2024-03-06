@@ -6,7 +6,7 @@ import (
 )
 
 type AdminRepository struct {
-	DB *database.Database
+	db *database.Database
 }
 
 func NewAdminRepository(database *database.Database) *AdminRepository {
@@ -15,6 +15,10 @@ func NewAdminRepository(database *database.Database) *AdminRepository {
 	}
 }
 
-func (r *AdminRepository) Client() *ent.AdminClient {
-	return r.DB.Ent.Debug().Admin
+func (r *AdminRepository) C() *ent.AdminClient {
+	return r.db.Admin
+}
+
+func (r *AdminRepository) DB() *database.Database {
+	return r.db
 }

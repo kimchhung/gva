@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/extra/app/common/contexts"
-	"github.com/kimchhung/gva/extra/app/common/mock"
 	"github.com/kimchhung/gva/extra/app/common/permissions"
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/module/admin/dto"
@@ -235,13 +234,13 @@ func (con *AdminController) AdminRoutes(meta *rctrl.RouteMeta) rctrl.MetaHandler
 		return []fiber.Handler{
 			request.AdminContext(adminCtx),
 			func(c *fiber.Ctx) error {
-				_, err := con.service.GetAdminNestedRouteById(c.UserContext(), adminCtx.Admin.ID)
+				list, err := con.service.GetAdminNestedRouteById(c.UserContext(), adminCtx.Admin.ID)
 				if err != nil {
 					return err
 				}
 
 				return request.Response(c,
-					response.Data(mock.GetRoutes()),
+					response.Data(list),
 					response.Message("Admin routes list retreived successfully!"),
 				)
 			},

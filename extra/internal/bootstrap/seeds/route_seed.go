@@ -22,7 +22,6 @@ func (RouterSeeder) Count(conn *ent.Client) (int, error) {
 }
 
 func (RouterSeeder) Seed(conn *ent.Client) error {
-
 	routers := mock.GetRoutes()
 	flats := routeutil.FlattenNestedRoutes(routers)
 
@@ -36,7 +35,7 @@ func (RouterSeeder) Seed(conn *ent.Client) error {
 			SetTitle(r.Title).
 			SetComponent(r.Component).
 			SetPath(r.Path).
-			SetIsEnable(r.IsEnable).
+			SetIsEnable(true).
 			SetMeta(r.Meta).
 			SetName(r.Name).
 			SetRedirect(r.Redirect).
@@ -51,15 +50,14 @@ func (RouterSeeder) Seed(conn *ent.Client) error {
 		}
 	}
 
-	err := tx.Commit()
-
 	for cid, pid := range childToParent {
-		_, err := conn.Route.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
+		_, err := tx.Route.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
 		if err != nil {
 			return fmt.Errorf("save routers: %w", err)
 		}
 	}
 
+	err := tx.Commit()
 	if err != nil {
 		return fmt.Errorf("commit routers: %w", err)
 	}

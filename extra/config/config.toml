@@ -9,13 +9,18 @@ production = false
 
 [app.tls]
 enable = false
-cert-file = "./storage/selfsigned.crt"
-key-file = "./storage/selfsigned.key"
+cert_file = "./storage/selfsigned.crt"
+key_file = "./storage/selfsigned.key"
 
 [db.mysql]
 dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true" # <username>:<password>@tcp(<host>:<port>)/<dbname>
-[db]
-enable_seed = true
+
+[seed]
+enable = true
+
+[seed.super_admin]
+username = "admin"
+password = "123456"
 
 [logger]
 time_format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10

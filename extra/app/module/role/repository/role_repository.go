@@ -6,7 +6,7 @@ import (
 )
 
 type RoleRepository struct {
-	DB *database.Database
+	db *database.Database
 }
 
 func NewRoleRepository(database *database.Database) *RoleRepository {
@@ -15,7 +15,10 @@ func NewRoleRepository(database *database.Database) *RoleRepository {
 	}
 }
 
-func (r *RoleRepository) Client() *ent.RoleClient {
-	return r.DB.Ent.Role
+func (r *RoleRepository) C() *ent.RoleClient {
+	return r.db.Role
 }
 
+func (r *RoleRepository) DB() *database.Database {
+	return r.db
+}

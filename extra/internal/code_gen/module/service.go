@@ -22,25 +22,25 @@ func New{{.EntityPascal}}Service(repository *repository.{{.EntityPascal}}Reposit
 }
 
 func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context) ([]*ent.{{.EntityPascal}}, error) {
-	return s.repo.Client().Query().Order(ent.Asc({{.EntityAllLower}}.FieldID)).All(ctx)
+	return s.repo.C().Query().Order(ent.Asc({{.EntityAllLower}}.FieldID)).All(ctx)
 }
 
 func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context, id int) (*ent.{{.EntityPascal}}, error) {
-	return s.repo.Client().Query().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
+	return s.repo.C().Query().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
 }
 
 func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, payload *dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
-	return s.repo.Client().Create().
+	return s.repo.C().Create().
 		Save(ctx)
 }
 
 func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id int, payload *dto.{{.EntityPascal}}Request) (*ent.{{.EntityPascal}}, error) {
-	return s.repo.Client().UpdateOneID(id).
+	return s.repo.C().UpdateOneID(id).
 		Save(ctx)
 }
 
 func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id int) error {
-	return s.repo.Client().DeleteOneID(id).Exec(ctx)
+	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }
 
 `

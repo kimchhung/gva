@@ -5,6 +5,7 @@ import (
 	"errors"
 	"slices"
 
+	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/ent"
 )
 
@@ -15,16 +16,27 @@ const (
 type (
 	AdminContextKey    struct{}
 	AdminContextOption func(*AdminContext)
-	AdminContext       struct {
-		context.Context
-		cancel context.CancelFunc
-
-		Admin *ent.Admin
-
-		isSuperAdmin bool
-		permissions  []*ent.Permission
-	}
 )
+
+type AdminContext struct {
+	context.Context
+
+	Admin *ent.Admin
+
+	isSuperAdmin bool
+	permissions  []*ent.Permission
+}
+
+func NewAdminContext(parentCtx context.Context, opts ...AdminContextOption) *AdminContext {
+	ctx := &AdminContext{}
+	ctx.Context = context.WithValue(parentCtx, AdminContextKey{}, ctx)
+
+	for _, opt := range opts {
+		opt(ctx)
+	}
+
+	return ctx
+}
 
 func (ctx *AdminContext) IsSuperAdmin() bool {
 	if ctx.isSuperAdmin {
@@ -93,17 +105,6 @@ func WithAdmin(admin *ent.Admin) AdminContextOption {
 	}
 }
 
-func NewAdminContext(parentCtx context.Context, opts ...AdminContextOption) *AdminContext {
-	ctx := &AdminContext{}
-	ctx.Context = context.WithValue(parentCtx, AdminContextKey{}, ctx)
-
-	for _, opt := range opts {
-		opt(ctx)
-	}
-
-	return ctx
-}
-
 func GetAdminContext(ctx context.Context) (*AdminContext, error) {
 	v, ok := ctx.(*AdminContext)
 	if ok {
@@ -121,7 +122,7 @@ func GetAdminContext(ctx context.Context) (*AdminContext, error) {
 func MustAdminContext(ctx context.Context) *AdminContext {
 	actx, err := GetAdminContext(ctx)
 	if err != nil {
-		panic(err)
+		panic(app_err.ErrUnauthorized)
 	}
 
 	return actx

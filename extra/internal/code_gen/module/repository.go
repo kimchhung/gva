@@ -8,7 +8,7 @@ import (
 )
 
 type {{.EntityPascal}}Repository struct {
-	DB *database.Database
+	db *database.Database
 }
 
 func New{{.EntityPascal}}Repository(database *database.Database) *{{.EntityPascal}}Repository {
@@ -17,8 +17,12 @@ func New{{.EntityPascal}}Repository(database *database.Database) *{{.EntityPasca
 	}
 }
 
-func (r *{{.EntityPascal}}Repository) Client() *ent.{{.EntityPascal}}Client {
-	return r.DB.Ent.{{.EntityPascal}}
+func (r *{{.EntityPascal}}Repository) C() *ent.{{.EntityPascal}}Client {
+	return r.db.{{.EntityPascal}}
+}
+
+func (r *{{.EntityPascal}}Repository) DB() *database.Database {
+	return r.db
 }
 
 `

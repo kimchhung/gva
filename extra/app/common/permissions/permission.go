@@ -10,10 +10,7 @@ type PermissionKey string
 
 func RequireAny(permissions ...PermissionKey) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		adminCtx, err := contexts.GetAdminContext(c.UserContext())
-		if err != nil {
-			return err
-		}
+		adminCtx := contexts.MustAdminContext(c.UserContext())
 
 		if adminCtx.IsSuperAdmin() {
 			return nil
@@ -36,10 +33,7 @@ func RequireAny(permissions ...PermissionKey) fiber.Handler {
 
 func RequireAll(permissions ...PermissionKey) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		adminCtx, err := contexts.GetAdminContext(c.UserContext())
-		if err != nil {
-			return err
-		}
+		adminCtx := contexts.MustAdminContext(c.UserContext())
 
 		if adminCtx.IsSuperAdmin() {
 			return nil
@@ -59,5 +53,17 @@ func RequireAll(permissions ...PermissionKey) fiber.Handler {
 		}
 
 		return app_err.ErrUnauthorized
+	}
+}
+
+func RequireSuperAdmin() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		adminCtx := contexts.MustAdminContext(c.UserContext())
+
+		if adminCtx.IsSuperAdmin() {
+			return nil
+		}
+
+		return app_err.ErrUnauthorized // None of the required permissions were found
 	}
 }

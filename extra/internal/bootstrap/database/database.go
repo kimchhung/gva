@@ -1,6 +1,8 @@
 package database
 
 import (
+	"reflect"
+
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/ent"
 
@@ -13,7 +15,7 @@ import (
 )
 
 type Database struct {
-	Ent *ent.Client
+	*ent.Client
 	Log *zerolog.Logger
 	Cfg *config.Config
 }
@@ -38,36 +40,37 @@ func (db *Database) ConnectDatabase() {
 		db.Log.Error().Err(err).Msg("An unknown error occurred when to connect the database!")
 	}
 
-	db.Ent = ent.NewClient(ent.Driver(drv))
+	db.Client = ent.NewClient(ent.Driver(drv))
 }
 
 func (db *Database) ShutdownDatabase() {
-	if err := db.Ent.Close(); err != nil {
+	if err := db.Client.Close(); err != nil {
 		db.Log.Error().Err(err).Msg("An unknown error occurred when to shutdown the database!")
 	}
 }
 
 func (db *Database) SeedModels(seeder ...Seeder) {
-	if !db.Cfg.DB.EnableSeed {
+	if !db.Cfg.Seed.Enable {
 		return
 	}
 
 	for _, v := range seeder {
+		name := reflect.TypeOf(v).Name()
 
-		count, err := v.Count(db.Ent)
+		count, err := v.Count(db.Client)
 		if err != nil {
 			db.Log.Panic().Err(err).Msg("")
 		}
 
 		if count == 0 {
-			err = v.Seed(db.Ent)
+			err = v.Seed(db.Client)
 			if err != nil {
 				db.Log.Panic().Err(err).Msg("Error")
 			}
 
-			db.Log.Debug().Msg("Table has seeded successfully.")
+			db.Log.Debug().Str("name", name).Msg("Table has seeded successfully.")
 		} else {
-			db.Log.Warn().Msg("Table has seeded already. Skipping!")
+			db.Log.Warn().Str("name", name).Msg("Table has seeded already. Skipping!")
 		}
 	}
 

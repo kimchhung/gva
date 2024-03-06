@@ -14,7 +14,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
-	"github.com/kimchhung/gva/extra/internal/bootstrap/database/seeds"
+	"github.com/kimchhung/gva/extra/internal/bootstrap/seeds"
+
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
@@ -103,7 +104,10 @@ func Start(lifecycle fx.Lifecycle, cfg *config.Config, routers *module.Router, f
 				}()
 
 				database.ConnectDatabase()
-				database.SeedModels(seeds.RouterSeeder{})
+				database.SeedModels(
+					seeds.RouterSeeder{},
+					seeds.NewSuperAdminSeeder(cfg),
+				)
 
 				return nil
 			},

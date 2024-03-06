@@ -33,7 +33,7 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, username, password stri
 		return "", nil, err
 	}
 
-	admin, err := s.adminRepo.Client().Create().SetUsername(username).SetPassword(hashedPassword).SetDisplayName(displayName).Save(ctx)
+	admin, err := s.adminRepo.C().Create().SetUsername(username).SetPassword(hashedPassword).SetDisplayName(displayName).Save(ctx)
 	if err != nil {
 		return "", nil, err
 	}
@@ -53,17 +53,15 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, username, password stri
 
 // LoginUser authenticates a user and returns a JWT token if successful.
 func (s *AuthService) LoginAdmin(ctx context.Context, username string, password string) (string, *ent.Admin, error) {
-	admin, err := s.adminRepo.Client().Query().Where(admin.Username(username)).WithRoles().First(ctx)
+	admin, err := s.adminRepo.C().Query().Where(admin.Username(username)).WithRoles().First(ctx)
 
 	if err != nil {
 		return "", nil, err
 	}
 
-	if username != "admin" {
-		// Verify the password (assuming you have a method to do this)
-		if err := s.passwordService.VerifyPassword(admin.Password, password); err != nil {
-			return "", admin, app_err.ErrPasswordValidationError
-		}
+	// Verify the password (assuming you have a method to do this)
+	if err := s.passwordService.VerifyPassword(admin.Password, password); err != nil {
+		return "", admin, app_err.ErrPasswordValidationError
 	}
 
 	// Generate a JWT token for the authenticated user

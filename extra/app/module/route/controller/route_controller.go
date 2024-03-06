@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/kimchhung/gva/extra/app/common/mock"
+	"github.com/kimchhung/gva/extra/app/common/permissions"
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/module/route/dto"
 	"github.com/kimchhung/gva/extra/app/module/route/service"
@@ -21,6 +21,7 @@ type RouteController struct {
 
 func (con *RouteController) Routes(r fiber.Router) {
 	route := r.Group("route")
+	route.Use(con.jwtService.ProtectAdmin())
 	rctrl.Register(route, con)
 }
 
@@ -41,17 +42,20 @@ func NewRouteController(service *service.RouteService, jwtService *services.JwtS
 // @Router /route [get]
 // @Security Bearer
 func (con *RouteController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").Name("get many Routes").Do(func(c *fiber.Ctx) error {
-		// list, err := con.service.GetRoutes(c.UserContext())
-		// if err != nil {
-		// 	return err
-		// }
+	return meta.Get("/").Name("get many Routes").Do(
+		permissions.RequireSuperAdmin(),
+		func(c *fiber.Ctx) error {
+			list, err := con.service.GetNestedRoutes(c.UserContext())
+			if err != nil {
+				return err
+			}
 
-		return request.Response(c,
-			response.Data(mock.GetRoutes()),
-			response.Message("Route list retreived successfully!"),
-		)
-	})
+			return request.Response(c,
+				response.Data(list),
+				response.Message("Route list retreived successfully!"),
+			)
+		},
+	)
 }
 
 // @Tags Route

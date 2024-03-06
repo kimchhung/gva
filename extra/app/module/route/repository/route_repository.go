@@ -6,7 +6,7 @@ import (
 )
 
 type RouteRepository struct {
-	DB *database.Database
+	db *database.Database
 }
 
 func NewRouteRepository(database *database.Database) *RouteRepository {
@@ -15,7 +15,10 @@ func NewRouteRepository(database *database.Database) *RouteRepository {
 	}
 }
 
-func (r *RouteRepository) Client() *ent.RouteClient {
-	return r.DB.Ent.Route
+func (r *RouteRepository) C() *ent.RouteClient {
+	return r.db.Route
 }
 
+func (r *RouteRepository) DB() *database.Database {
+	return r.db
+}

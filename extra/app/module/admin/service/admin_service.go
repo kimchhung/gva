@@ -1,8 +1,10 @@
 package service
 
 import (
+	"github.com/kimchhung/gva/extra/app/common/contexts"
 	"github.com/kimchhung/gva/extra/app/module/admin/dto"
 	"github.com/kimchhung/gva/extra/app/module/admin/repository"
+
 	"github.com/kimchhung/gva/extra/utils/routeutil"
 
 	"context"
@@ -10,6 +12,7 @@ import (
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/ent/admin"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
+	"github.com/kimchhung/gva/extra/internal/ent/route"
 )
 
 type AdminService struct {
@@ -23,15 +26,15 @@ func NewAdminService(repository *repository.AdminRepository) *AdminService {
 }
 
 func (s *AdminService) GetAdmins(ctx context.Context) ([]*ent.Admin, error) {
-	return s.repo.Client().Query().Order(ent.Asc(admin.FieldID)).All(ctx)
+	return s.repo.C().Query().Order(ent.Asc(admin.FieldID)).All(ctx)
 }
 
 func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, error) {
-	return s.repo.Client().Query().Where(admin.IDEQ(id)).First(ctx)
+	return s.repo.C().Query().Where(admin.IDEQ(id)).First(ctx)
 }
 
 func (s *AdminService) CreateAdmin(ctx context.Context, request dto.AdminRequest) (*ent.Admin, error) {
-	return s.repo.Client().Create().
+	return s.repo.C().Create().
 		SetPassword(request.Password).
 		SetUsername(request.Username).
 		SetDisplayName(request.DisplayName).
@@ -39,20 +42,29 @@ func (s *AdminService) CreateAdmin(ctx context.Context, request dto.AdminRequest
 }
 
 func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request dto.AdminRequest) (*ent.Admin, error) {
-	return s.repo.Client().UpdateOneID(id).
+	return s.repo.C().UpdateOneID(id).
 		SetDisplayName(request.DisplayName).
 		SetUsername(request.Username).
 		Save(ctx)
 }
 
 func (s *AdminService) DeleteAdmin(ctx context.Context, id int) error {
-	return s.repo.Client().DeleteOneID(id).Exec(ctx)
+	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }
 
 func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int) ([]*ent.Route, error) {
-	routes, err := s.repo.DB.Ent.Role.Query().
+	if contexts.MustAdminContext(ctx).IsSuperAdmin() {
+		routes, err := s.repo.DB().Route.Query().Where(route.IsEnable(true)).All(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		return routeutil.GroupRouteToNested(routes), nil
+	}
+
+	routes, err := s.repo.DB().Role.Query().
 		Where(role.HasAdminsWith(admin.ID(adminId))).
-		QueryRoutes().All(ctx)
+		QueryRoutes().Where(route.IsEnable(true)).All(ctx)
 
 	if err != nil {
 		return nil, err
@@ -62,7 +74,7 @@ func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int)
 }
 
 func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId int) ([]*ent.Permission, error) {
-	routes, err := s.repo.DB.Ent.Role.Query().
+	routes, err := s.repo.DB().Role.Query().
 		Where(
 			role.HasAdminsWith(admin.ID(adminId)),
 		).

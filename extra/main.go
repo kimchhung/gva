@@ -48,6 +48,7 @@ func main() {
 		permission.NewPermissionModule,
 		route.NewRouteModule,
 		todo.NewTodoModule,
+
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Add Router

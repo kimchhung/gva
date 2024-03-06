@@ -22,15 +22,21 @@ type (
 		IdleTimeout time.Duration `toml:"idle_timeout"`
 		TLS         struct {
 			Enable   bool
-			CertFile string `toml:"cert-file"`
-			KeyFile  string `toml:"key-file"`
+			CertFile string `toml:"cert_file"`
+			KeyFile  string `toml:"key_file"`
 		}
 	}
 	db = struct {
 		Mysql struct {
 			DSN string `toml:"dsn"`
 		}
-		EnableSeed bool `toml:"enable_seed"`
+	}
+	seed struct {
+		Enable     bool
+		SuperAdmin struct {
+			Username string `toml:"username"`
+			Password string `toml:"password"`
+		} `toml:"super_admin"`
 	}
 	logger = struct {
 		TimeFormat string        `toml:"time_format"`
@@ -80,6 +86,7 @@ type (
 type Config struct {
 	App        app
 	DB         db
+	Seed       seed
 	Logger     logger
 	Middleware middleware
 	Jwt        jwt
