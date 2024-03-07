@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "path": "/dashboard",
+    "component": "#",
+    "redirect": "/dashboard/welcome",
+    "name": "Dashboard",
+    "type": 0,
+    "meta": {
+      "title": "router.dashboard",
+      "icon": "ant-design:dashboard-filled",
+      "alwaysShow": true
+    },
+    "edges": {
+      "children": [
+        {
+          "id": 2,
+          "parentId": 1,
+          "path": "welcome",
+          "component": "views/Dashboard/Welcome",
+          "name": "Welcome",
+          "type": 1,
+          "meta": {
+            "title": "router.welcome",
+            "noCache": true,
+            "affix": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "path": "/authorization",
+    "component": "#",
+    "redirect": "/authorization/admin",
+    "name": "Authorization",
+    "type": 0,
+    "meta": {
+      "title": "router.authorization",
+      "icon": "eos-icons:role-binding",
+      "alwaysShow": true
+    },
+    "edges": {
+      "children": [
+        {
+          "id": 4,
+          "parentId": 3,
+          "path": "admin",
+          "component": "views/Authorization/Admin/Admin",
+          "name": "User",
+          "type": 1,
+          "meta": {
+            "title": "router.admin"
+          }
+        },
+        {
+          "id": 5,
+          "parentId": 3,
+          "path": "menu",
+          "component": "views/Authorization/Menu/Menu",
+          "name": "Menu",
+          "type": 1,
+          "meta": {
+            "title": "router.menuManagement"
+          }
+        },
+        {
+          "id": 6,
+          "parentId": 3,
+          "path": "role",
+          "component": "views/Authorization/Role/Role",
+          "name": "Role",
+          "type": 1,
+          "meta": {
+            "title": "router.role"
+          }
+        }
+      ]
+    }
+  }
+]

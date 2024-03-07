@@ -3,11 +3,12 @@ package seeds
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
-	"github.com/kimchhung/gva/extra/app/common/mock"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/ent"
+	"github.com/kimchhung/gva/extra/utils/json"
 	"github.com/kimchhung/gva/extra/utils/routeutil"
 )
 
@@ -22,23 +23,36 @@ func (RouterSeeder) Count(conn *ent.Client) (int, error) {
 	return conn.Route.Query().Count(context.TODO())
 }
 
+func getRouteData() (routes []*ent.Route) {
+	bytes, err := json.ReadJsonFile("./app/database/data/routes_data.json")
+	if err != nil {
+		log.Panicf("can't raed seed data %v", err)
+	}
+
+	if err := bytes.Out(&routes); err != nil {
+		log.Panicf("can't parse seed data %v", err)
+	}
+
+	return routes
+}
+
 func (RouterSeeder) Seed(conn *ent.Client) error {
-	routers := mock.GetRoutes()
+	routers := getRouteData()
 	flats := routeutil.FlattenNestedRoutes(routers)
 
 	childToParent := map[int]int{}
-
 	ctx := context.Background()
 	tx, _ := conn.Tx(ctx)
 
 	for _, r := range flats {
-		routeType := 0
 		if r.ParentID != nil {
 			childToParent[r.ID] = *r.ParentID
 		}
 
-		if !strings.Contains(r.Component, "#") {
-			routeType = 1
+		if strings.Contains(r.Component, "#") {
+			r.Type = 0
+		} else {
+			r.Type = 1
 		}
 
 		_, err := tx.Route.Create().SetID(r.ID).
@@ -49,7 +63,7 @@ func (RouterSeeder) Seed(conn *ent.Client) error {
 			SetMeta(r.Meta).
 			SetName(r.Name).
 			SetRedirect(r.Redirect).
-			SetType(routeType).Save(context.Background())
+			SetType(r.Type).Save(context.Background())
 
 		if err != nil {
 			return fmt.Errorf("create  routers: %w", err)
