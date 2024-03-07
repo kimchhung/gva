@@ -43,22 +43,19 @@ var (
 	errorByCode = map[int]*Error{}
 
 	// general
-	ErrUnknownError    = newError(http.StatusInternalServerError, -1, "unknown error")
-	ErrValidationError = newError(http.StatusBadRequest, -2, "validation error")
+	ErrUnknownError    = newError(http.StatusInternalServerError, -1, "unknown_error")
+	ErrValidationError = newError(http.StatusBadRequest, -2, "validation_error")
 	ErrUnauthorized    = newError(http.StatusForbidden, -3, "unauthorized")
-	ErrLoginError      = newError(http.StatusBadRequest, -4, "login error")
+	ErrBadRequest      = newError(http.StatusBadRequest, -4, "bad_request")
 	ErrUnauthenticated = newError(http.StatusUnauthorized, -5, "unauthenticated")
-	ErrForbidden       = newError(http.StatusForbidden, -6, "access denied")
-	ErrRecordNotFound  = newError(http.StatusNotFound, -7, "record not found")
-	ErrInvalidTOTP     = newError(http.StatusForbidden, -8, "invalid otp code")
-	ErrNotFound        = newError(http.StatusNotFound, -9, "not found")
-	ErrInvalidToken    = newError(http.StatusForbidden, -10, "invalid token")
-	ErrTooManyRetries  = newError(http.StatusForbidden, -11, "too many retries")
+	ErrForbidden       = newError(http.StatusForbidden, -6, "access_denied")
+	ErrInvalidTOTP     = newError(http.StatusBadRequest, -8, "invalid otp code")
+	ErrNotFound        = newError(http.StatusNotFound, -9, "not_found")
+	ErrInvalidToken    = newError(http.StatusForbidden, -10, "invalid_token")
+	ErrTooManyRetries  = newError(http.StatusForbidden, -11, "too_many_retries")
 
 	// users
-	ErrPasswordValidationError  = newError(http.StatusBadRequest, -501, "wrong password")
-	ErrUserNotFound             = newError(http.StatusNotFound, -502, "user not found")
-	ErrPhoneNumberAlreadyExists = newError(http.StatusConflict, -503, "phone number already exists")
-	ErrWrongVerifyCode          = newError(http.StatusBadRequest, -504, "wrong verify code")
-	ErrUsernameExists           = newError(http.StatusConflict, -505, "username already exists")
+	ErrPasswordValidationError = newError(http.StatusBadRequest, -501, "wrong_password")
+	ErrUserNotFound            = newError(http.StatusNotFound, -502, "user_not_found")
+	ErrUsernameExists          = newError(http.StatusConflict, -505, "username_already_exists")
 )

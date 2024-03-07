@@ -22,10 +22,22 @@ func (Admin) Mixin() []ent.Mixin {
 
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("username").Unique(),
-		field.String("password").Sensitive(),
-		field.JSON("whitelist_ips", []string{}).StructTag(`json:"-"`),
-		field.String("display_name").StructTag(`json:"displayName,omitempty"`).Optional(),
+		field.Int("id").
+			StructTag(`json:"id" rql:"column=id,name=id,filter,sort"`),
+
+		field.String("username").
+			StructTag(`json:"username" rql:"name=username,column=username,filter,sort"`).
+			Unique(),
+
+		field.String("password").
+			Sensitive(),
+
+		field.JSON("whitelist_ips", []string{}).
+			StructTag(`json:"-"`),
+
+		field.String("display_name").
+			StructTag(`json:"displayName,omitempty" rql:"name=displayName,column=display_name,filter,sort"`).
+			Optional(),
 	}
 }
 

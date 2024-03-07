@@ -15,11 +15,11 @@ import (
 
 // Admin is the model entity for the Admin schema.
 type Admin struct {
-	config `json:"-"`
+	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID int `json:"id" rql:"column=id,name=id,filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"createdAt,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// IsEnable holds the value of the "is_enable" field.
@@ -27,13 +27,13 @@ type Admin struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// Username holds the value of the "username" field.
-	Username string `json:"username,omitempty"`
+	Username string `json:"username" rql:"name=username,column=username,filter,sort"`
 	// Password holds the value of the "password" field.
-	Password string `json:"-"`
+	Password string `json:"-" rql:"-"`
 	// WhitelistIps holds the value of the "whitelist_ips" field.
 	WhitelistIps []string `json:"-"`
 	// DisplayName holds the value of the "display_name" field.
-	DisplayName string `json:"displayName,omitempty"`
+	DisplayName string `json:"displayName,omitempty" rql:"name=displayName,column=display_name,filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AdminQuery when eager-loading is set.
 	Edges        AdminEdges `json:"edges"`

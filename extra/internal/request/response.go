@@ -4,6 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/response"
+	"github.com/kimchhung/gva/extra/lang"
 	in_validator "github.com/kimchhung/gva/extra/utils/validator"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,20 +15,26 @@ import (
 var IsProduction bool
 
 // Default error handler
-var ErrorHandler = func(c *fiber.Ctx, err error) error {
+func ErrorHandler(c *fiber.Ctx, err error) error {
 	var resErr *app_err.Error
 
-	if e, ok := err.(validator.ValidationErrors); ok {
+	switch e := err.(type) {
+	case validator.ValidationErrors:
+		t := lang.Get(lang.WithFiberCtx(c))
+		msg := in_validator.RemoveTopStruct(e.Translate(t))
+
 		resErr = app_err.NewError(
 			app_err.ErrValidationError,
-			app_err.WithMessage(in_validator.RemoveTopStruct(e.Translate(in_validator.Trans))),
+			app_err.WithMessage(msg),
 		)
-	} else if e, ok := err.(*app_err.Error); ok {
+
+		resErr.SetTranslated()
+
+	case *app_err.Error:
 		resErr = e
-	} else {
+	default:
 		resErr = app_err.NewError(app_err.ErrUnknownError,
-			// * count as server error can send message to webhook chat or save as log
-			app_err.WithMessage(err.Error()),
+			app_err.Join(c.UserContext(), err),
 		)
 	}
 
@@ -35,6 +42,7 @@ var ErrorHandler = func(c *fiber.Ctx, err error) error {
 		log.Error().Err(err).Msg("From: Fiber's error handler")
 	}
 
+	resErr.Translate(c.UserContext())
 	return Response(c, response.Error(resErr))
 }
 

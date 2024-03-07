@@ -1,6 +1,7 @@
 package service
 
 import (
+	"entgo.io/ent/dialect/sql"
 	"github.com/kimchhung/gva/extra/app/common/contexts"
 	"github.com/kimchhung/gva/extra/app/module/admin/dto"
 	"github.com/kimchhung/gva/extra/app/module/admin/repository"
@@ -13,6 +14,7 @@ import (
 	"github.com/kimchhung/gva/extra/internal/ent/admin"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
+	"github.com/kimchhung/gva/extra/internal/rql"
 )
 
 type AdminService struct {
@@ -25,8 +27,13 @@ func NewAdminService(repository *repository.AdminRepository) *AdminService {
 	}
 }
 
-func (s *AdminService) GetAdmins(ctx context.Context) ([]*ent.Admin, error) {
-	return s.repo.C().Query().Order(ent.Asc(admin.FieldID)).All(ctx)
+func (s *AdminService) GetAdmins(ctx context.Context, p *rql.Params) ([]*ent.Admin, error) {
+	return s.repo.C().Query().Where(func(s *sql.Selector) {
+		s.Where(sql.ExprP(p.FilterExp.String(), p.FilterArgs...))
+	}).
+		Limit(p.Limit).
+		Offset(p.Offset).
+		All(ctx)
 }
 
 func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, error) {

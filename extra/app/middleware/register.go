@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/kimchhung/gva/extra/config"
+	"github.com/kimchhung/gva/extra/lang"
 	"github.com/kimchhung/gva/extra/utils"
 
 	"github.com/rs/zerolog"
@@ -36,6 +37,9 @@ func NewMiddleware(app *fiber.App, cfg *config.Config, log *zerolog.Logger) *Mid
 
 func (m *Middleware) Register() {
 	m.app.Use(cors.New())
+
+	// add locale to context
+	m.app.Use(lang.Middleware("locale"))
 
 	// Add Extra Middlewares
 	m.app.Use(swagger.New(swagger.Config{

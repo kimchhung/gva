@@ -1,11 +1,19 @@
 package app_err
 
-import "fmt"
+import (
+	"context"
+	"errors"
+	"fmt"
+
+	"github.com/kimchhung/gva/extra/lang"
+)
 
 type Error struct {
 	HttpCode  int
 	ErrorCode int
 	Message   string
+
+	isTranslate bool
 }
 
 type Option func(*Error)
@@ -14,9 +22,23 @@ func (e *Error) Error() string {
 	return fmt.Sprint(e.Message)
 }
 
-func WithMessageFunc(fn func(previous string) string) Option {
-	return func(err *Error) {
-		err.Message = fn(err.Error())
+func (e *Error) Translate(ctx context.Context) {
+	if e.isTranslate {
+		return
+	}
+
+	e.Message = lang.T(e.Message, lang.WithContext(ctx))
+	e.SetTranslated()
+}
+
+func (e *Error) SetTranslated() {
+	e.isTranslate = true
+}
+
+func Join(ctx context.Context, err error) Option {
+	return func(pErr *Error) {
+		pErr.Translate(ctx)
+		pErr.Message = errors.Join(pErr, err).Error()
 	}
 }
 
@@ -24,12 +46,6 @@ func WithMessageFunc(fn func(previous string) string) Option {
 func WithMessage(msg string) Option {
 	return func(err *Error) {
 		err.Message = msg
-	}
-}
-
-func WrapError(err error) Option {
-	return func(pErr *Error) {
-		pErr.Message = err.Error()
 	}
 }
 
