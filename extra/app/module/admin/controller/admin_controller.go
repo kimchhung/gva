@@ -45,15 +45,14 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Success  200 {object} response.Response{data=[]dto.AdminResponse} "Successfully retrieved Admins"
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	meta.Get("/").Name("get many Admins").Use(
-		request.RQL(rql.Config{
-			Model:       ent.Admin{},
-			Log:         log.Printf,
-			DefaultSort: []string{"-id"},
-		}),
-	)
+	// init parser once and reused
+	parser := rql.MustNewParser(rql.Config{
+		Model:       ent.Admin{},
+		Log:         log.Printf,
+		DefaultSort: []string{"-id"},
+	})
 
-	return meta.DoWithScope(func() []fiber.Handler {
+	return meta.Get("/").Name("get many Admins").DoWithScope(func() []fiber.Handler {
 		params := new(rql.Params)
 
 		return []fiber.Handler{
@@ -62,7 +61,7 @@ func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				permissions.AdminSuper,
 			),
 			request.Parse(
-				request.RqlParser(params),
+				request.RqlParser(params, parser),
 			),
 			func(c *fiber.Ctx) error {
 				list, err := con.service.GetAdmins(c.UserContext(), params)
