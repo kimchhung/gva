@@ -1,0 +1,12 @@
+[
+  {
+    "locale": "en",
+    "key": "wrong_password",
+    "trans": "Wrong password"
+  },
+  {
+    "locale": "en",
+    "key": "username_already_exists",
+    "trans": "Username already exists"
+  }
+]

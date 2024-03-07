@@ -1,0 +1,42 @@
+[
+  {
+    "locale": "en",
+    "key": "unknown_error",
+    "trans": "Unknown error"
+  },
+  {
+    "locale": "en",
+    "key": "validation_error",
+    "trans": "Validation error"
+  },
+  {
+    "locale": "en",
+    "key": "bad_request",
+    "trans": "Bad request"
+  },
+  {
+    "locale": "en",
+    "key": "invalid_token",
+    "trans": "Invalid token"
+  },
+  {
+    "locale": "en",
+    "key": "unauthorized",
+    "trans": "Unauthorized"
+  },
+  {
+    "locale": "en",
+    "key": "too_many_retries",
+    "trans": "Too many retries"
+  },
+  {
+    "locale": "en",
+    "key": "not_found",
+    "trans": "Not found"
+  },
+  {
+    "locale": "en",
+    "key": "access_denied",
+    "trans": "Access denied"
+  }
+]

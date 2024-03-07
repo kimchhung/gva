@@ -40,7 +40,7 @@ func (s *JwtService) ProtectAdmin() fiber.Handler {
 
 			admin := new(ent.Admin)
 			if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
-				return err
+				return app_err.ErrUnauthorized
 			}
 
 			adminCtx := contexts.NewAdminContext(

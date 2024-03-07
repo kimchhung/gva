@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/module/todo/dto"
 	"github.com/kimchhung/gva/extra/app/module/todo/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
@@ -12,19 +13,21 @@ import (
 // don't remove for runtime type checking
 var _ interface{ rctrl.Controller } = (*TodoController)(nil)
 
-
 type TodoController struct {
 	service *service.TodoService
+	jwtSv   *services.JwtService
 }
 
 func (con *TodoController) Routes(r fiber.Router) {
 	todo := r.Group("todo")
+	todo.Use(con.jwtSv.ProtectAdmin())
 	rctrl.Register(todo, con)
 }
 
-func NewTodoController(service *service.TodoService) *TodoController {
+func NewTodoController(service *service.TodoService, jwtSv *services.JwtService) *TodoController {
 	return &TodoController{
 		service: service,
+		jwtSv:   jwtSv,
 	}
 }
 
@@ -106,7 +109,7 @@ func (con *TodoController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 			),
 
 			func(c *fiber.Ctx) error {
-				data, err := con.service.CreateTodo(c.UserContext(),body)
+				data, err := con.service.CreateTodo(c.UserContext(), body)
 				if err != nil {
 					return err
 				}
@@ -119,7 +122,6 @@ func (con *TodoController) Create(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		}
 	})
 }
-
 
 // @Tags Todo
 // @Security Bearer
@@ -145,7 +147,7 @@ func (con *TodoController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 				request.BodyParser(body),
 			),
 			func(c *fiber.Ctx) error {
-				data, err := con.service.UpdateTodo(c.UserContext(), param.ID,body)
+				data, err := con.service.UpdateTodo(c.UserContext(), param.ID, body)
 				if err != nil {
 					return err
 				}
@@ -169,7 +171,7 @@ func (con *TodoController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Param id path int true "Todo ID"
 // @Success  200 {object} response.Response{} "Successfully deleted Todo"
 // @Router /todo/{id} [delete]
-func (con  *TodoController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+func (con *TodoController) Delete(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Todo").DoWithScope(func() []fiber.Handler {
 		param := &struct {
 			ID int `params:"id" validate:"gt=0"`

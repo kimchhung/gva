@@ -33,7 +33,7 @@ func RqlParser(out *rql.Params, parser *rql.Parser) Parser {
 		if err != nil {
 			return nil, app_err.NewError(
 				app_err.ErrValidationError,
-				app_err.Join(err),
+				app_err.Join(c.UserContext(), err),
 			)
 		}
 
