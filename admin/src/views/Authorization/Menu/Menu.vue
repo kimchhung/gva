@@ -109,7 +109,7 @@ const tableColumns = reactive<TableColumn<AdminRoute>[]>([
   {
     field: 'action',
     label: t('common.action'),
-    width: 240,
+    width: 250,
     slots: {
       default: (data) => {
         const row = data.row

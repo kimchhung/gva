@@ -228,6 +228,21 @@ export default {
     detail: 'Detail',
     remove: 'Remove',
     save: 'Save',
-    add: 'Add'
+    add: 'Add',
+    del: 'Delete'
+  },
+  exampleDemo: {
+    title: 'Title',
+    add: 'Add',
+    del: 'Delete',
+    edit: 'Edit',
+    author: 'Author',
+    displayTime: 'Display time',
+    importance: 'Importance',
+    pageviews: 'Pageviews',
+    important: 'Important',
+    content: 'Content',
+    save: 'Save',
+    detail: 'Detail'
   }
 }

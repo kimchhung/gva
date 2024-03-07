@@ -34,7 +34,6 @@ router.beforeEach(async (to, from, next) => {
         await adminStore.fetchAdminRouters()
       }
 
-      // Developers can modify it according to the actual situation
       const roleRouters = adminStore.getRoleRouters || []
 
       // Whether to use dynamic routing

@@ -1,8 +1,9 @@
-import { asyncRouterMap, constantRouterMap } from '@/router'
 import { flatMultiLevelRoutes, generateRoutesByServer } from '@/utils/routerHelper'
 import { cloneDeep } from 'lodash-es'
 import { defineStore } from 'pinia'
 import { store } from '../index'
+import { asyncRouterMap } from '@/router/asyncRoute'
+import { constantRouterMap } from '@/router/constantRoute'
 
 export type PermissionState = {
   routers: AppRouteRecordRaw[]
@@ -39,26 +40,19 @@ export const usePermissionStore = defineStore('permission', {
     setMenuTabRouters(routers: AppRouteRecordRaw[]): void {
       this.menuTabRouters = routers
     },
-    async generateRoutes(
-      type: 'server' | 'frontEnd' | 'static',
-      routers: AppCustomRouteRecordRaw[]
-    ) {
+    generateRoutes(type: 'server' | 'static', routers: AppCustomRouteRecordRaw[]) {
       try {
-        const routerMap =
-          type === 'server' ? await generateRoutesByServer(routers) : cloneDeep(asyncRouterMap)
+        const routerMap: AppRouteRecordRaw[] = []
+
+        if (type === 'server') {
+          routerMap.push(...(generateRoutesByServer(routers) ?? []))
+        }
+
+        // append async from local
+        routerMap.push(...cloneDeep(asyncRouterMap))
 
         // Dynamic routing, 404 must be put to the end
-        this.addRouters = routerMap.concat([
-          {
-            path: '/:path(.*)*',
-            redirect: '/404',
-            name: '404Page',
-            meta: {
-              hidden: true,
-              breadcrumb: false
-            }
-          }
-        ])
+        this.addRouters = routerMap.concat(NotFundRoute)
 
         // All routes of the rendering menu
         this.routers = cloneDeep(constantRouterMap).concat(routerMap)
@@ -73,6 +67,16 @@ export const usePermissionStore = defineStore('permission', {
   //   paths: ['routers', 'addRouters', 'menuTabRouters']
   // }
 })
+
+const NotFundRoute: AppRouteRecordRaw = {
+  path: '/:path(.*)*',
+  redirect: '/404',
+  name: '404Page',
+  meta: {
+    hidden: true,
+    breadcrumb: false
+  }
+} as const
 
 export const usePermissionStoreWithOut = () => {
   return usePermissionStore(store)

@@ -134,6 +134,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           manualChunks: {
             'vue-chunks': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
             'element-plus': ['element-plus'],
+            'wang-editor': ['@wangeditor/editor', '@wangeditor/editor-for-vue'],
+            echarts: ['echarts', 'echarts-wordcloud']
           }
         }
       },
@@ -165,7 +167,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         '@vueuse/core',
         'axios',
         'qs',
+        'echarts',
+        'echarts-wordcloud',
         'qrcode',
+        '@wangeditor/editor',
+        '@wangeditor/editor-for-vue',
         'vue-json-pretty',
         '@zxcvbn-ts/core',
         'dayjs',
