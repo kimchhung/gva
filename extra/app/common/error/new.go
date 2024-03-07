@@ -27,12 +27,7 @@ func (e *Error) Translate(ctx context.Context) {
 		return
 	}
 
-	e.Message = lang.T(
-		lang.Key(e.Message),
-		lang.WithContext(ctx),
-		lang.FallbackWithoutSeperator("_"),
-	)
-
+	e.Message = lang.T(e.Message, lang.WithContext(ctx))
 	e.SetTranslated()
 }
 
