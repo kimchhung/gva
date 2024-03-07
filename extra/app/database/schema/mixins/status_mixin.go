@@ -12,6 +12,9 @@ type IsEnableMixin struct {
 
 func (IsEnableMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Bool("is_enable").StructTag(`json:"isEnable"`).Default(true),
+		field.
+			Bool("is_enable").
+			StructTag(`json:"isEnable"`).
+			Default(true),
 	}
 }

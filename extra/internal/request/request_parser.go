@@ -1,6 +1,8 @@
 package request
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 type Parser func(*fiber.Ctx) (any, error)
 

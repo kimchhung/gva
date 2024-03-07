@@ -16,15 +16,21 @@ const (
 
 type (
 	ReponseOption func(resp *Response)
-
-	Response struct {
-		Code    int    `json:"code"`
-		Message string `json:"message,omitempty"`
-		Data    any    `json:"data,omitempty"`
-
-		HttpStatus int `json:"-"`
-	}
 )
+
+type Response struct {
+	Code    int    `json:"code"`
+	Message string `json:"message,omitempty"`
+	Data    any    `json:"data,omitempty"`
+
+	HttpStatus int `json:"-"`
+}
+
+type PageInfo struct {
+	Total int `json:"code"`
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}
 
 /*
 return as data in format

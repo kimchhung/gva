@@ -1,6 +1,9 @@
 package app_err
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Error struct {
 	HttpCode  int
@@ -27,9 +30,9 @@ func WithMessage(msg string) Option {
 	}
 }
 
-func WrapError(err error) Option {
+func Join(err error) Option {
 	return func(pErr *Error) {
-		pErr.Message = err.Error()
+		pErr.Message = errors.Join(pErr, err).Error()
 	}
 }
 

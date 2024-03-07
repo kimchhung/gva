@@ -11,6 +11,8 @@ import (
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"
+	"github.com/kimchhung/gva/extra/internal/rql"
+	"github.com/rs/zerolog/log"
 )
 
 var _ interface{ rctrl.Controller } = (*AdminController)(nil)
@@ -43,23 +45,38 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Success  200 {object} response.Response{data=[]dto.AdminResponse} "Successfully retrieved Admins"
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").Name("get many Admins").Do(
-		permissions.RequireAny(
-			permissions.AdminView,
-			permissions.AdminSuper,
-		),
-		func(c *fiber.Ctx) error {
-			list, err := con.service.GetAdmins(c.UserContext())
-			if err != nil {
-				return err
-			}
-
-			return request.Response(c,
-				response.Data(list),
-				response.Message("Admin list retreived successfully!"),
-			)
-		},
+	meta.Get("/").Name("get many Admins").Use(
+		request.RQL(rql.Config{
+			Model:       ent.Admin{},
+			Log:         log.Printf,
+			DefaultSort: []string{"-id"},
+		}),
 	)
+
+	return meta.DoWithScope(func() []fiber.Handler {
+		params := new(rql.Params)
+
+		return []fiber.Handler{
+			permissions.RequireAny(
+				permissions.AdminView,
+				permissions.AdminSuper,
+			),
+			request.Parse(
+				request.RqlParser(params),
+			),
+			func(c *fiber.Ctx) error {
+				list, err := con.service.GetAdmins(c.UserContext(), params)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(list),
+					response.Message("Admin list retreived successfully!"),
+				)
+			},
+		}
+	})
 }
 
 // @Tags Admin
