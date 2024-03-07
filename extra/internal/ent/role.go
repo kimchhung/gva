@@ -14,11 +14,11 @@ import (
 
 // Role is the model entity for the Role schema.
 type Role struct {
-	config `json:"-"`
+	config `json:"-" rql:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort`
+	CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// IsEnable holds the value of the "is_enable" field.

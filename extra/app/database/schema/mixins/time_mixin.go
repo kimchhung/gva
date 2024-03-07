@@ -15,7 +15,7 @@ type TimeMixin struct {
 func (TimeMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("created_at").
-			StructTag(`json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort`).
+			StructTag(`json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort"`).
 			Default(time.Now),
 
 		field.Time("updated_at").

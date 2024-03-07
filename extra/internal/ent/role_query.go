@@ -370,7 +370,7 @@ func (rq *RoleQuery) WithRoutes(opts ...func(*RouteQuery)) *RoleQuery {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort`
+//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -393,7 +393,7 @@ func (rq *RoleQuery) GroupBy(field string, fields ...string) *RoleGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort`
+//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,layout=time.RFC3339,filter,sort"`
 //	}
 //
 //	client.Role.Query().

@@ -26,7 +26,7 @@ func (Admin) Fields() []ent.Field {
 			StructTag(`json:"id" rql:"column=id,name=id,filter,sort"`),
 
 		field.String("username").
-			StructTag(`json:"username" rql:"column=username,name=username,filter,sort"`).
+			StructTag(`json:"username" rql:"name=username,column=username,filter,sort"`).
 			Unique(),
 
 		field.String("password").
@@ -36,7 +36,7 @@ func (Admin) Fields() []ent.Field {
 			StructTag(`json:"-"`),
 
 		field.String("display_name").
-			StructTag(`json:"displayName,omitempty" rql:"column=display_name,name=displayName,filter,sort"`).
+			StructTag(`json:"displayName,omitempty" rql:"name=displayName,column=display_name,filter,sort"`).
 			Optional(),
 	}
 }
