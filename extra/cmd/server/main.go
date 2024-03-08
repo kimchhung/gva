@@ -14,6 +14,13 @@ import (
 	_ "github.com/kimchhung/gva/extra/internal/ent/runtime"
 )
 
+var (
+	cfg       = config.NewConfig()
+	newConfig = fx.Provide(func() *config.Config {
+		return cfg
+	})
+)
+
 // @title Dashboard API
 // @version 1.0
 // @description GO VUE ADMIN Boilerplate
@@ -24,14 +31,9 @@ import (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
-	cfg := config.NewConfig()
-	fxNewConfig := func() *config.Config {
-		return cfg
-	}
-
 	fx.New(
 		// Provide config
-		fx.Provide(fxNewConfig),
+		newConfig,
 
 		/* Common Module */
 		common.NewCommonModule,
