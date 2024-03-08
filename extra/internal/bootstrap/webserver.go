@@ -30,7 +30,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		Prefork:               cfg.App.Prefork,
 		ErrorHandler:          request.ErrorHandler,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
-		EnablePrintRoutes:     !cfg.App.PrintRoutes,
+		EnablePrintRoutes:     cfg.App.PrintRoutes,
 		DisableStartupMessage: true,
 	})
 

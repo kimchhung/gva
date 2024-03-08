@@ -1,12 +1,10 @@
 package module
 
 import (
-	"slices"
-
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/kimchhung/gva/extra/app/module/dashboard"
-	"github.com/kimchhung/gva/extra/app/module/web"
+	dashboard "github.com/kimchhung/gva/extra/api/dashboard/module"
+	web "github.com/kimchhung/gva/extra/api/web/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"go.uber.org/fx"
@@ -45,12 +43,12 @@ func NewModules(cfg *config.Config) fx.Option {
 	}
 
 	/* Enable Dashboard Module */
-	if slices.Contains(cfg.Module.Enables, "dashboard") {
+	if cfg.API.Dashboard.Enable {
 		modules = append(modules, dashboard.NewDashboardModules)
 	}
 
 	/* Enable Web Module */
-	if slices.Contains(cfg.Module.Enables, "web") {
+	if cfg.API.Dashboard.Enable {
 		modules = append(modules, web.NewWebModules)
 	}
 

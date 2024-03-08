@@ -49,7 +49,7 @@ var (
 	ErrBadRequest      = newError(http.StatusBadRequest, -4, "bad_request")
 	ErrUnauthenticated = newError(http.StatusUnauthorized, -5, "unauthenticated")
 	ErrForbidden       = newError(http.StatusForbidden, -6, "access_denied")
-	ErrInvalidTOTP     = newError(http.StatusBadRequest, -8, "invalid otp code")
+	ErrInvalidTOTP     = newError(http.StatusBadRequest, -8, "invalid_otp_code")
 	ErrNotFound        = newError(http.StatusNotFound, -9, "not_found")
 	ErrInvalidToken    = newError(http.StatusForbidden, -10, "invalid_token")
 	ErrTooManyRetries  = newError(http.StatusForbidden, -11, "too_many_retries")

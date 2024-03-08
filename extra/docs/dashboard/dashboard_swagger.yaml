@@ -1,0 +1,1052 @@
+basePath: /dashboard
+definitions:
+  dto.AdminRequest:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      displayName:
+        description: DisplayName holds the value of the "display_name" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AdminQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
+      whitelistIps:
+        description: WhitelistIps holds the value of the "whitelist_ips" field.
+        items:
+          type: string
+        type: array
+    type: object
+  dto.AdminResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      displayName:
+        description: DisplayName holds the value of the "display_name" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AdminQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
+      whitelistIps:
+        description: WhitelistIps holds the value of the "whitelist_ips" field.
+        items:
+          type: string
+        type: array
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        maxLength: 30
+        minLength: 6
+        type: string
+      username:
+        maxLength: 30
+        minLength: 5
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.LoginResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/ent.Admin'
+      token:
+        type: string
+    type: object
+  dto.PermissionRequest:
+    properties:
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PermissionQuery when eager-loading is set.
+      group:
+        description: Group holds the value of the "group" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: integer
+      key:
+        description: Key holds the value of the "key" field.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+    type: object
+  dto.PermissionResponse:
+    properties:
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PermissionQuery when eager-loading is set.
+      group:
+        description: Group holds the value of the "group" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: integer
+      key:
+        description: Key holds the value of the "key" field.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+    type: object
+  dto.RegisterRequest:
+    properties:
+      displayName:
+        type: string
+      password:
+        maxLength: 30
+        minLength: 6
+        type: string
+      username:
+        maxLength: 30
+        minLength: 5
+        type: string
+    required:
+    - displayName
+    - password
+    - username
+    type: object
+  dto.RegisterResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/ent.Admin'
+      token:
+        type: string
+    type: object
+  dto.RoleRequest:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.RoleEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RoleQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.RoleResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.RoleEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RoleQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.RouteResponse:
+    properties:
+      component:
+        description: Component holds the value of the "component" field.
+        type: string
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.RouteEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RouteQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      meta:
+        additionalProperties: true
+        description: Meta holds the value of the "meta" field.
+        type: object
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      parentId:
+        description: ParentID holds the value of the "parent_id" field.
+        type: integer
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      redirect:
+        description: Redirect holds the value of the "redirect" field.
+        type: string
+      title:
+        description: Title holds the value of the "title" field.
+        type: string
+      type:
+        description: Type holds the value of the "type" field.
+        type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.Admin:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      displayName:
+        description: DisplayName holds the value of the "display_name" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AdminQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
+      whitelistIps:
+        description: WhitelistIps holds the value of the "whitelist_ips" field.
+        items:
+          type: string
+        type: array
+    type: object
+  ent.AdminEdges:
+    properties:
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  ent.Permission:
+    properties:
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PermissionQuery when eager-loading is set.
+      group:
+        description: Group holds the value of the "group" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: integer
+      key:
+        description: Key holds the value of the "key" field.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+    type: object
+  ent.PermissionEdges:
+    properties:
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  ent.Role:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.RoleEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RoleQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.RoleEdges:
+    properties:
+      admins:
+        description: Admins holds the value of the admins edge.
+        items:
+          $ref: '#/definitions/ent.Admin'
+        type: array
+      permissions:
+        description: Permissions holds the value of the permissions edge.
+        items:
+          $ref: '#/definitions/ent.Permission'
+        type: array
+      routes:
+        description: Routes holds the value of the routes edge.
+        items:
+          $ref: '#/definitions/ent.Route'
+        type: array
+    type: object
+  ent.Route:
+    properties:
+      component:
+        description: Component holds the value of the "component" field.
+        type: string
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.RouteEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RouteQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      meta:
+        additionalProperties: true
+        description: Meta holds the value of the "meta" field.
+        type: object
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      parentId:
+        description: ParentID holds the value of the "parent_id" field.
+        type: integer
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      redirect:
+        description: Redirect holds the value of the "redirect" field.
+        type: string
+      title:
+        description: Title holds the value of the "title" field.
+        type: string
+      type:
+        description: Type holds the value of the "type" field.
+        type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.RouteEdges:
+    properties:
+      children:
+        description: Children holds the value of the children edge.
+        items:
+          $ref: '#/definitions/ent.Route'
+        type: array
+      parent:
+        allOf:
+        - $ref: '#/definitions/ent.Route'
+        description: Parent holds the value of the parent edge.
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: GO VUE ADMIN Boilerplate
+  title: GVA Dashboard API
+  version: "1.0"
+paths:
+  /admin:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Admins
+      operationId: list-all-Admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admins
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AdminResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Admins
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create a new Admin with the provided details
+      operationId: create-Admin
+      parameters:
+      - description: Admin data
+        in: body
+        name: Admin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Admin
+      tags:
+      - Admin
+  /admin/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Admin by ID
+      operationId: delete-Admin-by-id
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Admin
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Admin
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Get a Admin by ID
+      operationId: get-Admin-by-id
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      - Bearer: []
+      summary: Get a Admin
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      description: Update a Admin by ID
+      operationId: update-Admin-by-id
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin data
+        in: body
+        name: Admin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Admin
+      tags:
+      - Admin
+  /admin/route:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of permissions for an Admin by ID
+      operationId: get-Admin-permissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admin permissions
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Admin permissions
+      tags:
+      - Admin
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a admin with the provided credentials
+      operationId: create-Auth
+      parameters:
+      - description: Auth data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Auth
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.LoginResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.LoginResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      summary: Authenticate a admin
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: get admin data by token
+      operationId: create-Auth-me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/ent.Admin'
+              type: object
+      security:
+      - Bearer: []
+      summary: query your self after login
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new admin with the provided credentials
+      operationId: create-Auth-register
+      parameters:
+      - description: Registration data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RegisterResponse'
+              type: object
+      summary: Register a new admin
+      tags:
+      - Auth
+  /permission:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Permissions
+      operationId: list-all-Permissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Permissions
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.PermissionResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.PermissionResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Permissions
+      tags:
+      - Permission
+    post:
+      consumes:
+      - application/json
+      description: Create a new Permission with the provided details
+      operationId: create-Permission
+      parameters:
+      - description: Permission data
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Permission
+      tags:
+      - Permission
+  /permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Permission by ID
+      operationId: delete-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Permission
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Permission
+      tags:
+      - Permission
+    get:
+      consumes:
+      - application/json
+      description: Get a Permission by ID
+      operationId: get-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Permission
+      tags:
+      - Permission
+    patch:
+      consumes:
+      - application/json
+      description: Update a Permission by ID
+      operationId: update-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission data
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Permission
+      tags:
+      - Permission
+  /role:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Roles
+      operationId: list-all-Roles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Roles
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.RoleResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.RoleResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Roles
+      tags:
+      - Role
+    post:
+      consumes:
+      - application/json
+      description: Create a new Role with the provided details
+      operationId: create-Role
+      parameters:
+      - description: Role data
+        in: body
+        name: Role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Role
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Role
+      tags:
+      - Role
+  /role/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Role by ID
+      operationId: delete-Role-by-id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Role
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Role
+      tags:
+      - Role
+    get:
+      consumes:
+      - application/json
+      description: Get a Role by ID
+      operationId: get-Role-by-id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Role
+      tags:
+      - Role
+    patch:
+      consumes:
+      - application/json
+      description: Update a Role by ID
+      operationId: update-Role-by-id
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Role data
+        in: body
+        name: Role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Role
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Role
+      tags:
+      - Role
+  /route:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Routes
+      operationId: list-all-Routes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Routes
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.RouteResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.RouteResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Routes
+      tags:
+      - Route
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

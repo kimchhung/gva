@@ -38,8 +38,17 @@ type (
 			Password string `toml:"password"`
 		} `toml:"super_admin"`
 	}
-	module struct {
-		Enables []string
+	api struct {
+		Web struct {
+			Enable   bool
+			Port     string
+			BasePath string `toml:"base_path"`
+		}
+		Dashboard struct {
+			Enable   bool
+			Port     string
+			BasePath string `toml:"base_path"`
+		}
 	}
 	logger = struct {
 		TimeFormat string        `toml:"time_format"`
@@ -87,38 +96,30 @@ type (
 )
 
 type Config struct {
+	API        api
 	App        app
 	DB         db
 	Seed       seed
-	Module     module
 	Logger     logger
 	Middleware middleware
 	Jwt        jwt
 	Password   password
 }
 
-func ParseConfig(name string, debug ...bool) (*Config, error) {
+func ParseConfig(name string) (*Config, error) {
 	var contents *Config
-	var file []byte
-	var err error
 
-	if len(debug) > 0 {
-		file, err = os.ReadFile(name)
-	} else {
-		file, err = os.ReadFile("./config/" + name + ".toml")
-	}
-
+	file, err := os.ReadFile("./" + name + ".toml")
 	if err != nil {
 		return &Config{}, err
 	}
 
 	err = toml.Unmarshal(file, &contents)
-
 	return contents, err
 }
 
 func NewConfig() *Config {
-	config, err := ParseConfig("config")
+	config, err := ParseConfig(".env")
 	if err != nil && !fiber.IsChild() {
 		fmt.Printf("errrr %v : %v", err, config)
 	}

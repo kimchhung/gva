@@ -8,5 +8,10 @@
     "locale": "en",
     "key": "username_already_exists",
     "trans": "此用户名已存在"
+  },
+  {
+    "locale": "en",
+    "key": "invalid_otp_code",
+    "trans": "Invalid otp code"
   }
 ]
