@@ -26,32 +26,33 @@ func NewRouter(modules []rctrl.ModuleRouter) *Router {
 	return r
 }
 
-func (*Router) Name() string {
-	return "base"
-}
-
 func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	for _, r := range r.modules {
-		if slices.Contains(cfg.Module.Enables, r.Name()) {
-			r.Register(app, cfg)
-		}
+		r.Register(app, cfg)
 	}
 }
 
-var NewModules = fx.Module("app",
-
-	/* Web Module */
-	web.NewWebModules,
-
-	/* Dashboard Module */
-	dashboard.NewDashboardModules,
-
-	/* Register module router to fiber base on config */
-	fx.Provide(
-		// register as *Router
-		fx.Annotate(NewRouter,
-			// take group params from container => []rctrl.ModuleRouter -> NewRouter
-			fx.ParamTags(`group:"module"`),
+func NewModules(cfg *config.Config) fx.Option {
+	modules := []fx.Option{
+		/* Register module router to fiber base on config */
+		fx.Provide(
+			// register as *Router
+			fx.Annotate(NewRouter,
+				// take group params from container => []rctrl.ModuleRouter -> NewRouter
+				fx.ParamTags(`group:"module"`),
+			),
 		),
-	),
-)
+	}
+
+	/* Enable Dashboard Module */
+	if slices.Contains(cfg.Module.Enables, "dashboard") {
+		modules = append(modules, dashboard.NewDashboardModules())
+	}
+
+	/* Enable Web Module */
+	if slices.Contains(cfg.Module.Enables, "web") {
+		modules = append(modules, web.NewWebModules())
+	}
+
+	return fx.Module("app", modules...)
+}

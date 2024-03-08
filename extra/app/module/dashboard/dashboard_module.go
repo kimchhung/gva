@@ -27,10 +27,6 @@ func NewRouter(controllers []rctrl.Controller) *Router {
 	}
 }
 
-func (r *Router) Name() string {
-	return "dashboard"
-}
-
 func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	base := "/dashboard"
 	api := app.Group(base)
@@ -49,27 +45,29 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}
 }
 
-var NewDashboardModules = fx.Module(
-	"dashboard-module",
-	admin.NewAdminModule,
-	auth.NewAuthModule,
-	role.NewRoleModule,
-	permission.NewPermissionModule,
-	route.NewRouteModule,
+func NewDashboardModules() fx.Option {
+	return fx.Module(
+		"dashboard-module",
+		admin.NewAdminModule,
+		auth.NewAuthModule,
+		role.NewRoleModule,
+		permission.NewPermissionModule,
+		route.NewRouteModule,
 
-	// #inject:module (do not remove this comment, it is used by the code generator)
+		// #inject:module (do not remove this comment, it is used by the code generator)
 
-	// Add Router
-	fx.Provide(
-		fx.Annotate(NewRouter,
-			// convert type *Router => rctrl.ModuleRouter
-			fx.As(new(rctrl.ModuleRouter)),
+		// Add Router
+		fx.Provide(
+			fx.Annotate(NewRouter,
+				// convert type *Router => rctrl.ModuleRouter
+				fx.As(new(rctrl.ModuleRouter)),
 
-			// take group params from container => []rctrl.Controller -> NewRouter
-			fx.ParamTags(`group:"dashboard-controller"`),
+				// take group params from container => []rctrl.Controller -> NewRouter
+				fx.ParamTags(`group:"dashboard-controller"`),
 
-			// register to container as member of module group
-			fx.ResultTags(`group:"module"`),
+				// register to container as member of module group
+				fx.ResultTags(`group:"module"`),
+			),
 		),
-	),
-)
+	)
+}

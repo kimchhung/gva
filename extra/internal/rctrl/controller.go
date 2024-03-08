@@ -13,7 +13,4 @@ type Controller interface {
 
 type ModuleRouter interface {
 	Register(app fiber.Router, cfg *config.Config)
-
-	// dashbaord | web
-	Name() string
 }
