@@ -17,13 +17,13 @@ import (
 type Route struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID int `json:"id", rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"createdAt,omitempty" rql:"name=createdAt,column=created_at,filter,sort"`
+	CreatedAt time.Time `json:"createdAt,omitempty" rql:"column=created_at,filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// IsEnable holds the value of the "is_enable" field.
-	IsEnable bool `json:"isEnable"`
+	IsEnable bool `json:"isEnable"  rql:"column=is_enable,filter,sort"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// ParentID holds the value of the "parent_id" field.
@@ -44,7 +44,7 @@ type Route struct {
 	Meta map[string]interface{} `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RouteQuery when eager-loading is set.
-	Edges        RouteEdges `json:"edges"`
+	Edges        RouteEdges `json:"edges", rql:"-"`
 	selectValues sql.SelectValues
 }
 

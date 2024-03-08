@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/rql"
+	"github.com/rs/zerolog/log"
 )
 
 /*
@@ -40,4 +41,22 @@ func RqlParser(out *rql.Params, parser *rql.Parser) Parser {
 		*out = *param
 		return nil, nil
 	}
+}
+
+/*
+Model is the resource definition. The parser is configured based on the its definition. For example, given the following struct definition:
+
+	type User struct {
+	    Age	 int	`rql:"filter,sort"`
+	    Name string	`rql:"filter"`
+	}
+*/
+func MustRqlParser(model any) *rql.Parser {
+	return rql.MustNewParser(rql.Config{
+		Model:       model,
+		Log:         log.Info().Msgf,
+		DefaultSort: []string{"-id"},
+		DoNotLog:    false,
+		FieldSep:    ".",
+	})
 }

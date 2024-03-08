@@ -12,7 +12,6 @@ import (
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"
 	"github.com/kimchhung/gva/extra/internal/rql"
-	"github.com/rs/zerolog/log"
 )
 
 var _ interface{ rctrl.Controller } = (*AdminController)(nil)
@@ -46,11 +45,7 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	// init parser once and reused
-	parser := rql.MustNewParser(rql.Config{
-		Model:       ent.Admin{},
-		Log:         log.Printf,
-		DefaultSort: []string{"-id"},
-	})
+	parser := request.MustRqlParser(ent.Admin{})
 
 	return meta.Get("/").Name("get many Admins").DoWithScope(func() []fiber.Handler {
 		params := new(rql.Params)

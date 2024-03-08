@@ -109,12 +109,6 @@ func (ac *AdminCreate) SetNillableDisplayName(s *string) *AdminCreate {
 	return ac
 }
 
-// SetID sets the "id" field.
-func (ac *AdminCreate) SetID(i int) *AdminCreate {
-	ac.mutation.SetID(i)
-	return ac
-}
-
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
 func (ac *AdminCreate) AddRoleIDs(ids ...int) *AdminCreate {
 	ac.mutation.AddRoleIDs(ids...)
@@ -229,10 +223,8 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	ac.mutation.id = &_node.ID
 	ac.mutation.done = true
 	return _node, nil
@@ -243,10 +235,6 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 		_node = &Admin{config: ac.config}
 		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	)
-	if id, ok := ac.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(admin.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -343,7 +331,7 @@ func (acb *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
