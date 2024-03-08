@@ -63,8 +63,13 @@ var NewWebModules = fx.Module(
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
+			// convert type *Router => rctrl.ModuleRouter
 			fx.As(new(rctrl.ModuleRouter)),
+
+			// take group params from container => []rctrl.Controller -> NewRouter
 			fx.ParamTags(`group:"web-controller"`),
+
+			// register rctrl.ModuleRouter to container as member of module group
 			fx.ResultTags(`group:"module"`),
 		),
 	),

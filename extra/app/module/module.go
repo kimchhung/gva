@@ -48,7 +48,9 @@ var NewModules = fx.Module("app",
 
 	/* Register module router to fiber base on config */
 	fx.Provide(
+		// register as *Router
 		fx.Annotate(NewRouter,
+			// take group params from container => []rctrl.ModuleRouter -> NewRouter
 			fx.ParamTags(`group:"module"`),
 		),
 	),

@@ -21,7 +21,7 @@ type Router struct {
 	controllers []rctrl.Controller
 }
 
-func NewRouter(controllers ...rctrl.Controller) *Router {
+func NewRouter(controllers []rctrl.Controller) *Router {
 	return &Router{
 		controllers,
 	}
@@ -62,8 +62,13 @@ var NewDashboardModules = fx.Module(
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
+			// convert type *Router => rctrl.ModuleRouter
 			fx.As(new(rctrl.ModuleRouter)),
+
+			// take group params from container => []rctrl.Controller -> NewRouter
 			fx.ParamTags(`group:"dashboard-controller"`),
+
+			// register to container as member of module group
 			fx.ResultTags(`group:"module"`),
 		),
 	),
