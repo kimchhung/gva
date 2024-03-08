@@ -46,12 +46,12 @@ func NewModules(cfg *config.Config) fx.Option {
 
 	/* Enable Dashboard Module */
 	if slices.Contains(cfg.Module.Enables, "dashboard") {
-		modules = append(modules, dashboard.NewDashboardModules())
+		modules = append(modules, dashboard.NewDashboardModules)
 	}
 
 	/* Enable Web Module */
 	if slices.Contains(cfg.Module.Enables, "web") {
-		modules = append(modules, web.NewWebModules())
+		modules = append(modules, web.NewWebModules)
 	}
 
 	return fx.Module("app", modules...)

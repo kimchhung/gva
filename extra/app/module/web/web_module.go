@@ -55,24 +55,20 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}
 }
 
-func NewWebModules() fx.Option {
-	return fx.Module(
-		"web-module",
+var NewWebModules = fx.Module("web-module",
+	demo.NewDemoModule,
+	// #inject:module (do not remove this comment, it is used by the code generator)
+	// Add Router
+	fx.Provide(
+		fx.Annotate(NewRouter,
+			// convert type *Router => rctrl.ModuleRouter
+			fx.As(new(rctrl.ModuleRouter)),
 
-		demo.NewDemoModule,
-		// #inject:module (do not remove this comment, it is used by the code generator)
-		// Add Router
-		fx.Provide(
-			fx.Annotate(NewRouter,
-				// convert type *Router => rctrl.ModuleRouter
-				fx.As(new(rctrl.ModuleRouter)),
+			// take group params from container => []rctrl.Controller -> NewRouter
+			fx.ParamTags(`group:"web-controller"`),
 
-				// take group params from container => []rctrl.Controller -> NewRouter
-				fx.ParamTags(`group:"web-controller"`),
-
-				// register rctrl.ModuleRouter to container as member of module group
-				fx.ResultTags(`group:"module"`),
-			),
+			// register rctrl.ModuleRouter to container as member of module group
+			fx.ResultTags(`group:"module"`),
 		),
-	)
-}
+	),
+)
