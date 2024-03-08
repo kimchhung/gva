@@ -10,7 +10,6 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -40,16 +39,6 @@ func (m *Middleware) Register() {
 
 	// add locale to context
 	m.app.Use(lang.Middleware("locale"))
-
-	// Add Extra Middlewares
-	m.app.Use(swagger.New(swagger.Config{
-		Next:     utils.IsEnabled(m.cfg.Middleware.Swagger.Enable),
-		BasePath: "/",
-		FilePath: "./docs/swagger.json",
-		Path:     "swagger",
-		Title:    "Swagger API Docs",
-		CacheAge: 0,
-	}))
 
 	m.app.Use(limiter.New(limiter.Config{
 		Next:       utils.IsEnabled(m.cfg.Middleware.Limiter.Enable),

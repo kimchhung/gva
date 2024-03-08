@@ -8,8 +8,8 @@ var Controller = strings.ReplaceAll(`package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/kimchhung/gva/extra/app/module/{{.EntitySnake}}/dto"
-	"github.com/kimchhung/gva/extra/app/module/{{.EntitySnake}}/service"
+	"github.com/kimchhung/gva/extra/app/module/dashboard/{{.EntitySnake}}/dto"
+	"github.com/kimchhung/gva/extra/app/module/dashboard/{{.EntitySnake}}/service"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"

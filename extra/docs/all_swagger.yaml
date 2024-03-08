@@ -1,0 +1,15 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: GO VUE ADMIN Boilerplate
+  title: Web API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

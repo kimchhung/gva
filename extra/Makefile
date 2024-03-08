@@ -5,8 +5,13 @@ include migrate.mk
 gen:
 	go generate cmd/ent/generate.go
 
-swag:
-	swag init
+swag.all:
+	swag init -g main.go --dir ./cmd/server/web --instanceName all
+swag.web:
+	swag init -g main.go --dir ./cmd/server/web --instanceName web
+swag.dash:
+	swag init -g main.go --dir ./cmd/server/dashboard --instanceName dashboard
+
 
 crud:
 	go run cmd/code_gen/generate.go $(name)

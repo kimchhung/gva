@@ -33,7 +33,7 @@ func GenerateCodes(params CodeGenParams) {
 func Appends(params CodeGenParams) {
 	InjectCodeToPos("main.go", map[string]string{
 		"// #inject:module ":      fmt.Sprintf("%v.New%vModule,\n", params.EntitySnake, params.EntityPascal),
-		"// #inject:moduleImport": fmt.Sprintf(`"github.com/kimchhung/gva/extra/app/module/%v"`+"\n", params.EntitySnake),
+		"// #inject:moduleImport": fmt.Sprintf(`"github.com/kimchhung/gva/extra/app/module/dashboard/%v"`+"\n", params.EntitySnake),
 	}, true)
 }
 
