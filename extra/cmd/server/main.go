@@ -3,10 +3,8 @@ package main
 import (
 	fxzerolog "github.com/efectn/fx-zerolog"
 	"github.com/kimchhung/gva/extra/app/common"
+	"github.com/kimchhung/gva/extra/app/module"
 	"go.uber.org/fx"
-
-	"github.com/kimchhung/gva/extra/app/module/dashboard"
-	"github.com/kimchhung/gva/extra/app/module/web"
 
 	"github.com/kimchhung/gva/extra/internal/bootstrap"
 
@@ -26,15 +24,11 @@ import (
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	fx.New(
-		// Provide patterns
+		/* Common Module */
 		common.NewCommonModule,
 
-		// * dashboard modules * //
-		dashboard.NewDashboardModules,
-
-		// * web modules * //
-		web.NewWebModules,
-
+		/* Web, Dashboard Module */
+		module.NewModules,
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
 		// Start Application

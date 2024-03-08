@@ -38,6 +38,9 @@ type (
 			Password string `toml:"password"`
 		} `toml:"super_admin"`
 	}
+	module struct {
+		Enables []string
+	}
 	logger = struct {
 		TimeFormat string        `toml:"time_format"`
 		Level      zerolog.Level `toml:"level"`
@@ -87,6 +90,7 @@ type Config struct {
 	App        app
 	DB         db
 	Seed       seed
+	Module     module
 	Logger     logger
 	Middleware middleware
 	Jwt        jwt

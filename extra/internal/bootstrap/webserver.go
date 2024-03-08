@@ -12,8 +12,7 @@ import (
 	futils "github.com/gofiber/fiber/v2/utils"
 	"github.com/kimchhung/gva/extra/app/database/seeds"
 	"github.com/kimchhung/gva/extra/app/middleware"
-	"github.com/kimchhung/gva/extra/app/module/dashboard"
-	"github.com/kimchhung/gva/extra/app/module/web"
+	"github.com/kimchhung/gva/extra/app/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 
@@ -42,8 +41,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 func Start(
 	lifecycle fx.Lifecycle,
 	cfg *config.Config,
-	dashboard *dashboard.Router,
-	web *web.Router,
+	modules *module.Router,
 	fiber *fiber.App,
 	middlewares *middleware.Middleware,
 	database *database.Database,
@@ -54,8 +52,7 @@ func Start(
 			OnStart: func(ctx context.Context) error {
 				// Register middlewares & routes
 				middlewares.Register()
-				dashboard.Register(fiber, cfg)
-				web.Register(fiber, cfg)
+				modules.Register(fiber, cfg)
 
 				// Custom Startup Messages
 				host, port := config.ParseAddr(cfg.App.Port)

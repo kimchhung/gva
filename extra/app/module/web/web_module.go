@@ -12,6 +12,8 @@ import (
 	"go.uber.org/fx"
 )
 
+var _ interface{ rctrl.ModuleRouter } = (*Router)(nil)
+
 type Router struct {
 	controllers []rctrl.Controller
 }
@@ -20,6 +22,10 @@ func NewRouter(controllers ...rctrl.Controller) *Router {
 	return &Router{
 		controllers,
 	}
+}
+
+func (r *Router) Name() string {
+	return "web"
 }
 
 // @title GVA Web API
@@ -57,7 +63,9 @@ var NewWebModules = fx.Module(
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
+			fx.As(new(rctrl.ModuleRouter)),
 			fx.ParamTags(`group:"web-controller"`),
+			fx.ResultTags(`group:"module"`),
 		),
 	),
 )

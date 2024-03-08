@@ -15,6 +15,8 @@ import (
 	"go.uber.org/fx"
 )
 
+var _ interface{ rctrl.ModuleRouter } = (*Router)(nil)
+
 type Router struct {
 	controllers []rctrl.Controller
 }
@@ -23,6 +25,10 @@ func NewRouter(controllers ...rctrl.Controller) *Router {
 	return &Router{
 		controllers,
 	}
+}
+
+func (r *Router) Name() string {
+	return "dashboard"
 }
 
 func (r *Router) Register(app fiber.Router, cfg *config.Config) {
@@ -56,7 +62,9 @@ var NewDashboardModules = fx.Module(
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
+			fx.As(new(rctrl.ModuleRouter)),
 			fx.ParamTags(`group:"dashboard-controller"`),
+			fx.ResultTags(`group:"module"`),
 		),
 	),
 )
