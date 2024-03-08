@@ -36,7 +36,7 @@ func main() {
 		/* Common Module */
 		common.NewCommonModule,
 
-		/* Web, Dashboard Module */
+		/* Web, Dashboard |> Module <| */
 		module.NewModules(cfg),
 		// #inject:module (do not remove this comment, it is used by the code generator)
 
