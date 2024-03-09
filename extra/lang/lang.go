@@ -21,56 +21,37 @@ const (
 )
 
 func init() {
-	UT = ut.New(en.New(), zh.New())
-	err := UT.Import(ut.FormatJSON, "translation")
-	if err != nil {
-		log.Error().Err(err).Msg("UT.Import(ut.FormatJSON")
+	en := en.New()
+	UT = ut.New(en, en, zh.New())
+
+	if err := UT.Import(ut.FormatJSON, "./lang"); err != nil {
+		log.Panic().Err(err).Msg("UT.Import(ut.FormatJSON")
+	}
+
+	if err := UT.VerifyTranslations(); err != nil {
+		log.Panic().Err(err).Msg("VerifyTranslations")
 	}
 }
 
-func GetTranslator(locale string) ut.Translator {
+func getTranslator(locale string) ut.Translator {
 	trans, found := UT.GetTranslator(locale)
 	if !found {
-		log.Warn().Msgf("translator not found for locale %s, using default", "en")
+		log.Error().Msgf("translator not found for locale %s, using default", "en")
 	}
 
 	return trans
 }
 
 type (
-	langKey struct{}
-	Option  func(*Config)
-	Config  struct {
-		locale   string
-		key      *string
-		fallback *string
-		params   []string
+	langKey         struct{}
+	TranslateOption func(*Config)
+	LocaleOption    func(*Config)
+	Config          struct {
+		locale       string
+		fallbackFunc func(key string) string
+		params       []string
 	}
 )
-
-func WithLocale(locale string) Option {
-	return func(c *Config) {
-		c.locale = locale
-	}
-}
-
-// translate to base on locale in context
-func WithContext(ctx context.Context) Option {
-	return func(c *Config) {
-		if locale, ok := ctx.Value(langKey{}).(string); ok {
-			c.locale = locale
-		}
-	}
-}
-
-// translate to base on locale in fiber context
-func WithFiberCtx(ctx *fiber.Ctx) Option {
-	return func(c *Config) {
-		if locale, ok := ctx.UserContext().Value(langKey{}).(string); ok {
-			c.locale = locale
-		}
-	}
-}
 
 // default locale
 func Middleware(headerName string) fiber.Handler {
@@ -79,66 +60,44 @@ func Middleware(headerName string) fiber.Handler {
 			headerName = "locale"
 		}
 
+		locale := c.Get(headerName)
+		if locale == "" {
+			return c.Next()
+		}
+
 		ctx := context.WithValue(c.UserContext(), langKey{}, c.Get(headerName))
 		c.SetUserContext(ctx)
 		return c.Next()
 	}
 }
 
-func Get(opt Option, opts ...Option) ut.Translator {
+// get translators
+func GetTranslator(localeOpt LocaleOption) ut.Translator {
 	config := &Config{locale: LocaleEN}
-	opt(config)
-
-	for _, op := range opts {
-		op(config)
-	}
-
-	return GetTranslator(config.locale)
-}
-
-type TOption func(*Config)
-
-// default use key
-func Fallback(text string) Option {
-	return func(c *Config) {
-		c.fallback = &text
-	}
-}
-
-func Params(params ...string) Option {
-	return func(c *Config) {
-		c.params = params
-	}
+	localeOpt(config)
+	return getTranslator(config.locale)
 }
 
 // translate key with params
-func T(key string, opts ...Option) string {
-	if key == "" {
-		return ""
-	}
-
+func T(localeOpt LocaleOption, key string, opts ...TranslateOption) string {
 	config := &Config{
 		locale: LocaleEN,
-		key:    &key,
 	}
 
+	localeOpt(config)
 	for _, op := range opts {
 		op(config)
 	}
 
-	if config.locale == "" {
-		return *config.key
-	}
-
-	trans, err := GetTranslator(config.locale).T(config.key, config.params...)
+	trans, err := getTranslator(config.locale).T(key, config.params...)
 	if err != nil {
-		log.Warn().Msgf("translator not found for locale %s, key %s", config.locale, *config.key)
+		log.Warn().Msgf("translator not found for locale %s, key %s, err %v", config.locale, key, err)
 
-		if config.fallback != nil {
-			return *config.fallback
+		if config.fallbackFunc != nil {
+			return config.fallbackFunc(key)
 		}
 
-		return strings.ReplaceAll(*config.key, "_", " ")
+		return strings.ReplaceAll(key, "_", " ")
 	}
 
 	return trans

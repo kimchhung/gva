@@ -3,7 +3,7 @@ package module
 import (
 	"github.com/gofiber/fiber/v2"
 
-	dashboard "github.com/kimchhung/gva/extra/api/dashboard/module"
+	admin "github.com/kimchhung/gva/extra/api/admin/module"
 	web "github.com/kimchhung/gva/extra/api/web/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
@@ -37,18 +37,18 @@ func NewModules(cfg *config.Config) fx.Option {
 			// register as *Router
 			fx.Annotate(NewRouter,
 				// take group params from container => []rctrl.ModuleRouter -> NewRouter
-				fx.ParamTags(`group:"module"`),
+				fx.ParamTags(`group:"modules"`),
 			),
 		),
 	}
 
-	/* Enable Dashboard Module */
-	if cfg.API.Dashboard.Enable {
-		modules = append(modules, dashboard.NewDashboardModules)
+	/* Enable admin Module */
+	if cfg.API.Admin.Enable {
+		modules = append(modules, admin.NewadminModules)
 	}
 
 	/* Enable Web Module */
-	if cfg.API.Dashboard.Enable {
+	if cfg.API.Web.Enable {
 		modules = append(modules, web.NewWebModules)
 	}
 

@@ -10,13 +10,13 @@ import (
 var ROUTE_LIST = `[
 	{
 	   "id":1,
-	   "path": "/dashboard",
+	   "path": "/admin",
 	   "component": "#",
-	   "redirect": "/dashboard/",
-	   "name": "Dashboard",
+	   "redirect": "/admin/",
+	   "name": "admin",
 	   "meta": {
-		 "title": "router.dashboard",
-		 "icon": "ant-design:dashboard-filled",
+		 "title": "router.admin",
+		 "icon": "ant-design:admin-filled",
 		 "alwaysShow": true
 	   },
 	   "edges": {
@@ -25,7 +25,7 @@ var ROUTE_LIST = `[
 			 "id":2,
 			 "parentId":1,
 			 "path": "/",
-			 "component": "views/Dashboard/Welcome",
+			 "component": "views/admin/Welcome",
 			 "name": "Welcome",
 			 "meta": {
 			   "title": "router.welcome",

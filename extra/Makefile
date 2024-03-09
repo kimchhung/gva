@@ -5,24 +5,30 @@ include migrate.mk
 gen:
 	go generate cmd/ent/generate.go
 
+# Run both dashboad and web same port
+run: 
+	go run api/main.go
+
+# Run only web api
 run.web: 
-	go run api/web/web.go
+	go run api/web/main.go
 
-run.dash: 
-	go run api/dashboard/dashboard.go
+# run only admin
+run.admin: 
+	go run api/admin/main.go
 
-swag.web:
-	swag init -g web.go -d ./api/web --parseDependency --output ./docs/web/ --instanceName web
+swag: 
+	make swag.web 
+	make swag.admin
 
-swag.dash:
-	swag init -g dashboard.go -d ./api/dashboard --parseDependency --output ./docs/dashboard/ --instanceName dashboard
+swag.web: 
+	swag init -g main.go -d ./api/web --parseDependency --output ./api/web/docs/ --instanceName web
+
+swag.admin:
+	swag init -g main.go -d ./api/admin --parseDependency --output ./api/admin/docs --instanceName admin
 
 crud:
 	go run cmd/code_gen/generate.go $(name)
-
-# Run application outside Docker
-run:
-	go run main.go
 
 # Run application inside Docker
 docker:
@@ -40,3 +46,4 @@ tidy:
 stop:
 	docker-compose down
 
+      

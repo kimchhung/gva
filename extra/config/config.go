@@ -44,7 +44,7 @@ type (
 			Port     string
 			BasePath string `toml:"base_path"`
 		}
-		Dashboard struct {
+		Admin struct {
 			Enable   bool
 			Port     string
 			BasePath string `toml:"base_path"`

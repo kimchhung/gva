@@ -1,0 +1,49 @@
+definitions:
+  response.Response:
+    properties:
+      code:
+        description: expose
+        type: integer
+      data:
+        description: The Data field contains the actual response data
+      message:
+        type: string
+      meta:
+        description: Meta provides additional information about the data, such as
+          its type or kind.y.
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: GO VUE ADMIN Boilerplate
+  title: GVA Web API
+  version: "1.0"
+paths:
+  /demo/:
+    get:
+      consumes:
+      - application/json
+      description: Welcome
+      operationId: welcome-all-Demos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: List all Demos
+      tags:
+      - Demo
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

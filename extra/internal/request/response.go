@@ -1,18 +1,36 @@
 package request
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/response"
+	"github.com/pkg/errors"
+
 	"github.com/kimchhung/gva/extra/lang"
 	in_validator "github.com/kimchhung/gva/extra/utils/validator"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 // Nothing to describe this fucking variable.
 var IsProduction bool
+
+func init() {
+	zerolog.ErrorStackMarshaler = MarshalStackSkip(3)
+}
+
+func StackHandler(c *fiber.Ctx, panic any) {
+	if _, ok := panic.(*app_err.Error); ok {
+		return
+	}
+
+	err := errors.Wrap(fmt.Errorf("%v", panic), "from panic")
+	log.Error().Stack().Err(err).Msg("Stack handler")
+}
 
 // Default error handler
 func ErrorHandler(c *fiber.Ctx, err error) error {
@@ -20,53 +38,53 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 
 	switch e := err.(type) {
 	case validator.ValidationErrors:
-		t := lang.Get(lang.WithFiberCtx(c))
-		msg := in_validator.RemoveTopStruct(e.Translate(t))
-
+		// error from request input validation
+		t := lang.GetTranslator(lang.FiberCtx(c))
+		translatedMsg := in_validator.RemoveTopStruct(e.Translate(t))
 		resErr = app_err.NewError(
 			app_err.ErrValidationError,
-			app_err.WithMessage(msg),
+			app_err.Message(translatedMsg),
 		)
 
-		resErr.SetTranslated()
-
 	case *app_err.Error:
+		// throw from logical error for user to see
 		resErr = e
+		resErr.Message = lang.T(lang.FiberCtx(c), resErr.Message)
+
+	case *fiber.Error:
+		// wrong routing .....
+		resErr = app_err.NewError(
+			app_err.ErrBadRequest,
+			app_err.MessageFunc(
+				func(message string) string {
+					return lang.T(lang.FiberCtx(c), message)
+				},
+			),
+			app_err.Join(err),
+		)
+		resErr.HttpCode = e.Code
+
 	default:
-		resErr = app_err.NewError(app_err.ErrUnknownError,
-			app_err.Join(c.UserContext(), err),
+		// unexpected error, crashed etc...
+		resErr = app_err.NewError(
+			app_err.ErrUnknownError,
+			app_err.MessageFunc(
+				func(message string) string {
+					return lang.T(lang.FiberCtx(c), message)
+				},
+			),
+			app_err.Join(err),
 		)
 	}
 
 	if !IsProduction {
-		log.Error().Err(err).Msg("From: Fiber's error handler")
+		log.Err(err).Str("from", "fiber error").Msg("Error handler")
 	}
 
-	resErr.Translate(c.UserContext())
 	return Response(c, response.Error(resErr))
 }
 
-func defaultResponse() *response.Response {
-	return &response.Response{
-		Code:       response.SuccessCode,
-		Message:    response.SuccessMessage,
-		HttpStatus: response.SuccessHttpCode,
-		Data:       map[string]any{},
-	}
-}
-
-// A fuction to return beautiful responses.
+// A fuction to return beautiful and structured responses.
 func Response(c *fiber.Ctx, opt response.ReponseOption, opts ...response.ReponseOption) error {
-	resp := defaultResponse()
-	opt(resp)
-
-	for _, op := range opts {
-		op(resp)
-	}
-
-	if v, ok := resp.Data.(map[string]any); ok && len(v) == 0 {
-		resp.Data = nil
-	}
-
-	return c.Status(resp.HttpStatus).JSON(resp)
+	return response.New(opt, opts...).Parse(c)
 }

@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/kimchhung/gva/extra/config"
+	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/lang"
+
 	"github.com/kimchhung/gva/extra/utils"
 
 	"github.com/rs/zerolog"
@@ -52,8 +54,9 @@ func (m *Middleware) Register() {
 	}))
 
 	m.app.Use(recover.New(recover.Config{
-		Next:             utils.IsEnabled(m.cfg.Middleware.Recover.Enable),
-		EnableStackTrace: true,
+		Next:              utils.IsEnabled(m.cfg.Middleware.Recover.Enable),
+		EnableStackTrace:  true,
+		StackTraceHandler: request.StackHandler,
 	}))
 
 	m.app.Use(pprof.New(pprof.Config{

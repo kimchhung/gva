@@ -20,11 +20,14 @@ var (
 
 func init() {
 	validate = validator.New()
+	enTranslator := lang.GetTranslator(lang.Locale(lang.LocaleEN))
+	zhTranslator := lang.GetTranslator(lang.Locale(lang.LocaleZH))
 
-	if err := ent.RegisterDefaultTranslations(validate, lang.GetTranslator(lang.LocaleEN)); err != nil && !fiber.IsChild() {
+	if err := ent.RegisterDefaultTranslations(validate, enTranslator); err != nil && !fiber.IsChild() {
 		log.Panic().Err(err).Msg("")
 	}
-	if err := zht.RegisterDefaultTranslations(validate, lang.GetTranslator(lang.LocaleZH)); err != nil && !fiber.IsChild() {
+
+	if err := zht.RegisterDefaultTranslations(validate, zhTranslator); err != nil && !fiber.IsChild() {
 		log.Panic().Err(err).Msg("")
 	}
 }

@@ -19,7 +19,7 @@ var _ interface {
 type RouterSeeder struct {
 }
 
-func (RouterSeeder) Count(conn *ent.Client) (int, error) {
+func (RouterSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
 	return conn.Route.Query().Count(context.TODO())
 }
 
@@ -36,52 +36,60 @@ func getRouteData() (routes []*ent.Route) {
 	return routes
 }
 
-func (RouterSeeder) Seed(conn *ent.Client) error {
+func (RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 	routers := getRouteData()
 	flats := routeutil.FlattenNestedRoutes(routers)
 
 	childToParent := map[int]int{}
-	ctx := context.Background()
-	tx, _ := conn.Tx(ctx)
 
-	for _, r := range flats {
-		if r.ParentID != nil {
-			childToParent[r.ID] = *r.ParentID
+	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
+
+		for _, r := range flats {
+			if r.ParentID != nil {
+				childToParent[r.ID] = *r.ParentID
+			}
+
+			if strings.Contains(r.Component, "#") {
+				r.Type = 0
+			} else {
+				r.Type = 1
+			}
+
+			_, err := tx.Route.Create().SetID(r.ID).
+				SetTitle(r.Title).
+				SetComponent(r.Component).
+				SetPath(r.Path).
+				SetIsEnable(true).
+				SetMeta(r.Meta).
+				SetName(r.Name).
+				SetRedirect(r.Redirect).
+				SetType(r.Type).Save(context.Background())
+
+			if err != nil {
+				return fmt.Errorf("create  routers: %w", err)
+			}
+
 		}
 
-		if strings.Contains(r.Component, "#") {
-			r.Type = 0
-		} else {
-			r.Type = 1
+		for cid, pid := range childToParent {
+			_, err := tx.Route.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
+			if err != nil {
+				return fmt.Errorf("save routers: %w", err)
+			}
 		}
 
-		_, err := tx.Route.Create().SetID(r.ID).
-			SetTitle(r.Title).
-			SetComponent(r.Component).
-			SetPath(r.Path).
-			SetIsEnable(true).
-			SetMeta(r.Meta).
-			SetName(r.Name).
-			SetRedirect(r.Redirect).
-			SetType(r.Type).Save(context.Background())
+		return nil
 
-		if err != nil {
-			return fmt.Errorf("create  routers: %w", err)
-		}
-
-	}
-
-	for cid, pid := range childToParent {
-		_, err := tx.Route.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
-		if err != nil {
-			return fmt.Errorf("save routers: %w", err)
-		}
-	}
-
-	err := tx.Commit()
-	if err != nil {
-		return fmt.Errorf("commit routers: %w", err)
-	}
+	})
 
 	return nil
+}
+
+// rollback calls to tx.Rollback and wraps the given error
+// with the rollback error if occurred.
+func rollback(tx *ent.Tx, err error) error {
+	if rerr := tx.Rollback(); rerr != nil {
+		err = fmt.Errorf("%w: %v", err, rerr)
+	}
+	return err
 }

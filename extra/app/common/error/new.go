@@ -1,11 +1,7 @@
 package app_err
 
 import (
-	"context"
-	"errors"
-	"fmt"
-
-	"github.com/kimchhung/gva/extra/lang"
+	"strings"
 )
 
 type Error struct {
@@ -13,48 +9,62 @@ type Error struct {
 	ErrorCode int
 	Message   string
 
-	isTranslate bool
+	subErrs []error
 }
 
 type Option func(*Error)
 
+const (
+	seperator = ", "
+)
+
 func (e *Error) Error() string {
-	return fmt.Sprint(e.Message)
-}
+	msgs := make([]string, 0)
+	msgs = append(msgs, e.Message)
 
-func (e *Error) Translate(ctx context.Context) {
-	if e.isTranslate {
-		return
+	for _, subErr := range e.subErrs {
+		if msg := subErr.Error(); msg != "" {
+			msgs = append(msgs, msg)
+		}
 	}
 
-	e.Message = lang.T(e.Message, lang.WithContext(ctx))
-	e.SetTranslated()
+	return strings.Join(msgs, seperator)
 }
 
-func (e *Error) SetTranslated() {
-	e.isTranslate = true
+func (e *Error) Join(err error) *Error {
+	e.subErrs = append(e.subErrs, err)
+	return e
 }
 
-func Join(ctx context.Context, err error) Option {
-	return func(pErr *Error) {
-		pErr.Translate(ctx)
-		pErr.Message = errors.Join(pErr, err).Error()
+// overwrite original message with raw message
+func Join(err error) Option {
+	return func(_err *Error) {
+		_err.Join(err)
 	}
 }
 
-// overwrite original message
-func WithMessage(msg string) Option {
+// overwrite original message with raw message
+func Message(text string) Option {
 	return func(err *Error) {
-		err.Message = msg
+		err.Message = text
 	}
 }
 
-func NewError(err *Error, opts ...Option) *Error {
+// overwrite original message with raw message
+func MessageFunc(fn func(message string) string) Option {
+	return func(err *Error) {
+		err.Message = fn(err.Message)
+	}
+}
+
+// this clone original error and apply modification change
+func NewError(err *Error, opt Option, opts ...Option) *Error {
 	nErr := new(Error)
 	*nErr = *err
+	opt(nErr)
 
-	for _, opt := range opts {
-		opt(nErr)
+	for _, op := range opts {
+		op(nErr)
 	}
 
 	return nErr

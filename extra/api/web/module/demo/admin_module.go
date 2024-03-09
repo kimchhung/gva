@@ -13,6 +13,6 @@ var NewDemoModule = fx.Module("DemoModule",
 	fx.Provide(fx.Annotate(
 		controller.NewDemoController,
 		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"web-controller"`),
+		fx.ResultTags(`group:"web-controllers"`),
 	)),
 )

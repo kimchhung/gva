@@ -1,0 +1,76 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "GO VUE ADMIN Boilerplate",
+        "title": "GVA Web API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "paths": {
+        "/demo/": {
+            "get": {
+                "description": "Welcome",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Demo"
+                ],
+                "summary": "List all Demos",
+                "operationId": "welcome-all-Demos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "expose",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "The Data field contains the actual response data"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "description": "Meta provides additional information about the data, such as its type or kind.y."
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

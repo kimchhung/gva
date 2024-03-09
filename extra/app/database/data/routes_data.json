@@ -1,14 +1,14 @@
 [
   {
     "id": 1,
-    "path": "/dashboard",
+    "path": "/admin",
     "component": "#",
-    "redirect": "/dashboard/welcome",
-    "name": "Dashboard",
+    "redirect": "/admin/welcome",
+    "name": "admin",
     "type": 0,
     "meta": {
-      "title": "router.dashboard",
-      "icon": "ant-design:dashboard-filled",
+      "title": "router.admin",
+      "icon": "ant-design:admin-filled",
       "alwaysShow": true
     },
     "edges": {
@@ -17,7 +17,7 @@
           "id": 2,
           "parentId": 1,
           "path": "welcome",
-          "component": "views/Dashboard/Welcome",
+          "component": "views/admin/Welcome",
           "name": "Welcome",
           "type": 1,
           "meta": {
