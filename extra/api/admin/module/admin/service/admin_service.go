@@ -29,8 +29,9 @@ func NewAdminService(repository *repository.AdminRepository) *AdminService {
 }
 
 func (s *AdminService) Paginate(ctx context.Context, p *rql.Params) ([]*ent.Admin, *pagi.Meta, error) {
-	list := s.repo.RQL(p).AllX(ctx)
-	total := s.repo.RQL(p).CountX(ctx)
+	q := s.repo.RQL(p)
+	list := q.WithRoles().AllX(ctx)
+	total := q.CountX(ctx)
 
 	return list, &pagi.Meta{
 		Total:  total,

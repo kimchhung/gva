@@ -48,8 +48,15 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 
 	case *app_err.Error:
 		// throw from logical error for user to see
-		resErr = e
-		resErr.Message = lang.T(lang.FiberCtx(c), resErr.Message)
+		if e.IsDisableTranslate() {
+			resErr = e
+		} else {
+			resErr = app_err.NewError(e, app_err.MessageFunc(
+				func(message string) string {
+					return lang.T(lang.FiberCtx(c), message)
+				},
+			))
+		}
 
 	case *fiber.Error:
 		// wrong routing .....
@@ -66,6 +73,7 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 
 	default:
 		// unexpected error, crashed etc...
+		// StackHandler will invoke too
 		resErr = app_err.NewError(
 			app_err.ErrUnknownError,
 			app_err.MessageFunc(
@@ -78,7 +86,7 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 	}
 
 	if !IsProduction {
-		log.Err(err).Str("from", "fiber error").Msg("Error handler")
+		log.Err(resErr).Str("from", "fiber error").Msg("Error handler")
 	}
 
 	return Response(c, response.Error(resErr))

@@ -44,7 +44,10 @@ func (db *Database) ConnectDatabase() {
 		db.Log.Panic().Err(err).Str("dns", db.Cfg.DB.Mysql.DSN).Msg("An unknown error occurred when to connect the database!")
 	}
 
-	db.Client = ent.NewClient(ent.Driver(drv))
+	db.Client = ent.NewClient(
+		ent.Driver(drv),
+		ent.Debug(),
+	)
 }
 
 func (db *Database) ShutdownDatabase() {

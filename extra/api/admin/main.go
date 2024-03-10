@@ -24,6 +24,7 @@ var (
 // @securityDefinitions.apikey Bearer
 // @in header
 // @name Authorization
+// @Param locale header string true "en"
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	docs.SwaggerInfoadmin.BasePath = "admin"

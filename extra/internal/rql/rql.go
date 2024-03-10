@@ -499,7 +499,12 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 	for _, op := range modifierOps {
 		f.ModifierOps[op.String()] = true
 	}
+
 	p.fields[f.Name] = f
+	if p.ColumnNameFn != nil {
+		p.MapColumnName[f.Name] = p.ColumnNameFn(f.Name)
+	}
+
 	return nil
 }
 
@@ -579,7 +584,7 @@ func (p *Parser) sel(fields []string) []string {
 		if fieldName != finalCol {
 			finalCol = fmt.Sprintf("%v AS %v", finalCol, fieldName)
 		}
-		selectFields[i] = finalCol
+		selectFields[i] = tranformColumnWithTable(p, finalCol)
 	}
 
 	return selectFields
@@ -789,10 +794,33 @@ func (p *Parser) fmtOp(field string, op Op, length ...int) string {
 	return colName + " " + op.SQL() + " ?"
 }
 
+func withIfTablePrefix(table string, col string) string {
+	if table != "" {
+		return fmt.Sprintf("`%s`.`%s`", table, col)
+	}
+	return col
+}
+
+func tranformColumnWithTable(p *Parser, field string) string {
+	if p.ColumnNameFn != nil {
+		if name, ok := p.MapColumnName[field]; ok {
+			return withIfTablePrefix(p.Table, name)
+		}
+
+		return withIfTablePrefix(p.Table, p.ColumnNameFn(field))
+	}
+
+	return field
+}
+
 // colName formats the query field to database column name in cases the user configured a custom
 // field separator. for example: if the user configured the field separator to be ".", the fields
 // like "address.name" will be changed to "address_name".
 func (p *Parser) colName(field string) string {
+	if p.ColumnNameFn != nil {
+		return tranformColumnWithTable(p, field)
+	}
+
 	str := field
 	if p.FieldSep != DefaultFieldSep {
 		if p.Config.InterpretFieldSepAsNestedJsonbObject {
@@ -815,7 +843,7 @@ func (p *Parser) colName(field string) string {
 		}
 	}
 
-	return str
+	return withIfTablePrefix(p.Table, str)
 }
 
 func (p *Parser) op(op Op) string {

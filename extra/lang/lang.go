@@ -15,9 +15,11 @@ var (
 	UT *ut.UniversalTranslator
 )
 
+type LocaleType string
+
 const (
-	LocaleEN = "en"
-	LocaleZH = "zh"
+	LocaleEN LocaleType = "en"
+	LocaleZH LocaleType = "zh"
 )
 
 func init() {
@@ -33,8 +35,8 @@ func init() {
 	}
 }
 
-func getTranslator(locale string) ut.Translator {
-	trans, found := UT.GetTranslator(locale)
+func getTranslator(locale LocaleType) ut.Translator {
+	trans, found := UT.GetTranslator(string(locale))
 	if !found {
 		log.Error().Msgf("translator not found for locale %s, using default", "en")
 	}
@@ -47,14 +49,14 @@ type (
 	TranslateOption func(*Config)
 	LocaleOption    func(*Config)
 	Config          struct {
-		locale       string
+		locale       LocaleType
 		fallbackFunc func(key string) string
 		params       []string
 	}
 )
 
 // default locale
-func Middleware(headerName string) fiber.Handler {
+func Register(headerName string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if headerName == "" {
 			headerName = "locale"
@@ -101,4 +103,10 @@ func T(localeOpt LocaleOption, key string, opts ...TranslateOption) string {
 	}
 
 	return trans
+}
+
+func Is(source LocaleOption, target LocaleType) bool {
+	config := &Config{}
+	source(config)
+	return config.locale == target
 }

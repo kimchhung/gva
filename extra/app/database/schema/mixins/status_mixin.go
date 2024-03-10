@@ -14,7 +14,7 @@ func (IsEnableMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.
 			Bool("is_enable").
-			StructTag(`json:"isEnable"  rql:"column=is_enable,filter,sort"`).
+			StructTag(`json:"isEnable"  rql:"filter,sort"`).
 			Default(true),
 	}
 }

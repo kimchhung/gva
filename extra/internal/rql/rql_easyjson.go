@@ -380,3 +380,5 @@ func (v *Query) UnmarshalJSON(data []byte) error {
 func (v *Query) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson4bc42f5bDecodeGithubComA8mRql(l, v)
 }
+
+

@@ -17,13 +17,13 @@ import (
 type Admin struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id", rql:"filter,sort"`
+	ID int `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"createdAt,omitempty" rql:"column=created_at,filter,sort"`
+	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// IsEnable holds the value of the "is_enable" field.
-	IsEnable bool `json:"isEnable"  rql:"column=is_enable,filter,sort"`
+	IsEnable bool `json:"isEnable"  rql:"filter,sort"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// Username holds the value of the "username" field.
@@ -36,7 +36,7 @@ type Admin struct {
 	DisplayName string `json:"displayName,omitempty" rql:"column=display_name,filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AdminQuery when eager-loading is set.
-	Edges        AdminEdges `json:"edges", rql:"-"`
+	Edges        AdminEdges `json:"edges" rql:"-"`
 	selectValues sql.SelectValues
 }
 

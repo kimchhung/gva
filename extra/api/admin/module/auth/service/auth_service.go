@@ -10,6 +10,7 @@ import (
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/ent/admin"
+	"github.com/kimchhung/gva/extra/lang"
 )
 
 type AuthService struct {
@@ -30,12 +31,16 @@ func NewAuthService(jwtService *services.JwtService, adminRepo *repository.Admin
 func (s *AuthService) RegisterAdmin(ctx context.Context, username, password string, displayName string) (string, *ent.Admin, error) {
 	hashedPassword, err := s.passwordService.HashPassword(password)
 	if err != nil {
-		return "", nil, err
+		panic(err)
 	}
 
 	admin, err := s.adminRepo.C().Create().SetUsername(username).SetPassword(hashedPassword).SetDisplayName(displayName).Save(ctx)
 	if err != nil {
-		return "", nil, err
+		if ent.IsConstraintError(err) {
+			panic(app_err.ErrUsernameExists)
+		}
+
+		panic(err)
 	}
 
 	// Generate a JWT token for the authenticated user
@@ -45,7 +50,7 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, username, password stri
 	)
 
 	if err != nil {
-		return "", nil, err
+		panic(err)
 	}
 
 	return token, admin, nil
@@ -54,14 +59,22 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, username, password stri
 // LoginUser authenticates a user and returns a JWT token if successful.
 func (s *AuthService) LoginAdmin(ctx context.Context, username string, password string) (string, *ent.Admin, error) {
 	admin, err := s.adminRepo.C().Query().Where(admin.Username(username)).WithRoles().First(ctx)
-
 	if err != nil {
-		return "", nil, err
+		if ent.IsNotFound(err) {
+			panic(
+				app_err.NewError(
+					app_err.ErrNotFound,
+					app_err.Prefix(lang.Ctx(ctx), "Admin"),
+				),
+			)
+		}
+
+		panic(err)
 	}
 
 	// Verify the password (assuming you have a method to do this)
 	if err := s.passwordService.VerifyPassword(admin.Password, password); err != nil {
-		return "", admin, app_err.ErrPasswordValidationError
+		panic(app_err.ErrPasswordValidationError)
 	}
 
 	// Generate a JWT token for the authenticated user
@@ -71,7 +84,7 @@ func (s *AuthService) LoginAdmin(ctx context.Context, username string, password 
 	)
 
 	if err != nil {
-		return "", nil, err
+		panic(app_err.ErrPasswordValidationError)
 	}
 
 	return token, admin, nil

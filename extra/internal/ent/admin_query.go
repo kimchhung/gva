@@ -298,7 +298,7 @@ func (aq *AdminQuery) WithRoles(opts ...func(*RoleQuery)) *AdminQuery {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"column=created_at,filter,sort"`
+//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -321,7 +321,7 @@ func (aq *AdminQuery) GroupBy(field string, fields ...string) *AdminGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"column=created_at,filter,sort"`
+//		CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 //	}
 //
 //	client.Admin.Query().

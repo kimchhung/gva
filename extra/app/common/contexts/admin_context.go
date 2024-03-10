@@ -5,6 +5,7 @@ import (
 	"errors"
 	"slices"
 
+	"github.com/gofiber/fiber/v2"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/ent"
 )
@@ -27,15 +28,18 @@ type AdminContext struct {
 	permissions  []*ent.Permission
 }
 
-func NewAdminContext(parentCtx context.Context, opts ...AdminContextOption) *AdminContext {
-	ctx := &AdminContext{}
-	ctx.Context = context.WithValue(parentCtx, AdminContextKey{}, ctx)
+// a context help handling error
+func NewAdminContext(opts ...AdminContextOption) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		ctx := &AdminContext{}
+		ctx.Context = context.WithValue(c.UserContext(), AdminContextKey{}, ctx)
+		for _, opt := range opts {
+			opt(ctx)
+		}
 
-	for _, opt := range opts {
-		opt(ctx)
+		c.SetUserContext(ctx)
+		return c.Next()
 	}
-
-	return ctx
 }
 
 func (ctx *AdminContext) IsSuperAdmin() bool {

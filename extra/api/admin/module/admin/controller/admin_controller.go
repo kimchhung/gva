@@ -26,7 +26,7 @@ type AdminController struct {
 
 func (con *AdminController) Routes(r fiber.Router) {
 	admin := r.Group("admin")
-	// admin.Use(con.jwtService.ProtectAdmin())
+	admin.Use(con.jwtService.ProtectAdmin())
 	rctrl.Register(admin, con)
 }
 
@@ -48,7 +48,7 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	// init parser once and reused
-	parser := request.MustRqlParser(dto.AdminRequest{})
+	parser := request.MustRqlParser(dto.AdminRequest{}, "admins", nil)
 
 	return meta.Get("/").Name("get many Admins").DoWithScope(func() []fiber.Handler {
 		params := new(rql.Params)

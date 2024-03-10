@@ -11,7 +11,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kimchhung/gva/extra/app/common/contexts"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
-	"github.com/kimchhung/gva/extra/app/middleware/token"
 	"github.com/kimchhung/gva/extra/config"
 
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
@@ -32,27 +31,19 @@ func NewJwtService(cfg *config.Config, db *database.Database) *JwtService {
 }
 
 func (s *JwtService) ProtectAdmin() fiber.Handler {
-	return token.New(
-		token.VerifyFunc(func(c *fiber.Ctx, headerValue string) error {
-			token := strings.Replace(headerValue, "Bearer ", "", 1)
-			if token == "" {
-				return app_err.ErrUnauthorized
-			}
+	return func(c *fiber.Ctx) error {
+		token := strings.TrimSpace(strings.Replace(c.Get("authorization"), "Bearer ", "", 1))
+		if token == "" {
+			return app_err.ErrUnauthorized
+		}
 
-			admin := new(ent.Admin)
-			if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
-				return app_err.ErrUnauthorized
-			}
+		admin := new(ent.Admin)
+		if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
+			return app_err.ErrUnauthorized
+		}
 
-			adminCtx := contexts.NewAdminContext(
-				c.UserContext(),
-				contexts.WithAdmin(admin),
-			)
-
-			c.SetUserContext(adminCtx)
-			return nil
-		}),
-	)
+		return contexts.NewAdminContext(contexts.WithAdmin(admin))(c)
+	}
 }
 
 func (s *JwtService) AdminValidator(out *ent.Admin) ClaimValidator {

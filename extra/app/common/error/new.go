@@ -2,6 +2,8 @@ package app_err
 
 import (
 	"strings"
+
+	"github.com/kimchhung/gva/extra/lang"
 )
 
 type Error struct {
@@ -9,7 +11,8 @@ type Error struct {
 	ErrorCode int
 	Message   string
 
-	subErrs []error
+	subErrs            []error
+	isDisableTranslate bool
 }
 
 type Option func(*Error)
@@ -29,6 +32,10 @@ func (e *Error) Error() string {
 	}
 
 	return strings.Join(msgs, seperator)
+}
+
+func (e Error) IsDisableTranslate() bool {
+	return e.isDisableTranslate
 }
 
 func (e *Error) Join(err error) *Error {
@@ -57,7 +64,36 @@ func MessageFunc(fn func(message string) string) Option {
 	}
 }
 
-// this clone original error and apply modification change
+// Add prefix to original message
+func Prefix(localeOpt lang.LocaleOption, prefix string) Option {
+	return func(err *Error) {
+		translated := lang.T(localeOpt, err.Message)
+		err.isDisableTranslate = true
+		if !lang.Is(localeOpt, lang.LocaleZH) {
+			prefix += " "
+		}
+		err.Message = prefix + translated
+	}
+}
+
+// Add sufic to original message
+func Suffix(localeOpt lang.LocaleOption, prefix string) Option {
+	return func(err *Error) {
+		translated := lang.T(localeOpt, err.Message)
+		err.isDisableTranslate = true
+		if !lang.Is(localeOpt, lang.LocaleZH) {
+			prefix = " " + prefix
+		}
+		err.Message = translated + prefix
+	}
+}
+
+/*
+this clone original error and apply modification change
+by default error will be translated when response
+
+	NewError(err,DisableTranslate()) // to disable translation when response
+*/
 func NewError(err *Error, opt Option, opts ...Option) *Error {
 	nErr := new(Error)
 	*nErr = *err
@@ -68,4 +104,11 @@ func NewError(err *Error, opt Option, opts ...Option) *Error {
 	}
 
 	return nErr
+}
+
+// to disable translation
+func DisableTranslate() Option {
+	return func(err *Error) {
+		err.isDisableTranslate = true
+	}
 }

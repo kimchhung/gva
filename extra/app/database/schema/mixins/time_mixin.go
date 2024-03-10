@@ -17,7 +17,7 @@ type TimeMixin struct {
 func (TimeMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("created_at").
-			StructTag(`json:"createdAt,omitempty" rql:"column=created_at,filter,sort"`).
+			StructTag(`json:"createdAt,omitempty" rql:"filter,sort"`).
 			Default(time.Now),
 
 		field.Time("updated_at").
@@ -30,11 +30,11 @@ func (TimeMixin) Fields() []ent.Field {
 func (TimeMixin) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		edge.Annotation{
-			StructTag: `json:"edges", rql:"-"`,
+			StructTag: `json:"edges" rql:"-"`,
 		},
 		field.Annotation{
 			StructTag: map[string]string{
-				"id": `json:"id", rql:"filter,sort"`,
+				"id": `json:"id" rql:"filter,sort"`,
 			},
 		},
 	}

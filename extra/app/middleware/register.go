@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kimchhung/gva/extra/app/common/contexts"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/lang"
@@ -37,16 +38,20 @@ func NewMiddleware(app *fiber.App, cfg *config.Config, log *zerolog.Logger) *Mid
 }
 
 func (m *Middleware) Register() {
-	m.app.Use(cors.New())
 
-	// add locale to context
-	m.app.Use(lang.Middleware("locale"))
+	m.app.Use(cors.New())
 
 	m.app.Use(limiter.New(limiter.Config{
 		Next:       utils.IsEnabled(m.cfg.Middleware.Limiter.Enable),
 		Max:        m.cfg.Middleware.Limiter.Max,
 		Expiration: m.cfg.Middleware.Limiter.ExpSecs * time.Second,
 	}))
+
+	// add locale to context
+	m.app.Use(
+		contexts.NewRequestContext(),
+		lang.Register("locale"),
+	)
 
 	m.app.Use(compress.New(compress.Config{
 		Next:  utils.IsEnabled(m.cfg.Middleware.Compress.Enable),
