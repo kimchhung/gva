@@ -78,14 +78,20 @@ Json
 	  "sort": ["-id","createdAt","+isEnable"]
 	}
 */
-func MustRqlParser(table string, mapColumnName map[string]string, model any) *rql.Parser {
+func MustRqlParser(table string, model any, mapColumnName ...map[string]string) *rql.Parser {
+
+	var mapColumn map[string]string
+	if len(mapColumnName) > 0 {
+		mapColumn = mapColumnName[0]
+	}
+
 	return rql.MustNewParser(rql.Config{
 		Model:         model,
 		Log:           log.Debug().Msgf,
 		DefaultSort:   []string{"-createdAt"}, // desc
 		ColumnFn:      rql.PascalToCamelCase,
 		ColumnNameFn:  rql.CamelCaseToSnakeCase,
-		MapColumnName: mapColumnName,
+		MapColumnName: mapColumn,
 		Table:         table,
 	})
 }

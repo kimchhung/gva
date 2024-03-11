@@ -48,9 +48,7 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	// init parser once and reused
-	parser := request.MustRqlParser(
-		"admins",
-		nil,
+	parser := request.MustRqlParser("admins",
 		struct{ ent.Admin }{},
 	)
 
