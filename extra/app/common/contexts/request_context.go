@@ -98,22 +98,21 @@ func NewRequestContext() fiber.Handler {
 
 		defer func() {
 			rvr := recover()
-
 			if rvr != nil {
-				perr, ok := rvr.(error)
+				panicErr, ok := rvr.(error)
 				if !ok {
 					err = fmt.Errorf("%v", rvr)
 					ctx.LogFields.Stack = debug.Stack()
 					ctx.LogFields.Error = err
 				} else {
-					err = perr
+					err = panicErr
 				}
 			}
 
 			a, _ := rerror.ParseError(c, err)
 
 			ctx.endTime = time.Now()
-			ctx.LogFields.ErrorCode = a.HttpCode
+			ctx.LogFields.ErrorCode = a.ErrorCode
 			ctx.LogFields.httpCode = c.Response().StatusCode()
 			ctx.LogFields.Latency = ctx.endTime.Sub(ctx.startTime)
 
