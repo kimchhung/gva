@@ -15,3 +15,10 @@ type Response[T any] struct {
 	Data []T   `json:"data"`
 	Meta *Meta `json:"meta"`
 }
+
+type Param struct {
+	Limit  int            `json:"limit"`
+	Offset int            `json:"offset"`
+	Filter map[string]any `json:"filter"`
+	Sort   []string       `json:"sort"`
+}

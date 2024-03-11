@@ -9,8 +9,7 @@ definitions:
         description: DisplayName holds the value of the "display_name" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.AdminEdges'
+        $ref: '#/definitions/ent.AdminEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the AdminQuery when eager-loading is set.
@@ -41,8 +40,7 @@ definitions:
         description: DisplayName holds the value of the "display_name" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.AdminEdges'
+        $ref: '#/definitions/ent.AdminEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the AdminQuery when eager-loading is set.
@@ -88,8 +86,7 @@ definitions:
   dto.PermissionRequest:
     properties:
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.PermissionEdges'
+        $ref: '#/definitions/ent.PermissionEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the PermissionQuery when eager-loading is set.
@@ -112,8 +109,7 @@ definitions:
   dto.PermissionResponse:
     properties:
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.PermissionEdges'
+        $ref: '#/definitions/ent.PermissionEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the PermissionQuery when eager-loading is set.
@@ -166,8 +162,7 @@ definitions:
         description: Description holds the value of the "description" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.RoleEdges'
+        $ref: '#/definitions/ent.RoleEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RoleQuery when eager-loading is set.
@@ -199,8 +194,7 @@ definitions:
         description: Description holds the value of the "description" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.RoleEdges'
+        $ref: '#/definitions/ent.RoleEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RoleQuery when eager-loading is set.
@@ -232,8 +226,7 @@ definitions:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.RouteEdges'
+        $ref: '#/definitions/ent.RouteEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RouteQuery when eager-loading is set.
@@ -278,8 +271,7 @@ definitions:
         description: DisplayName holds the value of the "display_name" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.AdminEdges'
+        $ref: '#/definitions/ent.AdminEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the AdminQuery when eager-loading is set.
@@ -312,8 +304,7 @@ definitions:
   ent.Permission:
     properties:
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.PermissionEdges'
+        $ref: '#/definitions/ent.PermissionEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the PermissionQuery when eager-loading is set.
@@ -350,8 +341,7 @@ definitions:
         description: Description holds the value of the "description" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.RoleEdges'
+        $ref: '#/definitions/ent.RoleEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RoleQuery when eager-loading is set.
@@ -401,8 +391,7 @@ definitions:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
       edges:
-        allOf:
-        - $ref: '#/definitions/ent.RouteEdges'
+        $ref: '#/definitions/ent.RouteEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RouteQuery when eager-loading is set.
@@ -446,8 +435,7 @@ definitions:
           $ref: '#/definitions/ent.Route'
         type: array
       parent:
-        allOf:
-        - $ref: '#/definitions/ent.Route'
+        $ref: '#/definitions/ent.Route'
         description: Parent holds the value of the parent edge.
       roles:
         description: Roles holds the value of the roles edge.
@@ -485,32 +473,6 @@ info:
   version: "1.0"
 paths:
   /admin:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all Admins
-      operationId: list-all-Admins
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Admins
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/ent.Admin'
-                  type: array
-                meta:
-                  $ref: '#/definitions/pagi.Meta'
-              type: object
-      security:
-      - Bearer: []
-      summary: List all Admins
-      tags:
-      - Admin
     post:
       consumes:
       - application/json
@@ -627,6 +589,33 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
+  /admin/paginate:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Admins
+      operationId: list-all-Admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admins
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ent.Admin'
+                  type: array
+                meta:
+                  $ref: '#/definitions/pagi.Meta'
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Admins
+      tags:
+      - Admin
   /admin/route:
     get:
       consumes:
@@ -733,6 +722,27 @@ paths:
       summary: Register a new admin
       tags:
       - Auth
+  /demo/:
+    get:
+      consumes:
+      - application/json
+      description: Welcome
+      operationId: welcome-all-Demos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: List all Demos
+      tags:
+      - Demo
   /permission:
     get:
       consumes:

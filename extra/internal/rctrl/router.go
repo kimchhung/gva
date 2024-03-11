@@ -128,7 +128,7 @@ func Register(app fiber.Router, controller any) {
 	controllerType := reflect.TypeOf(controller)
 	controllerValue := reflect.ValueOf(controller)
 
-	for i := 0; i < controllerType.NumMethod(); i++ {
+	for i := controllerType.NumMethod() - 1; i >= 0; i-- {
 		method := controllerType.Method(i)
 		if method.Type.NumOut() == 1 && method.Type.Out(0).ConvertibleTo(reflect.TypeOf((*MetaHandler)(nil)).Elem()) {
 

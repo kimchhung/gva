@@ -29,7 +29,6 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		ServerHeader:          cfg.App.Name,
 		AppName:               cfg.App.Name,
 		Prefork:               cfg.App.Prefork,
-		ErrorHandler:          request.ErrorHandler,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
 		DisableStartupMessage: true,

@@ -48,9 +48,13 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Router /admin [get]
 func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	// init parser once and reused
-	parser := request.MustRqlParser(dto.AdminRequest{}, "admins", nil)
+	parser := request.MustRqlParser(
+		"admins",
+		nil,
+		struct{ ent.Admin }{},
+	)
 
-	return meta.Get("/").Name("get many Admins").DoWithScope(func() []fiber.Handler {
+	return meta.Get("/paginate").Name("get many Admins").DoWithScope(func() []fiber.Handler {
 		params := new(rql.Params)
 
 		return []fiber.Handler{

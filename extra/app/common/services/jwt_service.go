@@ -32,6 +32,9 @@ func NewJwtService(cfg *config.Config, db *database.Database) *JwtService {
 
 func (s *JwtService) ProtectAdmin() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		if c != nil {
+			panic("test")
+		}
 		token := strings.TrimSpace(strings.Replace(c.Get("authorization"), "Bearer ", "", 1))
 		if token == "" {
 			return app_err.ErrUnauthorized

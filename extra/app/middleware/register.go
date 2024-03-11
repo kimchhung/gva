@@ -6,7 +6,6 @@ import (
 
 	"github.com/kimchhung/gva/extra/app/common/contexts"
 	"github.com/kimchhung/gva/extra/config"
-	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/lang"
 
 	"github.com/kimchhung/gva/extra/utils"
@@ -20,7 +19,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
-	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 type Middleware struct {
@@ -58,11 +56,11 @@ func (m *Middleware) Register() {
 		Level: m.cfg.Middleware.Compress.Level,
 	}))
 
-	m.app.Use(recover.New(recover.Config{
-		Next:              utils.IsEnabled(m.cfg.Middleware.Recover.Enable),
-		EnableStackTrace:  true,
-		StackTraceHandler: request.StackHandler,
-	}))
+	// m.app.Use(recover.New(recover.Config{
+	// 	Next:              utils.IsEnabled(m.cfg.Middleware.Recover.Enable),
+	// 	EnableStackTrace:  true,
+	// 	StackTraceHandler: request.StackHandler,
+	// }))
 
 	m.app.Use(pprof.New(pprof.Config{
 		Next: utils.IsEnabled(m.cfg.Middleware.Pprof.Enable),

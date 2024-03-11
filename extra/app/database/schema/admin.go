@@ -33,7 +33,7 @@ func (Admin) Fields() []ent.Field {
 			StructTag(`json:"whitelistIps"`),
 
 		field.String("display_name").
-			StructTag(`json:"displayName,omitempty" rql:"column=display_name,filter,sort"`).
+			StructTag(`json:"displayName,omitempty" rql:"filter,sort"`).
 			Optional(),
 	}
 }

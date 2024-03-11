@@ -1,27 +1,27 @@
 # Makefile for some commands.
 include migrate.mk
 
-# Generate Ent 
+# Generate Ent
 gen:
 	go generate cmd/ent/generate.go
 
 # Run both dashboad and web same port
-run: 
+run:
 	go run api/main.go
 
 # Run only web api
-run.web: 
+run.web:
 	go run api/web/main.go
 
 # run only admin
-run.admin: 
+run.admin:
 	go run api/admin/main.go
 
-swag: 
-	make swag.web 
+swag:
+	make swag.web
 	make swag.admin
 
-swag.web: 
+swag.web:
 	swag init -g main.go -d ./api/web --parseDependency --output ./api/web/docs/ --instanceName web
 
 swag.admin:
@@ -46,4 +46,5 @@ tidy:
 stop:
 	docker-compose down
 
-      
+test:
+	find . -name '$(name)*_test.go' -execdir go test -v {} \;

@@ -52,6 +52,7 @@ func RqlParser(out *rql.Params, parser *rql.Parser) Parser {
 
 /*
 Model is the resource definition. The parser is configured based on the its definition. For example, given the following struct definition:
+note: for admin only
 
 	type User struct {
 	    Age	 int	`rql:"filter,sort"`
@@ -77,12 +78,12 @@ Json
 	  "sort": ["-id","createdAt","+isEnable"]
 	}
 */
-func MustRqlParser(model any, table string, mapColumnName map[string]string) *rql.Parser {
+func MustRqlParser(table string, mapColumnName map[string]string, model any) *rql.Parser {
 	return rql.MustNewParser(rql.Config{
 		Model:         model,
 		Log:           log.Info().Msgf,
 		DefaultSort:   []string{"-createdAt"}, // desc
-		DoNotLog:      false,
+		DoNotLog:      true,
 		ColumnFn:      rql.PascalToCamelCase,
 		ColumnNameFn:  rql.CamelCaseToSnakeCase,
 		MapColumnName: mapColumnName,
