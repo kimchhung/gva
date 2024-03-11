@@ -66,7 +66,7 @@ type RequestContext struct {
 	LogFields *logFields
 }
 
-func defaultFields(c *fiber.Ctx) *logFields {
+func defaultLogFields(c *fiber.Ctx) *logFields {
 	rid := c.Get(fiber.HeaderXRequestID)
 	if rid == "" {
 		rid = uuid.New().String()
@@ -91,7 +91,7 @@ func NewRequestContext() fiber.Handler {
 		ctx := &RequestContext{}
 		ctx.Context = context.WithValue(c.UserContext(), RequestContextKey{}, ctx)
 		ctx.startTime = time.Now()
-		ctx.LogFields = defaultFields(c)
+		ctx.LogFields = defaultLogFields(c)
 
 		c.SetUserContext(ctx)
 		var err error
