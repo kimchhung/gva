@@ -18,7 +18,7 @@ type RouteController struct {
 	jwtService *services.JwtService
 }
 
-func (con *RouteController) Routes(r fiber.Router) {
+func (con *RouteController) Init(r fiber.Router) {
 	route := r.Group("route")
 	route.Use(con.jwtService.ProtectAdmin())
 	rctrl.Register(route, con)

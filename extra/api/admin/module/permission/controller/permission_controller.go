@@ -16,7 +16,7 @@ type PermissionController struct {
 	service *service.PermissionService
 }
 
-func (con *PermissionController) Routes(r fiber.Router) {
+func (con *PermissionController) Init(r fiber.Router) {
 	permission := r.Group("permission")
 	rctrl.Register(permission, con)
 }
@@ -37,7 +37,7 @@ func NewPermissionController(service *service.PermissionService) *PermissionCont
 // @Router /permission [get]
 // @Security Bearer
 func (con *PermissionController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").Name("get many Permissions").Do(func(c *fiber.Ctx) error {
+	return meta.Get("/").Do(func(c *fiber.Ctx) error {
 		list, err := con.service.GetPermissions(c.UserContext())
 		if err != nil {
 			return err

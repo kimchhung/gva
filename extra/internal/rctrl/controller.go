@@ -8,7 +8,7 @@ import (
 )
 
 type Controller interface {
-	Routes(router fiber.Router)
+	Init(router fiber.Router)
 }
 
 type ModuleRouter interface {

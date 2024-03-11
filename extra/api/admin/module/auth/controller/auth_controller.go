@@ -25,7 +25,7 @@ type AuthController struct {
 	jwtService *services.JwtService
 }
 
-func (con *AuthController) Routes(r fiber.Router) {
+func (con *AuthController) Init(r fiber.Router) {
 	auth := r.Group("auth")
 	rctrl.Register(auth, con)
 }

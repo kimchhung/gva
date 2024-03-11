@@ -13,7 +13,7 @@ var _ interface{ rctrl.Controller } = (*DemoController)(nil)
 type DemoController struct {
 }
 
-func (con *DemoController) Routes(r fiber.Router) {
+func (con *DemoController) Init(r fiber.Router) {
 	Demo := r.Group("demo")
 	rctrl.Register(Demo, con)
 }

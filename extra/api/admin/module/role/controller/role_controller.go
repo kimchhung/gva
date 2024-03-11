@@ -17,7 +17,7 @@ type RoleController struct {
 	service *service.RoleService
 }
 
-func (con *RoleController) Routes(r fiber.Router) {
+func (con *RoleController) Init(r fiber.Router) {
 	role := r.Group("role")
 	rctrl.Register(role, con)
 }
