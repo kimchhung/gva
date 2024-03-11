@@ -81,9 +81,8 @@ Json
 func MustRqlParser(table string, mapColumnName map[string]string, model any) *rql.Parser {
 	return rql.MustNewParser(rql.Config{
 		Model:         model,
-		Log:           log.Info().Msgf,
+		Log:           log.Debug().Msgf,
 		DefaultSort:   []string{"-createdAt"}, // desc
-		DoNotLog:      true,
 		ColumnFn:      rql.PascalToCamelCase,
 		ColumnNameFn:  rql.CamelCaseToSnakeCase,
 		MapColumnName: mapColumnName,

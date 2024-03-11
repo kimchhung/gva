@@ -45,8 +45,7 @@ type (
 		Message string `json:"message"`
 
 		// internal use
-		httpStatus     int
-		lockHttpStatus *int
+		httpStatus int
 	}
 
 	Response struct {
@@ -61,9 +60,5 @@ type (
 )
 
 func (r *Response) Parse(c *fiber.Ctx) error {
-	if r.lockHttpStatus != nil {
-		return c.Status(*r.lockHttpStatus).JSON(r)
-	}
-
 	return c.Status(r.httpStatus).JSON(r)
 }

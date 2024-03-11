@@ -63,9 +63,6 @@ type (
 			Enable bool
 			Level  compress.Level
 		}
-		Recover struct {
-			Enable bool
-		}
 		Monitor struct {
 			Enable bool
 			Path   string

@@ -9,7 +9,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	rerror "github.com/kimchhung/gva/extra/internal/response/error"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -23,7 +22,7 @@ type logFields struct {
 	Method    string
 	Path      string
 	Protocol  string
-	httpCode  int
+	HttpCode  int
 	ErrorCode int
 	Latency   time.Duration
 	Error     error
@@ -38,9 +37,9 @@ func (lf *logFields) MarshalZerologObject(e *zerolog.Event) {
 		Str("method", lf.Method).
 		Str("path", lf.Path).
 		Str("protocol", lf.Protocol).
-		Int("httpCode", lf.httpCode).
+		Int("httpCode", lf.HttpCode).
 		Int("errorCode", lf.ErrorCode).
-		Int64("latencyMs", lf.Latency.Milliseconds()).
+		Str("latency", fmt.Sprintf("%v", lf.Latency)).
 		Str("tag", "request")
 
 	if lf.Error != nil {
@@ -59,11 +58,27 @@ type (
 
 type RequestContext struct {
 	context.Context
-
 	startTime time.Time
-	endTime   time.Time
+	logFields *logFields
+}
 
-	LogFields *logFields
+func (ctx *RequestContext) PrintLog() {
+	switch {
+	case len(ctx.logFields.Stack) != 0:
+		log.Error().EmbedObject(ctx.logFields).Msg("panic recover")
+	case ctx.logFields.HttpCode >= 500:
+		log.Error().EmbedObject(ctx.logFields).Msg("server error")
+	case ctx.logFields.HttpCode >= 400:
+		log.Error().EmbedObject(ctx.logFields).Msg("client error")
+	case ctx.logFields.HttpCode >= 300:
+		log.Warn().EmbedObject(ctx.logFields).Msg("redirect")
+	case ctx.logFields.HttpCode >= 200:
+		log.Info().EmbedObject(ctx.logFields).Msg("success")
+	case ctx.logFields.HttpCode >= 100:
+		log.Info().EmbedObject(ctx.logFields).Msg("informative")
+	default:
+		log.Warn().EmbedObject(ctx.logFields).Msg("unknown status")
+	}
 }
 
 func defaultLogFields(c *fiber.Ctx) *logFields {
@@ -89,40 +104,28 @@ func defaultLogFields(c *fiber.Ctx) *logFields {
 func NewRequestContext() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := &RequestContext{}
-		ctx.Context = context.WithValue(c.UserContext(), RequestContextKey{}, ctx)
+		ctx.Context = context.WithValue(c.Context(), RequestContextKey{}, ctx)
 		ctx.startTime = time.Now()
-		ctx.LogFields = defaultLogFields(c)
-
+		ctx.logFields = defaultLogFields(c)
 		c.SetUserContext(ctx)
-		var err error
 
 		defer func() {
+			var err error
 			rvr := recover()
 			if rvr != nil {
-				panicErr, ok := rvr.(error)
-				if !ok {
+				if e, ok := rvr.(error); !ok {
 					err = fmt.Errorf("%v", rvr)
-					ctx.LogFields.Stack = debug.Stack()
-					ctx.LogFields.Error = err
+					ctx.logFields.Stack = debug.Stack()
 				} else {
-					err = panicErr
+					err = e
 				}
 			}
 
-			a, _ := rerror.ParseError(c, err)
-
-			ctx.endTime = time.Now()
-			ctx.LogFields.ErrorCode = a.ErrorCode
-			ctx.LogFields.httpCode = c.Response().StatusCode()
-			ctx.LogFields.Latency = ctx.endTime.Sub(ctx.startTime)
-
-			if !IsProduction {
-				ctx.Print()
-			}
+			ctx.logFields.Latency = time.Since(ctx.startTime)
+			ctx.logFields.Error = err
 		}()
 
-		err = c.Next()
-		return err
+		return c.Next()
 	}
 }
 
@@ -153,21 +156,9 @@ func StartTime(ctx context.Context) time.Time {
 	return MustRequestContext(ctx).startTime
 }
 
-func (ctx *RequestContext) Print() {
-	switch {
-	case len(ctx.LogFields.Stack) != 0:
-		log.Error().EmbedObject(ctx.LogFields).Msg("panic recover")
-	case ctx.LogFields.httpCode >= 500:
-		log.Error().EmbedObject(ctx.LogFields).Msg("server error")
-	case ctx.LogFields.httpCode >= 400:
-		log.Error().EmbedObject(ctx.LogFields).Msg("client error")
-	case ctx.LogFields.httpCode >= 300:
-		log.Warn().EmbedObject(ctx.LogFields).Msg("redirect")
-	case ctx.LogFields.httpCode >= 200:
-		log.Info().EmbedObject(ctx.LogFields).Msg("success")
-	case ctx.LogFields.httpCode >= 100:
-		log.Info().EmbedObject(ctx.LogFields).Msg("informative")
-	default:
-		log.Warn().EmbedObject(ctx.LogFields).Msg("unknown status")
-	}
+func SetRequestStatus(ctx context.Context, errorCode int, httpCode int) *RequestContext {
+	rctx := MustRequestContext(ctx)
+	rctx.logFields.HttpCode = httpCode
+	rctx.logFields.ErrorCode = errorCode
+	return rctx
 }

@@ -101,17 +101,6 @@ func Status(status int) ReponseOption {
 	}
 }
 
-/*
-Lock default status
-
-	Status(http.StatusOK)
-*/
-func LockHttpStatus(status int) ReponseOption {
-	return func(resp *Response) {
-		resp.lockHttpStatus = &status
-	}
-}
-
 func Error(err *app_err.Error) ReponseOption {
 	return func(resp *Response) {
 		resp.Code = err.ErrorCode

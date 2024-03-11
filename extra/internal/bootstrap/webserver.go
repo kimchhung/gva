@@ -17,6 +17,7 @@ import (
 
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
+	rerror "github.com/kimchhung/gva/extra/internal/response/error"
 
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/rs/zerolog"
@@ -32,6 +33,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
 		DisableStartupMessage: true,
+		ErrorHandler:          rerror.ErrorHandler,
 	})
 
 	// Pass production config to check it
