@@ -1,7 +1,6 @@
 package rctrl_test
 
 import (
-	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -22,8 +21,7 @@ func (con *MyController) Hello(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	})
 }
 
-// BenchmarkRegisterRoutes-8   	 1921436	       603.7 ns/op	     981 B/op	      15 allocs/op
-// BenchmarkRegisterRoutes-8   	  712566	      1614 ns/op	    1469 B/op	      30 allocs/op
+// BenchmarkRegisterRoutes-8   	  634002	      1708 ns/op	    1499 B/op	      30 allocs/op
 func BenchmarkRegisterRoutes(b *testing.B) {
 	app := fiber.New()
 
@@ -33,7 +31,7 @@ func BenchmarkRegisterRoutes(b *testing.B) {
 	}
 }
 
-// BenchmarkHandleRequestCtr-8   	  228070	      5311 ns/op	    5779 B/op	      25 allocs/op
+// BenchmarkHandleRequestCtr-8   	  220992	      5797 ns/op	    5773 B/op	      25 allocs/op
 func BenchmarkHandleRequestCtr(b *testing.B) {
 	app := fiber.New()
 	rctrl.Register(app, &MyController{})
@@ -49,26 +47,15 @@ func BenchmarkHandleRequestCtr(b *testing.B) {
 
 // BenchmarkHandleRequest-8   	  229569	      5311 ns/op	    5776 B/op	      25 allocs/op
 func BenchmarkHandleRequest(b *testing.B) {
-	app := fiber.New(
-		fiber.Config{
-			EnablePrintRoutes: true,
-		},
-	)
+	app := fiber.New()
 
-	app.Get("/paginate", func(c *fiber.Ctx) error {
-		fmt.Println("++++++")
+	g := app.Group("/hello")
+	g.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Get("/:id", func(c *fiber.Ctx) error {
-		fmt.Println("-----")
-		return c.SendString("Hello, World!" + c.Params("id", ""))
-	})
-
-	//print ------
-
 	// Create a new HTTP request with the route from the test case
-	req := httptest.NewRequest("GET", "/paginate", nil)
+	req := httptest.NewRequest("GET", "/hello", nil)
 
 	// Run the benchmark
 	for i := 0; i < b.N; i++ {

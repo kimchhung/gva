@@ -1,6 +1,7 @@
 package rctrl
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"reflect"
@@ -100,7 +101,7 @@ func (r *RouteMeta) DoWithScope(handler MetaHandler) MetaHandler {
 	return handler
 }
 
-func defineRoute(app fiber.Router, r *RouteMeta, defineMeta func(meta *RouteMeta) MetaHandler) fiber.Router {
+func defineRoute(app fiber.Router, methodName string, r *RouteMeta, defineMeta func(meta *RouteMeta) MetaHandler) fiber.Router {
 	handlers := defineMeta(r)()
 	handler := func(c *fiber.Ctx) error {
 		for _, handler := range handlers {
@@ -111,6 +112,10 @@ func defineRoute(app fiber.Router, r *RouteMeta, defineMeta func(meta *RouteMeta
 		return nil
 	}
 
+	if r.name == "" {
+		r.name = methodName
+	}
+
 	if r.method == http.MethodGet {
 		return app.Get(r.path, append(r.middlewares, handler)...).Name(r.name)
 	}
@@ -119,8 +124,8 @@ func defineRoute(app fiber.Router, r *RouteMeta, defineMeta func(meta *RouteMeta
 }
 
 // default path is "/" and method is "GET"
-func NewRoute(app fiber.Router, metaFunc MetaFunc) fiber.Router {
-	return defineRoute(app, &RouteMeta{}, metaFunc)
+func NewRoute(app fiber.Router, methodName string, metaFunc MetaFunc) fiber.Router {
+	return defineRoute(app, methodName, &RouteMeta{}, metaFunc)
 }
 
 // Register registers routes defined by the controller methods.
@@ -141,7 +146,7 @@ func Register(app fiber.Router, controller any) {
 			}
 
 			// Create a new route using the MetaHandler
-			NewRoute(app, metaHandler)
+			NewRoute(app, fmt.Sprintf("%s.%s", controllerType.Elem().Name(), method.Name), metaHandler)
 		}
 	}
 }
