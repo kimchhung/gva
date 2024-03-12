@@ -93,5 +93,6 @@ func MustRqlParser(table string, model any, mapColumnName ...map[string]string) 
 		ColumnNameFn:  rql.CamelCaseToSnakeCase,
 		MapColumnName: mapColumn,
 		Table:         table,
+		DoNotLog:      true,
 	})
 }

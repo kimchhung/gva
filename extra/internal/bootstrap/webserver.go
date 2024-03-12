@@ -32,8 +32,9 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		Prefork:               cfg.App.Prefork,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
-		DisableStartupMessage: true,
 		ErrorHandler:          rerror.ErrorHandler,
+		DisableStartupMessage: true,
+		Immutable:             true,
 	})
 
 	// Pass production config to check it
@@ -86,13 +87,13 @@ func Start(
 				prefork = "Disabled"
 			}
 
-			log.Debug().Msgf("Version: %s", "-")
-			log.Debug().Msgf("Host: %s", host)
-			log.Debug().Msgf("Port: %s", port)
-			log.Debug().Msgf("Prefork: %s", prefork)
-			log.Debug().Msgf("Handlers: %d", fiber.HandlersCount())
-			log.Debug().Msgf("Processes: %d", procs)
-			log.Debug().Msgf("PID: %d", os.Getpid())
+			log.Info().Msgf("Version: %s", "-")
+			log.Info().Msgf("Host: %s", host)
+			log.Info().Msgf("Port: %s", port)
+			log.Info().Msgf("Prefork: %s", prefork)
+			log.Info().Msgf("Handlers: %d", fiber.HandlersCount())
+			log.Info().Msgf("Processes: %d", procs)
+			log.Info().Msgf("PID: %d", os.Getpid())
 		}
 
 		// Listen the app (with TLS Support)

@@ -48,7 +48,7 @@ func (m *Middleware) Register() {
 	// add locale to context
 	m.app.Use(
 		contexts.NewRequestContext(),
-		lang.Register("locale"),
+		lang.Register(),
 	)
 
 	m.app.Use(compress.New(compress.Config{

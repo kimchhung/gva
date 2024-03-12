@@ -11,6 +11,7 @@ var (
 	cfg = config.NewConfig()
 )
 
+// Run both web and admin api
 func main() {
 	app.New(
 		/* global config */

@@ -58,10 +58,14 @@ func (s *JwtService) AdminValidator(out *ent.Admin) ClaimValidator {
 			return app_err.ErrUnauthorized
 		}
 
-		admin, err := s.db.Admin.Query().Where(admin.IDEQ(id)).
-			WithRoles(func(rq *ent.RoleQuery) {
-				rq.WithPermissions()
-			}).First(context.Background())
+		admin, err := s.db.Admin.Query().
+			Where(admin.IDEQ(id)).
+			WithRoles(
+				func(rq *ent.RoleQuery) {
+					rq.WithPermissions()
+				},
+			).
+			First(context.Background())
 
 		if err != nil {
 			// Handle error, for example, if the admin is not found

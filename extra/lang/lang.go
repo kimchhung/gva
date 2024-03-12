@@ -56,18 +56,15 @@ type (
 )
 
 // default locale
-func Register(headerName string) fiber.Handler {
+func Register() fiber.Handler {
+
 	return func(c *fiber.Ctx) error {
-		if headerName == "" {
-			headerName = "locale"
+		preferredLanguage := c.AcceptsLanguages("en", "zh")
+		if preferredLanguage == "" {
+			preferredLanguage = "en"
 		}
 
-		locale := c.Get(headerName)
-		if locale == "" {
-			return c.Next()
-		}
-
-		ctx := context.WithValue(c.UserContext(), langKey{}, c.Get(headerName))
+		ctx := context.WithValue(c.UserContext(), langKey{}, preferredLanguage)
 		c.SetUserContext(ctx)
 		return c.Next()
 	}

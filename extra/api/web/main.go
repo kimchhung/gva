@@ -24,6 +24,7 @@ var (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
+	// * Run only web api
 
 	docs.SwaggerInfoweb.BasePath = "web"
 	if cfg.API.Web.BasePath != "" {

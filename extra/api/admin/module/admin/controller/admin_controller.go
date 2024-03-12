@@ -52,7 +52,7 @@ func (con *AdminController) Paginate(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 		struct{ ent.Admin }{},
 	)
 
-	return meta.Get("/paginate").Name("get many Admins").DoWithScope(func() []fiber.Handler {
+	return meta.Get("/paginate").DoWithScope(func() []fiber.Handler {
 		params := new(rql.Params)
 
 		return []fiber.Handler{

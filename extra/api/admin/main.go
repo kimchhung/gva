@@ -27,6 +27,7 @@ var (
 // @Param locale header string true "en"
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
+	// * Run only web api
 	docs.SwaggerInfoadmin.BasePath = "admin"
 	if cfg.API.Admin.BasePath != "" {
 		docs.SwaggerInfoadmin.BasePath = cfg.API.Admin.BasePath

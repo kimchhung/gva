@@ -46,7 +46,7 @@ func NewAuthController(service *service.AuthService, jwtService *services.JwtSer
 // @Success 200 {object} response.Response{data=map[string]dto.LoginResponse{list=[]dto.LoginResponse}} "Successfully created Auth"
 // @Router /auth/login [post]
 func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Post("/login").Name("admin login").DoWithScope(func() []fiber.Handler {
+	return meta.Post("/login").DoWithScope(func() []fiber.Handler {
 		body := new(dto.LoginRequest)
 
 		return []fiber.Handler{
@@ -84,7 +84,7 @@ func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Success  200 {object} response.Response{data=dto.RegisterResponse} "Successfully registered admin"
 // @Router /auth/register [post]
 func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Post("/register").Name("admin register").DoWithScope(func() []fiber.Handler {
+	return meta.Post("/register").DoWithScope(func() []fiber.Handler {
 		body := new(dto.RegisterRequest)
 
 		return []fiber.Handler{
@@ -126,7 +126,7 @@ func (con *AuthController) Me(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	meta.Use(
 		con.jwtService.ProtectAdmin(),
 	)
-	return meta.Get("/me").Name("retrieved admin by token").Do(func(c *fiber.Ctx) error {
+	return meta.Get("/me").Do(func(c *fiber.Ctx) error {
 		adminCtx, err := contexts.GetAdminContext(c.UserContext())
 		if err != nil {
 			return err

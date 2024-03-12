@@ -28,7 +28,7 @@ func NewDemoController() *DemoController {
 // @Success   200 {object} response.Response{data=any}
 // @Router /demo/ [get]
 func (con *DemoController) Welcome(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").Name("demo").Do(
+	return meta.Get("/").Do(
 		func(c *fiber.Ctx) error {
 			d := response.Response{}
 
