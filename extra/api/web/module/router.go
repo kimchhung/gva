@@ -19,9 +19,7 @@ type Router struct {
 }
 
 func NewRouter(controllers ...rctrl.Controller) *Router {
-	return &Router{
-		controllers,
-	}
+	return &Router{controllers}
 }
 
 func (r *Router) Register(app fiber.Router, cfg *config.Config) {

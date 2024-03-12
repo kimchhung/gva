@@ -16,6 +16,7 @@ type (
 		name   string
 
 		middlewares []fiber.Handler
+		handlers    []fiber.Handler
 	}
 
 	MetaHandler = func() []fiber.Handler
@@ -101,33 +102,6 @@ func (r *RouteMeta) DoWithScope(handler MetaHandler) MetaHandler {
 	return handler
 }
 
-func defineRoute(app fiber.Router, methodName string, r *RouteMeta, defineMeta func(meta *RouteMeta) MetaHandler) fiber.Router {
-	handlers := defineMeta(r)()
-	handler := func(c *fiber.Ctx) error {
-		for _, handler := range handlers {
-			if err := handler(c); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-
-	if r.name == "" {
-		r.name = methodName
-	}
-
-	if r.method == http.MethodGet {
-		return app.Get(r.path, append(r.middlewares, handler)...).Name(r.name)
-	}
-
-	return app.Add(r.method, r.path, append(r.middlewares, handler)...).Name(r.name)
-}
-
-// default path is "/" and method is "GET"
-func NewRoute(app fiber.Router, methodName string, metaFunc MetaFunc) fiber.Router {
-	return defineRoute(app, methodName, &RouteMeta{}, metaFunc)
-}
-
 // Register registers routes defined by the controller methods.
 func Register(app fiber.Router, controller Controller) {
 	r := controller.Init(app)
@@ -137,17 +111,40 @@ func Register(app fiber.Router, controller Controller) {
 	for i := controllerType.NumMethod() - 1; i >= 0; i-- {
 		method := controllerType.Method(i)
 		if method.Type.NumOut() == 1 && method.Type.Out(0).ConvertibleTo(reflect.TypeOf((*MetaHandler)(nil)).Elem()) {
-
 			methodValue := controllerValue.MethodByName(method.Name)
-			metaHandler, ok := methodValue.Interface().(func(*RouteMeta) MetaHandler)
+			metaHandlerFunc, ok := methodValue.Interface().(func(*RouteMeta) MetaHandler)
 			if !ok {
 				// Log an error instead of panicking
 				log.Printf("controller method %s must be a func(*RouteMeta) MetaHandler", method.Name)
 				continue
 			}
 
-			// Create a new route using the MetaHandler
-			NewRoute(r, fmt.Sprintf("%s.%s", controllerType.Elem().Name(), method.Name), metaHandler)
+			meta := &RouteMeta{
+				name:   fmt.Sprintf("%s.%s", controllerType.Elem().Name(), method.Name),
+				method: "GET",
+				path:   "/",
+			}
+
+			meta.handlers = metaHandlerFunc(meta)()
+			AddRoute(r, meta)
 		}
 	}
+}
+
+func AddRoute(r fiber.Router, meta *RouteMeta) {
+	handler := func(c *fiber.Ctx) error {
+		for _, handler := range meta.handlers {
+			if err := handler(c); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	if meta.method == http.MethodGet {
+		r.Get(meta.path, append(meta.middlewares, handler)...).Name(meta.name)
+		return
+	}
+
+	r.Add(meta.method, meta.path, append(meta.middlewares, handler)...).Name(meta.name)
 }
