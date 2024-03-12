@@ -24,10 +24,10 @@ type AdminController struct {
 	jwtService *services.JwtService
 }
 
-func (con *AdminController) Init(r fiber.Router) {
-	admin := r.Group("admin")
-	admin.Use(con.jwtService.ProtectAdmin())
-	rctrl.Register(admin, con)
+func (con *AdminController) Init(r fiber.Router) fiber.Router {
+	return r.Group("admin").Use(
+		con.jwtService.ProtectAdmin(),
+	)
 }
 
 func NewAdminController(service *service.AdminService, jwtService *services.JwtService) *AdminController {
@@ -46,7 +46,7 @@ func NewAdminController(service *service.AdminService, jwtService *services.JwtS
 // @Produce  json
 // @Success  200 {object} response.Response{data=[]ent.Admin,meta=pagi.Meta} "Successfully retrieved Admins"
 // @Router /admin [get]
-func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+func (con *AdminController) Paginate(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	// init parser once and reused
 	parser := request.MustRqlParser("admins",
 		struct{ ent.Admin }{},
@@ -87,7 +87,7 @@ func (con *AdminController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Produce json
 // @Success 200 {object} response.Response{} "Successfully retrieved Admin routes"
 // @Router /admin/route [get]
-func (con *AdminController) Routes(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+func (con *AdminController) AdminRoutes(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/route").DoWithScope(func() []fiber.Handler {
 		adminCtx := new(contexts.AdminContext)
 
@@ -131,7 +131,6 @@ func (con *AdminController) AdminPermissions(meta *rctrl.RouteMeta) rctrl.MetaHa
 
 				return request.Response(c,
 					response.Data(permissions),
-					response.Message("Admin permissions list retreived successfully!"),
 				)
 			},
 		}
@@ -171,7 +170,6 @@ func (con *AdminController) Get(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The admin retrieved successfully!"),
 				)
 			},
 		}

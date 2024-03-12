@@ -129,7 +129,8 @@ func NewRoute(app fiber.Router, methodName string, metaFunc MetaFunc) fiber.Rout
 }
 
 // Register registers routes defined by the controller methods.
-func Register(app fiber.Router, controller any) {
+func Register(app fiber.Router, controller Controller) {
+	r := controller.Init(app)
 	controllerType := reflect.TypeOf(controller)
 	controllerValue := reflect.ValueOf(controller)
 
@@ -146,7 +147,7 @@ func Register(app fiber.Router, controller any) {
 			}
 
 			// Create a new route using the MetaHandler
-			NewRoute(app, fmt.Sprintf("%s.%s", controllerType.Elem().Name(), method.Name), metaHandler)
+			NewRoute(r, fmt.Sprintf("%s.%s", controllerType.Elem().Name(), method.Name), metaHandler)
 		}
 	}
 }

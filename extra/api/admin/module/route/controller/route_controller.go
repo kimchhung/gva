@@ -18,10 +18,10 @@ type RouteController struct {
 	jwtService *services.JwtService
 }
 
-func (con *RouteController) Init(r fiber.Router) {
-	route := r.Group("route")
-	route.Use(con.jwtService.ProtectAdmin())
-	rctrl.Register(route, con)
+func (con *RouteController) Init(r fiber.Router) fiber.Router {
+	return r.Group("route").Use(
+		con.jwtService.ProtectAdmin(),
+	)
 }
 
 func NewRouteController(service *service.RouteService, jwtService *services.JwtService) *RouteController {
@@ -41,7 +41,7 @@ func NewRouteController(service *service.RouteService, jwtService *services.JwtS
 // @Router /route [get]
 // @Security Bearer
 func (con *RouteController) List(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").Name("get many Routes").Do(
+	return meta.Get("/").Do(
 
 		permissions.RequireSuperAdmin(),
 		func(c *fiber.Ctx) error {

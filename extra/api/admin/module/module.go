@@ -6,8 +6,6 @@ import (
 
 	"github.com/kimchhung/gva/extra/api/admin/module/admin"
 	"github.com/kimchhung/gva/extra/api/admin/module/auth"
-	"github.com/kimchhung/gva/extra/api/admin/module/permission"
-	"github.com/kimchhung/gva/extra/api/admin/module/role"
 	"github.com/kimchhung/gva/extra/api/admin/module/route"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
@@ -44,15 +42,13 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}))
 
 	for _, controller := range r.controllers {
-		controller.Init(api)
+		rctrl.Register(app, controller)
 	}
 }
 
 var NewadminModules = fx.Module("admin-module",
 	admin.NewAdminModule,
 	auth.NewAuthModule,
-	role.NewRoleModule,
-	permission.NewPermissionModule,
 	route.NewRouteModule,
 
 	// #inject:module (do not remove this comment, it is used by the code generator)

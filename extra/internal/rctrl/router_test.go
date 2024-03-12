@@ -14,6 +14,10 @@ import (
 
 type MyController struct{}
 
+func (MyController) Init(r fiber.Router) fiber.Router {
+	return r
+}
+
 // 743730	      1660 ns/op	    1465 B/op	      30 allocs/op
 func (con *MyController) Hello(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Get("/hello").Do(func(c *fiber.Ctx) error {

@@ -7,15 +7,12 @@ import (
 	"github.com/kimchhung/gva/extra/internal/response"
 )
 
-// don't remove for runtime type checking
-var _ interface{ rctrl.Controller } = (*DemoController)(nil)
-
 type DemoController struct {
+	rctrl.Controller
 }
 
-func (con *DemoController) Init(r fiber.Router) {
-	Demo := r.Group("demo")
-	rctrl.Register(Demo, con)
+func (con *DemoController) Init(r fiber.Router) fiber.Router {
+	return r.Group("demo")
 }
 
 func NewDemoController() *DemoController {
