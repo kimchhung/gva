@@ -13,11 +13,13 @@ var (
 
 // Run both web and admin api
 func main() {
+
+	/* Web, admin |> Module <| */
+	modules := module.New(cfg)
+
 	app.New(
 		/* global config */
 		cfg,
-
-		/* Web, admin |> Module <| */
-		module.NewModules(cfg),
+		modules,
 	).Run()
 }

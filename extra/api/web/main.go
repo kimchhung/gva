@@ -4,6 +4,7 @@ import (
 	"github.com/kimchhung/gva/extra/api/web/docs"
 	"github.com/kimchhung/gva/extra/app"
 	"github.com/kimchhung/gva/extra/app/module"
+
 	"github.com/kimchhung/gva/extra/config"
 
 	_ "github.com/kimchhung/gva/extra/internal/ent/runtime"
@@ -40,10 +41,12 @@ func main() {
 		cfg.App.Port = cfg.API.Web.Port
 	}
 
+	/* Web |> module <| */
+	modules := module.New(cfg)
+
 	app.New(
 		/* global config */
 		cfg,
-		/* Web | admin | |> both <| */
-		module.NewModules(cfg),
+		modules,
 	).Run()
 }

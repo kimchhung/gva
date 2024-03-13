@@ -30,7 +30,7 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}
 }
 
-func NewModules(cfg *config.Config) fx.Option {
+func New(cfg *config.Config) fx.Option {
 	modules := []fx.Option{
 		/* Register module router to fiber base on config */
 		fx.Provide(

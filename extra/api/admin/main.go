@@ -41,11 +41,12 @@ func main() {
 		cfg.App.Port = cfg.API.Admin.Port
 	}
 
+	/* Admin |> module <| */
+	modules := module.New(cfg)
+
 	app.New(
 		/* global config */
 		cfg,
-
-		/* Web, admin |> Module <| */
-		module.NewModules(cfg),
+		modules,
 	).Run()
 }
