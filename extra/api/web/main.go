@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/kimchhung/gva/extra/api/web/docs"
+	web "github.com/kimchhung/gva/extra/api/web/module"
 	"github.com/kimchhung/gva/extra/app"
 	"github.com/kimchhung/gva/extra/app/module"
 
@@ -43,10 +44,11 @@ func main() {
 
 	/* Web |> module <| */
 	modules := module.New(cfg)
+	modules = append(modules, web.NewWebModules)
 
 	app.New(
 		/* global config */
 		cfg,
-		modules,
+		modules...,
 	).Run()
 }

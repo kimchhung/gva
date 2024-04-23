@@ -109,8 +109,9 @@ func NewRequestContext() fiber.Handler {
 		ctx.logFields = defaultLogFields(c)
 		c.SetUserContext(ctx)
 
+		var err error
+
 		defer func() {
-			var err error
 			rvr := recover()
 			if rvr != nil {
 				if e, ok := rvr.(error); !ok {
@@ -125,7 +126,11 @@ func NewRequestContext() fiber.Handler {
 			ctx.logFields.Error = err
 		}()
 
-		return c.Next()
+		if err = c.Next(); err != nil {
+			return err
+		}
+
+		return err
 	}
 }
 

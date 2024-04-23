@@ -40,7 +40,7 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}))
 
 	for _, controller := range r.controllers {
-		rctrl.Register(app, controller)
+		rctrl.Register(api, controller)
 	}
 }
 

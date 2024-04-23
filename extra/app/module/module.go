@@ -3,8 +3,6 @@ package module
 import (
 	"github.com/gofiber/fiber/v2"
 
-	admin "github.com/kimchhung/gva/extra/api/admin/module"
-	web "github.com/kimchhung/gva/extra/api/web/module"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"go.uber.org/fx"
@@ -30,27 +28,14 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}
 }
 
-func New(cfg *config.Config) fx.Option {
-	modules := []fx.Option{
-		/* Register module router to fiber base on config */
-		fx.Provide(
-			// register as *Router
-			fx.Annotate(NewRouter,
-				// take group params from container => []rctrl.ModuleRouter -> NewRouter
-				fx.ParamTags(`group:"modules"`),
-			),
+func New(cfg *config.Config, modules ...fx.Option) []fx.Option {
+	app := append(modules, fx.Provide(
+		// register as *Router
+		fx.Annotate(NewRouter,
+			// take group params from container => []rctrl.ModuleRouter -> NewRouter
+			fx.ParamTags(`group:"modules"`),
 		),
-	}
+	))
 
-	/* Enable admin Module */
-	if cfg.API.Admin.Enable {
-		modules = append(modules, admin.NewadminModules)
-	}
-
-	/* Enable Web Module */
-	if cfg.API.Web.Enable {
-		modules = append(modules, web.NewWebModules)
-	}
-
-	return fx.Module("app", modules...)
+	return app
 }

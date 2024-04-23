@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/kimchhung/gva/extra/api/admin/docs"
+	admin "github.com/kimchhung/gva/extra/api/admin/module"
 	"github.com/kimchhung/gva/extra/app"
 	"github.com/kimchhung/gva/extra/app/module"
 	"github.com/kimchhung/gva/extra/config"
@@ -43,10 +44,11 @@ func main() {
 
 	/* Admin |> module <| */
 	modules := module.New(cfg)
+	modules = append(modules, admin.NewadminModules)
 
 	app.New(
 		/* global config */
 		cfg,
-		modules,
+		modules...,
 	).Run()
 }
