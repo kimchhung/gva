@@ -14,7 +14,7 @@ import (
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/app/database/seeds"
 	"github.com/kimchhung/gva/extra/app/middleware"
-	"github.com/kimchhung/gva/extra/app/module"
+	"github.com/kimchhung/gva/extra/app/router"
 
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
@@ -46,7 +46,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 func Start(
 	lifecycle fx.Lifecycle,
 	cfg *config.Config,
-	routers *module.Router,
+	routers *router.Router,
 	fiber *fiber.App,
 	middlewares *middleware.Middleware,
 	database *database.Database,

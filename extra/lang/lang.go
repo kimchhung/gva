@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	UT *ut.UniversalTranslator
+	uTranslator *ut.UniversalTranslator
 )
 
 type LocaleType string
@@ -22,21 +22,30 @@ const (
 	LocaleZH LocaleType = "zh"
 )
 
-func init() {
+func InitializeTranslator() error {
 	en := en.New()
-	UT = ut.New(en, en, zh.New())
+	zh := zh.New()
+	uTranslator = ut.New(en, en, zh)
 
-	if err := UT.Import(ut.FormatJSON, "./lang"); err != nil {
-		log.Panic().Err(err).Msg("UT.Import(ut.FormatJSON")
+	if err := uTranslator.Import(ut.FormatJSON, "./lang"); err != nil {
+		return err
 	}
 
-	if err := UT.VerifyTranslations(); err != nil {
-		log.Panic().Err(err).Msg("VerifyTranslations")
+	if err := uTranslator.VerifyTranslations(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func init() {
+	if err := InitializeTranslator(); err != nil {
+		log.Panic().Err(err).Msg("Failed to initialize translator")
 	}
 }
 
 func getTranslator(locale LocaleType) ut.Translator {
-	trans, found := UT.GetTranslator(string(locale))
+	trans, found := uTranslator.GetTranslator(string(locale))
 	if !found {
 		log.Error().Msgf("translator not found for locale %s, using default", "en")
 	}
@@ -57,7 +66,6 @@ type (
 
 // default locale
 func Register() fiber.Handler {
-
 	return func(c *fiber.Ctx) error {
 		preferredLanguage := c.AcceptsLanguages("en", "zh")
 		if preferredLanguage == "" {

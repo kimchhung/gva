@@ -1,8 +1,7 @@
-package module
+package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"go.uber.org/fx"
@@ -28,7 +27,7 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}
 }
 
-func New(cfg *config.Config, modules ...fx.Option) []fx.Option {
+func WithRouter(modules ...fx.Option) []fx.Option {
 	app := append(modules, fx.Provide(
 		// register as *Router
 		fx.Annotate(NewRouter,

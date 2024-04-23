@@ -4,7 +4,8 @@ import (
 	"github.com/kimchhung/gva/extra/api/admin/docs"
 	admin "github.com/kimchhung/gva/extra/api/admin/module"
 	"github.com/kimchhung/gva/extra/app"
-	"github.com/kimchhung/gva/extra/app/module"
+	"github.com/kimchhung/gva/extra/app/router"
+
 	"github.com/kimchhung/gva/extra/config"
 
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
@@ -43,8 +44,9 @@ func main() {
 	}
 
 	/* Admin |> module <| */
-	modules := module.New(cfg)
-	modules = append(modules, admin.NewadminModules)
+	modules := router.WithRouter(
+		admin.NewAdminModules,
+	)
 
 	app.New(
 		/* global config */

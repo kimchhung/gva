@@ -44,7 +44,7 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config) {
 	}
 }
 
-var NewadminModules = fx.Module("admin-module",
+var NewAdminModules = fx.Module("admin-module",
 	admin.NewAdminModule,
 	auth.NewAuthModule,
 	route.NewRouteModule,

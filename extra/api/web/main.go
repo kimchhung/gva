@@ -4,7 +4,7 @@ import (
 	"github.com/kimchhung/gva/extra/api/web/docs"
 	web "github.com/kimchhung/gva/extra/api/web/module"
 	"github.com/kimchhung/gva/extra/app"
-	"github.com/kimchhung/gva/extra/app/module"
+	"github.com/kimchhung/gva/extra/app/router"
 
 	"github.com/kimchhung/gva/extra/config"
 
@@ -43,8 +43,7 @@ func main() {
 	}
 
 	/* Web |> module <| */
-	modules := module.New(cfg)
-	modules = append(modules, web.NewWebModules)
+	modules := router.WithRouter(web.NewWebModules)
 
 	app.New(
 		/* global config */
