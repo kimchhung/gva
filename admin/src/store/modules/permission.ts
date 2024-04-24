@@ -1,9 +1,9 @@
+import { asyncRouterMap } from '@/router/asyncRoute'
+import { constantRouterMap } from '@/router/constantRoute'
 import { flatMultiLevelRoutes, generateRoutesByServer } from '@/utils/routerHelper'
 import { cloneDeep } from 'lodash-es'
 import { defineStore } from 'pinia'
 import { store } from '../index'
-import { asyncRouterMap } from '@/router/asyncRoute'
-import { constantRouterMap } from '@/router/constantRoute'
 
 export type PermissionState = {
   routers: AppRouteRecordRaw[]
@@ -40,7 +40,7 @@ export const usePermissionStore = defineStore('permission', {
     setMenuTabRouters(routers: AppRouteRecordRaw[]): void {
       this.menuTabRouters = routers
     },
-    generateRoutes(type: 'server' | 'static', routers: AppCustomRouteRecordRaw[]) {
+    generateRoutes(type: 'server' | 'static' | 'frontEnd', routers: AppCustomRouteRecordRaw[]) {
       try {
         const routerMap: AppRouteRecordRaw[] = []
 

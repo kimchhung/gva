@@ -15,6 +15,8 @@ import (
 	"github.com/kimchhung/gva/extra/app/database/seeds"
 	"github.com/kimchhung/gva/extra/app/middleware"
 	"github.com/kimchhung/gva/extra/app/router"
+	"github.com/kimchhung/gva/extra/lang"
+	"github.com/kimchhung/gva/extra/utils/validator"
 
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
@@ -52,7 +54,12 @@ func Start(
 	database *database.Database,
 	log *zerolog.Logger,
 ) {
+	// validator and translator
+	lang.InitializeTranslator()
+	validator.InitializeValidator()
+
 	onStart := func(ctx context.Context) error {
+
 		// Register middlewares & routes
 		middlewares.Register()
 		routers.Register(fiber, cfg)

@@ -63,7 +63,8 @@ export const useAdminStore = defineStore('admin', {
     },
     async fetchAdminRouters() {
       const [data] = await useApi(() => getAdminRoleRouters())
-      if (data) this.setRoleRouters(convertEdgeChildren(data?.list || []))
+      if (data) this.setRoleRouters(convertEdgeChildren(data as any))
+
       return this.routers
     },
     logoutConfirm() {

@@ -1,5 +1,7 @@
 # Makefile for some commands.
-include migrate.mk
+include cmd/migrate.mk
+include cmd/admin_cmd.mk
+
 
 # Generate Ent
 gen:
@@ -48,3 +50,4 @@ stop:
 
 test:
 	find . -name '$(name)*_test.go' -execdir go test -v {} \;
+

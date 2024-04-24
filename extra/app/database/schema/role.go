@@ -23,8 +23,11 @@ func (Role) Mixin() []ent.Mixin {
 func (Role) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").StructTag(`json:"name,omitempty"`),
+
 		field.String("description").StructTag(`json:"description,omitempty"`),
+
 		field.Int("order").StructTag(`json:"order,omitempty"`),
+
 		field.Bool("is_changeable").StructTag(`json:"isChangeable,omitempty"`),
 	}
 }

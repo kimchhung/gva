@@ -22,15 +22,12 @@ export const getAdminInfoReq = () =>
 export const getAdminListApi = ({ params }: AxiosConfig) => {
   return request.get<{
     code: string
-    data: {
-      list: any[]
-      total: number
-    }
+    data: any[]
   }>({ url: '/mock/user/list', params })
 }
 
 export const getAdminRoleRouters = () => {
-  return request.get<RouteReponse>({ url: '/admin/route' })
+  return request.get<RouteReponse>({ url: '/route' })
 }
 
 export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {

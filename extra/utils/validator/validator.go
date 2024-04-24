@@ -18,7 +18,7 @@ var (
 	validate *validator.Validate // Use a single validator instance
 )
 
-func init() {
+func InitializeValidator() {
 	validate = validator.New()
 	enTranslator := lang.GetTranslator(lang.Locale(lang.LocaleEN))
 	zhTranslator := lang.GetTranslator(lang.Locale(lang.LocaleZH))

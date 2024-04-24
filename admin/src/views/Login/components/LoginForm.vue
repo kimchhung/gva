@@ -231,7 +231,7 @@ const signIn = async () => {
       if (appStore.getDynamicRouter) {
         getRoleRouterAndAddRoute()
       } else {
-        await permissionStore.generateRoutes('static', []).catch(() => {})
+        permissionStore.generateRoutes('static', [])
         permissionStore.getAddRouters.forEach((route) => {
           addRoute(route as RouteRecordRaw) //Dynamic adding accessable routing table
         })
@@ -247,17 +247,16 @@ const getRoleRouterAndAddRoute = async () => {
   const routers = await adminStore.fetchAdminRouters()
   if (routers) {
     appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await permissionStore.generateRoutes('server', routers).catch((e) => {
-          console.error(e)
-        })
-      : await permissionStore.generateRoutes('frontEnd', routers).catch((e) => {
-          console.error(e)
-        })
+      ? permissionStore.generateRoutes('server', routers)
+      : permissionStore.generateRoutes('frontEnd', routers)
 
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // Dynamic adding accessable routing table
     })
     permissionStore.setIsAddRouters(true)
+
+    console.log({ path: permissionStore.addRouters[0].path })
+
     push({ path: permissionStore.addRouters[0].path })
   }
 }
@@ -279,4 +278,3 @@ const toRegister = () => {
     @register="formRegister"
   />
 </template>
-@/store/modules/admin@/api/admin@/api/admin/types
