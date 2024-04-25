@@ -19,6 +19,6 @@ var NewAdminModule = fx.Module("AdminModule",
 	fx.Provide(fx.Annotate(
 		controller.NewAdminController,
 		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"admin-controller"`),
+		fx.ResultTags(`group:"admin-controllers"`),
 	)),
 )

@@ -15,6 +15,6 @@ var NewAuthModule = fx.Module("AuthModule",
 	// Regiser Controller
 	fx.Provide(fx.Annotate(controller.NewAuthController,
 		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"admin-controller"`),
+		fx.ResultTags(`group:"admin-controllers"`),
 	)),
 )

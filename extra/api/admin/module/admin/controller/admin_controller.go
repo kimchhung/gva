@@ -25,9 +25,7 @@ type AdminController struct {
 }
 
 func (con *AdminController) Init(r fiber.Router) fiber.Router {
-	return r.Group("admin").Use(
-		con.jwtService.ProtectAdmin(),
-	)
+	return r.Group("admin")
 }
 
 func NewAdminController(service *service.AdminService, jwtService *services.JwtService) *AdminController {

@@ -1,13 +1,18 @@
 package admin
 
 import (
+	"strings"
+
 	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/skip"
 
 	"github.com/kimchhung/gva/extra/api/admin/module/admin"
 	"github.com/kimchhung/gva/extra/api/admin/module/auth"
 	"github.com/kimchhung/gva/extra/api/admin/module/route"
+	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/config"
+	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/utils"
 	"go.uber.org/fx"
@@ -23,25 +28,36 @@ func NewRouter(controllers []rctrl.Controller) *Router {
 	return &Router{controllers}
 }
 
-func (r *Router) Register(app fiber.Router, cfg *config.Config) {
-	basePath := "/admin"
-	if cfg.API.Admin.BasePath != "" {
-		basePath = cfg.API.Admin.BasePath
-	}
+func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
+	utils.SetIfEmpty(cfg.API.Admin.BasePath, "/admin")
 
-	api := app.Group(basePath)
-	api.Use(swagger.New(swagger.Config{
-		Next:     utils.IsEnabled(cfg.Middleware.Swagger.Enable),
-		BasePath: basePath,
-		FilePath: "./api/admin/docs/admin_swagger.json",
-		Path:     "swagger",
-		Title:    "admin API Docs",
-		CacheAge: 0,
-	}))
+	api := app.Group(cfg.API.Admin.BasePath,
+		r.useSwagger(cfg),
+		r.useJwtGuard(cfg, args[0].(*database.Database)),
+	)
 
 	for _, controller := range r.controllers {
 		rctrl.Register(api, controller)
 	}
+}
+
+func (r *Router) useSwagger(cfg *config.Config) fiber.Handler {
+	return swagger.New(swagger.Config{
+		Next:     utils.IsEnabled(cfg.Middleware.Swagger.Enable),
+		BasePath: cfg.API.Admin.BasePath,
+		FilePath: "./api/admin/docs/admin_swagger.json",
+		Path:     "swagger",
+		Title:    "admin API Docs",
+		CacheAge: 0,
+	})
+}
+
+func (r *Router) useJwtGuard(cfg *config.Config, db *database.Database) fiber.Handler {
+	jwt_ := services.NewJwtService(cfg, db)
+
+	return skip.New(jwt_.ProtectAdmin(), func(c *fiber.Ctx) bool {
+		return strings.Contains(c.Route().Path, "/auth")
+	})
 }
 
 var NewAdminModules = fx.Module("admin-module",
@@ -57,7 +73,7 @@ var NewAdminModules = fx.Module("admin-module",
 			fx.As(new(rctrl.ModuleRouter)),
 
 			// take group params from container => []rctrl.Controller -> NewRouter
-			fx.ParamTags(`group:"admin-controller"`),
+			fx.ParamTags(`group:"admin-controllers"`),
 
 			// register to container as member of module group
 			fx.ResultTags(`group:"modules"`),

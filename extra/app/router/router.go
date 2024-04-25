@@ -21,9 +21,9 @@ func NewRouter(modules []rctrl.ModuleRouter) *Router {
 	return r
 }
 
-func (r *Router) Register(app fiber.Router, cfg *config.Config) {
+func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
 	for _, r := range r.modules {
-		r.Register(app, cfg)
+		r.Register(app, cfg, args...)
 	}
 }
 

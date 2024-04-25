@@ -18,6 +18,6 @@ var NewRouteModule = fx.Module("RouteModule",
 	// Regiser Controller
 	fx.Provide(fx.Annotate(controller.NewRouteController,
 		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"admin-controller"`),
+		fx.ResultTags(`group:"admin-controllers"`),
 	)),
 )

@@ -22,7 +22,7 @@ func NewRouter(controllers ...rctrl.Controller) *Router {
 	return &Router{controllers}
 }
 
-func (r *Router) Register(app fiber.Router, cfg *config.Config) {
+func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
 	basePath := "/web"
 	if cfg.API.Web.BasePath != "" {
 		basePath = cfg.API.Web.BasePath

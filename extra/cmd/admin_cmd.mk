@@ -7,3 +7,7 @@ admin_cmd.pull:
 # push route from file to db
 admin_cmd.push:
 	go run cmd/admin_cmd/main.go push
+
+# push route from file to db
+admin_cmd.seeds:
+	go run cmd/admin_cmd/main.go seeds

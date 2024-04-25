@@ -141,10 +141,13 @@ func AddRoute(r fiber.Router, meta *RouteMeta) {
 		return nil
 	}
 
-	if meta.method == http.MethodGet {
-		r.Get(meta.path, append(meta.middlewares, handler)...).Name(meta.name)
-		return
-	}
+	// fiber auto register route head with get
+	// uncomment if this if need
+
+	// if meta.method == http.MethodGet {
+	// 	r.Get(meta.path, append(meta.middlewares, handler)...).Name(meta.name)
+	// 	return
+	// }
 
 	r.Add(meta.method, meta.path, append(meta.middlewares, handler)...).Name(meta.name)
 }

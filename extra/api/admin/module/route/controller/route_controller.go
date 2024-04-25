@@ -4,7 +4,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/extra/api/admin/module/route/service"
 	"github.com/kimchhung/gva/extra/app/common/permissions"
-	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"
@@ -14,20 +13,16 @@ import (
 var _ interface{ rctrl.Controller } = (*RouteController)(nil)
 
 type RouteController struct {
-	service    *service.RouteService
-	jwtService *services.JwtService
+	service *service.RouteService
 }
 
 func (con *RouteController) Init(r fiber.Router) fiber.Router {
-	return r.Group("route").Use(
-		con.jwtService.ProtectAdmin(),
-	)
+	return r.Group("route")
 }
 
-func NewRouteController(service *service.RouteService, jwtService *services.JwtService) *RouteController {
+func NewRouteController(service *service.RouteService) *RouteController {
 	return &RouteController{
-		service:    service,
-		jwtService: jwtService,
+		service: service,
 	}
 }
 

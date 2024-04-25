@@ -8,7 +8,7 @@ import (
 )
 
 type ModuleRouter interface {
-	Register(app fiber.Router, cfg *config.Config)
+	Register(app fiber.Router, cfg *config.Config, args ...any)
 }
 
 /*
