@@ -3,37 +3,34 @@ import { defineComponent } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 
 /**
-* redirect: noredirect        当设置 noredirect 的时候该路由在面包屑导航中不可被点击
-* name:'router-name'          设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
+* redirect: noredirect         When set to noredirect, this route cannot be clicked in the breadcrumb navigation.
+* name:'router-name'          Set the name of the route. It must be filled in, otherwise, problems will occur when using <keep-alive>.
 * meta : {
-    hidden: true              当设置 true 的时候该路由不会再侧边栏出现 如404，login等页面(默认 false)
+    hidden: true              When set to true, this route will not appear in the sidebar, such as 404, login pages (default false).
 
-    alwaysShow: true          当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式，
-                              只有一个时，会将那个子路由当做根路由显示在侧边栏，
-                              若你想不管路由下面的 children 声明的个数都显示你的根路由，
-                              你可以设置 alwaysShow: true，这样它就会忽略之前定义的规则，
-                              一直显示根路由(默认 false)
+    alwaysShow: true          When you have more than one child route declared under a route, it will automatically become a nested mode.
+                              If you want to always show your root route regardless of the number of child routes declared,
+                              you can set alwaysShow: true. This way, it will ignore the previously defined rules and always show the root route (default false).
 
-    title: 'title'            设置该路由在侧边栏和面包屑中展示的名字
+    title: 'title'             Set the name displayed for this route in the sidebar and breadcrumb.
 
-    icon: 'svg-name'          设置该路由的图标
+    icon: 'svg-name'          Set the icon for this route.
 
-    noCache: true             如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
+    noCache: true             If set to true, it will not be cached by <keep-alive> (default false).
 
-    breadcrumb: false         如果设置为false，则不会在breadcrumb面包屑中显示(默认 true)
+    breadcrumb: false         If set to false, it will not be displayed in the breadcrumb (default true).
 
-    affix: true               如果设置为true，则会一直固定在tag项中(默认 false)
+    affix: true               If set to true, it will always be fixed in the tag (default false).
 
-    noTagsView: true          如果设置为true，则不会出现在tag中(默认 false)
+    noTagsView: true          If set to true, it will not appear in the tag (default false).
 
-    activeMenu: '/dashboard'  显示高亮的路由路径
+    activeMenu: '/dashboard' The highlighted route path.
 
-    canTo: true               设置为true即使hidden为true，也依然可以进行路由跳转(默认 false)
+    canTo: true               Set to true to allow route jump even if hidden is true (default false).
 
-    permission: ['edit','add', 'delete']    设置该路由的权限
-  }
+    permission: ['edit','add', 'delete'] Set the permissions for this route.
+ }
 **/
-
 interface RouteMetaCustom extends Record<string | number | symbol, unknown> {
   hidden?: boolean
   alwaysShow?: boolean

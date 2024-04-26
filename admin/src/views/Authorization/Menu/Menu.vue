@@ -83,7 +83,11 @@ const tableColumns = reactive<TableColumn<AdminRoute>[]>([
     slots: {
       default: (data) => {
         const component = data.row.component
-        return <>{component === '#' ? '顶级目录' : component === '##' ? '子目录' : component}</>
+        return (
+          <>
+            {component === '#' ? 'Top directory' : component === '##' ? 'Subdirectory' : component}
+          </>
+        )
       }
     }
   },

@@ -49,7 +49,9 @@ const detailSchema = ref<DescriptionsSchema[]>([
     slots: {
       default: (data) => {
         const component = data.component
-        return <>{component === '#' ? '顶级目录' : component === '##' ? '子目录' : component}</>
+        return (
+          <>{component === '#' ? 'Top-level' : component === '##' ? 'Subdirectory' : component}</>
+        )
       }
     }
   },
