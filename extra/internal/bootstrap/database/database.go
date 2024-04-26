@@ -37,7 +37,7 @@ func NewDatabase(cfg *config.Config, log *zerolog.Logger) *Database {
 }
 
 func (db *Database) ConnectDatabase() error {
-	defer db.Log.Info().Msg("Database is connected!")
+	defer db.Log.Info().Msg("Database is connected")
 
 	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
 	if err != nil {

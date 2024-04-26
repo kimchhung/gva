@@ -35,7 +35,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
 		ErrorHandler:          rerror.ErrorHandler,
-		DisableStartupMessage: true,
+		DisableStartupMessage: false,
 		Immutable:             true,
 	})
 
@@ -103,11 +103,13 @@ func Start(
 
 			// Listen the app (with TLS Support)
 			if cfg.App.TLS.Enable {
-				log.Debug().Msg("TLS support was enabled.")
+				log.Info().Msg("TLS support was enabled.")
 
-				if err := fiber.ListenTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil {
-					log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
-				}
+				go func() {
+					if err := fiber.ListenTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil {
+						log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
+					}
+				}()
 			}
 
 			go func() {

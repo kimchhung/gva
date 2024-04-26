@@ -16,7 +16,7 @@ type (
 	app = struct {
 		Name        string        `toml:"name"`
 		Port        string        `toml:"port"`
-		PrintRoutes bool          `toml:"print-routes"`
+		PrintRoutes bool          `toml:"print_routes"`
 		Prefork     bool          `toml:"prefork"`
 		Production  bool          `toml:"production"`
 		IdleTimeout time.Duration `toml:"idle_timeout"`
