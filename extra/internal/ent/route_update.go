@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/extra/app/database/schema/types"
 	"github.com/kimchhung/gva/extra/internal/ent/predicate"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
@@ -161,23 +162,16 @@ func (ru *RouteUpdate) SetNillableName(s *string) *RouteUpdate {
 }
 
 // SetType sets the "type" field.
-func (ru *RouteUpdate) SetType(i int) *RouteUpdate {
-	ru.mutation.ResetType()
-	ru.mutation.SetType(i)
+func (ru *RouteUpdate) SetType(r route.Type) *RouteUpdate {
+	ru.mutation.SetType(r)
 	return ru
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ru *RouteUpdate) SetNillableType(i *int) *RouteUpdate {
-	if i != nil {
-		ru.SetType(*i)
+func (ru *RouteUpdate) SetNillableType(r *route.Type) *RouteUpdate {
+	if r != nil {
+		ru.SetType(*r)
 	}
-	return ru
-}
-
-// AddType adds i to the "type" field.
-func (ru *RouteUpdate) AddType(i int) *RouteUpdate {
-	ru.mutation.AddType(i)
 	return ru
 }
 
@@ -196,8 +190,16 @@ func (ru *RouteUpdate) SetNillableTitle(s *string) *RouteUpdate {
 }
 
 // SetMeta sets the "meta" field.
-func (ru *RouteUpdate) SetMeta(m map[string]interface{}) *RouteUpdate {
-	ru.mutation.SetMeta(m)
+func (ru *RouteUpdate) SetMeta(tm types.RouteMeta) *RouteUpdate {
+	ru.mutation.SetMeta(tm)
+	return ru
+}
+
+// SetNillableMeta sets the "meta" field if the given value is not nil.
+func (ru *RouteUpdate) SetNillableMeta(tm *types.RouteMeta) *RouteUpdate {
+	if tm != nil {
+		ru.SetMeta(*tm)
+	}
 	return ru
 }
 
@@ -331,7 +333,20 @@ func (ru *RouteUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ru *RouteUpdate) check() error {
+	if v, ok := ru.mutation.GetType(); ok {
+		if err := route.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Route.type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ru.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(route.Table, route.Columns, sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -368,10 +383,7 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(route.FieldName, field.TypeString, value)
 	}
 	if value, ok := ru.mutation.GetType(); ok {
-		_spec.SetField(route.FieldType, field.TypeInt, value)
-	}
-	if value, ok := ru.mutation.AddedType(); ok {
-		_spec.AddField(route.FieldType, field.TypeInt, value)
+		_spec.SetField(route.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := ru.mutation.Title(); ok {
 		_spec.SetField(route.FieldTitle, field.TypeString, value)
@@ -650,23 +662,16 @@ func (ruo *RouteUpdateOne) SetNillableName(s *string) *RouteUpdateOne {
 }
 
 // SetType sets the "type" field.
-func (ruo *RouteUpdateOne) SetType(i int) *RouteUpdateOne {
-	ruo.mutation.ResetType()
-	ruo.mutation.SetType(i)
+func (ruo *RouteUpdateOne) SetType(r route.Type) *RouteUpdateOne {
+	ruo.mutation.SetType(r)
 	return ruo
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ruo *RouteUpdateOne) SetNillableType(i *int) *RouteUpdateOne {
-	if i != nil {
-		ruo.SetType(*i)
+func (ruo *RouteUpdateOne) SetNillableType(r *route.Type) *RouteUpdateOne {
+	if r != nil {
+		ruo.SetType(*r)
 	}
-	return ruo
-}
-
-// AddType adds i to the "type" field.
-func (ruo *RouteUpdateOne) AddType(i int) *RouteUpdateOne {
-	ruo.mutation.AddType(i)
 	return ruo
 }
 
@@ -685,8 +690,16 @@ func (ruo *RouteUpdateOne) SetNillableTitle(s *string) *RouteUpdateOne {
 }
 
 // SetMeta sets the "meta" field.
-func (ruo *RouteUpdateOne) SetMeta(m map[string]interface{}) *RouteUpdateOne {
-	ruo.mutation.SetMeta(m)
+func (ruo *RouteUpdateOne) SetMeta(tm types.RouteMeta) *RouteUpdateOne {
+	ruo.mutation.SetMeta(tm)
+	return ruo
+}
+
+// SetNillableMeta sets the "meta" field if the given value is not nil.
+func (ruo *RouteUpdateOne) SetNillableMeta(tm *types.RouteMeta) *RouteUpdateOne {
+	if tm != nil {
+		ruo.SetMeta(*tm)
+	}
 	return ruo
 }
 
@@ -833,7 +846,20 @@ func (ruo *RouteUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ruo *RouteUpdateOne) check() error {
+	if v, ok := ruo.mutation.GetType(); ok {
+		if err := route.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Route.type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error) {
+	if err := ruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(route.Table, route.Columns, sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt))
 	id, ok := ruo.mutation.ID()
 	if !ok {
@@ -887,10 +913,7 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 		_spec.SetField(route.FieldName, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.GetType(); ok {
-		_spec.SetField(route.FieldType, field.TypeInt, value)
-	}
-	if value, ok := ruo.mutation.AddedType(); ok {
-		_spec.AddField(route.FieldType, field.TypeInt, value)
+		_spec.SetField(route.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := ruo.mutation.Title(); ok {
 		_spec.SetField(route.FieldTitle, field.TypeString, value)

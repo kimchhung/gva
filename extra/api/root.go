@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	admin "github.com/kimchhung/gva/extra/api/admin/module"
@@ -15,7 +15,7 @@ var (
 )
 
 // Run both web and admin api
-func main() {
+func Run() {
 	/* Web, admin |> Module <| */
 	modules := router.WithRouter()
 

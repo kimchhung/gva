@@ -36,26 +36,30 @@ func NewDatabase(cfg *config.Config, log *zerolog.Logger) *Database {
 	return db
 }
 
-func (db *Database) ConnectDatabase() {
+func (db *Database) ConnectDatabase() error {
 	defer db.Log.Info().Msg("Database is connected!")
 
 	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
 	if err != nil {
-		db.Log.Panic().Err(err).Str("dns", db.Cfg.DB.Mysql.DSN).Msg("An unknown error occurred when to connect the database!")
+		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}
 
 	db.Client = ent.NewClient(
 		ent.Driver(drv),
 		ent.Debug(),
 	)
+
+	return nil
 }
 
-func (db *Database) ShutdownDatabase() {
+func (db *Database) ShutdownDatabase() error {
 	defer db.Log.Info().Msg("Database connection is closed")
 
 	if err := db.Client.Close(); err != nil {
-		db.Log.Error().Err(err).Msg("An unknown error occurred when to shutdown the database!")
+		return fmt.Errorf("An unknown error occurred when to shutdown the database! %v", err)
 	}
+
+	return nil
 }
 
 func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {

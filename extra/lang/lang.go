@@ -35,13 +35,14 @@ func InitializeTranslator() error {
 		log.Panic().Err(err).Msg("Failed to initialize translator")
 	}
 
+	log.Info().Msg("Translator is initialized")
 	return nil
 }
 
 func getTranslator(locale LocaleType) ut.Translator {
 	trans, found := uTranslator.GetTranslator(string(locale))
 	if !found {
-		log.Error().Msgf("translator not found for locale %s, using default", "en")
+		log.Panic().Msgf("translator not found for locale %s, using default", "en")
 	}
 
 	return trans

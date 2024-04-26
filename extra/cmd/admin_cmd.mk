@@ -11,3 +11,6 @@ admin_cmd.push:
 # push route from file to db
 admin_cmd.seeds:
 	go run cmd/admin_cmd/main.go seeds
+
+
+

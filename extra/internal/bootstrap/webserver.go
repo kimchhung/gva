@@ -95,61 +95,68 @@ func Start(
 	database *database.Database,
 	log *zerolog.Logger,
 ) {
-	// validator and translator
-	lang.InitializeTranslator()
-	validator.InitializeValidator()
+	lifecycle.Append(fx.StartHook(
+		func(ctx context.Context) error {
+			// Register middlewares & routes
+			middlewares.Register()
+			routers.Register(fiber, cfg, database)
 
-	onStart := func(ctx context.Context) error {
-		// Register middlewares & routes
-		middlewares.Register()
-		routers.Register(fiber, cfg, database)
+			// Listen the app (with TLS Support)
+			if cfg.App.TLS.Enable {
+				log.Debug().Msg("TLS support was enabled.")
 
-		// Listen the app (with TLS Support)
-		if cfg.App.TLS.Enable {
-			log.Debug().Msg("TLS support was enabled.")
-
-			if err := fiber.ListenTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil {
-				log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
+				if err := fiber.ListenTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil {
+					log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
+				}
 			}
-		}
 
-		go func() {
-			if err := fiber.Listen(cfg.App.Port); err != nil {
-				log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
+			go func() {
+				if err := fiber.Listen(cfg.App.Port); err != nil {
+					log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
+				}
+			}()
+
+			go func() {
+				time.Sleep(time.Second)
+				printStartupMessage(cfg, fiber)
+			}()
+
+			// Initailize validator and translator
+			if err := lang.InitializeTranslator(); err != nil {
+				return err
 			}
-		}()
 
-		go func() {
-			time.Sleep(time.Second)
-			printStartupMessage(cfg, fiber)
-		}()
+			if err := validator.InitializeValidator(); err != nil {
+				return err
+			}
 
-		// Connect db
-		database.ConnectDatabase()
+			// Connect db
+			if err := database.ConnectDatabase(); err != nil {
+				return err
+			}
 
-		return nil
-	}
-
-	onStop := func(ctx context.Context) error {
-		log.Info().Msg("Shutting down the app...")
-		if err := fiber.Shutdown(); err != nil {
-			log.Panic().Err(err).Msg("")
-		}
-
-		log.Info().Msg("Running cleanup tasks...")
-		log.Info().Msg("1- Shutdown the database")
-
-		database.ShutdownDatabase()
-
-		log.Info().Msgf("%s was successful shutdown.", cfg.App.Name)
-		log.Info().Msg("\u001b[96mSee you again👋\u001b[0m")
-		return nil
-	}
-
-	lifecycle.Append(
-		fx.Hook{
-			OnStart: onStart,
-			OnStop:  onStop,
+			return nil
 		},
-	)
+	))
+
+	lifecycle.Append(fx.StopHook(
+		func(ctx context.Context) error {
+			log.Info().Msg("Shutting down the app...")
+			if err := fiber.Shutdown(); err != nil {
+				log.Panic().Err(err).Msg("")
+			}
+
+			log.Info().Msg("Running cleanup tasks...")
+			log.Info().Msg("1- Shutdown the database")
+
+			if err := database.ShutdownDatabase(); err != nil {
+				return err
+			}
+
+			log.Info().Msgf("%s was successful shutdown.", cfg.App.Name)
+			log.Info().Msg("\u001b[96mSee you again👋\u001b[0m")
+			return nil
+		},
+	))
+
 }

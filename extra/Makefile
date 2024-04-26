@@ -1,23 +1,11 @@
 # Makefile for some commands.
 include cmd/migrate.mk
 include cmd/admin_cmd.mk
-
+include cmd/serve_cmd.mk
 
 # Generate Ent
 gen:
 	go generate cmd/ent/generate.go
-
-# Run both dashboad and web same port
-run:
-	go run api/main.go
-
-# Run only web api
-run.web:
-	go run api/web/main.go
-
-# run only admin
-run.admin:
-	go run api/admin/main.go
 
 swag:
 	make swag.web

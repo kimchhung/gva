@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"github.com/kimchhung/gva/extra/api/web/docs"
@@ -25,7 +25,7 @@ var (
 // @in header
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
-func main() {
+func Run() {
 	// * Run only web api
 
 	docs.SwaggerInfoweb.BasePath = "web"

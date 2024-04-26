@@ -83,52 +83,6 @@ definitions:
       token:
         type: string
     type: object
-  dto.PermissionRequest:
-    properties:
-      edges:
-        $ref: '#/definitions/ent.PermissionEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the PermissionQuery when eager-loading is set.
-      group:
-        description: Group holds the value of the "group" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: integer
-      key:
-        description: Key holds the value of the "key" field.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      order:
-        description: Order holds the value of the "order" field.
-        type: integer
-    type: object
-  dto.PermissionResponse:
-    properties:
-      edges:
-        $ref: '#/definitions/ent.PermissionEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the PermissionQuery when eager-loading is set.
-      group:
-        description: Group holds the value of the "group" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: integer
-      key:
-        description: Key holds the value of the "key" field.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      order:
-        description: Order holds the value of the "order" field.
-        type: integer
-    type: object
   dto.RegisterRequest:
     properties:
       displayName:
@@ -153,70 +107,6 @@ definitions:
       token:
         type: string
     type: object
-  dto.RoleRequest:
-    properties:
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      description:
-        description: Description holds the value of the "description" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.RoleEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the RoleQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: integer
-      isChangeable:
-        description: IsChangeable holds the value of the "is_changeable" field.
-        type: boolean
-      isEnable:
-        description: IsEnable holds the value of the "is_enable" field.
-        type: boolean
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      order:
-        description: Order holds the value of the "order" field.
-        type: integer
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  dto.RoleResponse:
-    properties:
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      description:
-        description: Description holds the value of the "description" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.RoleEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the RoleQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: integer
-      isChangeable:
-        description: IsChangeable holds the value of the "is_changeable" field.
-        type: boolean
-      isEnable:
-        description: IsEnable holds the value of the "is_enable" field.
-        type: boolean
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      order:
-        description: Order holds the value of the "order" field.
-        type: integer
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
   dto.RouteResponse:
     properties:
       component:
@@ -237,9 +127,8 @@ definitions:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
       meta:
-        additionalProperties: true
+        $ref: '#/definitions/types.RouteMeta'
         description: Meta holds the value of the "meta" field.
-        type: object
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -257,7 +146,7 @@ definitions:
         type: string
       type:
         description: Type holds the value of the "type" field.
-        type: integer
+        type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -402,9 +291,8 @@ definitions:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
       meta:
-        additionalProperties: true
+        $ref: '#/definitions/types.RouteMeta'
         description: Meta holds the value of the "meta" field.
-        type: object
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -422,7 +310,7 @@ definitions:
         type: string
       type:
         description: Type holds the value of the "type" field.
-        type: integer
+        type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -465,6 +353,33 @@ definitions:
         description: Meta provides additional information about the data, such as
           its type or kind.y.
     type: object
+  types.RouteMeta:
+    properties:
+      activeMenu:
+        type: string
+      affix:
+        type: boolean
+      alwaysShow:
+        type: boolean
+      breadcrumb:
+        type: boolean
+      canTo:
+        type: boolean
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      noCache:
+        type: boolean
+      noTagsView:
+        type: boolean
+      permission:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -473,6 +388,32 @@ info:
   version: "1.0"
 paths:
   /admin:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Admins
+      operationId: list-all-Admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admins
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ent.Admin'
+                  type: array
+                meta:
+                  $ref: '#/definitions/pagi.Meta'
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Admins
+      tags:
+      - Admin
     post:
       consumes:
       - application/json
@@ -589,33 +530,6 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
-  /admin/paginate:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all Admins
-      operationId: list-all-Admins
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Admins
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/ent.Admin'
-                  type: array
-                meta:
-                  $ref: '#/definitions/pagi.Meta'
-              type: object
-      security:
-      - Bearer: []
-      summary: List all Admins
-      tags:
-      - Admin
   /admin/route:
     get:
       consumes:
@@ -722,321 +636,6 @@ paths:
       summary: Register a new admin
       tags:
       - Auth
-  /demo/:
-    get:
-      consumes:
-      - application/json
-      description: Welcome
-      operationId: welcome-all-Demos
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  type: object
-              type: object
-      summary: List all Demos
-      tags:
-      - Demo
-  /permission:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all Permissions
-      operationId: list-all-Permissions
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Permissions
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  additionalProperties:
-                    allOf:
-                    - $ref: '#/definitions/dto.PermissionResponse'
-                    - properties:
-                        list:
-                          items:
-                            $ref: '#/definitions/dto.PermissionResponse'
-                          type: array
-                      type: object
-                  type: object
-              type: object
-      security:
-      - Bearer: []
-      summary: List all Permissions
-      tags:
-      - Permission
-    post:
-      consumes:
-      - application/json
-      description: Create a new Permission with the provided details
-      operationId: create-Permission
-      parameters:
-      - description: Permission data
-        in: body
-        name: Permission
-        required: true
-        schema:
-          $ref: '#/definitions/dto.PermissionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully created Permission
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.PermissionResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Create a Permission
-      tags:
-      - Permission
-  /permission/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a Permission by ID
-      operationId: delete-Permission-by-id
-      parameters:
-      - description: Permission ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully deleted Permission
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Delete a Permission
-      tags:
-      - Permission
-    get:
-      consumes:
-      - application/json
-      description: Get a Permission by ID
-      operationId: get-Permission-by-id
-      parameters:
-      - description: Permission ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.PermissionResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Get a Permission
-      tags:
-      - Permission
-    patch:
-      consumes:
-      - application/json
-      description: Update a Permission by ID
-      operationId: update-Permission-by-id
-      parameters:
-      - description: Permission ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Permission data
-        in: body
-        name: Permission
-        required: true
-        schema:
-          $ref: '#/definitions/dto.PermissionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully updated Permission
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.PermissionResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Update a Permission
-      tags:
-      - Permission
-  /role:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all Roles
-      operationId: list-all-Roles
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Roles
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  additionalProperties:
-                    allOf:
-                    - $ref: '#/definitions/dto.RoleResponse'
-                    - properties:
-                        list:
-                          items:
-                            $ref: '#/definitions/dto.RoleResponse'
-                          type: array
-                      type: object
-                  type: object
-              type: object
-      security:
-      - Bearer: []
-      summary: List all Roles
-      tags:
-      - Role
-    post:
-      consumes:
-      - application/json
-      description: Create a new Role with the provided details
-      operationId: create-Role
-      parameters:
-      - description: Role data
-        in: body
-        name: Role
-        required: true
-        schema:
-          $ref: '#/definitions/dto.RoleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully created Role
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.RoleResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Create a Role
-      tags:
-      - Role
-  /role/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a Role by ID
-      operationId: delete-Role-by-id
-      parameters:
-      - description: Role ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully deleted Role
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Delete a Role
-      tags:
-      - Role
-    get:
-      consumes:
-      - application/json
-      description: Get a Role by ID
-      operationId: get-Role-by-id
-      parameters:
-      - description: Role ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.RoleResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Get a Role
-      tags:
-      - Role
-    patch:
-      consumes:
-      - application/json
-      description: Update a Role by ID
-      operationId: update-Role-by-id
-      parameters:
-      - description: Role ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Role data
-        in: body
-        name: Role
-        required: true
-        schema:
-          $ref: '#/definitions/dto.RoleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully updated Role
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.RoleResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Update a Role
-      tags:
-      - Role
   /route:
     get:
       consumes:

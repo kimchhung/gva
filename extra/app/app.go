@@ -28,7 +28,7 @@ func New(cfg *config.Config, opts ...fx.Option) *fx.App {
 		fx.WithLogger(fxzerolog.InitPtr()),
 
 		/* add web or admin modules */
-		fx.Module("server", opts...),
+		fx.Module("api", opts...),
 	)
 }
 

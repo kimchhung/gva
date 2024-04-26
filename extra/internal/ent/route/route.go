@@ -3,6 +3,7 @@
 package route
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -114,6 +115,34 @@ var (
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt int
 )
+
+// Type defines the type for the "type" enum field.
+type Type string
+
+// TypeCataLog is the default value of the Type enum.
+const DefaultType = TypeCataLog
+
+// Type values.
+const (
+	TypeCataLog      Type = "cata_log"
+	TypeMenu         Type = "menu"
+	TypeButton       Type = "button"
+	TypeExternalLink Type = "external_link"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeCataLog, TypeMenu, TypeButton, TypeExternalLink:
+		return nil
+	default:
+		return fmt.Errorf("route: invalid enum value for type field: %q", _type)
+	}
+}
 
 // OrderOption defines the ordering options for the Route queries.
 type OrderOption func(*sql.Selector)

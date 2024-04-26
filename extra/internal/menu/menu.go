@@ -9,6 +9,7 @@ import (
 	"github.com/kimchhung/gva/extra/app/database/schema/softdelete"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/ent"
+	"github.com/kimchhung/gva/extra/internal/ent/route"
 	"github.com/kimchhung/gva/extra/utils/json"
 	"github.com/kimchhung/gva/extra/utils/routeutil"
 )
@@ -57,9 +58,9 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 			}
 
 			if strings.Contains(r.Component, "#") {
-				r.Type = 0
+				r.Type = route.TypeCataLog
 			} else {
-				r.Type = 1
+				r.Type = route.TypeMenu
 			}
 
 			_, err := tx.Route.Create().SetID(r.ID).

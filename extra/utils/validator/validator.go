@@ -18,18 +18,21 @@ var (
 	validate *validator.Validate // Use a single validator instance
 )
 
-func InitializeValidator() {
+func InitializeValidator() error {
 	validate = validator.New()
 	enTranslator := lang.GetTranslator(lang.Locale(lang.LocaleEN))
 	zhTranslator := lang.GetTranslator(lang.Locale(lang.LocaleZH))
 
 	if err := ent.RegisterDefaultTranslations(validate, enTranslator); err != nil && !fiber.IsChild() {
-		log.Panic().Err(err).Msg("")
+		return err
 	}
 
 	if err := zht.RegisterDefaultTranslations(validate, zhTranslator); err != nil && !fiber.IsChild() {
-		log.Panic().Err(err).Msg("")
+		return err
 	}
+
+	log.Info().Msg("Validator is initialized")
+	return nil
 }
 
 func ValidateStruct(input any) error {

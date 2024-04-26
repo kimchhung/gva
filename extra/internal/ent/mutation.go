@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/kimchhung/gva/extra/app/database/schema/types"
 	"github.com/kimchhung/gva/extra/internal/ent/admin"
 	"github.com/kimchhung/gva/extra/internal/ent/permission"
 	"github.com/kimchhung/gva/extra/internal/ent/predicate"
@@ -2570,10 +2571,9 @@ type RouteMutation struct {
 	component       *string
 	redirect        *string
 	name            *string
-	_type           *int
-	add_type        *int
+	_type           *route.Type
 	title           *string
-	meta            *map[string]interface{}
+	meta            *types.RouteMeta
 	clearedFields   map[string]struct{}
 	parent          *int
 	clearedparent   bool
@@ -3050,13 +3050,12 @@ func (m *RouteMutation) ResetName() {
 }
 
 // SetType sets the "type" field.
-func (m *RouteMutation) SetType(i int) {
-	m._type = &i
-	m.add_type = nil
+func (m *RouteMutation) SetType(r route.Type) {
+	m._type = &r
 }
 
 // GetType returns the value of the "type" field in the mutation.
-func (m *RouteMutation) GetType() (r int, exists bool) {
+func (m *RouteMutation) GetType() (r route.Type, exists bool) {
 	v := m._type
 	if v == nil {
 		return
@@ -3067,7 +3066,7 @@ func (m *RouteMutation) GetType() (r int, exists bool) {
 // OldType returns the old "type" field's value of the Route entity.
 // If the Route object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RouteMutation) OldType(ctx context.Context) (v int, err error) {
+func (m *RouteMutation) OldType(ctx context.Context) (v route.Type, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
@@ -3081,28 +3080,9 @@ func (m *RouteMutation) OldType(ctx context.Context) (v int, err error) {
 	return oldValue.Type, nil
 }
 
-// AddType adds i to the "type" field.
-func (m *RouteMutation) AddType(i int) {
-	if m.add_type != nil {
-		*m.add_type += i
-	} else {
-		m.add_type = &i
-	}
-}
-
-// AddedType returns the value that was added to the "type" field in this mutation.
-func (m *RouteMutation) AddedType() (r int, exists bool) {
-	v := m.add_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetType resets all changes to the "type" field.
 func (m *RouteMutation) ResetType() {
 	m._type = nil
-	m.add_type = nil
 }
 
 // SetTitle sets the "title" field.
@@ -3142,12 +3122,12 @@ func (m *RouteMutation) ResetTitle() {
 }
 
 // SetMeta sets the "meta" field.
-func (m *RouteMutation) SetMeta(value map[string]interface{}) {
-	m.meta = &value
+func (m *RouteMutation) SetMeta(tm types.RouteMeta) {
+	m.meta = &tm
 }
 
 // Meta returns the value of the "meta" field in the mutation.
-func (m *RouteMutation) Meta() (r map[string]interface{}, exists bool) {
+func (m *RouteMutation) Meta() (r types.RouteMeta, exists bool) {
 	v := m.meta
 	if v == nil {
 		return
@@ -3158,7 +3138,7 @@ func (m *RouteMutation) Meta() (r map[string]interface{}, exists bool) {
 // OldMeta returns the old "meta" field's value of the Route entity.
 // If the Route object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RouteMutation) OldMeta(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *RouteMutation) OldMeta(ctx context.Context) (v types.RouteMeta, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
 	}
@@ -3521,7 +3501,7 @@ func (m *RouteMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case route.FieldType:
-		v, ok := value.(int)
+		v, ok := value.(route.Type)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3535,7 +3515,7 @@ func (m *RouteMutation) SetField(name string, value ent.Value) error {
 		m.SetTitle(v)
 		return nil
 	case route.FieldMeta:
-		v, ok := value.(map[string]interface{})
+		v, ok := value.(types.RouteMeta)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3552,9 +3532,6 @@ func (m *RouteMutation) AddedFields() []string {
 	if m.adddeleted_at != nil {
 		fields = append(fields, route.FieldDeletedAt)
 	}
-	if m.add_type != nil {
-		fields = append(fields, route.FieldType)
-	}
 	return fields
 }
 
@@ -3565,8 +3542,6 @@ func (m *RouteMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case route.FieldDeletedAt:
 		return m.AddedDeletedAt()
-	case route.FieldType:
-		return m.AddedType()
 	}
 	return nil, false
 }
@@ -3582,13 +3557,6 @@ func (m *RouteMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
-		return nil
-	case route.FieldType:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Route numeric field %s", name)

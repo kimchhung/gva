@@ -55,3 +55,5 @@ func main() {
 	// uncomment if want to generate sql for data migration
 	// migratedata.GenerateSql(dir)
 }
+
+

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/extra/app/database/schema/types"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
 )
@@ -116,8 +117,16 @@ func (rc *RouteCreate) SetName(s string) *RouteCreate {
 }
 
 // SetType sets the "type" field.
-func (rc *RouteCreate) SetType(i int) *RouteCreate {
-	rc.mutation.SetType(i)
+func (rc *RouteCreate) SetType(r route.Type) *RouteCreate {
+	rc.mutation.SetType(r)
+	return rc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (rc *RouteCreate) SetNillableType(r *route.Type) *RouteCreate {
+	if r != nil {
+		rc.SetType(*r)
+	}
 	return rc
 }
 
@@ -128,8 +137,8 @@ func (rc *RouteCreate) SetTitle(s string) *RouteCreate {
 }
 
 // SetMeta sets the "meta" field.
-func (rc *RouteCreate) SetMeta(m map[string]interface{}) *RouteCreate {
-	rc.mutation.SetMeta(m)
+func (rc *RouteCreate) SetMeta(tm types.RouteMeta) *RouteCreate {
+	rc.mutation.SetMeta(tm)
 	return rc
 }
 
@@ -233,6 +242,10 @@ func (rc *RouteCreate) defaults() error {
 		v := route.DefaultDeletedAt
 		rc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := rc.mutation.GetType(); !ok {
+		v := route.DefaultType
+		rc.mutation.SetType(v)
+	}
 	return nil
 }
 
@@ -264,6 +277,11 @@ func (rc *RouteCreate) check() error {
 	}
 	if _, ok := rc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Route.type"`)}
+	}
+	if v, ok := rc.mutation.GetType(); ok {
+		if err := route.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Route.type": %w`, err)}
+		}
 	}
 	if _, ok := rc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Route.title"`)}
@@ -336,7 +354,7 @@ func (rc *RouteCreate) createSpec() (*Route, *sqlgraph.CreateSpec) {
 		_node.Name = value
 	}
 	if value, ok := rc.mutation.GetType(); ok {
-		_spec.SetField(route.FieldType, field.TypeInt, value)
+		_spec.SetField(route.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
 	if value, ok := rc.mutation.Title(); ok {

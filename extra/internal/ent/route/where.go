@@ -100,11 +100,6 @@ func Name(v string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldName, v))
 }
 
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v int) predicate.Route {
-	return predicate.Route(sql.FieldEQ(FieldType, v))
-}
-
 // Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
 func Title(v string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldTitle, v))
@@ -531,43 +526,23 @@ func NameContainsFold(v string) predicate.Route {
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v int) predicate.Route {
+func TypeEQ(v Type) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v int) predicate.Route {
+func TypeNEQ(v Type) predicate.Route {
 	return predicate.Route(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...int) predicate.Route {
+func TypeIn(vs ...Type) predicate.Route {
 	return predicate.Route(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...int) predicate.Route {
+func TypeNotIn(vs ...Type) predicate.Route {
 	return predicate.Route(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v int) predicate.Route {
-	return predicate.Route(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v int) predicate.Route {
-	return predicate.Route(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v int) predicate.Route {
-	return predicate.Route(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v int) predicate.Route {
-	return predicate.Route(sql.FieldLTE(FieldType, v))
 }
 
 // TitleEQ applies the EQ predicate on the "title" field.

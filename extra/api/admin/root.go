@@ -1,8 +1,9 @@
-package main
+package admin
 
 import (
 	"github.com/kimchhung/gva/extra/api/admin/docs"
 	admin "github.com/kimchhung/gva/extra/api/admin/module"
+
 	"github.com/kimchhung/gva/extra/app"
 	"github.com/kimchhung/gva/extra/app/router"
 
@@ -28,7 +29,7 @@ var (
 // @name Authorization
 // @Param locale header string true "en"
 // @description Type "Bearer" followed by a space and JWT token.
-func main() {
+func Run() {
 	// * Run only web api
 	docs.SwaggerInfoadmin.BasePath = "admin"
 	if cfg.API.Admin.BasePath != "" {

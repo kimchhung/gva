@@ -88,7 +88,7 @@ var (
 		{Name: "component", Type: field.TypeString},
 		{Name: "redirect", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
-		{Name: "type", Type: field.TypeInt},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
 		{Name: "title", Type: field.TypeString},
 		{Name: "meta", Type: field.TypeJSON},
 		{Name: "parent_id", Type: field.TypeInt, Nullable: true},

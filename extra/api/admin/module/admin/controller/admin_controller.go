@@ -29,6 +29,7 @@ func (con *AdminController) Init(r fiber.Router) fiber.Router {
 }
 
 func NewAdminController(service *service.AdminService, jwtService *services.JwtService) *AdminController {
+
 	return &AdminController{
 		service:    service,
 		jwtService: jwtService,

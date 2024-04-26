@@ -33,7 +33,7 @@ type Admin struct {
 	// WhitelistIps holds the value of the "whitelist_ips" field.
 	WhitelistIps []string `json:"whitelistIps"`
 	// DisplayName holds the value of the "display_name" field.
-	DisplayName string `json:"displayName,omitempty" rql:"column=display_name,filter,sort"`
+	DisplayName string `json:"displayName,omitempty" rql:"filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AdminQuery when eager-loading is set.
 	Edges        AdminEdges `json:"edges" rql:"-"`

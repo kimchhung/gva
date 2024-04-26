@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/kimchhung/gva/extra/app/database/schema/types"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
 )
 
@@ -37,11 +38,11 @@ type Route struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Type holds the value of the "type" field.
-	Type int `json:"type,omitempty"`
+	Type route.Type `json:"type,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// Meta holds the value of the "meta" field.
-	Meta map[string]interface{} `json:"meta,omitempty"`
+	Meta types.RouteMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RouteQuery when eager-loading is set.
 	Edges        RouteEdges `json:"edges" rql:"-"`
@@ -99,9 +100,9 @@ func (*Route) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case route.FieldIsEnable:
 			values[i] = new(sql.NullBool)
-		case route.FieldID, route.FieldDeletedAt, route.FieldParentID, route.FieldType:
+		case route.FieldID, route.FieldDeletedAt, route.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldTitle:
+		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType, route.FieldTitle:
 			values[i] = new(sql.NullString)
 		case route.FieldCreatedAt, route.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -182,10 +183,10 @@ func (r *Route) assignValues(columns []string, values []any) error {
 				r.Name = value.String
 			}
 		case route.FieldType:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				r.Type = int(value.Int64)
+				r.Type = route.Type(value.String)
 			}
 		case route.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
