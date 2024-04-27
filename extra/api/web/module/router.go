@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/swaggo/swag/example/basic/docs"
 
-	"github.com/kimchhung/gva/extra/api/web/module/demo"
+	"github.com/kimchhung/gva/extra/api/web/module/index"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/utils"
@@ -45,7 +45,7 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
 }
 
 var NewWebModules = fx.Module("web-module",
-	demo.NewDemoModule,
+	index.NewDemoModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(

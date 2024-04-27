@@ -58,6 +58,18 @@ func printStartupMessage(cfg *config.Config, fiber *fiber.App) {
 		}
 	}
 
+	if cfg.API.Web.Enable {
+		log.Info().
+			Str("path", host+":"+port+cfg.API.Web.BasePath).
+			Msg("Web API")
+	}
+
+	if cfg.API.Admin.Enable {
+		log.Info().
+			Str("path", host+":"+port+cfg.API.Admin.BasePath).
+			Msg("Admin API")
+	}
+
 	// ASCII Art
 	ascii, err := os.ReadFile("./storage/ascii_art.txt")
 	if err != nil {

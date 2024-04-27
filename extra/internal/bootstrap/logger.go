@@ -28,7 +28,7 @@ func NewLogger(cfg *config.Config) *zerolog.Logger {
 type PreforkHook struct{}
 
 func (h PreforkHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
-	if fiber.IsChild() {
+	if fiber.IsChild() && level != zerolog.ErrorLevel {
 		e.Discard()
 	}
 }

@@ -18,6 +18,7 @@ import (
 
 type Database struct {
 	*ent.Client
+	sql *sql.Driver
 	Log *zerolog.Logger
 	Cfg *config.Config
 }
@@ -44,12 +45,17 @@ func (db *Database) ConnectDatabase() error {
 		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}
 
+	db.sql = drv
 	db.Client = ent.NewClient(
 		ent.Driver(drv),
 		ent.Debug(),
 	)
 
 	return nil
+}
+
+func (db *Database) Sql() *sql.Driver {
+	return db.sql
 }
 
 func (db *Database) ShutdownDatabase() error {

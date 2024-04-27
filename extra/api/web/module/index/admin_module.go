@@ -1,7 +1,7 @@
-package demo
+package index
 
 import (
-	"github.com/kimchhung/gva/extra/api/web/module/demo/controller"
+	"github.com/kimchhung/gva/extra/api/web/module/index/controller"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"go.uber.org/fx"
 )
