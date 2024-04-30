@@ -147,6 +147,12 @@ func (ru *RouteUpdate) SetNillableRedirect(s *string) *RouteUpdate {
 	return ru
 }
 
+// ClearRedirect clears the value of the "redirect" field.
+func (ru *RouteUpdate) ClearRedirect() *RouteUpdate {
+	ru.mutation.ClearRedirect()
+	return ru
+}
+
 // SetName sets the "name" field.
 func (ru *RouteUpdate) SetName(s string) *RouteUpdate {
 	ru.mutation.SetName(s)
@@ -171,20 +177,6 @@ func (ru *RouteUpdate) SetType(r route.Type) *RouteUpdate {
 func (ru *RouteUpdate) SetNillableType(r *route.Type) *RouteUpdate {
 	if r != nil {
 		ru.SetType(*r)
-	}
-	return ru
-}
-
-// SetTitle sets the "title" field.
-func (ru *RouteUpdate) SetTitle(s string) *RouteUpdate {
-	ru.mutation.SetTitle(s)
-	return ru
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (ru *RouteUpdate) SetNillableTitle(s *string) *RouteUpdate {
-	if s != nil {
-		ru.SetTitle(*s)
 	}
 	return ru
 }
@@ -379,14 +371,14 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.Redirect(); ok {
 		_spec.SetField(route.FieldRedirect, field.TypeString, value)
 	}
+	if ru.mutation.RedirectCleared() {
+		_spec.ClearField(route.FieldRedirect, field.TypeString)
+	}
 	if value, ok := ru.mutation.Name(); ok {
 		_spec.SetField(route.FieldName, field.TypeString, value)
 	}
 	if value, ok := ru.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)
-	}
-	if value, ok := ru.mutation.Title(); ok {
-		_spec.SetField(route.FieldTitle, field.TypeString, value)
 	}
 	if value, ok := ru.mutation.Meta(); ok {
 		_spec.SetField(route.FieldMeta, field.TypeJSON, value)
@@ -647,6 +639,12 @@ func (ruo *RouteUpdateOne) SetNillableRedirect(s *string) *RouteUpdateOne {
 	return ruo
 }
 
+// ClearRedirect clears the value of the "redirect" field.
+func (ruo *RouteUpdateOne) ClearRedirect() *RouteUpdateOne {
+	ruo.mutation.ClearRedirect()
+	return ruo
+}
+
 // SetName sets the "name" field.
 func (ruo *RouteUpdateOne) SetName(s string) *RouteUpdateOne {
 	ruo.mutation.SetName(s)
@@ -671,20 +669,6 @@ func (ruo *RouteUpdateOne) SetType(r route.Type) *RouteUpdateOne {
 func (ruo *RouteUpdateOne) SetNillableType(r *route.Type) *RouteUpdateOne {
 	if r != nil {
 		ruo.SetType(*r)
-	}
-	return ruo
-}
-
-// SetTitle sets the "title" field.
-func (ruo *RouteUpdateOne) SetTitle(s string) *RouteUpdateOne {
-	ruo.mutation.SetTitle(s)
-	return ruo
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (ruo *RouteUpdateOne) SetNillableTitle(s *string) *RouteUpdateOne {
-	if s != nil {
-		ruo.SetTitle(*s)
 	}
 	return ruo
 }
@@ -909,14 +893,14 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 	if value, ok := ruo.mutation.Redirect(); ok {
 		_spec.SetField(route.FieldRedirect, field.TypeString, value)
 	}
+	if ruo.mutation.RedirectCleared() {
+		_spec.ClearField(route.FieldRedirect, field.TypeString)
+	}
 	if value, ok := ruo.mutation.Name(); ok {
 		_spec.SetField(route.FieldName, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)
-	}
-	if value, ok := ruo.mutation.Title(); ok {
-		_spec.SetField(route.FieldTitle, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.Meta(); ok {
 		_spec.SetField(route.FieldMeta, field.TypeJSON, value)

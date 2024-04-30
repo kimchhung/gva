@@ -1,5 +1,6 @@
 export default {
   common: {
+    time: '时间',
     action: '行动',
     index: '指數',
     inputText: '请输入',
@@ -294,6 +295,7 @@ export default {
     detail: '详情',
     remove: '移除',
     save: '保存',
-    add: '添加'
+    add: '添加',
+    del: '删除'
   }
 }

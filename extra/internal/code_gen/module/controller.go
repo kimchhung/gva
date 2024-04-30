@@ -23,9 +23,8 @@ type {{.EntityPascal}}Controller struct {
 	service *service.{{.EntityPascal}}Service
 }
 
-func (con *{{.EntityPascal}}Controller) Routes(r fiber.Router) {
-	{{.EntityAllLower}} := r.Group("{{.EntityKebab}}")
-	rctrl.Register({{.EntityAllLower}}, con)
+func (con *{{.EntityPascal}}Controller) Init(r fiber.Router) fiber.Router {
+	return r.Group("{{.EntityKebab}}")
 }
 
 func New{{.EntityPascal}}Controller(service *service.{{.EntityPascal}}Service) *{{.EntityPascal}}Controller {

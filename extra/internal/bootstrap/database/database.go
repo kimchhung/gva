@@ -48,7 +48,6 @@ func (db *Database) ConnectDatabase() error {
 	db.sql = drv
 	db.Client = ent.NewClient(
 		ent.Driver(drv),
-		ent.Debug(),
 	)
 
 	return nil

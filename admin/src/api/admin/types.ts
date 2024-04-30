@@ -1,4 +1,4 @@
-import { AdminRoute } from '../role'
+import { MenuRoute } from '../authorization/types'
 
 export type AdminLoginType = {
   username: string
@@ -22,7 +22,7 @@ export type AdminInfo = {
 }
 
 export const convertEdgeChildren = (
-  list: AdminRoute[],
+  list: MenuRoute[],
   appRoutes: AppCustomRouteRecordRaw[] = []
 ): AppCustomRouteRecordRaw[] => {
   list.forEach((r) => {

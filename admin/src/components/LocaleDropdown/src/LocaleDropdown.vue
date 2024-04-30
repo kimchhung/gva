@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import { ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus'
-import { useLocaleStore } from '@/store/modules/locale'
-import { useLocale } from '@/hooks/web/useLocale'
-import { propTypes } from '@/utils/propTypes'
 import { useDesign } from '@/hooks/web/useDesign'
+import { useLocale } from '@/hooks/web/useLocale'
+import { useLocaleStore } from '@/store/modules/locale'
+import { propTypes } from '@/utils/propTypes'
+import { ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus'
+import { computed, unref } from 'vue'
 
 const { getPrefixCls } = useDesign()
 
@@ -22,8 +22,8 @@ const currentLang = computed(() => localeStore.getCurrentLocale)
 
 const setLang = (lang: LocaleType) => {
   if (lang === unref(currentLang).lang) return
-  // 需要重新加载页面让整个语言多初始化
-  window.location.reload()
+  // Need to reload the page to make the entire language initialize more
+  // window.location.reload()
   localeStore.setCurrentLocale({
     lang
   })

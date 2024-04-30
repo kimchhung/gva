@@ -24,7 +24,7 @@ var New{{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	// Regiser Controller
 	fx.Provide(
 		fx.Annotate(
-			controller.NewTodoController,
+			controller.New{{.EntityPascal}}Controller,
 			fx.As(new(rctrl.Controller)),
 			fx.ResultTags(%sgroup:"controllers"%s),
 		),

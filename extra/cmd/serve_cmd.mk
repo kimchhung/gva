@@ -1,8 +1,8 @@
 serve.admin:
-	go run cmd/serve/main.go admin
+	go run api/admin/main.go
 
 serve.web:
-	go run cmd/serve/main.go web
+	go run api/web/main.go web
 
 serve:
-	go run cmd/serve/main.go all
+	go run api/main.go all

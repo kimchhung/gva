@@ -1,7 +1,9 @@
 <script setup lang="tsx">
 import { convertEdgeChildren } from '@/api/admin/types'
-import { getRouteListApi } from '@/api/menu'
-import { AdminRoute } from '@/api/role'
+
+import { api } from '@/api'
+
+import { MenuRoute } from '@/api/authorization/types'
 import { useApi } from '@/axios'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
@@ -20,12 +22,12 @@ import Write from './components/Write.vue'
 const { t } = useI18n()
 
 const { tableRegister, tableState, tableMethods } = useTable({
-  fetchDataApi: async () => {
-    const [data] = await useApi(() => getRouteListApi())
-    if (!data?.list) return { list: [] }
+  fetchDataApi: async (props) => {
+    const [data] = await useApi(() => api().getRouters(props))
+    if (!data) return { list: [] }
 
     return {
-      list: convertEdgeChildren(data.list)
+      list: convertEdgeChildren(data)
     }
   }
 })
@@ -33,18 +35,19 @@ const { tableRegister, tableState, tableMethods } = useTable({
 const { dataList, loading } = tableState
 const { getList } = tableMethods
 
-const tableColumns = reactive<TableColumn<AdminRoute>[]>([
+const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   {
     field: 'index',
     label: t('common.index'),
     type: 'index'
   },
+
   {
     field: 'meta.title',
     label: t('meta.title'),
     slots: {
       default: (data) => {
-        const title = data.row.meta.title
+        const title = t(data.row.meta.title)
         return <>{title}</>
       }
     }
@@ -52,6 +55,7 @@ const tableColumns = reactive<TableColumn<AdminRoute>[]>([
   {
     field: 'meta.icon',
     label: t('meta.icon'),
+    width: 80,
     slots: {
       default: (data) => {
         const icon = data.row.meta.icon
@@ -67,6 +71,7 @@ const tableColumns = reactive<TableColumn<AdminRoute>[]>([
       }
     }
   },
+
   // {
   //   field: 'meta.permission',
   //   label: t('meta.permission'),
@@ -176,11 +181,8 @@ const save = async () => {
   const formData = await write?.submit()
 
   if (formData) {
-    saveLoading.value = true
-    setTimeout(() => {
-      saveLoading.value = false
-      dialogVisible.value = false
-    }, 1000)
+    const [res] = await useApi(() => api().createRouter(formData), { loading: saveLoading })
+    console.log({ formData, res })
   }
 }
 </script>

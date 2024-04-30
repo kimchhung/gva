@@ -1,4 +1,4 @@
-package web
+package main
 
 import (
 	"github.com/kimchhung/gva/extra/api/web/docs"
@@ -16,15 +16,15 @@ var (
 	cfg = config.NewConfig()
 )
 
-// @title GVA Web API
-// @version 1.0
+// @title       GVA Web API
+// @version     1.0
 // @description GO VUE ADMIN Boilerplate
-// @host localhost:8080
+// @host        localhost:8080
 
 // @securityDefinitions.apikey Bearer
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+// @in                         header
+// @name                       Authorization
+// @description                Type "Bearer" followed by a space and JWT token.
 func Run() {
 	// * Run only web api
 
@@ -50,4 +50,8 @@ func Run() {
 		cfg,
 		modules...,
 	).Run()
+}
+
+func main() {
+	Run()
 }

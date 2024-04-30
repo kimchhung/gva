@@ -34,13 +34,11 @@ type Route struct {
 	// Component holds the value of the "component" field.
 	Component string `json:"component,omitempty"`
 	// Redirect holds the value of the "redirect" field.
-	Redirect string `json:"redirect,omitempty"`
+	Redirect *string `json:"redirect,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Type holds the value of the "type" field.
 	Type route.Type `json:"type,omitempty"`
-	// Title holds the value of the "title" field.
-	Title string `json:"title,omitempty"`
 	// Meta holds the value of the "meta" field.
 	Meta types.RouteMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -102,7 +100,7 @@ func (*Route) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case route.FieldID, route.FieldDeletedAt, route.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType, route.FieldTitle:
+		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType:
 			values[i] = new(sql.NullString)
 		case route.FieldCreatedAt, route.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -174,7 +172,8 @@ func (r *Route) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field redirect", values[i])
 			} else if value.Valid {
-				r.Redirect = value.String
+				r.Redirect = new(string)
+				*r.Redirect = value.String
 			}
 		case route.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -187,12 +186,6 @@ func (r *Route) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				r.Type = route.Type(value.String)
-			}
-		case route.FieldTitle:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field title", values[i])
-			} else if value.Valid {
-				r.Title = value.String
 			}
 		case route.FieldMeta:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -276,17 +269,16 @@ func (r *Route) String() string {
 	builder.WriteString("component=")
 	builder.WriteString(r.Component)
 	builder.WriteString(", ")
-	builder.WriteString("redirect=")
-	builder.WriteString(r.Redirect)
+	if v := r.Redirect; v != nil {
+		builder.WriteString("redirect=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(r.Name)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", r.Type))
-	builder.WriteString(", ")
-	builder.WriteString("title=")
-	builder.WriteString(r.Title)
 	builder.WriteString(", ")
 	builder.WriteString("meta=")
 	builder.WriteString(fmt.Sprintf("%v", r.Meta))

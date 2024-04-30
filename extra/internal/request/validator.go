@@ -1,6 +1,8 @@
 package request
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/kimchhung/gva/extra/app/common/contexts"
@@ -12,15 +14,16 @@ import (
 func Validate(parser Parser, parsers ...Parser) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		for _, parse := range append(parsers, parser) {
-
 			data, err := parse(c)
 			if err != nil {
+				fmt.Printf("errr %v", err)
 				return err
 			}
 
 			if err = validator.ValidateStruct(data); err != nil {
 				return err
 			}
+
 		}
 
 		return nil

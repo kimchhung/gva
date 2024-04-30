@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	admin "github.com/kimchhung/gva/extra/api/admin/module"
@@ -34,4 +34,8 @@ func Run() {
 		cfg,
 		modules...,
 	).Run()
+}
+
+func main() {
+	Run()
 }

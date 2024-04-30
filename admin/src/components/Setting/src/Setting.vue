@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { ElDrawer, ElDivider, ElMessage } from 'element-plus'
-import { ref, unref } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
-import { useCssVar } from '@vueuse/core'
+import { useDesign } from '@/hooks/web/useDesign'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useStorage } from '@/hooks/web/useStorage'
 import { useAppStore } from '@/store/modules/app'
-import { trim, setCssVar, getCssVar } from '@/utils'
+import { useServerTime } from '@/store/modules/time'
+import { getCssVar, setCssVar, trim } from '@/utils'
+import { useClipboard, useCssVar } from '@vueuse/core'
+import { ElDivider, ElDrawer, ElMessage } from 'element-plus'
+import { storeToRefs } from 'pinia'
+import { computed, ref, unref } from 'vue'
 import ColorRadioPicker from './components/ColorRadioPicker.vue'
 import InterfaceDisplay from './components/InterfaceDisplay.vue'
 import LayoutRadioPicker from './components/LayoutRadioPicker.vue'
-import { useStorage } from '@/hooks/web/useStorage'
-import { useClipboard } from '@vueuse/core'
-import { useDesign } from '@/hooks/web/useDesign'
 
 const { clear: storageClear } = useStorage('localStorage')
 
@@ -142,7 +143,7 @@ const copyConfig = async () => {
   }
 }
 
-// 清空缓存
+// Empty the cache
 const clear = () => {
   storageClear()
   window.location.reload()
@@ -153,6 +154,9 @@ const themeChange = () => {
   setMenuTheme(color)
   setHeaderTheme(color)
 }
+
+const { currentTime } = storeToRefs(useServerTime())
+const time = computed(() => currentTime?.value?.format('HH:mm:ss Z'))
 </script>
 
 <template>
@@ -170,15 +174,15 @@ const themeChange = () => {
     </template>
 
     <div class="text-center">
-      <!-- 主题 -->
+      <ElDivider>{{ t('common.time') }}</ElDivider>
+      {{ time }}
+
       <ElDivider>{{ t('setting.theme') }}</ElDivider>
       <ThemeSwitch @change="themeChange" />
 
-      <!-- 布局 -->
       <ElDivider>{{ t('setting.layout') }}</ElDivider>
       <LayoutRadioPicker />
 
-      <!-- 系统主题 -->
       <ElDivider>{{ t('setting.systemTheme') }}</ElDivider>
       <ColorRadioPicker
         v-model="systemTheme"
@@ -195,7 +199,6 @@ const themeChange = () => {
         @change="setSystemTheme"
       />
 
-      <!-- 头部主题 -->
       <ElDivider>{{ t('setting.headerTheme') }}</ElDivider>
       <ColorRadioPicker
         v-model="headerTheme"
@@ -212,7 +215,6 @@ const themeChange = () => {
         @change="setHeaderTheme"
       />
 
-      <!-- 菜单主题 -->
       <ElDivider>{{ t('setting.menuTheme') }}</ElDivider>
       <ColorRadioPicker
         v-model="menuTheme"
@@ -230,7 +232,6 @@ const themeChange = () => {
       />
     </div>
 
-    <!-- 界面显示 -->
     <ElDivider>{{ t('setting.interfaceDisplay') }}</ElDivider>
     <InterfaceDisplay />
 

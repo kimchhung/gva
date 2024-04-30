@@ -18,16 +18,23 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
   ) {
     config.data = objToFormData(config.data)
   }
+
   if (config.method === 'get' && config.params) {
+    // let url = config.url as string
+    // url += '?'
+    // const keys = Object.keys(config.params)
+    // for (const key of keys) {
+    //   if (config.params[key] !== void 0 && config.params[key] !== null) {
+    //     url += `${key}=${encodeURIComponent(config.params[key])}&`
+    //   }
+    // }
+    // url = url.substring(0, url.length - 1)
+    // config.params = {}
+    // config.url = url
+
     let url = config.url as string
     url += '?'
-    const keys = Object.keys(config.params)
-    for (const key of keys) {
-      if (config.params[key] !== void 0 && config.params[key] !== null) {
-        url += `${key}=${encodeURIComponent(config.params[key])}&`
-      }
-    }
-    url = url.substring(0, url.length - 1)
+    url += qs.stringify(config.params)
     config.params = {}
     config.url = url
   }
@@ -35,8 +42,11 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
 }
 
 const defaultResponseInterceptors = (response: AxiosResponse) => {
+  const reqId = response.headers['X-Request-Id']
+  console.log({ reqId, h: response?.headers })
+
   if (response?.config?.responseType === 'blob') {
-    // 如果是文件流，直接过
+    // If it is a file flow, pass it directly
     return response
   } else if (response.data.code === SUCCESS_CODE) {
     return response.data

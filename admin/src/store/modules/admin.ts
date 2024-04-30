@@ -1,5 +1,7 @@
-import { getAdminInfoReq, getAdminRoleRouters } from '@/api/admin'
+import { getAdminInfoReq } from '@/api/admin'
 import { AdminInfo, convertEdgeChildren } from '@/api/admin/types'
+
+import { api } from '@/api'
 import { useApi } from '@/axios'
 import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
@@ -62,7 +64,7 @@ export const useAdminStore = defineStore('admin', {
       if (data) this.setAdminInfo(data)
     },
     async fetchAdminRouters() {
-      const [data] = await useApi(() => getAdminRoleRouters())
+      const [data] = await useApi(() => api().getRouters())
       if (data) this.setRoleRouters(convertEdgeChildren(data as any))
 
       return this.routers

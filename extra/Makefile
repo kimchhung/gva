@@ -2,20 +2,12 @@
 include cmd/migrate.mk
 include cmd/admin_cmd.mk
 include cmd/serve_cmd.mk
+include cmd/swag_cmd.mk
 
 # Generate Ent
 gen:
 	go generate cmd/ent/generate.go
 
-swag:
-	make swag.web
-	make swag.admin
-
-swag.web:
-	swag init -g main.go -d ./api/web --parseDependency --output ./api/web/docs/ --instanceName web
-
-swag.admin:
-	swag init -g main.go -d ./api/admin --parseDependency --output ./api/admin/docs --instanceName admin
 
 crud:
 	go run cmd/code_gen/generate.go $(name)

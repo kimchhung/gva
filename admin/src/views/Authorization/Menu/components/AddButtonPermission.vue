@@ -59,8 +59,8 @@ const confirm = async () => {
     </template>
     <template #footer>
       <div>
-        <BaseButton @click="() => (modelValue = false)">取消</BaseButton>
-        <BaseButton type="primary" @click="confirm">确认</BaseButton>
+        <BaseButton @click="() => (modelValue = false)">Cancel</BaseButton>
+        <BaseButton type="primary" @click="confirm">confirm</BaseButton>
       </div>
     </template>
   </ElDrawer>

@@ -441,14 +441,55 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/route": {
+        "/permissions": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get a list of all Routes",
+                "description": "Get a list of all permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization Management"
+                ],
+                "summary": "List all permissions",
+                "operationId": "list-all-permissions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PermissionResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/route": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create One Route",
                 "consumes": [
                     "application/json"
                 ],
@@ -456,10 +497,48 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Route"
+                    "Authorization Management"
+                ],
+                "summary": "Create One Route",
+                "operationId": "create-one-route",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.RouteResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/routes": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all Routes",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization Management"
                 ],
                 "summary": "List all Routes",
-                "operationId": "list-all-Routes",
+                "operationId": "list-all-routes",
                 "responses": {
                     "200": {
                         "description": "Successfully retrieved Routes",
@@ -612,6 +691,43 @@ const docTemplateadmin = `{
                 }
             }
         },
+        "dto.PermissionResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
+                    "$ref": "#/definitions/ent.PermissionEdges"
+                },
+                "group": {
+                    "description": "Group holds the value of the \"group\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "integer"
+                },
+                "key": {
+                    "description": "Key holds the value of the \"key\" field.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterRequest": {
             "type": "object",
             "required": [
@@ -689,10 +805,6 @@ const docTemplateadmin = `{
                     "description": "Redirect holds the value of the \"redirect\" field.",
                     "type": "string"
                 },
-                "title": {
-                    "description": "Title holds the value of the \"title\" field.",
-                    "type": "string"
-                },
                 "type": {
                     "description": "Type holds the value of the \"type\" field.",
                     "type": "string"
@@ -758,6 +870,10 @@ const docTemplateadmin = `{
         "ent.Permission": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
                     "$ref": "#/definitions/ent.PermissionEdges"
@@ -781,6 +897,10 @@ const docTemplateadmin = `{
                 "order": {
                     "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
                 }
             }
         },
@@ -904,10 +1024,6 @@ const docTemplateadmin = `{
                 },
                 "redirect": {
                     "description": "Redirect holds the value of the \"redirect\" field.",
-                    "type": "string"
-                },
-                "title": {
-                    "description": "Title holds the value of the \"title\" field.",
                     "type": "string"
                 },
                 "type": {

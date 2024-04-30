@@ -1,5 +1,5 @@
 /**
- * 菜单类型枚举
+ * Menu type enumeration
  */
 export const enum MenuTypeEnum {
   /**

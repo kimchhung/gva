@@ -100,11 +100,6 @@ func Name(v string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldName, v))
 }
 
-// Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
-func Title(v string) predicate.Route {
-	return predicate.Route(sql.FieldEQ(FieldTitle, v))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldCreatedAt, v))
@@ -450,6 +445,16 @@ func RedirectHasSuffix(v string) predicate.Route {
 	return predicate.Route(sql.FieldHasSuffix(FieldRedirect, v))
 }
 
+// RedirectIsNil applies the IsNil predicate on the "redirect" field.
+func RedirectIsNil() predicate.Route {
+	return predicate.Route(sql.FieldIsNull(FieldRedirect))
+}
+
+// RedirectNotNil applies the NotNil predicate on the "redirect" field.
+func RedirectNotNil() predicate.Route {
+	return predicate.Route(sql.FieldNotNull(FieldRedirect))
+}
+
 // RedirectEqualFold applies the EqualFold predicate on the "redirect" field.
 func RedirectEqualFold(v string) predicate.Route {
 	return predicate.Route(sql.FieldEqualFold(FieldRedirect, v))
@@ -543,71 +548,6 @@ func TypeIn(vs ...Type) predicate.Route {
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.Route {
 	return predicate.Route(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TitleEQ applies the EQ predicate on the "title" field.
-func TitleEQ(v string) predicate.Route {
-	return predicate.Route(sql.FieldEQ(FieldTitle, v))
-}
-
-// TitleNEQ applies the NEQ predicate on the "title" field.
-func TitleNEQ(v string) predicate.Route {
-	return predicate.Route(sql.FieldNEQ(FieldTitle, v))
-}
-
-// TitleIn applies the In predicate on the "title" field.
-func TitleIn(vs ...string) predicate.Route {
-	return predicate.Route(sql.FieldIn(FieldTitle, vs...))
-}
-
-// TitleNotIn applies the NotIn predicate on the "title" field.
-func TitleNotIn(vs ...string) predicate.Route {
-	return predicate.Route(sql.FieldNotIn(FieldTitle, vs...))
-}
-
-// TitleGT applies the GT predicate on the "title" field.
-func TitleGT(v string) predicate.Route {
-	return predicate.Route(sql.FieldGT(FieldTitle, v))
-}
-
-// TitleGTE applies the GTE predicate on the "title" field.
-func TitleGTE(v string) predicate.Route {
-	return predicate.Route(sql.FieldGTE(FieldTitle, v))
-}
-
-// TitleLT applies the LT predicate on the "title" field.
-func TitleLT(v string) predicate.Route {
-	return predicate.Route(sql.FieldLT(FieldTitle, v))
-}
-
-// TitleLTE applies the LTE predicate on the "title" field.
-func TitleLTE(v string) predicate.Route {
-	return predicate.Route(sql.FieldLTE(FieldTitle, v))
-}
-
-// TitleContains applies the Contains predicate on the "title" field.
-func TitleContains(v string) predicate.Route {
-	return predicate.Route(sql.FieldContains(FieldTitle, v))
-}
-
-// TitleHasPrefix applies the HasPrefix predicate on the "title" field.
-func TitleHasPrefix(v string) predicate.Route {
-	return predicate.Route(sql.FieldHasPrefix(FieldTitle, v))
-}
-
-// TitleHasSuffix applies the HasSuffix predicate on the "title" field.
-func TitleHasSuffix(v string) predicate.Route {
-	return predicate.Route(sql.FieldHasSuffix(FieldTitle, v))
-}
-
-// TitleEqualFold applies the EqualFold predicate on the "title" field.
-func TitleEqualFold(v string) predicate.Route {
-	return predicate.Route(sql.FieldEqualFold(FieldTitle, v))
-}
-
-// TitleContainsFold applies the ContainsFold predicate on the "title" field.
-func TitleContainsFold(v string) predicate.Route {
-	return predicate.Route(sql.FieldContainsFold(FieldTitle, v))
 }
 
 // HasParent applies the HasEdge predicate on the "parent" edge.

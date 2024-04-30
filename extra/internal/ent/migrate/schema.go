@@ -41,6 +41,8 @@ var (
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "group", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "key", Type: field.TypeString},
@@ -86,10 +88,9 @@ var (
 		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
 		{Name: "path", Type: field.TypeString},
 		{Name: "component", Type: field.TypeString},
-		{Name: "redirect", Type: field.TypeString},
+		{Name: "redirect", Type: field.TypeString, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
-		{Name: "title", Type: field.TypeString},
 		{Name: "meta", Type: field.TypeJSON},
 		{Name: "parent_id", Type: field.TypeInt, Nullable: true},
 	}
@@ -101,7 +102,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "routes_routes_children",
-				Columns:    []*schema.Column{RoutesColumns[12]},
+				Columns:    []*schema.Column{RoutesColumns[11]},
 				RefColumns: []*schema.Column{RoutesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -113,17 +114,6 @@ var (
 				Columns: []*schema.Column{RoutesColumns[4]},
 			},
 		},
-	}
-	// TodosColumns holds the columns for the "todos" table.
-	TodosColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
-	}
-	// TodosTable holds the schema information for the "todos" table.
-	TodosTable = &schema.Table{
-		Name:       "todos",
-		Columns:    TodosColumns,
-		PrimaryKey: []*schema.Column{TodosColumns[0]},
 	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
@@ -206,7 +196,6 @@ var (
 		PermissionsTable,
 		RolesTable,
 		RoutesTable,
-		TodosTable,
 		AdminRolesTable,
 		RolePermissionsTable,
 		RoleRoutesTable,

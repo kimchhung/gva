@@ -1,5 +1,4 @@
 import request from '@/axios'
-import { RouteReponse } from '../role'
 import { AdminInfo, LoginResponse } from './types'
 
 type RoleParams = {
@@ -24,10 +23,6 @@ export const getAdminListApi = ({ params }: AxiosConfig) => {
     code: string
     data: any[]
   }>({ url: '/mock/user/list', params })
-}
-
-export const getAdminRoleRouters = () => {
-  return request.get<RouteReponse>({ url: '/route' })
 }
 
 export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {

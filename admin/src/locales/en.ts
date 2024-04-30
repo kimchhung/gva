@@ -1,7 +1,8 @@
 export default {
   common: {
-    action: 'action',
-    index: 'index',
+    time: 'Time',
+    action: 'Action',
+    index: 'Index',
     inputText: 'Please input',
     selectText: 'Please select',
     startTimeText: 'Start time',
@@ -51,7 +52,6 @@ export default {
     notSpace: 'Spaces are not allowed',
     notSpecialCharacters: 'Special characters are not allowed',
     isEqual: 'The two are not equal',
-    // 列设置
     setting: 'Setting'
   },
   lock: {

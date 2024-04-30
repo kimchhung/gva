@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import { getRouteListApi } from '@/api/menu'
+import { api } from '@/api'
+import { useApi } from '@/axios'
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -107,39 +108,42 @@ const rules = reactive({
 const { formRegister, formMethods } = useForm()
 const { setValues, getFormData, getElFormExpose } = formMethods
 
-const treeData = ref([])
+const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const res = await getRouteListApi()
-  if (res) {
-    treeData.value = res.data.list
-    if (!props.currentRow) return
-    await nextTick()
-    const checked: any[] = []
-    eachTree(props.currentRow.menu, (v) => {
-      checked.push({
-        id: v.id,
-        permission: v.meta?.permission || []
-      })
-    })
-    eachTree(treeData.value, (v) => {
-      const index = findIndex(checked, (item) => {
-        return item.id === v.id
-      })
-      if (index > -1) {
-        const meta = { ...(v.meta || {}) }
-        meta.permission = checked[index].permission
-        v.meta = meta
-      }
-    })
-    for (const item of checked) {
-      unref(treeRef)?.setChecked(item.id, true, false)
-    }
-    // unref(treeRef)?.setCheckedKeys(
-    //   checked.map((v) => v.id),
-    //   false
-    // )
+  const [list] = await useApi(() => api().getRouters())
+  if (!list) {
+    return
   }
+
+  treeData.value = list
+  if (!props.currentRow) return
+  await nextTick()
+  const checked: any[] = []
+  eachTree(props.currentRow.menu, (v) => {
+    checked.push({
+      id: v.id,
+      permission: v.meta?.permission || []
+    })
+  })
+  eachTree(treeData.value, (v) => {
+    const index = findIndex(checked, (item) => {
+      return item.id === v.id
+    })
+    if (index > -1) {
+      const meta = { ...(v.meta || {}) }
+      meta.permission = checked[index].permission
+      v.meta = meta
+    }
+  })
+  for (const item of checked) {
+    unref(treeRef)?.setChecked(item.id, true, false)
+  }
+  // unref(treeRef)?.setCheckedKeys(
+  //   checked.map((v) => v.id),
+  //   false
+  // )
 }
+
 getMenuList()
 
 const submit = async () => {

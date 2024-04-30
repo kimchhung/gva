@@ -36,15 +36,15 @@ func NewAuthController(service *service.AuthService, jwtService *services.JwtSer
 	}
 }
 
-// @Tags Auth
-// @Summary Authenticate a admin
+// @Tags        Auth
+// @Summary     Authenticate a admin
 // @Description Authenticate a admin with the provided credentials
-// @ID create-Auth
-// @Accept  json
-// @Produce  json
-// @Param Auth body dto.LoginRequest true "Auth data"
-// @Success 200 {object} response.Response{data=map[string]dto.LoginResponse{list=[]dto.LoginResponse}} "Successfully created Auth"
-// @Router /auth/login [post]
+// @ID          create-Auth
+// @Accept      json
+// @Produce     json
+// @Param       Auth body     dto.LoginRequest                                                               true "Auth data"
+// @Success     200  {object} response.Response{data=map[string]dto.LoginResponse{list=[]dto.LoginResponse}} "Successfully created Auth"
+// @Router      /auth/login [post]
 func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/login").DoWithScope(func() []fiber.Handler {
 		body := new(dto.LoginRequest)
@@ -74,15 +74,15 @@ func (con *AuthController) Login(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	})
 }
 
-// @Tags Auth
-// @Summary Register a new admin
+// @Tags        Auth
+// @Summary     Register a new admin
 // @Description Register a new admin with the provided credentials
-// @ID create-Auth-register
-// @Accept  json
-// @Produce  json
-// @Param Auth body dto.RegisterRequest true "Registration data"
-// @Success  200 {object} response.Response{data=dto.RegisterResponse} "Successfully registered admin"
-// @Router /auth/register [post]
+// @ID          create-Auth-register
+// @Accept      json
+// @Produce     json
+// @Param       Auth body     dto.RegisterRequest                          true "Registration data"
+// @Success     200  {object} response.Response{data=dto.RegisterResponse} "Successfully registered admin"
+// @Router      /auth/register [post]
 func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/register").DoWithScope(func() []fiber.Handler {
 		body := new(dto.RegisterRequest)
@@ -113,15 +113,15 @@ func (con *AuthController) Register(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	})
 }
 
-// @Tags Auth
-// @Security Bearer
-// @Summary query your self after login
+// @Tags        Auth
+// @Security    Bearer
+// @Summary     query your self after login
 // @Description get admin data by token
-// @ID create-Auth-me
-// @Accept  json
-// @Produce  json
-// @Success  200 {object} response.Response{data=ent.Admin} "Successfully registered admin"
-// @Router /auth/me [get]
+// @ID          create-Auth-me
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.Response{data=ent.Admin} "Successfully registered admin"
+// @Router      /auth/me [get]
 func (con *AuthController) Me(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	meta.Use(
 		con.jwtService.ProtectAdmin(),

@@ -110,20 +110,19 @@ func NewRequestContext() fiber.Handler {
 		c.SetUserContext(ctx)
 
 		var err error
-
 		defer func() {
-			rvr := recover()
-			if rvr != nil {
-				if e, ok := rvr.(error); !ok {
-					err = fmt.Errorf("%v", rvr)
-					ctx.logFields.Stack = debug.Stack()
-				} else {
+			if rvr := recover(); rvr != nil {
+				if e, ok := rvr.(error); ok {
 					err = e
+				} else {
+					err = fmt.Errorf("panic %v", rvr)
+					ctx.logFields.Stack = debug.Stack()
 				}
 			}
 
 			ctx.logFields.Latency = time.Since(ctx.startTime)
 			ctx.logFields.Error = err
+
 		}()
 
 		if err = c.Next(); err != nil {

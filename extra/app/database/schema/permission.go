@@ -4,10 +4,17 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/kimchhung/gva/extra/app/database/schema/mixins"
 )
 
 type Permission struct {
 	ent.Schema
+}
+
+func (Permission) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixins.TimeMixin{},
+	}
 }
 
 func (Permission) Fields() []ent.Field {

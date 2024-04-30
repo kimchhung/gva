@@ -32,7 +32,10 @@ func (Route) Fields() []ent.Field {
 
 		field.String("component"),
 
-		field.String("redirect"),
+		field.String("redirect").
+			Optional().
+			Nillable().
+			StructTag(`json:"redirect,omitempty"`),
 
 		field.String("name"),
 
@@ -41,8 +44,6 @@ func (Route) Fields() []ent.Field {
 		field.Enum("type").
 			Values("cata_log", "menu", "button", "external_link").
 			Default("cata_log"),
-
-		field.String("title"),
 
 		field.JSON("meta", types.RouteMeta{}),
 	}

@@ -64,13 +64,12 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 			}
 
 			_, err := tx.Route.Create().SetID(r.ID).
-				SetTitle(r.Title).
 				SetComponent(r.Component).
 				SetPath(r.Path).
 				SetIsEnable(true).
 				SetMeta(r.Meta).
 				SetName(r.Name).
-				SetRedirect(r.Redirect).
+				SetNillableRedirect(r.Redirect).
 				SetType(r.Type).Save(context.Background())
 
 			if err != nil {

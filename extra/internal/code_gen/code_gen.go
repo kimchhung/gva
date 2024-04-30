@@ -20,14 +20,14 @@ type CodeGenParams struct {
 }
 
 func GenerateCodes(params CodeGenParams) {
-	GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
-	GenerateModule(params, "module", "app/module", module_template.Module)
-	GenerateModuleChild(params, "dto", "app/module", "request", module_template.DtoRequest)
-	GenerateModuleChild(params, "dto", "app/module", "response", module_template.DtoResponse)
-	GenerateModuleChild(params, "repository", "app/module", "repository", module_template.Repository)
-	GenerateModuleChild(params, "service", "app/module", "service", module_template.Service)
-	GenerateModuleChild(params, "controller", "app/module", "controller", module_template.Controller)
-	Appends(params)
+	// GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
+	GenerateModule(params, "module", "api/admin/module", module_template.Module)
+	GenerateModuleChild(params, "dto", "api/admin/module", "request", module_template.DtoRequest)
+	GenerateModuleChild(params, "dto", "api/admin/module", "response", module_template.DtoResponse)
+	GenerateModuleChild(params, "repository", "api/admin/module", "repository", module_template.Repository)
+	GenerateModuleChild(params, "service", "api/admin/module", "service", module_template.Service)
+	GenerateModuleChild(params, "controller", "api/admin/module", "controller", module_template.Controller)
+	// Appends(params)
 }
 
 func Appends(params CodeGenParams) {

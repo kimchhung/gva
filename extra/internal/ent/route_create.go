@@ -110,6 +110,14 @@ func (rc *RouteCreate) SetRedirect(s string) *RouteCreate {
 	return rc
 }
 
+// SetNillableRedirect sets the "redirect" field if the given value is not nil.
+func (rc *RouteCreate) SetNillableRedirect(s *string) *RouteCreate {
+	if s != nil {
+		rc.SetRedirect(*s)
+	}
+	return rc
+}
+
 // SetName sets the "name" field.
 func (rc *RouteCreate) SetName(s string) *RouteCreate {
 	rc.mutation.SetName(s)
@@ -127,12 +135,6 @@ func (rc *RouteCreate) SetNillableType(r *route.Type) *RouteCreate {
 	if r != nil {
 		rc.SetType(*r)
 	}
-	return rc
-}
-
-// SetTitle sets the "title" field.
-func (rc *RouteCreate) SetTitle(s string) *RouteCreate {
-	rc.mutation.SetTitle(s)
 	return rc
 }
 
@@ -269,9 +271,6 @@ func (rc *RouteCreate) check() error {
 	if _, ok := rc.mutation.Component(); !ok {
 		return &ValidationError{Name: "component", err: errors.New(`ent: missing required field "Route.component"`)}
 	}
-	if _, ok := rc.mutation.Redirect(); !ok {
-		return &ValidationError{Name: "redirect", err: errors.New(`ent: missing required field "Route.redirect"`)}
-	}
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Route.name"`)}
 	}
@@ -282,9 +281,6 @@ func (rc *RouteCreate) check() error {
 		if err := route.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Route.type": %w`, err)}
 		}
-	}
-	if _, ok := rc.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Route.title"`)}
 	}
 	if _, ok := rc.mutation.Meta(); !ok {
 		return &ValidationError{Name: "meta", err: errors.New(`ent: missing required field "Route.meta"`)}
@@ -347,7 +343,7 @@ func (rc *RouteCreate) createSpec() (*Route, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := rc.mutation.Redirect(); ok {
 		_spec.SetField(route.FieldRedirect, field.TypeString, value)
-		_node.Redirect = value
+		_node.Redirect = &value
 	}
 	if value, ok := rc.mutation.Name(); ok {
 		_spec.SetField(route.FieldName, field.TypeString, value)
@@ -356,10 +352,6 @@ func (rc *RouteCreate) createSpec() (*Route, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)
 		_node.Type = value
-	}
-	if value, ok := rc.mutation.Title(); ok {
-		_spec.SetField(route.FieldTitle, field.TypeString, value)
-		_node.Title = value
 	}
 	if value, ok := rc.mutation.Meta(); ok {
 		_spec.SetField(route.FieldMeta, field.TypeJSON, value)

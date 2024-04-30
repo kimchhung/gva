@@ -9,7 +9,7 @@ tmp_dir = "tmp"
 # Array of commands to run before each build
 # pre_cmd = ["echo 'hello air' > pre_cmd.txt"]
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./tmp/main ./cmd/serve"
+cmd = "go build -o ./tmp/main ./api"
 # Array of commands to run after ^C
 
 # Binary file yields from `cmd`.

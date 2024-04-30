@@ -2,6 +2,7 @@ package admin
 
 import (
 	"strings"
+	"time"
 
 	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
@@ -9,11 +10,14 @@ import (
 
 	"github.com/kimchhung/gva/extra/api/admin/module/admin"
 	"github.com/kimchhung/gva/extra/api/admin/module/auth"
-	"github.com/kimchhung/gva/extra/api/admin/module/route"
+	"github.com/kimchhung/gva/extra/api/admin/module/authorization"
+
 	"github.com/kimchhung/gva/extra/app/common/services"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/request"
+	"github.com/kimchhung/gva/extra/internal/response"
 	"github.com/kimchhung/gva/extra/utils"
 	"go.uber.org/fx"
 )
@@ -30,14 +34,25 @@ func NewRouter(controllers []rctrl.Controller) *Router {
 
 func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
 	utils.SetIfEmpty(cfg.API.Admin.BasePath, "/admin")
+	api := app.Group(cfg.API.Admin.BasePath)
 
-	api := app.Group(cfg.API.Admin.BasePath,
+	api.Get("/now", func(c *fiber.Ctx) error {
+		return request.Response(c, response.Data(time.Now().UTC().Format(time.RFC3339)))
+	})
+
+	api.Use(
 		r.useSwagger(cfg),
 		r.useJwtGuard(cfg, args[0].(*database.Database)),
 	)
 
 	for _, controller := range r.controllers {
 		rctrl.Register(api, controller)
+	}
+}
+
+func (r *Router) now() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.SendString(time.Now().UTC().Format(time.RFC3339))
 	}
 }
 
@@ -56,14 +71,16 @@ func (r *Router) useJwtGuard(cfg *config.Config, db *database.Database) fiber.Ha
 	jwt_ := services.NewJwtService(cfg, db)
 
 	return skip.New(jwt_.ProtectAdmin(), func(c *fiber.Ctx) bool {
-		return strings.Contains(c.Route().Path, "/auth")
+		return strings.Contains(c.Request().URI().String(), "/auth/")
 	})
 }
 
 var NewAdminModules = fx.Module("admin-module",
 	admin.NewAdminModule,
 	auth.NewAuthModule,
-	route.NewRouteModule,
+	authorization.NewAuthorizationModule,
+
+	// manage admin, menu, role, route
 
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router

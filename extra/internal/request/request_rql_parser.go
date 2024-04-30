@@ -1,6 +1,8 @@
 package request
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/rql"
@@ -30,15 +32,15 @@ https://github.com/a8m/rql
 */
 func RqlParser(out *rql.Params, parser *rql.Parser) Parser {
 	return func(c *fiber.Ctx) (any, error) {
-		param, err := parser.Parse(
-			[]byte(`{
-				"limit": 25,
-				"offset": 0,
-				"sort": ["-createdAt"]
-			}`),
+		param, err := parser.ParseQuery(
+			&rql.Query{
+				Limit:  20,
+				Offset: 0,
+			},
 		)
 
 		if err != nil {
+			fmt.Printf("%v", err)
 			return nil, app_err.NewError(
 				app_err.ErrBadRequest,
 				app_err.Join(err),

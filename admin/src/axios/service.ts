@@ -23,6 +23,7 @@ axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
     import.meta.env.VITE_USE_MOCK === 'true' ? url.replace('/mock', '') : url,
     controller
   )
+
   return res
 })
 
@@ -30,7 +31,7 @@ axiosInstance.interceptors.response.use(
   (res: AxiosResponse) => {
     const url = res.config.url || ''
     abortControllerMap.delete(url)
-    // 这里不能做任何处理，否则后面的 interceptors 拿不到完整的上下文了
+    // Can't do any processing here, otherwise the interceptors in the back will not get a complete context
 
     return res
   },

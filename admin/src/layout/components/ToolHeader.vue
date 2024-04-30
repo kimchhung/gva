@@ -1,13 +1,13 @@
 <script lang="tsx">
-import { defineComponent, computed } from 'vue'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { Collapse } from '@/components/Collapse'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
+import { Screenfull } from '@/components/Screenfull'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
-import { Screenfull } from '@/components/Screenfull'
-import { Breadcrumb } from '@/components/Breadcrumb'
-import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { useAppStore } from '@/store/modules/app'
+import { computed, defineComponent } from 'vue'
 
 const { getPrefixCls, variables } = useDesign()
 
@@ -15,22 +15,22 @@ const prefixCls = getPrefixCls('tool-header')
 
 const appStore = useAppStore()
 
-// 面包屑
+// Bread crumbs
 const breadcrumb = computed(() => appStore.getBreadcrumb)
 
-// 折叠图标
+// Folding icon
 const hamburger = computed(() => appStore.getHamburger)
 
-// 全屏图标
+// Full -screen icon
 const screenfull = computed(() => appStore.getScreenfull)
 
-// 尺寸图标
+// Size icon
 const size = computed(() => appStore.getSize)
 
-// 布局
+// layout
 const layout = computed(() => appStore.getLayout)
 
-// 多语言图标
+// Multi -language icon
 const locale = computed(() => appStore.getLocale)
 
 export default defineComponent({

@@ -49,8 +49,8 @@ export type TableSlotDefault<T extends object> = {
 export type Pagination = {
   small?: boolean
   background?: boolean
-  pageSize?: number
-  defaultPageSize?: number
+  limit?: number
+  defaultLimit?: number
   total?: number
   pageCount?: number
   pagerCount?: number
@@ -72,24 +72,24 @@ export type TableSetProps = {
 }
 
 export type TableProps<T extends object = {}> = {
-  pageSize?: number
-  currentPage?: number
+  limit?: number
+  page?: number
   showAction?: boolean
-  // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
+  // Whether all the excess is exceeded, priority is lower than the showflowtooltip in SCHEMA,
   showOverflowTooltip?: boolean
-  // 表头
+  // header
   columns?: TableColumn<T>[]
-  // 是否展示分页
+  // Whether to show paging
   pagination?: Pagination | undefined
-  // 仅对 type=selection 的列有效，类型为 Boolean，为 true 则会在数据更新之后保留之前选中的数据（需指定 row-key）
+  // Only the column of Type = Selection is valid, and the type is Boolean. For True, the data selected before the data will be retained after the data is updated (requiring Row-Key)
   reserveSelection?: boolean
-  // 加载状态
+  // Load status
   loading?: boolean
-  // 是否叠加索引
+  // Whether to overlap the index
   reserveIndex?: boolean
-  // 对齐方式
+  // Alignment method
   align?: 'left' | 'center' | 'right'
-  // 表头对齐方式
+  // Models on heads
   headerAlign?: 'left' | 'center' | 'right'
   imagePreview?: string[]
   videoPreview?: string[]

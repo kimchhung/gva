@@ -25,6 +25,7 @@ var seedCmd = &cobra.Command{
 
 		db := database.NewDatabase(config.NewConfig(), log)
 		db.ConnectDatabase()
+		defer db.Close()
 
 		// dependencies for seeding
 		ctx = context.WithValue(ctx, config.Config{}, cfg)

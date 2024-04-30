@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -13,9 +14,13 @@ import (
 
 // Permission is the model entity for the Permission schema.
 type Permission struct {
-	config `json:"-"`
+	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID int `json:"id" rql:"filter,sort"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// Group holds the value of the "group" field.
 	Group string `json:"group,omitempty"`
 	// Name holds the value of the "name" field.
@@ -26,7 +31,7 @@ type Permission struct {
 	Order int `json:"order,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PermissionQuery when eager-loading is set.
-	Edges        PermissionEdges `json:"edges"`
+	Edges        PermissionEdges `json:"edges" rql:"-"`
 	selectValues sql.SelectValues
 }
 
@@ -57,6 +62,8 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case permission.FieldGroup, permission.FieldName, permission.FieldKey:
 			values[i] = new(sql.NullString)
+		case permission.FieldCreatedAt, permission.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -78,6 +85,18 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			pe.ID = int(value.Int64)
+		case permission.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pe.CreatedAt = value.Time
+			}
+		case permission.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pe.UpdatedAt = value.Time
+			}
 		case permission.FieldGroup:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field group", values[i])
@@ -143,6 +162,12 @@ func (pe *Permission) String() string {
 	var builder strings.Builder
 	builder.WriteString("Permission(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pe.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(pe.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(pe.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("group=")
 	builder.WriteString(pe.Group)
 	builder.WriteString(", ")

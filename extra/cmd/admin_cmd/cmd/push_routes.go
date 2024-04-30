@@ -15,7 +15,7 @@ const (
 )
 
 var pushRouteCmd = &cobra.Command{
-	Use:   "push",
+	Use:   "push.route",
 	Short: "push routes from json to database, delete and recreate base on file",
 	Long:  `This command pulls routes from the database and performs necessary operations.`,
 	Run: func(cmd *cobra.Command, args []string) {

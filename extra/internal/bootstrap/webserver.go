@@ -54,20 +54,30 @@ func printStartupMessage(cfg *config.Config, fiber *fiber.App) {
 		if fiber.Config().Network == "tcp6" {
 			host = "[::1]"
 		} else {
-			host = "0.0.0.0"
+			host = "http://localhost"
 		}
 	}
 
 	if cfg.API.Web.Enable {
-		log.Info().
-			Str("path", host+":"+port+cfg.API.Web.BasePath).
-			Msg("Web API")
+		url := host + ":" + port + cfg.API.Web.BasePath
+		logi := log.Info().Str("baseUrl", url)
+
+		if cfg.Middleware.Swagger.Enable {
+			logi.Str("docs", url+"/swagger")
+		}
+
+		logi.Msg("Web API")
 	}
 
 	if cfg.API.Admin.Enable {
-		log.Info().
-			Str("path", host+":"+port+cfg.API.Admin.BasePath).
-			Msg("Admin API")
+		url := host + ":" + port + cfg.API.Admin.BasePath
+		logi := log.Info().Str("baseUrl", url)
+
+		if cfg.Middleware.Swagger.Enable {
+			logi.Str("docs", url+"/swagger")
+		}
+
+		logi.Msg("Admin API")
 	}
 
 	// ASCII Art

@@ -126,6 +126,8 @@ func Register(app fiber.Router, controller Controller) {
 			}
 
 			meta.handlers = metaHandlerFunc(meta)()
+
+			// fiber endpoint
 			AddRoute(r, meta)
 		}
 	}

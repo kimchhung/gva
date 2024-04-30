@@ -17,6 +17,3 @@ type Role func(*sql.Selector)
 
 // Route is the predicate function for route builders.
 type Route func(*sql.Selector)
-
-// Todo is the predicate function for todo builders.
-type Todo func(*sql.Selector)

@@ -1,7 +1,8 @@
+import { Table, TableColumn, TableExpose, TableProps, TableSetProps } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Table, TableExpose, TableProps, TableSetProps, TableColumn } from '@/components/Table'
-import { ElTable, ElMessageBox, ElMessage } from 'element-plus'
-import { ref, watch, unref, nextTick, onMounted } from 'vue'
+import { ElMessage, ElMessageBox, ElTable } from 'element-plus'
+import { nextTick, onMounted, ref, unref, watch } from 'vue'
+import { QueryPagi } from './usePagi'
 
 const { t } = useI18n()
 
@@ -10,7 +11,7 @@ type UseTableConfig = {
    * 是否初始化的时候请求一次
    */
   immediate?: boolean
-  fetchDataApi: () => Promise<{
+  fetchDataApi: (props?: QueryPagi) => Promise<{
     list: any[]
     total?: number
   }>
@@ -21,26 +22,30 @@ export const useTable = (config: UseTableConfig) => {
   const { immediate = true } = config
 
   const loading = ref(false)
-  const currentPage = ref(1)
-  const pageSize = ref(10)
+
+  const fetchProps = ref({
+    page: 1,
+    limit: 20
+  } as QueryPagi)
+
   const total = ref(0)
   const dataList = ref<any[]>([])
 
   watch(
-    () => currentPage.value,
+    () => fetchProps.value,
     () => {
       methods.getList()
     }
   )
 
   watch(
-    () => pageSize.value,
+    () => fetchProps.value.page,
     () => {
-      // 当前页不为1时，修改页数后会导致多次调用getList方法
-      if (unref(currentPage) === 1) {
+      // When the current page is not 1, after the number of modification pages, it will cause multiple times to call the getlist method
+      if (unref(fetchProps.value.page) === 1) {
         methods.getList()
       } else {
-        currentPage.value = 1
+        fetchProps.value.page = 1
         methods.getList()
       }
     }
@@ -52,10 +57,10 @@ export const useTable = (config: UseTableConfig) => {
     }
   })
 
-  // Table实例
+  // Table instance
   const tableRef = ref<typeof Table & TableExpose>()
 
-  // ElTable实例
+  // Eltable instance
   const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
   const register = (ref: typeof Table & TableExpose, elRef: ComponentRef<typeof ElTable>) => {
@@ -74,12 +79,12 @@ export const useTable = (config: UseTableConfig) => {
 
   const methods = {
     /**
-     * 获取表单数据
+     * Get the form data
      */
     getList: async () => {
       loading.value = true
       try {
-        const res = await config?.fetchDataApi()
+        const res = await config?.fetchDataApi(unref(fetchProps.value))
         console.log('fetchDataApi res', res)
         if (res) {
           dataList.value = res.list
@@ -93,8 +98,8 @@ export const useTable = (config: UseTableConfig) => {
     },
 
     /**
-     * @description 设置table组件的props
-     * @param props table组件的props
+     * @description Set the props of the table component
+     * @param props PROPS of table components
      */
     setProps: async (props: TableProps = {}) => {
       const table = await getTable()
@@ -102,8 +107,8 @@ export const useTable = (config: UseTableConfig) => {
     },
 
     /**
-     * @description 设置column
-     * @param columnProps 需要设置的列
+     * @description Set column
+     * @param columnProps Columns that need to be set
      */
     setColumn: async (columnProps: TableSetProps[]) => {
       const table = await getTable()
@@ -111,9 +116,9 @@ export const useTable = (config: UseTableConfig) => {
     },
 
     /**
-     * @description 新增column
-     * @param tableColumn 需要新增数据
-     * @param index 在哪里新增
+     * @description New COLUMN
+     * @param tableColumn Need to add data
+     * @param index Where to add
      */
     addColumn: async (tableColumn: TableColumn, index?: number) => {
       const table = await getTable()
@@ -121,8 +126,8 @@ export const useTable = (config: UseTableConfig) => {
     },
 
     /**
-     * @description 删除column
-     * @param field 删除哪个数据
+     * @description Delete column
+     * @param field Which data deletes
      */
     delColumn: async (field: string) => {
       const table = await getTable()
@@ -130,7 +135,7 @@ export const useTable = (config: UseTableConfig) => {
     },
 
     /**
-     * @description 获取ElTable组件的实例
+     * @description Examples to obtain ELTable components
      * @returns ElTable instance
      */
     getElTableExpose: async () => {
@@ -166,13 +171,14 @@ export const useTable = (config: UseTableConfig) => {
 
           // 计算出临界点
           const current =
-            unref(total) % unref(pageSize) === idsLength || unref(pageSize) === 1
-              ? unref(currentPage) > 1
-                ? unref(currentPage) - 1
-                : unref(currentPage)
-              : unref(currentPage)
+            unref(total) % unref(fetchProps.value.limit) === idsLength ||
+            unref(fetchProps.value.limit) === 1
+              ? unref(fetchProps.value.page) > 1
+                ? unref(fetchProps.value.page) - 1
+                : unref(fetchProps.value.page)
+              : unref(fetchProps.value.page)
 
-          currentPage.value = current
+          fetchProps.value.page = current
           methods.getList()
         }
       })
@@ -183,8 +189,8 @@ export const useTable = (config: UseTableConfig) => {
     tableRegister: register,
     tableMethods: methods,
     tableState: {
-      currentPage,
-      pageSize,
+      limit: fetchProps.value.limit,
+      page: fetchProps.value.page,
       total,
       dataList,
       loading

@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/extra/app/common/contexts"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
+	"github.com/kimchhung/gva/extra/internal/ent"
 )
 
 type PermissionKey string
@@ -11,7 +12,6 @@ type PermissionKey string
 func RequireAny(permissions ...PermissionKey) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		adminCtx := contexts.MustAdminContext(c.UserContext())
-
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}
@@ -59,11 +59,20 @@ func RequireAll(permissions ...PermissionKey) fiber.Handler {
 func RequireSuperAdmin() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		adminCtx := contexts.MustAdminContext(c.UserContext())
-
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}
 
 		return app_err.ErrUnauthorized // None of the required permissions were found
 	}
+}
+
+func createBulkPermissionDto(conn *ent.Client, group string, keys ...PermissionKey) []*ent.PermissionCreate {
+	bulks := make([]*ent.PermissionCreate, len(keys))
+
+	for i, key := range keys {
+		bulks[i] = conn.Permission.Create().SetGroup(group).SetKey(string(key)).SetName(string(key)).SetOrder(i)
+	}
+
+	return bulks
 }

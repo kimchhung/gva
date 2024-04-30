@@ -36,8 +36,6 @@ const (
 	FieldName = "name"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldTitle holds the string denoting the title field in the database.
-	FieldTitle = "title"
 	// FieldMeta holds the string denoting the meta field in the database.
 	FieldMeta = "meta"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
@@ -76,7 +74,6 @@ var Columns = []string{
 	FieldRedirect,
 	FieldName,
 	FieldType,
-	FieldTitle,
 	FieldMeta,
 }
 
@@ -200,11 +197,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
-// ByTitle orders the results by the title field.
-func ByTitle(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTitle, opts...).ToFunc()
 }
 
 // ByParentField orders the results by parent field.

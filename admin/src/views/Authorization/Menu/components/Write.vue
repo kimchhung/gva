@@ -1,7 +1,11 @@
 <script setup lang="tsx">
 import { convertEdgeChildren } from '@/api/admin/types'
-import { getRouteListApi } from '@/api/menu'
+
+import { api } from '@/api'
+
+import { MenuRoute } from '@/api/authorization/types'
 import { Form, FormSchema } from '@/components/Form'
+import { MenuTypeEnum } from '@/constants/menuType'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useValidator } from '@/hooks/web/useValidator'
@@ -15,18 +19,18 @@ const { required } = useValidator()
 
 const props = defineProps({
   currentRow: {
-    type: Object as PropType<any>,
+    type: Object as PropType<MenuRoute>,
     default: () => null
   }
 })
 
-const handleClose = async (tag: any) => {
-  const formData = await getFormData()
-  // Delete the corresponding permissions
-  setValues({
-    permissionList: formData?.permissionList?.filter((v: any) => v.value !== tag.value)
-  })
-}
+// const handleClose = async (tag: any) => {
+//   const formData = await getFormData()
+//   // Delete the corresponding permissions
+//   setValues({
+//     permissionList: formData?.permissionList?.filter((v: any) => v.value !== tag.value)
+//   })
+// }
 
 const showDrawer = ref(false)
 
@@ -43,11 +47,11 @@ const formSchema = reactive<FormSchema[]>([
       options: [
         {
           label: 'Table of contents',
-          value: 0
+          value: MenuTypeEnum.CATALOG
         },
         {
           label: 'menu',
-          value: 1
+          value: MenuTypeEnum.MENU
         }
       ],
       on: {
@@ -106,15 +110,15 @@ const formSchema = reactive<FormSchema[]>([
       on: {
         change: async (val: number) => {
           const formData = await getFormData()
-          if (val && formData.type === 0) {
+          if (val && formData.type === MenuTypeEnum.CATALOG) {
             setValues({
               component: '##'
             })
-          } else if (!val && formData.type === 0) {
+          } else if (!val && formData.type === MenuTypeEnum.CATALOG) {
             setValues({
               component: '#'
             })
-          } else if (formData.type === 1) {
+          } else if (formData.type === MenuTypeEnum.MENU) {
             setValues({
               component: unref(cacheComponent) ?? ''
             })
@@ -123,8 +127,8 @@ const formSchema = reactive<FormSchema[]>([
       }
     },
     optionApi: async () => {
-      const res = await getRouteListApi()
-      const list = convertEdgeChildren(res.data.list)
+      const res = await api().getRouters()
+      const list = convertEdgeChildren(res.data)
       return list || []
     }
   },
@@ -171,16 +175,16 @@ const formSchema = reactive<FormSchema[]>([
   {
     field: 'isEnable',
     label: t('meta.isEnable'),
-    component: 'Select',
+    component: 'Switch',
     componentProps: {
       options: [
         {
           label: t('tagStatus.disable'),
-          value: 0
+          value: false
         },
         {
           label: t('tagStatus.enable'),
-          value: 1
+          value: true
         }
       ]
     }
@@ -250,8 +254,9 @@ watch(
   (value) => {
     if (!value) return
     const currentRow = cloneDeep(value)
-    cacheComponent.value = currentRow.type === 1 ? currentRow.component : ''
-    if (currentRow.parentId === 0) {
+
+    cacheComponent.value = currentRow.type === MenuTypeEnum.MENU ? currentRow.component : ''
+    if (!currentRow.parentId) {
       setSchema([
         {
           field: 'component',
@@ -268,7 +273,7 @@ watch(
         }
       ])
     }
-    if (currentRow.type === 1) {
+    if (currentRow.type === MenuTypeEnum.MENU) {
       setSchema([
         {
           field: 'component',
