@@ -3,7 +3,7 @@ package rerror
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/kimchhung/gva/extra/app/common/contexts"
+
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	in_validator "github.com/kimchhung/gva/extra/utils/validator"
 
@@ -12,15 +12,8 @@ import (
 )
 
 // Default error handler
-func ErrorHandler(c *fiber.Ctx, err error) error {
-	_, err = ParseError(c, err)
-	return err
-}
-
-var IsProd bool
-
-// Default error handler
 func ParseError(c *fiber.Ctx, err error) (*app_err.Error, error) {
+
 	var resErr *app_err.Error
 
 	switch e := err.(type) {
@@ -68,13 +61,7 @@ func ParseError(c *fiber.Ctx, err error) (*app_err.Error, error) {
 					return lang.T(lang.FiberCtx(c), message)
 				},
 			),
-			app_err.Join(err),
 		)
-	}
-
-	ctx := contexts.SetRequestStatus(c.UserContext(), resErr.ErrorCode, resErr.HttpCode)
-	if !IsProd {
-		ctx.PrintLog()
 	}
 
 	return resErr, response.New(response.Error(resErr)).Parse(c)

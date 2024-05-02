@@ -36,13 +36,19 @@ axiosInstance.interceptors.response.use(
     return res
   },
   (error: AxiosError) => {
+    const apiData = error.response?.data as {
+      code: number
+      data: any
+      message: string
+    }
+
+    const text = apiData ? apiData.message : `msg: ${error.message}, code ${error.code}`
+
     if ([401, 402, 403].includes(error.response?.status ?? 0)) {
-      ElMessage.error((error.response?.data as any).message)
-      const userStore = useAdminStoreWithOut()
-      userStore.logout()
+      ElMessage.error(text)
+      useAdminStoreWithOut().logout()
     } else {
-      console.log('err： ' + error) // for debug
-      ElMessage.error(error.message)
+      ElMessage.error(text)
     }
 
     return Promise.reject(error)
@@ -53,20 +59,16 @@ axiosInstance.interceptors.request.use(defaultRequestInterceptors)
 axiosInstance.interceptors.response.use(defaultResponseInterceptors)
 
 const service = {
-  request: (config: RequestConfig) => {
+  request: <T = any, R = AxiosResponse<T>, D = any>(config: RequestConfig) => {
     return new Promise((resolve, reject) => {
       if (config.interceptors?.requestInterceptors) {
         config = config.interceptors.requestInterceptors(config as any)
       }
 
       axiosInstance
-        .request(config)
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((err: any) => {
-          reject(err)
-        })
+        .request<T, R, D>(config)
+        .then((res) => resolve(res))
+        .catch((err: any) => reject(err))
     })
   },
   cancelRequest: (url: string | string[]) => {

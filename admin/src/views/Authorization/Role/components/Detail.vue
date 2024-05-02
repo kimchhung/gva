@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import { getRouteListApi } from '@/api/menu'
+import { api } from '@/api'
+import { useApi } from '@/axios'
 import { Descriptions, DescriptionsSchema } from '@/components/Descriptions'
 import { findIndex } from '@/utils'
 import { ElTag, ElTree } from 'element-plus'
@@ -32,9 +33,9 @@ const nodeClick = (treeData: any) => {
 
 const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const res = await getRouteListApi()
-  if (res) {
-    treeData.value = res.data.list
+  const [list] = await useApi(() => api().getRouters())
+  if (list) {
+    treeData.value = list
     await nextTick()
   }
 }

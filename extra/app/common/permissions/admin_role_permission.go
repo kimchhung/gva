@@ -17,6 +17,11 @@ const (
 	AdminRoleDelete PermissionKey = "ADMIN_ROLE.DELETE"
 )
 
+func init() {
+	groups = append(groups, AdminRoleGroup)
+	keys = append(keys, AdminRoleSuper, AdminRoleView, AdminRoleModify, AdminRoleDelete)
+}
+
 var _ database.Seeder = (*AdminRolePermissionSeeder)(nil)
 
 type AdminRolePermissionSeeder struct {

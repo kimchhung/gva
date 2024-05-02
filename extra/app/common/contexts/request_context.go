@@ -8,6 +8,9 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	app_err "github.com/kimchhung/gva/extra/app/common/error"
+	rerror "github.com/kimchhung/gva/extra/internal/response/error"
+
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -47,7 +50,7 @@ func (lf *logFields) MarshalZerologObject(e *zerolog.Event) {
 	}
 
 	if lf.Stack != nil {
-		e.Bytes("stack", lf.Stack)
+		fmt.Println(string(lf.Stack))
 	}
 }
 
@@ -69,7 +72,7 @@ func (ctx *RequestContext) PrintLog() {
 	case ctx.logFields.HttpCode >= 500:
 		log.Error().EmbedObject(ctx.logFields).Msg("server error")
 	case ctx.logFields.HttpCode >= 400:
-		log.Error().EmbedObject(ctx.logFields).Msg("client error")
+		log.Warn().EmbedObject(ctx.logFields).Msg("client error")
 	case ctx.logFields.HttpCode >= 300:
 		log.Warn().EmbedObject(ctx.logFields).Msg("redirect")
 	case ctx.logFields.HttpCode >= 200:
@@ -101,7 +104,7 @@ func defaultLogFields(c *fiber.Ctx) *logFields {
 }
 
 // a context help handling error
-func NewRequestContext() fiber.Handler {
+func NewRequestContext() func(c *fiber.Ctx) (err error) {
 	return func(c *fiber.Ctx) error {
 		ctx := &RequestContext{}
 		ctx.Context = context.WithValue(c.Context(), RequestContextKey{}, ctx)
@@ -112,24 +115,25 @@ func NewRequestContext() fiber.Handler {
 		var err error
 		defer func() {
 			if rvr := recover(); rvr != nil {
-				if e, ok := rvr.(error); ok {
-					err = e
-				} else {
-					err = fmt.Errorf("panic %v", rvr)
+				var ok bool
+
+				if _, ok = rvr.(*app_err.Error); !ok {
+					// internal error stacks
 					ctx.logFields.Stack = debug.Stack()
+				}
+
+				if err, ok = rvr.(error); !ok {
+					err = fmt.Errorf("%v", rvr)
 				}
 			}
 
 			ctx.logFields.Latency = time.Since(ctx.startTime)
 			ctx.logFields.Error = err
 
+			ErrorHandler(c, err)
 		}()
 
-		if err = c.Next(); err != nil {
-			return err
-		}
-
-		return err
+		return c.Next()
 	}
 }
 
@@ -165,4 +169,15 @@ func SetRequestStatus(ctx context.Context, errorCode int, httpCode int) *Request
 	rctx.logFields.HttpCode = httpCode
 	rctx.logFields.ErrorCode = errorCode
 	return rctx
+}
+
+// Default error handler
+func ErrorHandler(c *fiber.Ctx, err error) error {
+	perr, err := rerror.ParseError(c, err)
+	ctx := SetRequestStatus(c.UserContext(), perr.ErrorCode, perr.HttpCode)
+	if !IsProduction {
+		ctx.PrintLog()
+	}
+
+	return err
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/kimchhung/gva/extra/api/admin/module/admin/service"
 	"github.com/kimchhung/gva/extra/app/common/contexts"
 	"github.com/kimchhung/gva/extra/app/common/permissions"
-	"github.com/kimchhung/gva/extra/app/common/services"
 
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
@@ -20,19 +19,16 @@ import (
 var _ interface{ rctrl.Controller } = (*AdminController)(nil)
 
 type AdminController struct {
-	service    *service.AdminService
-	jwtService *services.JwtService
+	service *service.AdminService
 }
 
 func (con *AdminController) Init(r fiber.Router) fiber.Router {
 	return r.Group("admin")
 }
 
-func NewAdminController(service *service.AdminService, jwtService *services.JwtService) *AdminController {
-
+func NewAdminController(service *service.AdminService) *AdminController {
 	return &AdminController{
-		service:    service,
-		jwtService: jwtService,
+		service: service,
 	}
 }
 

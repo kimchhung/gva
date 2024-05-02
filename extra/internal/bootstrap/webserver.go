@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	futils "github.com/gofiber/fiber/v2/utils"
 
+	"github.com/kimchhung/gva/extra/app/common/contexts"
 	"github.com/kimchhung/gva/extra/app/middleware"
 	"github.com/kimchhung/gva/extra/app/router"
 	"github.com/kimchhung/gva/extra/lang"
@@ -18,7 +19,6 @@ import (
 
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
-	rerror "github.com/kimchhung/gva/extra/internal/response/error"
 
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/rs/zerolog"
@@ -34,7 +34,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		Prefork:               cfg.App.Prefork,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
-		ErrorHandler:          rerror.ErrorHandler,
+		ErrorHandler:          contexts.ErrorHandler,
 		DisableStartupMessage: false,
 		Immutable:             true,
 	})

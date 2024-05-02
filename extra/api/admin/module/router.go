@@ -71,7 +71,12 @@ func (r *Router) useJwtGuard(cfg *config.Config, db *database.Database) fiber.Ha
 	jwt_ := services.NewJwtService(cfg, db)
 
 	return skip.New(jwt_.ProtectAdmin(), func(c *fiber.Ctx) bool {
-		return strings.Contains(c.Request().URI().String(), "/auth/")
+		switch {
+		case strings.Contains(string(c.Request().URI().Path()), "/auth/"):
+			return true
+		}
+
+		return false
 	})
 }
 

@@ -1,13 +1,40 @@
 package permissions
 
 import (
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/extra/app/common/contexts"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/ent"
 )
 
+var (
+	groups []string
+	keys   []PermissionKey
+)
+
 type PermissionKey string
+
+func (p PermissionKey) Group() string {
+	parts := strings.SplitN(string(p), ".", 2)
+	if len(parts) > 1 {
+		return parts[0]
+	}
+	return ""
+}
+
+func Groups() []string {
+	list := make([]string, len(groups))
+	copy(list, groups)
+	return list
+}
+
+func Keys() []PermissionKey {
+	list := make([]PermissionKey, len(keys))
+	copy(list, keys)
+	return list
+}
 
 func RequireAny(permissions ...PermissionKey) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -71,7 +98,11 @@ func createBulkPermissionDto(conn *ent.Client, group string, keys ...PermissionK
 	bulks := make([]*ent.PermissionCreate, len(keys))
 
 	for i, key := range keys {
-		bulks[i] = conn.Permission.Create().SetGroup(group).SetKey(string(key)).SetName(string(key)).SetOrder(i)
+		bulks[i] = conn.Permission.Create().
+			SetGroup(group).
+			SetKey(string(key)).
+			SetName(string(key)).
+			SetOrder(i)
 	}
 
 	return bulks
