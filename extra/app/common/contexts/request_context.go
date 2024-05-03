@@ -174,6 +174,7 @@ func SetRequestStatus(ctx context.Context, errorCode int, httpCode int) *Request
 // Default error handler
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	perr, err := rerror.ParseError(c, err)
+
 	ctx := SetRequestStatus(c.UserContext(), perr.ErrorCode, perr.HttpCode)
 	if !IsProduction {
 		ctx.PrintLog()
