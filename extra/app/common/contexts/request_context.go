@@ -115,22 +115,26 @@ func NewRequestContext() func(c *fiber.Ctx) (err error) {
 		var err error
 		defer func() {
 			if rvr := recover(); rvr != nil {
+				fmt.Printf("errr rrr %v", rvr)
 				var ok bool
 
-				if _, ok = rvr.(*app_err.Error); !ok {
-					// internal error stacks
+				if err, ok = rvr.(*app_err.Error); !ok {
+					// unknown internal error stacks
 					ctx.logFields.Stack = debug.Stack()
 				}
 
 				if err, ok = rvr.(error); !ok {
+					// internal error stacks
 					err = fmt.Errorf("%v", rvr)
 				}
 			}
 
 			ctx.logFields.Latency = time.Since(ctx.startTime)
-			ctx.logFields.Error = err
-
-			ErrorHandler(c, err)
+			if err != nil {
+				ctx.logFields.Error = err
+				// case using panic to handler error instead of return error
+				err = ErrorHandler(c, err)
+			}
 		}()
 
 		return c.Next()

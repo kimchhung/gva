@@ -12,8 +12,8 @@ var (
 	successHttpCode = http.StatusOK
 )
 
-func defaultReponseBase() ReponseBase {
-	return ReponseBase{
+func defaultReponseBase() *Response {
+	return &Response{
 		Code:       successCode,
 		Message:    successMessage,
 		httpStatus: successHttpCode,
@@ -21,10 +21,7 @@ func defaultReponseBase() ReponseBase {
 }
 
 func New(opt ReponseOption, opts ...ReponseOption) *Response {
-	resp := &Response{
-		ReponseBase: defaultReponseBase(),
-	}
-
+	resp := defaultReponseBase()
 	opt(resp)
 
 	for _, op := range opts {
@@ -37,19 +34,12 @@ func New(opt ReponseOption, opts ...ReponseOption) *Response {
 type (
 	ReponseOption func(resp *Response)
 
-	// ResponseBase represents the basic structure of a response, including
-	// a status code, a message.
-	ReponseBase struct {
-		// expose
+	Response struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 
 		// internal use
 		httpStatus int
-	}
-
-	Response struct {
-		ReponseBase
 
 		// The Data field contains the actual response data
 		Data any `json:"data,omitempty"`
@@ -60,5 +50,5 @@ type (
 )
 
 func (r *Response) Parse(c *fiber.Ctx) error {
-	return c.Status(r.httpStatus).JSON(r)
+	return c.Status(r.httpStatus).JSON(r, fiber.MIMEApplicationJSONCharsetUTF8)
 }

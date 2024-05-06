@@ -39,5 +39,5 @@ var seedCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(pushRouteCmd)
+	rootCmd.AddCommand(seedCmd)
 }

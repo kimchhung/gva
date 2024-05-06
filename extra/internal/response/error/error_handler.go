@@ -52,6 +52,7 @@ func ParseError(c *fiber.Ctx, err error) (*app_err.Error, error) {
 		resErr.HttpCode = e.Code
 
 	default:
+
 		// unexpected error, crashed etc...
 		// StackHandler will invoke too
 		resErr = app_err.NewError(
