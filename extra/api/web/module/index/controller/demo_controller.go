@@ -23,14 +23,14 @@ func NewDemoController(db *database.Database) *DemoController {
 	return &DemoController{}
 }
 
-// @Tags        Demo
-// @Summary     List all Demos
-// @Description Welcome
-// @ID          welcome-all-Demos
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} response.Response{data=any}
-// @Router      / [get]
+//	@Tags			Demo
+//	@Summary		List all Demos
+//	@Description	Welcome
+//	@ID				welcome-all-Demos
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	response.Response{data=any}
+//	@Router			/ [get]
 func (con *DemoController) Welcome(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 
 	return meta.Get("/").Do(

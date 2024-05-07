@@ -13,6 +13,11 @@ BodyParser(&Person{})
 	    Name string `json:"name" xml:"name" form:"name"`
 	    Pass string `json:"pass" xml:"pass" form:"pass"`
 	}
+
+Swagger
+
+	// @Param 		<name> <params-type> <value-type> <required> <description>
+	// @Param 		info body dto.RouteRequest true "Route Info"
 */
 func BodyParser(out any) Parser {
 	return func(c *fiber.Ctx) (any, error) {
@@ -28,6 +33,11 @@ QueryParser(&Person{})
 	    Pass     string     `query:"pass"`
 	    Products []string   `query:"products"`
 	}
+
+Swagger
+
+	// @Param       <name> <params-type> <value-type> <required> <description>
+	// @Param       person query dto.Person true "person info"
 */
 func QueryParser(out any) Parser {
 	return func(c *fiber.Ctx) (any, error) {
@@ -38,7 +48,12 @@ func QueryParser(out any) Parser {
 /*
 ParamsParser(&param{})
 
-param := struct {ID uint `params:"id"`}{}
+	param := struct {ID uint `params:"id"`}{}
+
+Swagger
+
+	// @Param       <name> <params-type> <value-type> <required> <description>
+	// @Param       id path int true "Route ID"
 */
 func ParamsParser(out any) Parser {
 	return func(c *fiber.Ctx) (any, error) {

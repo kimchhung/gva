@@ -106,9 +106,7 @@ export const useRenderLayout = () => {
                 ]}
               ></ToolHeader>
 
-              {tagsView.value ? (
-                <TagsView class="layout-border__bottom layout-border__top"></TagsView>
-              ) : undefined}
+              {tagsView.value ? <TagsView></TagsView> : undefined}
             </div>
 
             <AppView></AppView>
@@ -214,7 +212,7 @@ export const useRenderLayout = () => {
             {tagsView.value ? (
               <TagsView
                 class={[
-                  'layout-border__bottom layout-border__top relative',
+                  'relative',
                   {
                     '!fixed w-full top-[calc(var(--top-tool-height)+1px)] left-0': fixedHeader.value
                   }
@@ -270,7 +268,7 @@ export const useRenderLayout = () => {
               {tagsView.value ? (
                 <TagsView
                   class={[
-                    'relative layout-border__bottom layout-border__top',
+                    'relative',
                     {
                       '!fixed top-0 left-0 z-10': fixedHeader.value,
                       'w-[calc(100%-var(--tab-menu-min-width))] !left-[var(--tab-menu-min-width)] mt-[var(--logo-height)]':

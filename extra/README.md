@@ -97,7 +97,7 @@ CUSTOM="Air" docker-compose up # Use with Air
 - [Fx](https://github.com/uber-go/fx)
 - [Zerolog](https://github.com/rs/zerolog)
 - [CodeGen](https://github.com/dolmen-go/codegen)
-- [Swagger](https://github.com/gofiber/swagger)
+- [Swagger](https://github.com/swaggo/swag)
 
 
 ## CRUD generator

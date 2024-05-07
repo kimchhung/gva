@@ -3,7 +3,7 @@ import { convertEdgeChildren } from '@/api/admin/types'
 
 import { api } from '@/api'
 
-import { MenuRoute } from '@/api/authorization/types'
+import { BaseModel, MenuRoute } from '@/api/authorization/types'
 import { useApi } from '@/axios'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
@@ -178,12 +178,20 @@ const AddAction = () => {
 
 const save = async () => {
   const write = unref(writeRef)
-  const formData = await write?.submit()
+  const formData = (await write?.submit()) as MenuRoute & BaseModel
 
-  if (formData) {
-    const [res] = await useApi(() => api().createRouter(formData), { loading: saveLoading })
-    console.log({ formData, res })
+  if (!formData) {
+    return
   }
+
+  const createOrUpdate = () => {
+    return useApi(
+      () => (formData?.id ? api().createRouter(formData) : api().updateRouter(formData)),
+      { loading: saveLoading }
+    )
+  }
+
+  createOrUpdate()
 }
 </script>
 

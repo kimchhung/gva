@@ -16,18 +16,18 @@ import (
 var _ interface{ rctrl.Controller } = (*AuthorizationController)(nil)
 
 type AuthorizationController struct {
-	permission_ *service.PermissionService
-	route_      *service.RouteService
+	_permission *service.PermissionService
+	_route      *service.RouteService
 }
 
 func (con *AuthorizationController) Init(r fiber.Router) fiber.Router {
 	return r.Group("authorization")
 }
 
-func NewAuthorizationController(permission_ *service.PermissionService, route_ *service.RouteService) *AuthorizationController {
+func NewAuthorizationController(_permission *service.PermissionService, _route *service.RouteService) *AuthorizationController {
 	return &AuthorizationController{
-		permission_: permission_,
-		route_:      route_,
+		_permission: _permission,
+		_route:      _route,
 	}
 }
 
@@ -54,7 +54,7 @@ func (con *AuthorizationController) Routes(meta *rctrl.RouteMeta) rctrl.MetaHand
 				request.RqlParser(params, parser),
 			),
 			func(c *fiber.Ctx) error {
-				list, meta, err := con.route_.Paginate(c.UserContext(), params)
+				list, meta, err := con._route.Paginate(c.UserContext(), params)
 				if err != nil {
 					return err
 				}
@@ -81,7 +81,7 @@ func (con *AuthorizationController) Permissions(meta *rctrl.RouteMeta) rctrl.Met
 		return []fiber.Handler{
 			permissions.RequireSuperAdmin(),
 			func(c *fiber.Ctx) error {
-				list, err := con.permission_.AllPermissions(c.UserContext())
+				list, err := con._permission.AllPermissions(c.UserContext())
 				if err != nil {
 					return err
 				}
@@ -95,14 +95,15 @@ func (con *AuthorizationController) Permissions(meta *rctrl.RouteMeta) rctrl.Met
 }
 
 // @Tags        Authorization Management
-// @Summary     Create One Route
-// @Description Create One Route
-// @ID          create-one-route
+// @Summary     Create a Route
+// @Description Create a Route
+// @ID          create-a-route
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully retrieved Routes"
 // @Router      /route [post]
 // @Security    Bearer
+// @Param 		info body dto.RouteRequest true "Route Info"
 func (con *AuthorizationController) CreateRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler {
 	return meta.Post("/route").DoWithScope(func() []fiber.Handler {
 		body := new(dto.RouteRequest)
@@ -112,7 +113,46 @@ func (con *AuthorizationController) CreateRoute(meta *rctrl.RouteMeta) rctrl.Met
 			request.Validate(request.BodyParser(body)),
 
 			func(c *fiber.Ctx) error {
-				data, err := con.route_.CreateRoute(c.UserContext(), body)
+				data, err := con._route.CreateRoute(c.UserContext(), body)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(data),
+					response.Meta(meta),
+				)
+			},
+		}
+	})
+}
+
+// @Tags        Authorization Management
+// @Summary     Update a Route
+// @Description Update a Route
+// @ID          Update-a-route
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully retrieved Routes"
+// @Router      /route [put]
+// @Security    Bearer
+// @Param 		info body dto.RouteRequest true "Route Info"
+// @Param 		id path int true "Route ID"
+func (con *AuthorizationController) UpdateRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Put("/route/:id").DoWithScope(func() []fiber.Handler {
+		body := new(dto.RouteRequest)
+		params := new(struct {
+			ID int `params:"id" validate:"required,min=0"`
+		})
+
+		return []fiber.Handler{
+			permissions.RequireSuperAdmin(),
+			request.Validate(
+				request.BodyParser(body),
+				request.ParamsParser(params),
+			),
+			func(c *fiber.Ctx) error {
+				data, err := con._route.UpdateRoute(c.UserContext(), params.ID, body)
 				if err != nil {
 					return err
 				}

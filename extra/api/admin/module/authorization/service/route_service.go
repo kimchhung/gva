@@ -57,9 +57,20 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*d
 	return &dto.RouteResponse{Route: route}, nil
 }
 
-func (s *RouteService) UpdateRoute(ctx context.Context, id int, payload *dto.RouteRequest) (*ent.Route, error) {
-	return s.repo.C().UpdateOneID(id).
+func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequest) (*dto.RouteResponse, error) {
+	route, err := s.repo.C().UpdateOneID(id).
+		SetComponent(r.Component).
+		SetPath(r.Path).
+		SetIsEnable(r.IsEnable).
+		SetMeta(r.Meta).
+		SetName(r.Name).
+		SetType(r.Type).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.RouteResponse{Route: route}, nil
 }
 
 func (s *RouteService) DeleteRoute(ctx context.Context, id int) error {

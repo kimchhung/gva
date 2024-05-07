@@ -31,6 +31,8 @@ export const filterMenusPath = (
 
       const fullPath = isUrl(v.path) ? v.path : allParentPath.join('/')
 
+      console.log("path",fullPath)
+
       data = cloneDeep(v)
       data.path = fullPath
       if (v.children && data) {

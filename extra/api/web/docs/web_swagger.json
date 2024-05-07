@@ -50,7 +50,6 @@
             "type": "object",
             "properties": {
                 "code": {
-                    "description": "expose",
                     "type": "integer"
                 },
                 "data": {

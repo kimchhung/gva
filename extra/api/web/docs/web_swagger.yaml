@@ -2,7 +2,6 @@ definitions:
   response.Response:
     properties:
       code:
-        description: expose
         type: integer
       data:
         description: The Data field contains the actual response data

@@ -50,12 +50,6 @@ func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
 	}
 }
 
-func (r *Router) now() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return c.SendString(time.Now().UTC().Format(time.RFC3339))
-	}
-}
-
 func (r *Router) useSwagger(cfg *config.Config) fiber.Handler {
 	return swagger.New(swagger.Config{
 		Next:     utils.IsEnabled(cfg.Middleware.Swagger.Enable),
@@ -63,7 +57,7 @@ func (r *Router) useSwagger(cfg *config.Config) fiber.Handler {
 		FilePath: "./api/admin/docs/admin_swagger.json",
 		Path:     "swagger",
 		Title:    "admin API Docs",
-		CacheAge: 0,
+		CacheAge: -1,
 	})
 }
 

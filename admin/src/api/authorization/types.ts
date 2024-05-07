@@ -1,8 +1,12 @@
 import { MenuTypeEnum } from '@/constants/menuType'
 
-export type MenuRoute = {
+export type BaseModel = {
+  id: number
   createdAt: string
   updatedAt: string
+}
+
+export type MenuRoute = Partial<BaseModel> & {
   parentId?: number
   isEnable: boolean
   path: string

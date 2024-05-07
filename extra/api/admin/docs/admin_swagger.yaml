@@ -9,7 +9,8 @@ definitions:
         description: DisplayName holds the value of the "display_name" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.AdminEdges'
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the AdminQuery when eager-loading is set.
@@ -40,7 +41,8 @@ definitions:
         description: DisplayName holds the value of the "display_name" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.AdminEdges'
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the AdminQuery when eager-loading is set.
@@ -89,7 +91,8 @@ definitions:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.PermissionEdges'
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the PermissionQuery when eager-loading is set.
@@ -136,6 +139,32 @@ definitions:
       token:
         type: string
     type: object
+  dto.RouteRequest:
+    properties:
+      component:
+        type: string
+      isEnable:
+        type: boolean
+      meta:
+        $ref: '#/definitions/types.RouteMeta'
+      name:
+        type: string
+      parentId:
+        description: optionals
+        minimum: 0
+        type: integer
+      path:
+        type: string
+      type:
+        $ref: '#/definitions/route.Type'
+    required:
+    - component
+    - isEnable
+    - meta
+    - name
+    - path
+    - type
+    type: object
   dto.RouteResponse:
     properties:
       component:
@@ -145,7 +174,8 @@ definitions:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.RouteEdges'
+        allOf:
+        - $ref: '#/definitions/ent.RouteEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RouteQuery when eager-loading is set.
@@ -156,7 +186,8 @@ definitions:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
       meta:
-        $ref: '#/definitions/types.RouteMeta'
+        allOf:
+        - $ref: '#/definitions/types.RouteMeta'
         description: Meta holds the value of the "meta" field.
       name:
         description: Name holds the value of the "name" field.
@@ -171,8 +202,9 @@ definitions:
         description: Redirect holds the value of the "redirect" field.
         type: string
       type:
+        allOf:
+        - $ref: '#/definitions/route.Type'
         description: Type holds the value of the "type" field.
-        type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -186,7 +218,8 @@ definitions:
         description: DisplayName holds the value of the "display_name" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.AdminEdges'
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the AdminQuery when eager-loading is set.
@@ -222,7 +255,8 @@ definitions:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.PermissionEdges'
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the PermissionQuery when eager-loading is set.
@@ -262,7 +296,8 @@ definitions:
         description: Description holds the value of the "description" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.RoleEdges'
+        allOf:
+        - $ref: '#/definitions/ent.RoleEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RoleQuery when eager-loading is set.
@@ -312,7 +347,8 @@ definitions:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
       edges:
-        $ref: '#/definitions/ent.RouteEdges'
+        allOf:
+        - $ref: '#/definitions/ent.RouteEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RouteQuery when eager-loading is set.
@@ -323,7 +359,8 @@ definitions:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
       meta:
-        $ref: '#/definitions/types.RouteMeta'
+        allOf:
+        - $ref: '#/definitions/types.RouteMeta'
         description: Meta holds the value of the "meta" field.
       name:
         description: Name holds the value of the "name" field.
@@ -338,8 +375,9 @@ definitions:
         description: Redirect holds the value of the "redirect" field.
         type: string
       type:
+        allOf:
+        - $ref: '#/definitions/route.Type'
         description: Type holds the value of the "type" field.
-        type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -352,7 +390,8 @@ definitions:
           $ref: '#/definitions/ent.Route'
         type: array
       parent:
-        $ref: '#/definitions/ent.Route'
+        allOf:
+        - $ref: '#/definitions/ent.Route'
         description: Parent holds the value of the parent edge.
       roles:
         description: Roles holds the value of the roles edge.
@@ -372,7 +411,6 @@ definitions:
   response.Response:
     properties:
       code:
-        description: expose
         type: integer
       data:
         description: The Data field contains the actual response data
@@ -382,6 +420,20 @@ definitions:
         description: Meta provides additional information about the data, such as
           its type or kind.y.
     type: object
+  route.Type:
+    enum:
+    - cata_log
+    - cata_log
+    - menu
+    - button
+    - external_link
+    type: string
+    x-enum-varnames:
+    - DefaultType
+    - TypeCataLog
+    - TypeMenu
+    - TypeButton
+    - TypeExternalLink
   types.RouteMeta:
     properties:
       activeMenu:
@@ -692,8 +744,15 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create One Route
-      operationId: create-one-route
+      description: Create a Route
+      operationId: create-a-route
+      parameters:
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RouteRequest'
       produces:
       - application/json
       responses:
@@ -708,7 +767,41 @@ paths:
               type: object
       security:
       - Bearer: []
-      summary: Create One Route
+      summary: Create a Route
+      tags:
+      - Authorization Management
+    put:
+      consumes:
+      - application/json
+      description: Update a Route
+      operationId: Update-a-route
+      parameters:
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RouteRequest'
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Routes
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RouteResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Route
       tags:
       - Authorization Management
   /routes:
