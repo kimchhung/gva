@@ -1,5 +1,5 @@
-import { defineConfig, toEscapedSelector as e, presetUno, presetIcons } from 'unocss'
 import transformerVariantGroup from '@unocss/transformer-variant-group'
+import { defineConfig, toEscapedSelector as e, presetIcons, presetUno } from 'unocss'
 import { loadEnv } from 'vite'
 
 const root = process.cwd()

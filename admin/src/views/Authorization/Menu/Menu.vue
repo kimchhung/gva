@@ -1,9 +1,8 @@
 <script setup lang="tsx">
 import { convertEdgeChildren } from '@/api/admin/types'
 
-import { api } from '@/api'
-
-import { BaseModel, MenuRoute } from '@/api/authorization/types'
+import { createRouter, deleteRouter, getRouters, updateRouter } from '@/api/authorization'
+import { MenuRoute } from '@/api/authorization/types'
 import { useApi } from '@/axios'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
@@ -14,8 +13,9 @@ import { Search } from '@/components/Search'
 import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useTable } from '@/hooks/web/useTable'
-import { ElTag } from 'element-plus'
+import { ElMessage, ElTag } from 'element-plus'
 import { reactive, ref, unref } from 'vue'
+
 import Detail from './components/Detail.vue'
 import Write from './components/Write.vue'
 
@@ -23,7 +23,7 @@ const { t } = useI18n()
 
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async (props) => {
-    const [data] = await useApi(() => api().getRouters(props))
+    const [data] = await useApi(() => getRouters(props))
     if (!data) return { list: [] }
 
     return {
@@ -130,7 +130,9 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
             <BaseButton type="success" onClick={() => action(row, 'detail')}>
               {t('button.detail')}
             </BaseButton>
-            <BaseButton type="danger">{t('button.del')}</BaseButton>
+            <BaseButton type="danger" onClick={() => action(row, 'delete')}>
+              {t('button.del')}
+            </BaseButton>
           </>
         )
       }
@@ -162,11 +164,26 @@ const writeRef = ref<ComponentRef<typeof Write>>()
 
 const saveLoading = ref(false)
 
-const action = (row, type: string) => {
-  dialogTitle.value = t(type === 'edit' ? 'button.edit' : 'button.detail')
-  actionType.value = type
-  currentRow.value = row
-  dialogVisible.value = true
+const action = (row: MenuRoute, type: 'edit' | 'detail' | 'delete') => {
+  switch (type) {
+    case 'delete':
+      if (row?.id) {
+        deleteRouter(Number(row?.id)).then(() => {
+          ElMessage.success({
+            message: 'delete successfully'
+          })
+        })
+      }
+
+      break
+
+    default:
+      dialogTitle.value = t(type === 'edit' ? 'button.edit' : 'button.detail')
+      actionType.value = type
+      currentRow.value = row
+      dialogVisible.value = true
+      break
+  }
 }
 
 const AddAction = () => {
@@ -178,20 +195,21 @@ const AddAction = () => {
 
 const save = async () => {
   const write = unref(writeRef)
-  const formData = (await write?.submit()) as MenuRoute & BaseModel
+  const formData = (await write?.submit()) as MenuRoute
 
   if (!formData) {
     return
   }
 
   const createOrUpdate = () => {
-    return useApi(
-      () => (formData?.id ? api().createRouter(formData) : api().updateRouter(formData)),
-      { loading: saveLoading }
+    const isCreate = !formData?.id
+    return (
+      useApi(() => (isCreate ? createRouter(formData) : updateRouter(formData))),
+      { loading: saveLoading, onFinally: () => (dialogVisible.value = false) }
     )
   }
 
-  createOrUpdate()
+  return await createOrUpdate()
 }
 </script>
 

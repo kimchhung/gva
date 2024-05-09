@@ -1,4 +1,4 @@
-import { api } from '@/api'
+import { getServerTime } from '@/api'
 import { useApi } from '@/axios'
 import dayjs from 'dayjs'
 import { defineStore } from 'pinia'
@@ -14,7 +14,7 @@ export const useTimeStore = defineStore('time', {
   }),
   actions: {
     async sync() {
-      const [data] = await useApi(() => api().getServerTime(), {
+      const [data] = await useApi(() => getServerTime(), {
         loading: this.$state,
         onError: (error) => console.error('Failed to sync time:', error)
       })

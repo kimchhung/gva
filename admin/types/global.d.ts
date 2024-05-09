@@ -46,6 +46,7 @@ declare global {
 
   declare type ThemeTypes = {
     elColorPrimary?: string
+    elBorderColor?: string
     leftMenuBorderColor?: string
     leftMenuBgColor?: string
     leftMenuBgLightColor?: string

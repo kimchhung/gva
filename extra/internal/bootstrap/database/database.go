@@ -61,7 +61,7 @@ func (db *Database) ShutdownDatabase() error {
 	defer db.Log.Info().Msg("Database connection is closed")
 
 	if err := db.Client.Close(); err != nil {
-		return fmt.Errorf("An unknown error occurred when to shutdown the database! %v", err)
+		return fmt.Errorf("an unknown error occurred when to shutdown the database! %v", err)
 	}
 
 	return nil

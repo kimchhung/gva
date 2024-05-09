@@ -30,17 +30,17 @@ type Route struct {
 	// ParentID holds the value of the "parent_id" field.
 	ParentID *int `json:"parentId,omitempty"`
 	// Path holds the value of the "path" field.
-	Path string `json:"path,omitempty"`
+	Path string `json:"path,omitempty" rql:"filter,sort"`
 	// Component holds the value of the "component" field.
-	Component string `json:"component,omitempty"`
+	Component string `json:"component,omitempty" rql:"filter,sort"`
 	// Redirect holds the value of the "redirect" field.
-	Redirect *string `json:"redirect,omitempty"`
+	Redirect *string `json:"redirect,omitempty" rql:"filter,sort"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" rql:"filter,sort"`
 	// Type holds the value of the "type" field.
-	Type route.Type `json:"type,omitempty"`
+	Type route.Type `json:"type,omitempty" rql:"filter,sort"`
 	// Meta holds the value of the "meta" field.
-	Meta types.RouteMeta `json:"meta,omitempty"`
+	Meta types.RouteMeta `json:"meta,omitempty" rql:"filter"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RouteQuery when eager-loading is set.
 	Edges        RouteEdges `json:"edges" rql:"-"`

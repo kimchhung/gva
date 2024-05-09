@@ -38,13 +38,11 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
     config.params = {}
     config.url = url
   }
+
   return config
 }
 
 const defaultResponseInterceptors = (response: AxiosResponse) => {
-  const reqId = response.headers['X-Request-Id']
-  console.log({ reqId, h: response?.headers })
-
   if (response?.config?.responseType === 'blob') {
     // If it is a file flow, pass it directly
     return response

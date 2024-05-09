@@ -48,7 +48,7 @@ func QueryParser(out any) Parser {
 /*
 ParamsParser(&param{})
 
-	param := struct {ID uint `params:"id"`}{}
+	param := new(struct {ID uint `params:"id"`})
 
 Swagger
 

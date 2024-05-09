@@ -33,7 +33,7 @@ type logFields struct {
 }
 
 func (lf *logFields) MarshalZerologObject(e *zerolog.Event) {
-	e.
+	e.Err(lf.Error).
 		Str("id", lf.ID).
 		Str("remoteIp", lf.RemoteIP).
 		Str("host", lf.Host).
@@ -44,10 +44,6 @@ func (lf *logFields) MarshalZerologObject(e *zerolog.Event) {
 		Int("errorCode", lf.ErrorCode).
 		Str("latency", fmt.Sprintf("%v", lf.Latency)).
 		Str("tag", "request")
-
-	if lf.Error != nil {
-		e.Err(lf.Error)
-	}
 
 	if lf.Stack != nil {
 		fmt.Println(string(lf.Stack))
@@ -131,7 +127,7 @@ func NewRequestContext() func(c *fiber.Ctx) (err error) {
 
 			ctx.logFields.Latency = time.Since(ctx.startTime)
 			if err != nil {
-				ctx.logFields.Error = err
+
 				// case using panic to handler error instead of return error
 				err = ErrorHandler(c, err)
 			}
@@ -179,9 +175,18 @@ func SetRequestStatus(ctx context.Context, errorCode int, httpCode int) *Request
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	perr, err := rerror.ParseError(c, err)
 
-	ctx := SetRequestStatus(c.UserContext(), perr.ErrorCode, perr.HttpCode)
+	rctx, rerr := GetRequestContext(c.UserContext())
+	if rerr != nil {
+		log.Error().Err(rerr).Msg("GetRequestContext")
+		return err
+	}
+
+	rctx.logFields.HttpCode = perr.HttpCode
+	rctx.logFields.ErrorCode = perr.ErrorCode
+	rctx.logFields.Error = perr
+
 	if !IsProduction {
-		ctx.PrintLog()
+		rctx.PrintLog()
 	}
 
 	return err

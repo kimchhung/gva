@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/ent"
@@ -28,4 +30,8 @@ func (r *RouteRepository) DB() *database.Database {
 
 func (r *RouteRepository) RQL(p *rql.Params, opts ...func(*sql.Selector)) *ent.RouteQuery {
 	return pagi.RQL(r.C().Query(), p, opts...)
+}
+
+func (r *RouteRepository) RQLCount(ctx context.Context, p *rql.Params, opts ...func(*sql.Selector)) int {
+	return pagi.RQLCount(r.C().Query(), p, opts...).CountX(ctx)
 }

@@ -74,6 +74,7 @@ export default {
     projectSetting: 'Project setting',
     theme: 'Theme',
     layout: 'Layout',
+    borderTheme: 'Border Theme',
     systemTheme: 'System theme',
     menuTheme: 'Menu theme',
     interfaceDisplay: 'Interface display',

@@ -24,17 +24,16 @@ func NewRouteService(repository *repository.RouteRepository) *RouteService {
 }
 
 func (s *RouteService) Paginate(ctx context.Context, p *rql.Params) ([]*ent.Route, *pagi.Meta, error) {
-	q := s.repo.RQL(p)
-	list := q.WithRoles().AllX(ctx)
-	total := q.CountX(ctx)
-
+	list := s.repo.RQL(p).WithRoles().AllX(ctx)
 	list = routeutil.GroupRouteToNested(list)
 
-	return list, &pagi.Meta{
-		Total:  total,
+	meta := &pagi.Meta{
+		Total:  s.repo.RQLCount(ctx, p),
 		Limit:  p.Limit,
 		Offset: p.Offset,
-	}, nil
+	}
+
+	return list, meta, nil
 }
 
 func (s *RouteService) GetRouteByID(ctx context.Context, id int) (*ent.Route, error) {

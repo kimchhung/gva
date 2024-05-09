@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { onMounted, watch, computed, unref, ref, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import type { RouteLocationNormalizedLoaded, RouterLinkProps } from 'vue-router'
+import { ContextMenu, ContextMenuExpose } from '@/components/ContextMenu'
+import { useScrollTo } from '@/hooks/event/useScrollTo'
+import { useDesign } from '@/hooks/web/useDesign'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useTagsView } from '@/hooks/web/useTagsView'
+import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-import { useAppStore } from '@/store/modules/app'
-import { useI18n } from '@/hooks/web/useI18n'
-import { filterAffixTags } from './helper'
-import { ContextMenu, ContextMenuExpose } from '@/components/ContextMenu'
-import { useDesign } from '@/hooks/web/useDesign'
 import { useTemplateRefsList } from '@vueuse/core'
 import { ElScrollbar } from 'element-plus'
-import { useScrollTo } from '@/hooks/event/useScrollTo'
-import { useTagsView } from '@/hooks/web/useTagsView'
 import { cloneDeep } from 'lodash-es'
+import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import type { RouteLocationNormalizedLoaded, RouterLinkProps } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { filterAffixTags } from './helper'
 
 const { getPrefixCls } = useDesign()
 
@@ -505,7 +505,7 @@ watch(
     margin-left: 4px;
     font-size: 12px;
     cursor: pointer;
-    border: 1px solid #d9d9d9;
+    border: 1px solid var(--el-border-color);
     border-radius: 4px;
 
     &--close {

@@ -26,7 +26,7 @@ const { t } = useI18n()
 
 const drawer = ref(false)
 
-// 主题色相关
+// Theme -related
 const systemTheme = ref(appStore.getTheme.elColorPrimary)
 
 const setSystemTheme = (color: string) => {
@@ -36,21 +36,28 @@ const setSystemTheme = (color: string) => {
   setMenuTheme(trim(unref(leftMenuBgColor)))
 }
 
-// 头部主题相关
+const borderTheme = ref(appStore.getTheme.elBorderColor || '')
+
+const setBorderTheme = (color: string) => {
+  setCssVar('--el-border-color', color)
+  appStore.setTheme({ elBorderColor: color })
+}
+
+// Head -themed theme
 const headerTheme = ref(appStore.getTheme.topHeaderBgColor || '')
 
 const setHeaderTheme = (color: string) => {
   appStore.setHeaderTheme(color)
 }
 
-// 菜单主题相关
+// Menu theme related
 const menuTheme = ref(appStore.getTheme.leftMenuBgColor || '')
 
 const setMenuTheme = (color: string) => {
   appStore.setMenuTheme(color)
 }
 
-// 监听layout变化，重置一些主题色
+//Surveillance layout changes, reset some theme colors
 // watch(
 //   () => layout.value,
 //   (n) => {
@@ -67,67 +74,69 @@ const setMenuTheme = (color: string) => {
 const copyConfig = async () => {
   const { copy, copied, isSupported } = useClipboard({
     source: `
-      // 面包屑
+      // Bread crumbs
       breadcrumb: ${appStore.getBreadcrumb},
-      // 面包屑图标
+      // Bread crumb icon
       breadcrumbIcon: ${appStore.getBreadcrumbIcon},
-      // 折叠图标
+      // Folding icon
       hamburger: ${appStore.getHamburger},
-      // 全屏图标
+      // Full -screen icon
       screenfull: ${appStore.getScreenfull},
-      // 尺寸图标
+      // Size icon
       size: ${appStore.getSize},
-      // 多语言图标
+      // Multi -language icon
       locale: ${appStore.getLocale},
-      // 标签页
+      // Bookmark page
       tagsView: ${appStore.getTagsView},
-      // 标签页图标
+      // Tab icon
       getTagsViewIcon: ${appStore.getTagsViewIcon},
       // logo
       logo: ${appStore.getLogo},
-      // 菜单手风琴
+      // Menukin piano
       uniqueOpened: ${appStore.getUniqueOpened},
-      // 固定header
+      // Fixed header
       fixedHeader: ${appStore.getFixedHeader},
-      // 页脚
+      // footer
       footer: ${appStore.getFooter},
-      // 灰色模式
+      // Gray mode
       greyMode: ${appStore.getGreyMode},
       // layout布局
       layout: '${appStore.getLayout}',
-      // 暗黑模式
+      // Dark mode
       isDark: ${appStore.getIsDark},
-      // 组件尺寸
+      // Component size
       currentSize: '${appStore.getCurrentSize}',
-      // 主题相关
+      // Theme -related
       theme: {
-        // 主题色
+        // Theme border color
+        elBorderColor: '${appStore.getTheme.elBorderColor}',
+        // Theme color
         elColorPrimary: '${appStore.getTheme.elColorPrimary}',
-        // 左侧菜单边框颜色
+        // The color of the left menu border
         leftMenuBorderColor: '${appStore.getTheme.leftMenuBorderColor}',
-        // 左侧菜单背景颜色
+        // The background color of the left menu
         leftMenuBgColor: '${appStore.getTheme.leftMenuBgColor}',
-        // 左侧菜单浅色背景颜色
+        // The left menu light background color
         leftMenuBgLightColor: '${appStore.getTheme.leftMenuBgLightColor}',
-        // 左侧菜单选中背景颜色
+        // Left menu selected background color
         leftMenuBgActiveColor: '${appStore.getTheme.leftMenuBgActiveColor}',
-        // 左侧菜单收起选中背景颜色
+        // The left menu put away the selected background color
         leftMenuCollapseBgActiveColor: '${appStore.getTheme.leftMenuCollapseBgActiveColor}',
-        // 左侧菜单字体颜色
+        // The font color of the left menu
         leftMenuTextColor: '${appStore.getTheme.leftMenuTextColor}',
-        // 左侧菜单选中字体颜色
+        // Select the font color of the left menu
         leftMenuTextActiveColor: '${appStore.getTheme.leftMenuTextActiveColor}',
-        // logo字体颜色
+        // logo font color
         logoTitleTextColor: '${appStore.getTheme.logoTitleTextColor}',
-        // logo边框颜色
+        // LOGO border color
         logoBorderColor: '${appStore.getTheme.logoBorderColor}',
-        // 头部背景颜色
+        // Head background color
         topHeaderBgColor: '${appStore.getTheme.topHeaderBgColor}',
-        // 头部字体颜色
+        // Head font color
         topHeaderTextColor: '${appStore.getTheme.topHeaderTextColor}',
-        // 头部悬停颜色
+        // Head suspension color
         topHeaderHoverColor: '${appStore.getTheme.topHeaderHoverColor}',
-        // 头部边框颜色
+        // Head border color
         topToolBorderColor: '${appStore.getTheme.topToolBorderColor}'
       }
     `,
@@ -188,10 +197,10 @@ const time = computed(() => currentTime?.value?.format('HH:mm:ss Z'))
         v-model="systemTheme"
         :schema="[
           '#409eff',
-          '#009688',
-          '#536dfe',
-          '#ff5c93',
-          '#ee4f12',
+          '#14b8a6',
+          '#06b6d4',
+          '#6366f1',
+          '#ec4899',
           '#0096c7',
           '#9c27b0',
           '#ff9800'
@@ -220,15 +229,31 @@ const time = computed(() => currentTime?.value?.format('HH:mm:ss Z'))
         v-model="menuTheme"
         :schema="[
           '#fff',
-          '#001529',
-          '#212121',
-          '#273352',
-          '#191b24',
-          '#383f45',
-          '#001628',
-          '#344058'
+          '#151515',
+          '#5172dc',
+          '#e74c3c',
+          '#24292e',
+          '#394664',
+          '#009688',
+          '#383f45'
         ]"
         @change="setMenuTheme"
+      />
+
+      <ElDivider>{{ t('setting.borderTheme') }}</ElDivider>
+      <ColorRadioPicker
+        v-model="borderTheme"
+        :schema="[
+          '#fff',
+          '#f1f5f9',
+          '#e2e8f0',
+          '#cbd5e1',
+          '#64748b',
+          '#334155',
+          '#1e293b',
+          '#0f172a'
+        ]"
+        @change="setBorderTheme"
       />
     </div>
 

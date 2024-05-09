@@ -1,8 +1,7 @@
 <script setup lang="tsx">
 import { convertEdgeChildren } from '@/api/admin/types'
 
-import { api } from '@/api'
-
+import { getRouters } from '@/api/authorization'
 import { MenuRoute } from '@/api/authorization/types'
 import { Form, FormSchema } from '@/components/Form'
 import { MenuTypeEnum } from '@/constants/menuType'
@@ -55,9 +54,9 @@ const formSchema = reactive<FormSchema[]>([
         }
       ],
       on: {
-        change: async (val: number) => {
+        change: async (val: MenuTypeEnum) => {
           const formData = await getFormData()
-          if (val === 1) {
+          if (val === MenuTypeEnum.MENU) {
             setSchema([
               {
                 field: 'component',
@@ -110,6 +109,7 @@ const formSchema = reactive<FormSchema[]>([
       on: {
         change: async (val: number) => {
           const formData = await getFormData()
+
           if (val && formData.type === MenuTypeEnum.CATALOG) {
             setValues({
               component: '##'
@@ -127,7 +127,7 @@ const formSchema = reactive<FormSchema[]>([
       }
     },
     optionApi: async () => {
-      const res = await api().getRouters()
+      const res = await getRouters()
       const list = convertEdgeChildren(res.data)
       return list || []
     }
@@ -160,7 +160,7 @@ const formSchema = reactive<FormSchema[]>([
   {
     field: 'meta.icon',
     label: t('meta.icon'),
-    component: 'Input'
+    component: 'IconPicker'
   },
   {
     field: 'path',

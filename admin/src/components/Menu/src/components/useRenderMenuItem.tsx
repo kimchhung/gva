@@ -1,8 +1,8 @@
-import { ElSubMenu, ElMenuItem } from 'element-plus'
-import { hasOneShowingChild } from '../helper'
 import { isUrl } from '@/utils/is'
-import { useRenderMenuTitle } from './useRenderMenuTitle'
 import { pathResolve } from '@/utils/routerHelper'
+import { ElMenuItem, ElSubMenu } from 'element-plus'
+import { hasOneShowingChild } from '../helper'
+import { useRenderMenuTitle } from './useRenderMenuTitle'
 
 const { renderMenuTitle } = useRenderMenuTitle()
 
@@ -10,6 +10,8 @@ export const useRenderMenuItem = () =>
   // allRouters: AppRouteRecordRaw[] = [],
   {
     const renderMenuItem = (routers: AppRouteRecordRaw[], parentPath = '/') => {
+      console.log('what', routers, parentPath)
+
       return routers
         .filter((v) => !v.meta?.hidden)
         .map((v) => {

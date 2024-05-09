@@ -75,6 +75,7 @@ export default {
     theme: '主题',
     layout: '布局',
     systemTheme: '系统主题',
+    borderTheme: '边境主题',
     menuTheme: '菜单主题',
     interfaceDisplay: '界面显示',
     breadcrumb: '面包屑',

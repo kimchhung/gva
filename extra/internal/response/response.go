@@ -20,9 +20,8 @@ func defaultReponseBase() *Response {
 	}
 }
 
-func New(opt ReponseOption, opts ...ReponseOption) *Response {
+func New(opts ...ReponseOption) *Response {
 	resp := defaultReponseBase()
-	opt(resp)
 
 	for _, op := range opts {
 		op(resp)

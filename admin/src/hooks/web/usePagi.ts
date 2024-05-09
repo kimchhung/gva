@@ -1,5 +1,4 @@
 import { isArray } from 'lodash-es'
-import QueryString from 'qs'
 
 export type QueryPagi = {
   page: number
@@ -97,10 +96,10 @@ export const setQuerySort = <T extends object>(query: QueryPagi, msort: SingleSo
   })
 }
 
-export const ToQueryString = (query: QueryPagi) => {
+export const createQueryPayload = (query: QueryPagi = { limit: 20, page: 1 }) => {
   const payload = {
-    limit: query.limit,
-    page: query.page
+    offset: (query.page - 1) * query.limit,
+    limit: query.limit * query.page
   } as Recordable
 
   if (query.search) {
@@ -150,5 +149,5 @@ export const ToQueryString = (query: QueryPagi) => {
     payload.sort = [...payload.sort(payload.sort ?? []), `${syntax}${column}`]
   })
 
-  return QueryString.stringify(payload)
+  return payload
 }

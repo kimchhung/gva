@@ -64,6 +64,8 @@ export const useAppStore = defineStore('app', {
       currentSize: 'default', // Component size
       theme: {
         // Theme color
+        elBorderColor: `#ebeef5`,
+        // Theme color
         elColorPrimary: '#409eff',
         // The color of the left menu border
         leftMenuBorderColor: 'inherit',

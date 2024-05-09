@@ -1,13 +1,13 @@
-import { computed } from 'vue'
-import { useAppStore } from '@/store/modules/app'
+import { Logo } from '@/components/Logo'
 import { Menu } from '@/components/Menu'
 import { TabMenu } from '@/components/TabMenu'
 import { TagsView } from '@/components/TagsView'
-import { Logo } from '@/components/Logo'
+import { useDesign } from '@/hooks/web/useDesign'
+import { useAppStore } from '@/store/modules/app'
+import { ElScrollbar } from 'element-plus'
+import { computed } from 'vue'
 import AppView from './AppView.vue'
 import ToolHeader from './ToolHeader.vue'
-import { ElScrollbar } from 'element-plus'
-import { useDesign } from '@/hooks/web/useDesign'
 
 const { getPrefixCls } = useDesign()
 
@@ -122,7 +122,7 @@ export const useRenderLayout = () => {
         <div class="flex items-center bg-[var(--top-header-bg-color)] relative layout-border__bottom dark:bg-[var(--el-bg-color)]">
           {logo.value ? <Logo class="custom-hover"></Logo> : undefined}
 
-          <ToolHeader class="flex-1"></ToolHeader>
+          <ToolHeader class="flex-1 border-2"></ToolHeader>
         </div>
         <div class="absolute top-[var(--logo-height)+1px] left-0 w-full h-[calc(100%-1px-var(--logo-height))] flex">
           <Menu class="!h-full relative layout-border__right"></Menu>
@@ -152,7 +152,7 @@ export const useRenderLayout = () => {
               {tagsView.value ? (
                 <TagsView
                   class={[
-                    'layout-border__bottom absolute',
+                    'absolute',
                     {
                       '!fixed top-0 left-0 z-10': fixedHeader.value,
                       'w-[calc(100%-var(--left-menu-min-width))] !left-[var(--left-menu-min-width)] mt-[calc(var(--logo-height)+1px)]':

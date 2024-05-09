@@ -14,7 +14,32 @@ func init() {
 	zerolog.ErrorStackMarshaler = MarshalStackSkip(3)
 }
 
-// A fuction to return beautiful and structured responses.
-func Response(c *fiber.Ctx, opt response.ReponseOption, opts ...response.ReponseOption) error {
-	return response.New(opt, opts...).Parse(c)
+/*
+A fuction to return beautiful and structured responses.
+
+	Response(c,response.Data(...))
+
+	{
+		code:0,
+		message:"OK"
+		data:any
+	}
+
+	Response(c)
+
+	{
+		code:0,
+		message:"OK"
+		data:any
+	}
+
+	Response(c,response.Error(...))
+
+	{
+		code:-5,
+		message:".....error"
+	}
+*/
+func Response(c *fiber.Ctx, opts ...response.ReponseOption) error {
+	return response.New(opts...).Parse(c)
 }

@@ -28,10 +28,7 @@ export const filterMenusPath = (
     const meta = v.meta ?? {}
     if (!meta.hidden || meta.canTo) {
       const allParentPath = getAllParentPath<AppRouteRecordRaw>(allRoutes, v.path)
-
       const fullPath = isUrl(v.path) ? v.path : allParentPath.join('/')
-
-      console.log("path",fullPath)
 
       data = cloneDeep(v)
       data.path = fullPath

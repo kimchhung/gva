@@ -100,7 +100,7 @@ func (con *AuthorizationController) Permissions(meta *rctrl.RouteMeta) rctrl.Met
 // @ID          create-a-route
 // @Accept      json
 // @Produce     json
-// @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully retrieved Routes"
+// @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully created Routes"
 // @Router      /route [post]
 // @Security    Bearer
 // @Param 		info body dto.RouteRequest true "Route Info"
@@ -133,7 +133,7 @@ func (con *AuthorizationController) CreateRoute(meta *rctrl.RouteMeta) rctrl.Met
 // @ID          Update-a-route
 // @Accept      json
 // @Produce     json
-// @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully retrieved Routes"
+// @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully updated Routes"
 // @Router      /route [put]
 // @Security    Bearer
 // @Param 		info body dto.RouteRequest true "Route Info"
@@ -159,8 +159,40 @@ func (con *AuthorizationController) UpdateRoute(meta *rctrl.RouteMeta) rctrl.Met
 
 				return request.Response(c,
 					response.Data(data),
-					response.Meta(meta),
 				)
+			},
+		}
+	})
+}
+
+// @Tags        Authorization Management
+// @Summary     Delete a Route
+// @Description Delete a Route
+// @ID          Delete-a-route
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.Response{} "Successfully Delete Routes"
+// @Router      /route [delete]
+// @Security    Bearer
+// @Param 		id path int true "Route ID"
+func (con *AuthorizationController) DeleteRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler {
+	return meta.Delete("/route/:id").DoWithScope(func() []fiber.Handler {
+		params := new(struct {
+			ID int `params:"id" validate:"required,min=0"`
+		})
+
+		return []fiber.Handler{
+			permissions.RequireSuperAdmin(),
+			request.Validate(
+				request.ParamsParser(params),
+			),
+			func(c *fiber.Ctx) error {
+				err := con._route.DeleteRoute(c.UserContext(), params.ID)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c)
 			},
 		}
 	})
