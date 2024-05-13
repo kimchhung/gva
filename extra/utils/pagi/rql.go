@@ -81,3 +81,40 @@ func RQLCount[T any](query T, p *rql.Params, opts ...func(*sql.Selector)) T {
 
 	return query
 }
+
+type InterceptorOption func(*sql.Selector)
+
+func WithFilter(filterExp rql.ExpString, filterArgs []interface{}) InterceptorOption {
+	return func(s *sql.Selector) {
+		if filterExp != "" {
+			s.Where(sql.ExprP(filterExp.String(), filterArgs...))
+		}
+	}
+}
+
+func WithSort(sort []string) InterceptorOption {
+	return func(s *sql.Selector) {
+		if len(sort) > 0 {
+			s.OrderBy(sort...)
+		}
+	}
+}
+
+func WithLimitOffset(limit int, offset int) InterceptorOption {
+	return func(s *sql.Selector) {
+		s.Limit(limit).Offset(offset)
+	}
+}
+
+func WithInterceptor[T any](query T, opts ...InterceptorOption) T {
+	q, err := intercept.NewQuery(query)
+	if err != nil {
+		panic(fmt.Errorf("invalid rql %v", err))
+	}
+
+	for _, opt := range opts {
+		q.WhereP(opt)
+	}
+
+	return query
+}

@@ -2,4 +2,4 @@ package main
 
 // _ "github.com/kimchhung/gva/extra/internal/ent/runtime"
 
-//go:generate go run -mod=mod entgo.io/ent/cmd/ent  generate --feature sql/versioned-migration --target=../../internal/ent ../../app/database/schema --feature intercept
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent  generate --feature sql/versioned-migration --target=../../internal/ent ../../app/database/schema --feature intercept --feature sql/execquery
