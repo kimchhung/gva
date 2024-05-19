@@ -1,4 +1,4 @@
-package app_err
+package apperror
 
 import (
 	"strings"

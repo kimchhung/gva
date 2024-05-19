@@ -1,6 +1,8 @@
 package request
 
 import (
+	"time"
+
 	"github.com/kimchhung/gva/extra/internal/response"
 
 	"github.com/gofiber/fiber/v2"
@@ -42,4 +44,8 @@ A fuction to return beautiful and structured responses.
 */
 func Response(c *fiber.Ctx, opts ...response.ReponseOption) error {
 	return response.New(opts...).Parse(c)
+}
+
+func ReponseNow(c *fiber.Ctx) error {
+	return Response(c, response.Data(time.Now().UTC().Format(time.RFC3339)))
 }

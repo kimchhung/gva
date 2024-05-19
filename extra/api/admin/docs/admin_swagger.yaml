@@ -615,18 +615,18 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of permissions for an Admin by ID
-      operationId: get-Admin-permissions
+      description: Get a list of permissionissions for an Admin by ID
+      operationId: get-Admin-permissionissions
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved Admin permissions
+          description: Successfully retrieved Admin permissionissions
           schema:
             $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: Get Admin permissions
+      summary: Get Admin permissionissions
       tags:
       - Admin
   /auth/login:
@@ -717,7 +717,7 @@ paths:
       summary: Register a new admin
       tags:
       - Auth
-  /permissions:
+  /permission:
     get:
       description: Get a list of all permissions
       operationId: list-all-permissions
@@ -739,49 +739,14 @@ paths:
       - Bearer: []
       summary: List all permissions
       tags:
-      - Authorization Management
+      - Permission
   /route:
-    post:
+    delete:
       consumes:
       - application/json
-      description: Create a Route
-      operationId: create-a-route
+      description: Delete a Route
+      operationId: Delete-a-route
       parameters:
-      - description: Route Info
-        in: body
-        name: info
-        required: true
-        schema:
-          $ref: '#/definitions/dto.RouteRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Routes
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.RouteResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Create a Route
-      tags:
-      - Authorization Management
-    put:
-      consumes:
-      - application/json
-      description: Update a Route
-      operationId: Update-a-route
-      parameters:
-      - description: Route Info
-        in: body
-        name: info
-        required: true
-        schema:
-          $ref: '#/definitions/dto.RouteRequest'
       - description: Route ID
         in: path
         name: id
@@ -791,23 +756,23 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved Routes
+          description: Successfully Delete Routes
           schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.RouteResponse'
-              type: object
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: Update a Route
+      summary: Delete a Route
       tags:
-      - Authorization Management
-  /routes:
+      - Route
     get:
       description: Get a list of all Routes
       operationId: list-all-routes
+      parameters:
+      - default: A
+        description: string default
+        in: query
+        name: default
+        type: string
       produces:
       - application/json
       responses:
@@ -833,7 +798,70 @@ paths:
       - Bearer: []
       summary: List all Routes
       tags:
-      - Authorization Management
+      - Route
+    post:
+      consumes:
+      - application/json
+      description: Create a Route
+      operationId: create-a-route
+      parameters:
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RouteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Routes
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RouteResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Route
+      tags:
+      - Route
+    put:
+      consumes:
+      - application/json
+      description: Update a Route
+      operationId: Update-a-route
+      parameters:
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RouteRequest'
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Routes
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RouteResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Route
+      tags:
+      - Route
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

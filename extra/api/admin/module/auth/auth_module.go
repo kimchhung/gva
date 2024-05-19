@@ -1,20 +1,14 @@
 package auth
 
 import (
-	"github.com/kimchhung/gva/extra/api/admin/module/auth/controller"
-	"github.com/kimchhung/gva/extra/api/admin/module/auth/service"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
-
+	"github.com/kimchhung/gva/extra/app/constant"
 	"go.uber.org/fx"
 )
 
 // Register bulkly
-var NewAuthModule = fx.Module("AuthModule",
-	fx.Provide(service.NewAuthService),
+var AuthModule = fx.Module("AuthModule",
+	fx.Provide(NewAuthService),
 
 	// Regiser Controller
-	fx.Provide(fx.Annotate(controller.NewAuthController,
-		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"admin-controllers"`),
-	)),
+	constant.ProvideAdminController(NewAuthController),
 )

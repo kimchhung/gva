@@ -21,7 +21,7 @@ func Run() {
 
 	/* Enable admin Module */
 	if cfg.API.Admin.Enable {
-		modules = append(modules, admin.NewAdminModules)
+		modules = append(modules, admin.APIAdminModules)
 	}
 
 	/* Enable Web Module */

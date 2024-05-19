@@ -3,13 +3,11 @@ package module
 import (
 	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
-	"github.com/swaggo/swag/example/basic/docs"
+	"github.com/kimchhung/gva/extra/api/web/docs"
 
-	"github.com/kimchhung/gva/extra/api/web/module/index"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/utils"
-	"go.uber.org/fx"
 )
 
 var _ interface{ rctrl.ModuleRouter } = (*Router)(nil)
@@ -22,42 +20,25 @@ func NewRouter(controllers ...rctrl.Controller) *Router {
 	return &Router{controllers}
 }
 
-func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
-	basePath := "/web"
-	if cfg.API.Web.BasePath != "" {
-		basePath = cfg.API.Web.BasePath
-		docs.SwaggerInfo.BasePath = basePath
-	}
+func (r *Router) Register(app fiber.Router, args ...any) {
+	cfg := args[0].(*config.Config)
 
-	api := app.Group(basePath)
-	api.Use(swagger.New(swagger.Config{
-		Next:     utils.IsEnabled(cfg.Middleware.Swagger.Enable),
-		BasePath: basePath,
-		FilePath: "./api/web/docs/web_swagger.json",
-		Path:     "swagger",
-		Title:    "Web API Docs",
-		CacheAge: 0,
-	}))
+	//default value if not exist in env config
+	utils.SetIfEmpty(&cfg.API.Web.BasePath, "/web")
+	docs.SwaggerInfoweb.BasePath = cfg.API.Web.BasePath
+
+	api := app.Group(cfg.API.Web.BasePath,
+		swagger.New(swagger.Config{
+			Next:     utils.IsEnabled(cfg.Middleware.Swagger.Enable),
+			BasePath: cfg.API.Web.BasePath,
+			FilePath: "./api/web/docs/web_swagger.json",
+			Path:     "swagger",
+			Title:    "Web API Docs",
+			CacheAge: 0,
+		}),
+	)
 
 	for _, controller := range r.controllers {
 		rctrl.Register(api, controller)
 	}
 }
-
-var NewWebModules = fx.Module("web-module",
-	index.NewDemoModule,
-	// #inject:module (do not remove this comment, it is used by the code generator)
-	// Add Router
-	fx.Provide(
-		fx.Annotate(NewRouter,
-			// convert type *Router => rctrl.ModuleRouter
-			fx.As(new(rctrl.ModuleRouter)),
-
-			// take group params from container => []rctrl.Controller -> NewRouter
-			fx.ParamTags(`group:"web-controllers"`),
-
-			// register rctrl.ModuleRouter to container as member of module group
-			fx.ResultTags(`group:"modules"`),
-		),
-	),
-)

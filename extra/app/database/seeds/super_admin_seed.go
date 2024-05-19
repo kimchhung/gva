@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kimchhung/gva/extra/app/common/services"
+	"github.com/kimchhung/gva/extra/app/common/service"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/ent"
@@ -28,7 +28,7 @@ func (s SuperAdminSeeder) Count(ctx context.Context, conn *ent.Client) (int, err
 
 func (s SuperAdminSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 	cfg := ctx.Value(config.Config{}).(*config.Config)
-	password_ := ctx.Value(services.PasswordService{}).(*services.PasswordService)
+	password_ := ctx.Value(service.PasswordService{}).(*service.PasswordService)
 
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 		role := tx.Role.Create().

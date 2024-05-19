@@ -24,6 +24,7 @@ type AdminQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Admin
 	withRoles  *RoleQuery
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -383,6 +384,9 @@ func (aq *AdminQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Admin,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -466,6 +470,9 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 
 func (aq *AdminQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
 	_spec.Node.Columns = aq.ctx.Fields
 	if len(aq.ctx.Fields) > 0 {
 		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
@@ -528,6 +535,9 @@ func (aq *AdminQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range aq.modifiers {
+		m(selector)
+	}
 	for _, p := range aq.predicates {
 		p(selector)
 	}
@@ -543,6 +553,12 @@ func (aq *AdminQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aq *AdminQuery) Modify(modifiers ...func(s *sql.Selector)) *AdminSelect {
+	aq.modifiers = append(aq.modifiers, modifiers...)
+	return aq.Select()
 }
 
 // AdminGroupBy is the group-by builder for Admin entities.
@@ -633,4 +649,10 @@ func (as *AdminSelect) sqlScan(ctx context.Context, root *AdminQuery, v any) err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (as *AdminSelect) Modify(modifiers ...func(s *sql.Selector)) *AdminSelect {
+	as.modifiers = append(as.modifiers, modifiers...)
+	return as
 }

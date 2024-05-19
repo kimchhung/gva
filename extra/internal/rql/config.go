@@ -7,7 +7,6 @@ import (
 	"reflect"
 	"slices"
 	"strings"
-	"unicode"
 )
 
 // Op is a filter operator used by rql.
@@ -47,6 +46,7 @@ const (
 	AND       = Op("and")       // conjunction
 	COUNT     = Op("count")     // aggregation
 	SUM       = Op("sum")       // aggregation
+	ABS       = Op("abs")       // aggregation
 	AVG       = Op("avg")       // aggregation
 	MIN       = Op("min")       // aggregation
 	MAX       = Op("max")       // aggregation
@@ -122,6 +122,11 @@ var (
 			expect(len(options) == 0, "max accepts no options")
 			return fmt.Sprintf("MAX(%v)", val)
 		},
+		ABS: func(val string, options []string) string {
+			expect(val != "", "abs requires a value")
+			expect(len(options) == 0, "abs accepts no options")
+			return fmt.Sprintf("ABS(%v)", val)
+		},
 		SUM: func(val string, options []string) string {
 			expect(val != "", "sum requires a value")
 			expect(len(options) == 0, "sum accepts no options")
@@ -149,8 +154,8 @@ var (
 		IN:        "IN",
 		LIKE:      "LIKE",
 		ILIKE:     "ILIKE",
-		ISNULL:    `IS`,
-		ISNOTNULL: `IS NOT`,
+		ISNULL:    `IS NULL`,
+		ISNOTNULL: `IS NOT NULL`,
 		NOT:       "NOT",
 		OR:        "OR",
 		AND:       "AND",
@@ -212,12 +217,13 @@ type Config struct {
 	// replaces the last jsonbSep with JsonbLastSep to access nested jsonb objects in postgres without quotes
 	JsonbLastSep string
 	// InterpretFieldSepAsNestedJsonbObject replaces the fieldSep with -> to access nested jsonb objects in postgres
-	InterpretFieldSepAsNestedJsonbObject bool
-	// ColumnFn is the function that translate the struct field string into a table column.
+	InterpretFieldSepAsNestedJsonbObject      bool
+	InterpretFieldSepAsNestedJsonbObjectMysql bool
+	// ColumnFn is the function that translate the field string into a table column.
 	// For example, given the following fields and their column names:
 	//
-	//	FullName => "full_name"
-	// 	CreatedAt => "createdAt"
+	//	CreatedAt => "created_at"
+	// 	createdAt => "created_at"
 	//
 	// It is preferred that you will follow the same convention that your ORM or other DB helper use.
 	// For example, If you are using `gorm` you want to se this option like this:
@@ -228,20 +234,9 @@ type Config struct {
 	//
 	ColumnFn func(string) string
 
-	// ColumnFnDB is the function that translate the struct field string into a table column.
-	// For example, given the following fields and their column names:
-	//
-	//	fullName => "full_name"
-	// 	hTTPPort => "http_port"
-	ColumnNameFn func(string) string
-
-	// add table prefix to all column
-	// createdAt => table.createdAt
-	Table string
-
-	// createdAt => users.createdAt
-	MapColumnName map[string]string
-
+	// NameFn is the function that translate the field string into a parser name
+	// 	CreatedAt => "created_at" | "createdAt"
+	NameFn func(string) string
 	// Log the the logging function used to log debug information in the initialization of the parser.
 	// It defaults `to log.Printf`.
 	Log func(string, ...interface{})
@@ -273,9 +268,6 @@ func (c *Config) defaults() error {
 	if c.ColumnFn == nil {
 		c.ColumnFn = Column
 	}
-	if c.MapColumnName == nil {
-		c.MapColumnName = make(map[string]string)
-	}
 	defaultString(&c.TagName, DefaultTagName)
 	defaultString(&c.OpPrefix, DefaultOpPrefix)
 	defaultString(&c.FieldSep, DefaultFieldSep)
@@ -296,34 +288,4 @@ func defaultInt(i *int, v int) {
 	if *i == 0 {
 		*i = v
 	}
-}
-
-func PascalToCamelCase(s string) string {
-	if !strings.Contains(s, "_") {
-		// If the string does not contain underscores, it's already in camelCase.
-		// Convert the first character to lowercase and return the original string.
-		r := []rune(s)
-		r[0] = unicode.ToLower(r[0])
-		return string(r)
-	}
-
-	r := []rune(s)
-	r[0] = unicode.ToLower(r[0])
-	return strings.ReplaceAll(string(r), "_", "")
-}
-
-// camelCaseToSnakeCase converts a camelCase string to snake_case.
-func CamelCaseToSnakeCase(s string) string {
-	var sb strings.Builder
-	for i, r := range s {
-		if i == 0 {
-			sb.WriteRune(unicode.ToLower(r)) // Convert the first character to lowercase
-		} else if unicode.IsUpper(r) {
-			sb.WriteString("_")
-			sb.WriteRune(unicode.ToLower(r)) // No need to convert to lowercase here
-		} else {
-			sb.WriteRune(r)
-		}
-	}
-	return sb.String()
 }

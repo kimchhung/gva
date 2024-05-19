@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 
-	app_err "github.com/kimchhung/gva/extra/app/common/error"
+	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	in_validator "github.com/kimchhung/gva/extra/utils/validator"
 
 	"github.com/kimchhung/gva/extra/internal/response"
@@ -12,26 +12,26 @@ import (
 )
 
 // Default error handler
-func ParseError(c *fiber.Ctx, err error) (*app_err.Error, error) {
+func ParseError(c *fiber.Ctx, err error) (*apperror.Error, error) {
 
-	var resErr *app_err.Error
+	var resErr *apperror.Error
 
 	switch e := err.(type) {
 	case validator.ValidationErrors:
 		// error from request input validation
 		t := lang.GetTranslator(lang.FiberCtx(c))
 		translatedMsg := in_validator.RemoveTopStruct(e.Translate(t))
-		resErr = app_err.NewError(
-			app_err.ErrValidationError,
-			app_err.Message(translatedMsg),
+		resErr = apperror.NewError(
+			apperror.ErrValidationError,
+			apperror.Message(translatedMsg),
 		)
 
-	case *app_err.Error:
+	case *apperror.Error:
 		// throw from logical error for user to see
 		if e.IsDisableTranslate() {
 			resErr = e
 		} else {
-			resErr = app_err.NewError(e, app_err.MessageFunc(
+			resErr = apperror.NewError(e, apperror.MessageFunc(
 				func(message string) string {
 					return lang.T(lang.FiberCtx(c), message)
 				},
@@ -40,14 +40,14 @@ func ParseError(c *fiber.Ctx, err error) (*app_err.Error, error) {
 
 	case *fiber.Error:
 		// wrong routing .....
-		resErr = app_err.NewError(
-			app_err.ErrBadRequest,
-			app_err.MessageFunc(
+		resErr = apperror.NewError(
+			apperror.ErrBadRequest,
+			apperror.MessageFunc(
 				func(message string) string {
 					return lang.T(lang.FiberCtx(c), message)
 				},
 			),
-			app_err.Join(err),
+			apperror.Join(err),
 		)
 		resErr.HttpCode = e.Code
 
@@ -55,9 +55,9 @@ func ParseError(c *fiber.Ctx, err error) (*app_err.Error, error) {
 
 		// unexpected error, crashed etc...
 		// StackHandler will invoke too
-		resErr = app_err.NewError(
-			app_err.ErrUnknownError,
-			app_err.MessageFunc(
+		resErr = apperror.NewError(
+			apperror.ErrUnknownError,
+			apperror.MessageFunc(
 				func(message string) string {
 					return lang.T(lang.FiberCtx(c), message)
 				},

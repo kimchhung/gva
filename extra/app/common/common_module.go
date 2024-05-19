@@ -1,7 +1,8 @@
 package common
 
 import (
-	"github.com/kimchhung/gva/extra/app/common/services"
+	"github.com/kimchhung/gva/extra/app/common/repository"
+	"github.com/kimchhung/gva/extra/app/common/service"
 	"github.com/kimchhung/gva/extra/app/middleware"
 	"github.com/kimchhung/gva/extra/internal/bootstrap"
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
@@ -15,6 +16,11 @@ var NewCommonModule = fx.Module("CommonModule",
 	fx.Provide(middleware.NewMiddleware),
 
 	// Services
-	fx.Provide(services.NewPasswordService),
-	fx.Provide(services.NewJwtService),
+	fx.Provide(service.NewPasswordService),
+	fx.Provide(service.NewJwtService),
+
+	// Database Repository | repositores
+	fx.Provide(repository.NewAdminRepository),
+	fx.Provide(repository.NewRouteRepository),
+	fx.Provide(repository.NewPermissionRepository),
 )

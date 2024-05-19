@@ -26,6 +26,7 @@ type RouteQuery struct {
 	withParent   *RouteQuery
 	withChildren *RouteQuery
 	withRoles    *RoleQuery
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -455,6 +456,9 @@ func (rq *RouteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Route,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(rq.modifiers) > 0 {
+		_spec.Modifiers = rq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -616,6 +620,9 @@ func (rq *RouteQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 
 func (rq *RouteQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := rq.querySpec()
+	if len(rq.modifiers) > 0 {
+		_spec.Modifiers = rq.modifiers
+	}
 	_spec.Node.Columns = rq.ctx.Fields
 	if len(rq.ctx.Fields) > 0 {
 		_spec.Unique = rq.ctx.Unique != nil && *rq.ctx.Unique
@@ -681,6 +688,9 @@ func (rq *RouteQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if rq.ctx.Unique != nil && *rq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range rq.modifiers {
+		m(selector)
+	}
 	for _, p := range rq.predicates {
 		p(selector)
 	}
@@ -696,6 +706,12 @@ func (rq *RouteQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (rq *RouteQuery) Modify(modifiers ...func(s *sql.Selector)) *RouteSelect {
+	rq.modifiers = append(rq.modifiers, modifiers...)
+	return rq.Select()
 }
 
 // RouteGroupBy is the group-by builder for Route entities.
@@ -786,4 +802,10 @@ func (rs *RouteSelect) sqlScan(ctx context.Context, root *RouteQuery, v any) err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (rs *RouteSelect) Modify(modifiers ...func(s *sql.Selector)) *RouteSelect {
+	rs.modifiers = append(rs.modifiers, modifiers...)
+	return rs
 }

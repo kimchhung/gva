@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/kimchhung/gva/extra/config"
+	"github.com/kimchhung/gva/extra/app/constant"
 	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"go.uber.org/fx"
 )
@@ -21,9 +21,9 @@ func NewRouter(modules []rctrl.ModuleRouter) *Router {
 	return r
 }
 
-func (r *Router) Register(app fiber.Router, cfg *config.Config, args ...any) {
+func (r *Router) Register(app fiber.Router, args ...any) {
 	for _, r := range r.modules {
-		r.Register(app, cfg, args...)
+		r.Register(app, args...)
 	}
 }
 
@@ -32,7 +32,7 @@ func WithRouter(modules ...fx.Option) []fx.Option {
 		// register as *Router
 		fx.Annotate(NewRouter,
 			// take group params from container => []rctrl.ModuleRouter -> NewRouter
-			fx.ParamTags(`group:"modules"`),
+			fx.ParamTags(constant.TagModule),
 		),
 	))
 

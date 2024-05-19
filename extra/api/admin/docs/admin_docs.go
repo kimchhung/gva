@@ -119,7 +119,7 @@ const docTemplateadmin = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get a list of permissions for an Admin by ID",
+                "description": "Get a list of permissionissions for an Admin by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -129,11 +129,11 @@ const docTemplateadmin = `{
                 "tags": [
                     "Admin"
                 ],
-                "summary": "Get Admin permissions",
-                "operationId": "get-Admin-permissions",
+                "summary": "Get Admin permissionissions",
+                "operationId": "get-Admin-permissionissions",
                 "responses": {
                     "200": {
-                        "description": "Successfully retrieved Admin permissions",
+                        "description": "Successfully retrieved Admin permissionissions",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -440,7 +440,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/permissions": {
+        "/permission": {
             "get": {
                 "security": [
                     {
@@ -452,7 +452,7 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authorization Management"
+                    "Permission"
                 ],
                 "summary": "List all permissions",
                 "operationId": "list-all-permissions",
@@ -482,115 +482,6 @@ const docTemplateadmin = `{
             }
         },
         "/route": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a Route",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Authorization Management"
-                ],
-                "summary": "Update a Route",
-                "operationId": "Update-a-route",
-                "parameters": [
-                    {
-                        "description": "Route Info",
-                        "name": "info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.RouteRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Route ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved Routes",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.RouteResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a Route",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Authorization Management"
-                ],
-                "summary": "Create a Route",
-                "operationId": "create-a-route",
-                "parameters": [
-                    {
-                        "description": "Route Info",
-                        "name": "info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.RouteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved Routes",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.RouteResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/routes": {
             "get": {
                 "security": [
                     {
@@ -602,10 +493,19 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authorization Management"
+                    "Route"
                 ],
                 "summary": "List all Routes",
                 "operationId": "list-all-routes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "A",
+                        "description": "string default",
+                        "name": "default",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully retrieved Routes",
@@ -641,6 +541,149 @@ const docTemplateadmin = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Update a Route",
+                "operationId": "Update-a-route",
+                "parameters": [
+                    {
+                        "description": "Route Info",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RouteRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.RouteResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Create a Route",
+                "operationId": "create-a-route",
+                "parameters": [
+                    {
+                        "description": "Route Info",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RouteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.RouteResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Delete a Route",
+                "operationId": "Delete-a-route",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully Delete Routes",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }

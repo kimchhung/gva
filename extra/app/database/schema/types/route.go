@@ -3,7 +3,7 @@ package types
 type RouteMeta struct {
 	Hidden     *bool    `json:"hidden,omitempty"`
 	AlwaysShow *bool    `json:"alwaysShow,omitempty"`
-	Title      *string  `json:"title,omitempty"`
+	Title      *string  `json:"title,omitempty" rql:"filter,sort"`
 	Icon       *string  `json:"icon,omitempty"`
 	NoCache    *bool    `json:"noCache,omitempty"`
 	Breadcrumb *bool    `json:"breadcrumb,omitempty"`

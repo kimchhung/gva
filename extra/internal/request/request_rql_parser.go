@@ -7,7 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/rql"
-	"github.com/rs/zerolog/log"
+	"github.com/kimchhung/gva/extra/utils"
+	"github.com/kimchhung/gva/extra/utils/json"
+	ustrings "github.com/kimchhung/gva/extra/utils/strings"
+
 	"github.com/tidwall/sjson"
 )
 
@@ -39,6 +42,15 @@ func splitPathAndValue(v string) (path string, value string) {
 	return dotPath, parts[1]
 }
 
+func isValidKey(key string) bool {
+	for _, validKey := range []string{"limit", "offset", "filter", "select", "sort"} {
+		if strings.Contains(validKey, key) {
+			return true
+		}
+	}
+	return false
+}
+
 /*
 ParseUrlQuery
 
@@ -47,27 +59,41 @@ ParseUrlQuery
 */
 func ParseUrlQuery(v string) string {
 	values := strings.Split(v, "&")
-	jsonStr := ""
+	jsonStr := json.NewEmptyObject()
+	var err error
 
 	for _, part := range values {
 		path, val := splitPathAndValue(part)
+		if !isValidKey(path) {
+			continue
+		}
+
+		if strings.ContainsRune(val, ',') {
+			jsonStr, err = sjson.SetBytes(jsonStr, path, strings.Split(val, ","))
+			utils.PanicIfErr("ParseUrlQuery", err)
+			continue
+		}
 
 		f, err := strconv.ParseFloat(val, 64)
 		if err == nil {
-			jsonStr, _ = sjson.Set(jsonStr, path, f)
+			jsonStr, err = sjson.SetBytes(jsonStr, path, f)
+			utils.PanicIfErr("ParseUrlQuery", err)
+
 			continue
 		}
 
 		b, err := strconv.ParseBool(val)
 		if err == nil {
-			jsonStr, _ = sjson.Set(jsonStr, path, b)
+			jsonStr, err = sjson.SetBytes(jsonStr, path, b)
+			utils.PanicIfErr("ParseUrlQuery", err)
 			continue
 		}
 
-		jsonStr, _ = sjson.Set(jsonStr, path, val)
+		jsonStr, err = sjson.SetBytes(jsonStr, path, val)
+		utils.PanicIfErr("ParseUrlQuery", err)
 	}
 
-	return jsonStr
+	return jsonStr.String()
 }
 
 /*
@@ -91,7 +117,7 @@ https://github.com/a8m/rql
 	  "sort": ["-createdAt"]
 	}
 */
-func RqlParser(out *rql.Params, parser *rql.Parser) Parser {
+func RqlQueryParser(out *rql.Params, parser *rql.Parser) Parser {
 	return func(c *fiber.Ctx) (any, error) {
 		urlQ := string(c.Request().URI().QueryString())
 		str := ParseUrlQuery(urlQ)
@@ -137,20 +163,13 @@ Json
 	  "sort": ["-id","createdAt","+isEnable"]
 	}
 */
-func MustRqlParser(table string, model any, mapColumnName ...map[string]string) *rql.Parser {
-	var mapColumn map[string]string
-	if len(mapColumnName) > 0 {
-		mapColumn = mapColumnName[0]
+func MustRqlParser(config rql.Config) *rql.Parser {
+	config.FieldSep = "__"
+	config.InterpretFieldSepAsNestedJsonbObjectMysql = true
+	config.NameFn = func(s string) string {
+		s = ustrings.ToCamel(s, config.FieldSep)
+		return strings.ReplaceAll(s, ".", config.FieldSep)
 	}
-
-	return rql.MustNewParser(rql.Config{
-		Model:         model,
-		Log:           log.Debug().Msgf,
-		ColumnFn:      rql.PascalToCamelCase,
-		ColumnNameFn:  rql.CamelCaseToSnakeCase,
-		MapColumnName: mapColumn,
-		Table:         table,
-		DoNotLog:      true,
-		LimitMaxValue: 500,
-	})
+	config.DoNotLog = false
+	return rql.MustNewParser(config)
 }

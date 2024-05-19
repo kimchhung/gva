@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kimchhung/gva/extra/app/common/contexts"
+	appctx "github.com/kimchhung/gva/extra/app/common/context"
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/lang"
 
@@ -47,7 +47,7 @@ func (m *Middleware) Register() {
 
 	// add locale to context
 	m.app.Use(
-		contexts.NewRequestContext(),
+		appctx.NewRequestContext(),
 		lang.Register(),
 	)
 

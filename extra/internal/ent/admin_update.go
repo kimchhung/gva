@@ -20,8 +20,9 @@ import (
 // AdminUpdate is the builder for updating Admin entities.
 type AdminUpdate struct {
 	config
-	hooks    []Hook
-	mutation *AdminMutation
+	hooks     []Hook
+	mutation  *AdminMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // Where appends a list predicates to the AdminUpdate builder.
@@ -228,6 +229,12 @@ func (au *AdminUpdate) defaults() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (au *AdminUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AdminUpdate {
+	au.modifiers = append(au.modifiers, modifiers...)
+	return au
+}
+
 func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	if ps := au.mutation.predicates; len(ps) > 0 {
@@ -317,6 +324,7 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{admin.Label}
@@ -332,9 +340,10 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // AdminUpdateOne is the builder for updating a single Admin entity.
 type AdminUpdateOne struct {
 	config
-	fields   []string
-	hooks    []Hook
-	mutation *AdminMutation
+	fields    []string
+	hooks     []Hook
+	mutation  *AdminMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -548,6 +557,12 @@ func (auo *AdminUpdateOne) defaults() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (auo *AdminUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AdminUpdateOne {
+	auo.modifiers = append(auo.modifiers, modifiers...)
+	return auo
+}
+
 func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error) {
 	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	id, ok := auo.mutation.ID()
@@ -654,6 +669,7 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.AddModifiers(auo.modifiers...)
 	_node = &Admin{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

@@ -1,11 +1,9 @@
 package request
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/kimchhung/gva/extra/app/common/contexts"
+	appctx "github.com/kimchhung/gva/extra/app/common/context"
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/utils/validator"
 )
@@ -16,7 +14,6 @@ func Validate(parser Parser, parsers ...Parser) fiber.Handler {
 		for _, parse := range append(parsers, parser) {
 			data, err := parse(c)
 			if err != nil {
-				fmt.Printf("errr %v", err)
 				return err
 			}
 
@@ -43,18 +40,18 @@ func Parse(parser Parser, parsers ...Parser) fiber.Handler {
 	}
 }
 
-// required middleware jwtService.ProtectAdmin()
-func AdminContext(out *contexts.AdminContext) fiber.Handler {
+// required middleware jwtService.RequiredAdmin()
+func MustAdminContext(out *appctx.AdminContext) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		*out = *contexts.MustAdminContext(c.UserContext())
+		*out = *appctx.MustAdminContext(c.UserContext())
 		return nil
 	}
 }
 
-// required middleware jwtService.ProtectAdmin()
-func Admin(out *ent.Admin) fiber.Handler {
+// required middleware jwtService.RequiredAdmin()
+func MustAdmin(out *ent.Admin) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		*out = *contexts.MustAdminContext(c.UserContext()).Admin
+		*out = *appctx.MustAdminContext(c.UserContext()).Admin
 		return nil
 	}
 }

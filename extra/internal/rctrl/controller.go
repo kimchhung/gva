@@ -4,11 +4,10 @@ package rctrl
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/kimchhung/gva/extra/config"
 )
 
 type ModuleRouter interface {
-	Register(app fiber.Router, cfg *config.Config, args ...any)
+	Register(app fiber.Router, args ...any)
 }
 
 /*
@@ -19,7 +18,7 @@ requirement usage of controller
 		return r
 	}
 
-	FuncName(meta *rctrl.RouteMeta) rctrl.MetaHandler{
+	func(con *Controller) FuncName(meta *rctrl.RouteMeta) rctrl.MetaHandler{
 		return meta.Get("/path").Do(...)
 		return meta.Get("/path").DoWithScope(...)
 	}

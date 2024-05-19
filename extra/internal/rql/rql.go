@@ -149,6 +149,9 @@ func (p ParseError) Error() string {
 
 // field is a configuration of a struct field.
 type field struct {
+	// Column 	// Name of the column.
+	Column string
+
 	// Name of the column.
 	Name string
 	// Has a "sort" option in the tag.
@@ -377,6 +380,7 @@ func (p *Parser) init() error {
 func (p *Parser) parseField(sf reflect.StructField) error {
 	f := &field{
 		Name:        p.ColumnFn(sf.Name),
+		Column:      p.ColumnFn(sf.Name),
 		CovertFn:    valueFn,
 		FilterOps:   make(map[string]bool),
 		ModifierOps: make(map[string]bool),
@@ -438,16 +442,16 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 		f.ValidateFn = validateInt
 		f.CovertFn = convertInt
 		filterOps = append(filterOps, EQ, NEQ, IN, LT, LTE, GT, GTE, ISNULL, ISNOTNULL)
-		modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, AVG, ROUND, BALANCE)
+		modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, AVG, ABS, ROUND, BALANCE)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		f.ValidateFn = validateUInt
 		f.CovertFn = convertInt
 		filterOps = append(filterOps, EQ, NEQ, IN, LT, LTE, GT, GTE, ISNULL, ISNOTNULL)
-		modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, AVG, ROUND, BALANCE)
+		modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, AVG, ABS, ROUND, BALANCE)
 	case reflect.Float32, reflect.Float64:
 		f.ValidateFn = validateFloat
 		filterOps = append(filterOps, EQ, NEQ, IN, LT, LTE, GT, GTE, ISNULL, ISNOTNULL)
-		modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, AVG, ROUND, BALANCE)
+		modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, AVG, ABS, ROUND, BALANCE)
 	case reflect.Struct:
 		switch v := reflect.Zero(typ); v.Interface().(type) {
 		case sql.NullBool:
@@ -467,11 +471,11 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 			f.ValidateFn = validateInt
 			f.CovertFn = convertInt
 			filterOps = append(filterOps, EQ, NEQ, IN, LT, LTE, GT, GTE, AVG, ROUND, ISNULL, ISNOTNULL)
-			modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, BALANCE)
+			modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, ABS, BALANCE)
 		case sql.NullFloat64:
 			f.ValidateFn = validateFloat
 			filterOps = append(filterOps, EQ, NEQ, IN, LT, LTE, GT, GTE, AVG, ROUND, ISNULL, ISNOTNULL)
-			modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, BALANCE)
+			modifierOps = append(modifierOps, MIN, MAX, COUNT, SUM, ABS, BALANCE)
 		case time.Time:
 			f.ValidateFn = validateTime(layout)
 			f.CovertFn = convertTime(layout)
@@ -493,18 +497,18 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 			fmt.Printf("rql: field type '%v' for %q is not supported - only allowed for select\n", typ.Kind(), sf.Name)
 		}
 	}
+
+	if p.NameFn != nil {
+		f.Name = p.NameFn(sf.Name)
+	}
+
 	for _, op := range filterOps {
 		f.FilterOps[p.op(op)] = true
 	}
 	for _, op := range modifierOps {
 		f.ModifierOps[op.String()] = true
 	}
-
 	p.fields[f.Name] = f
-	if p.ColumnNameFn != nil {
-		p.MapColumnName[f.Name] = p.ColumnNameFn(f.Name)
-	}
-
 	return nil
 }
 
@@ -546,6 +550,7 @@ func (p *Parser) sort(fields []string) []string {
 	sortParams := make([]string, len(fields))
 	for i, field := range fields {
 		expect(field != "", "sort field can not be empty")
+
 		var orderBy string
 		// if the sort field prefixed by an order indicator.
 		if order, ok := sortDirection[field[0]]; ok {
@@ -554,19 +559,46 @@ func (p *Parser) sort(fields []string) []string {
 		}
 		expect(p.fields[field] != nil, "unrecognized key %q for sorting", field)
 		expect(p.fields[field].Sortable, "field %q is not sortable", field)
-		colName := ""
+		colName := strings.Builder{}
 		if p.fields[field].SortableCaseInsensitive {
-			colName = fmt.Sprintf("lower(%v)", p.colName(field))
+			colName.WriteString(fmt.Sprintf("lower(%v)", p.colName(field)))
 		} else {
-			colName = fmt.Sprintf("%v", p.colName(field))
+			colName.WriteString(p.colName(field))
 		}
+
 		if orderBy != "" {
-			colName += " " + orderBy
+			colName.WriteString(" " + orderBy)
 		}
-		sortParams[i] = colName
+		sortParams[i] = colName.String()
 	}
 	return sortParams
 }
+
+// func (p *Parser) sort(fields []string) []string {
+// 	sortParams := make([]string, len(fields))
+// 	for i, field := range fields {
+// 		expect(field != "", "sort field can not be empty")
+// 		var orderBy string
+// 		// if the sort field prefixed by an order indicator.
+// 		if order, ok := sortDirection[field[0]]; ok {
+// 			orderBy = order
+// 			field = field[1:]
+// 		}
+// 		expect(p.fields[field] != nil, "unrecognized key %q for sorting", field)
+// 		expect(p.fields[field].Sortable, "field %q is not sortable", field)
+// 		colName := ""
+// 		if p.fields[field].SortableCaseInsensitive {
+// 			colName = fmt.Sprintf("lower(%v)", p.colName(field))
+// 		} else {
+// 			colName = fmt.Sprintf("%v", p.colName(field))
+// 		}
+// 		if orderBy != "" {
+// 			colName += " " + orderBy
+// 		}
+// 		sortParams[i] = colName
+// 	}
+// 	return sortParams
+// }
 
 func (p *Parser) group(fields []string) []string {
 	groupParams := make([]string, len(fields))
@@ -584,7 +616,7 @@ func (p *Parser) sel(fields []string) []string {
 		if fieldName != finalCol {
 			finalCol = fmt.Sprintf("%v AS %v", finalCol, fieldName)
 		}
-		selectFields[i] = tranformColumnWithTable(p, finalCol)
+		selectFields[i] = finalCol
 	}
 
 	return selectFields
@@ -593,9 +625,11 @@ func (p *Parser) sel(fields []string) []string {
 func (p *Parser) applyModifiers(field string, typ string) (fieldName string, res string) {
 	split := strings.Split(field, "|")
 	fieldName = split[0]
-	res = fieldName
+	res = p.colName(fieldName)
+
 	expect(fieldName != "", "group field can not be empty")
 	expect(p.fields[fieldName] != nil, "unrecognized key %q for applying modifiers", fieldName)
+	expect(typ == "select" && !strings.Contains(fieldName, "."), "unrecognized key %q for select", fieldName)
 	expect(typ != "group" || p.fields[fieldName].Groupable, "field %q is not groupable", fieldName)
 
 	if len(split) > 1 {
@@ -757,7 +791,7 @@ func (p *parseState) field(f *field, v interface{}) {
 		expect(f.FilterOps[opName], "can not apply op %q on field %q", opName, f.Name)
 		if opName == p.op(ISNULL) || opName == p.op(ISNOTNULL) {
 			p.WriteString(p.fmtOp(f.Name, Op(opName[1:])))
-			p.values = append(p.values, nil)
+			// p.values = append(p.values, nil)
 		} else if opName == p.op(IN) {
 			if valArr, ok := opVal.([]interface{}); !ok {
 				expect(false, "invalid datatype for field %q", f.Name)
@@ -784,6 +818,16 @@ func (p *parseState) field(f *field, v interface{}) {
 // for example: "name = ?", or "age >= ?".
 func (p *Parser) fmtOp(field string, op Op, length ...int) string {
 	colName := p.colName(field)
+
+	sql := func() string {
+		switch op {
+		case ISNOTNULL, ISNULL:
+			return colName + " " + op.SQL()
+
+		}
+		return colName + " " + op.SQL() + " ?"
+	}
+
 	if op == IN && len(length) > 0 && length[0] > 0 {
 		args := make([]string, 0, length[0])
 		for i := 0; i < length[0]; i++ {
@@ -791,41 +835,40 @@ func (p *Parser) fmtOp(field string, op Op, length ...int) string {
 		}
 		return colName + " " + op.SQL() + " (" + strings.Join(args, ",") + ")"
 	}
-	return colName + " " + op.SQL() + " ?"
-}
 
-func withIfTablePrefix(table string, col string) string {
-	if table != "" {
-		return fmt.Sprintf("`%s`.`%s`", table, col)
-	}
-	return col
-}
-
-func tranformColumnWithTable(p *Parser, field string) string {
-	if p.ColumnNameFn != nil {
-		if name, ok := p.MapColumnName[field]; ok {
-			return withIfTablePrefix(p.Table, name)
-		}
-
-		return withIfTablePrefix(p.Table, p.ColumnNameFn(field))
-	}
-
-	return field
+	return sql()
 }
 
 // colName formats the query field to database column name in cases the user configured a custom
 // field separator. for example: if the user configured the field separator to be ".", the fields
 // like "address.name" will be changed to "address_name".
 func (p *Parser) colName(field string) string {
-	if p.ColumnNameFn != nil {
-		return tranformColumnWithTable(p, field)
+	str := field
+
+	if !strings.Contains(str, p.FieldSep) {
+		return p.ColumnFn(str)
 	}
 
-	str := field
 	if p.FieldSep != DefaultFieldSep {
-		if p.Config.InterpretFieldSepAsNestedJsonbObject {
+		var isInterpret bool
+		if p.Config.InterpretFieldSepAsNestedJsonbObjectMysql {
+			isInterpret = true
 			split := strings.Split(field, p.FieldSep)
-			str = split[0]
+
+			str = p.ColumnFn(split[0])
+			jsonpath := split[1:]
+			if len(jsonpath) > 0 {
+				jsonpath[0] = p.ColumnFn(jsonpath[0])
+			}
+			if len(jsonpath) > 0 {
+				str += p.Config.JsonbSep + "'$." + strings.Join(jsonpath, ".") + "'"
+			}
+		}
+
+		if p.Config.InterpretFieldSepAsNestedJsonbObject {
+			isInterpret = true
+			split := strings.Split(field, p.FieldSep)
+			str = p.ColumnFn(split[0])
 			for i := 1; i < len(split); i++ {
 				if regexp.MustCompile(`^[0-9]+$`).MatchString(split[i]) {
 					str += p.Config.JsonbSep + split[i]
@@ -838,12 +881,14 @@ func (p *Parser) colName(field string) string {
 			if i > 0 {
 				str = str[:i] + strings.Replace(str[i:], p.Config.JsonbSep, p.Config.JsonbLastSep, 1)
 			}
-		} else {
+		}
+
+		if !isInterpret {
 			str = strings.Replace(field, p.FieldSep, DefaultFieldSep, -1)
 		}
 	}
 
-	return withIfTablePrefix(p.Table, str)
+	return str
 }
 
 func (p *Parser) op(op Op) string {

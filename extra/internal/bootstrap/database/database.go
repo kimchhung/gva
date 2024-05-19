@@ -3,16 +3,19 @@ package database
 import (
 	"context"
 	"fmt"
+
 	"reflect"
 
 	"github.com/kimchhung/gva/extra/config"
 	"github.com/kimchhung/gva/extra/internal/ent"
 
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+
+	dsql "database/sql"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -46,15 +49,18 @@ func (db *Database) ConnectDatabase() error {
 	}
 
 	db.sql = drv
+
 	db.Client = ent.NewClient(
 		ent.Driver(drv),
+		ent.Debug(),
+		ent.Log(log.Print),
 	)
 
 	return nil
 }
 
-func (db *Database) Sql() *sql.Driver {
-	return db.sql
+func (db *Database) Sql() *dsql.DB {
+	return db.sql.DB()
 }
 
 func (db *Database) ShutdownDatabase() error {

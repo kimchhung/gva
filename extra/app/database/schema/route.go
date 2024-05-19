@@ -26,7 +26,7 @@ func (Route) Fields() []ent.Field {
 		field.Int("parent_id").
 			Optional().
 			Nillable().
-			StructTag(`json:"parentId,omitempty"`),
+			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),
 
 		field.String("path").
 			StructTag(`rql:"filter,sort"`),
@@ -42,13 +42,15 @@ func (Route) Fields() []ent.Field {
 		field.String("name").
 			StructTag(`rql:"filter,sort"`),
 
-		field.Int("id").StructTag(`rql:"filter,sort"`),
+		field.Int("id").
+			StructTag(`rql:"filter,sort"`),
 
 		field.Enum("type").
 			Values("cata_log", "menu", "button", "external_link").
-			Default("cata_log").StructTag(`rql:"filter,sort"`),
+			Default("cata_log").
+			StructTag(`rql:"filter,sort"`),
 
-		field.JSON("meta", types.RouteMeta{}).StructTag(`rql:"filter"`),
+		field.JSON("meta", types.RouteMeta{}),
 	}
 }
 

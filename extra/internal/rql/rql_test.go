@@ -489,6 +489,7 @@ func TestParse(t *testing.T) {
 				Sort:       []string{"lower(address_name)", "address_zip_code desc", "age asc"},
 			},
 		},
+
 		{
 			name: "sort ->InterpretFieldSepAsNestedJsonbObject",
 			conf: Config{
@@ -517,6 +518,36 @@ func TestParse(t *testing.T) {
 				FilterExp:  "address->'zip'->>'code' = ?",
 				FilterArgs: []interface{}{100},
 				Sort:       []string{"lower(address->>'name')", "address->'zip'->>'code' desc", "age asc"},
+			},
+		},
+		{
+			name: "sort ->InterpretFieldSepAsNestedJsonbObjectMysql",
+			conf: Config{
+				Model: struct {
+					Age     int    `rql:"filter,sort"`
+					Name    string `rql:"filter,sort"`
+					Address struct {
+						Name string `rql:"filter,sort"`
+						ZIP  *struct {
+							Code int `rql:"filter,sort"`
+						}
+					}
+				}{},
+				FieldSep: ".",
+				InterpretFieldSepAsNestedJsonbObjectMysql: true,
+				DefaultLimit: 25,
+			},
+			input: []byte(`{
+								"filter": {
+									"address.zip.code": 100
+								},
+								"sort": ["address.name", "-address.zip.code", "+age"]
+							}`),
+			wantOut: &Params{
+				Limit:      25,
+				FilterExp:  "address->'$.zip.code' = ?",
+				FilterArgs: []interface{}{100}, //"address->'$.zip.code' desc"
+				Sort:       []string{"lower(address->'$.name')", "address->'$.zip.code' desc", "age asc"},
 			},
 		},
 		{
@@ -1126,6 +1157,23 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name: "abs",
+			conf: Config{
+				Model: struct {
+					Age int `rql:"filter,group,aggregate"`
+				}{},
+				DefaultLimit: 10,
+			},
+			input: []byte(`{
+				"select": ["age|abs"]
+				}`),
+			wantErr: false, // not supported
+			wantOut: &Params{
+				Select: []string{"ABS(age) AS age"},
+				Limit:  10,
+			},
+		},
+		{
 			name: "column in (?,?,?)",
 			conf: Config{
 				Model: struct {
@@ -1193,25 +1241,25 @@ func TestParse(t *testing.T) {
 				Limit: 25,
 			},
 		},
-		// {
-		// 	name: "is null or is not null",
-		// 	conf: Config{
-		// 		Model: struct {
-		// 			Name string `rql:"filter,group"`
-		// 			Age  int    `rql:"filter,group,aggregate"`
-		// 		}{},
-		// 	},
-		// 	input: []byte(`{
-		// 							"filter": {
-		// 								"name": { "$isnull": true },
-		// 								"age": { "$isnotnull": true }
-		// 							}
-		// 							}`),
-		// 	wantOut: &Params{
-		// 		FilterExp: "age IS NOT NULL AND name IS NULL",
-		// 		Limit:     25,
-		// 	},
-		// },
+		{
+			name: "is null or is not null",
+			conf: Config{
+				Model: struct {
+					Name string `rql:"filter"`
+					Age  int    `rql:"filter"`
+				}{},
+			},
+			input: []byte(`{
+									"filter": {
+										"name": { "$isnull": true },
+										"age": { "$isnotnull": true }
+									}
+									}`),
+			wantOut: &Params{
+				FilterExp: "name IS NULL AND age IS NOT NULL",
+				Limit:     25,
+			},
+		},
 	}
 	for _, tt := range tests {
 		fmt.Println("# " + tt.name)

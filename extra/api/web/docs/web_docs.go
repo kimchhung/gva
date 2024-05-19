@@ -14,63 +14,7 @@ const docTemplateweb = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {
-        "/": {
-            "get": {
-                "description": "Welcome",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Demo"
-                ],
-                "summary": "List all Demos",
-                "operationId": "welcome-all-Demos",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "response.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "description": "The Data field contains the actual response data"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "meta": {
-                    "description": "Meta provides additional information about the data, such as its type or kind.y."
-                }
-            }
-        }
-    },
+    "paths": {},
     "securityDefinitions": {
         "Bearer": {
             "description": "Type \"Bearer\" followed by a space and JWT token.",

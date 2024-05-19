@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	app_err "github.com/kimchhung/gva/extra/app/common/error"
+	apperror "github.com/kimchhung/gva/extra/app/common/error"
 )
 
 /*
@@ -101,7 +101,7 @@ func Status(status int) ReponseOption {
 	}
 }
 
-func Error(err *app_err.Error) ReponseOption {
+func Error(err *apperror.Error) ReponseOption {
 	return func(resp *Response) {
 		resp.Code = err.ErrorCode
 		resp.Message = err.Error()

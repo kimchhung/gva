@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -120,7 +121,7 @@ func Register(app fiber.Router, controller Controller) {
 			}
 
 			meta := &RouteMeta{
-				name:   fmt.Sprintf("%s.%s", controllerType.Elem().Name(), method.Name),
+				name:   strings.Replace(fmt.Sprintf("%v.%s", controllerType, method.Name), "*", "", 1),
 				method: "GET",
 				path:   "/",
 			}

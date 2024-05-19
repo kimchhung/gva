@@ -28,7 +28,7 @@ type Route struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// ParentID holds the value of the "parent_id" field.
-	ParentID *int `json:"parentId,omitempty"`
+	ParentID *int `json:"parentId,omitempty" rql:"filter,sort"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty" rql:"filter,sort"`
 	// Component holds the value of the "component" field.
@@ -40,7 +40,7 @@ type Route struct {
 	// Type holds the value of the "type" field.
 	Type route.Type `json:"type,omitempty" rql:"filter,sort"`
 	// Meta holds the value of the "meta" field.
-	Meta types.RouteMeta `json:"meta,omitempty" rql:"filter"`
+	Meta types.RouteMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RouteQuery when eager-loading is set.
 	Edges        RouteEdges `json:"edges" rql:"-"`

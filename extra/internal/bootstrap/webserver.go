@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	futils "github.com/gofiber/fiber/v2/utils"
 
-	"github.com/kimchhung/gva/extra/app/common/contexts"
+	appctx "github.com/kimchhung/gva/extra/app/common/context"
 	"github.com/kimchhung/gva/extra/app/middleware"
 	"github.com/kimchhung/gva/extra/app/router"
 	"github.com/kimchhung/gva/extra/lang"
@@ -34,7 +34,7 @@ func NewFiber(cfg *config.Config) *fiber.App {
 		Prefork:               cfg.App.Prefork,
 		IdleTimeout:           cfg.App.IdleTimeout * time.Second,
 		EnablePrintRoutes:     cfg.App.PrintRoutes,
-		ErrorHandler:          contexts.ErrorHandler,
+		ErrorHandler:          appctx.ErrorHandler,
 		DisableStartupMessage: false,
 		Immutable:             true,
 	})

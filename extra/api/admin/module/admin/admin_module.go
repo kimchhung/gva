@@ -1,24 +1,15 @@
 package admin
 
 import (
-	"github.com/kimchhung/gva/extra/api/admin/module/admin/controller"
-	"github.com/kimchhung/gva/extra/api/admin/module/admin/repository"
-	"github.com/kimchhung/gva/extra/api/admin/module/admin/service"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
-
+	"github.com/kimchhung/gva/extra/app/constant"
 	"go.uber.org/fx"
 )
 
 // Register bulkly
-var NewAdminModule = fx.Module("AdminModule",
-	// Register Repository & Service
-	fx.Provide(repository.NewAdminRepository),
-	fx.Provide(service.NewAdminService),
+var AdminModule = fx.Module("AdminModule",
+
+	fx.Provide(NewAdminService),
 
 	// Regiser Controller
-	fx.Provide(fx.Annotate(
-		controller.NewAdminController,
-		fx.As(new(rctrl.Controller)),
-		fx.ResultTags(`group:"admin-controllers"`),
-	)),
+	constant.ProvideAdminController(NewAdminController),
 )
