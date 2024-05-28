@@ -768,11 +768,10 @@ paths:
       description: Get a list of all Routes
       operationId: list-all-routes
       parameters:
-      - default: A
-        description: string default
+      - description: string default
         in: query
-        name: default
-        type: string
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:

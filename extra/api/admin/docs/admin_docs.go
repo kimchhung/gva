@@ -499,10 +499,9 @@ const docTemplateadmin = `{
                 "operationId": "list-all-routes",
                 "parameters": [
                     {
-                        "type": "string",
-                        "default": "A",
+                        "type": "integer",
                         "description": "string default",
-                        "name": "default",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],

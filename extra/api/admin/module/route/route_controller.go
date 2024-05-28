@@ -82,46 +82,6 @@ func (con *RouteController) Routes(m *rctrl.RouteMeta) rctrl.MetaHandler {
 }
 
 // @Tags        Route
-// @Summary     List all Routes
-// @Description Get a list of all Routes
-// @ID          list-all-routes
-// @Produce     json
-// @Success     200 {object} response.Response{data=map[string]dto.RouteResponse{list=[]dto.RouteResponse}} "Successfully retrieved Routes"
-// @Router      /route [get]
-// @Security    Bearer
-// @Param   	limit     query     int     false  "string default"     default(A)
-func (con *RouteController) RQL(m *rctrl.RouteMeta) rctrl.MetaHandler {
-	parser := request.MustRqlParser(rql.Config{
-		// Table:        route.Table,
-		Model:        ent.Route{},
-		DefaultLimit: 20,
-		DefaultSort:  []string{"-id"},
-		FieldSep:     ".",
-	})
-
-	return m.Get("/rql").DoWithScope(func() []fiber.Handler {
-		params := new(rql.Params)
-
-		return []fiber.Handler{
-			request.Parse(
-				request.RqlQueryParser(params, parser),
-				request.QueryParser(params),
-			),
-			func(c *fiber.Ctx) error {
-				data, err := con.route_s.RQL(c.UserContext(), params)
-				if err != nil {
-					return err
-				}
-
-				return request.Response(c,
-					response.Data(data),
-				)
-			},
-		}
-	})
-}
-
-// @Tags        Route
 // @Summary     Create a Route
 // @Description Create a Route
 // @ID          create-a-route

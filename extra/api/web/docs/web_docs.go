@@ -17,7 +17,6 @@ const docTemplateweb = `{
     "paths": {},
     "securityDefinitions": {
         "Bearer": {
-            "description": "Type \"Bearer\" followed by a space and JWT token.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -29,7 +28,7 @@ const docTemplateweb = `{
 var SwaggerInfoweb = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "",
+	BasePath:         "/web",
 	Schemes:          []string{},
 	Title:            "GVA Web API",
 	Description:      "GO VUE ADMIN Boilerplate",

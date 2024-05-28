@@ -60,7 +60,7 @@ type (
 )
 
 // default locale
-func Register() fiber.Handler {
+func Middleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		preferredLanguage := c.AcceptsLanguages("en", "zh")
 		if preferredLanguage == "" {
