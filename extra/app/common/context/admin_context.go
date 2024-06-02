@@ -7,7 +7,6 @@ import (
 
 	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/ent"
-	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -20,8 +19,6 @@ type (
 )
 
 type AdminContext struct {
-	context.Context
-
 	Admin *ent.Admin
 
 	isSuperAdmin bool
@@ -29,19 +26,14 @@ type AdminContext struct {
 }
 
 // a context help handling error
-func NewAdminContext(opts ...AdminContextOption) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			ctx := &AdminContext{}
-			ctx.Context = context.WithValue(c.Request().Context(), AdminContextKey{}, ctx)
-			for _, opt := range opts {
-				opt(ctx)
-			}
+func WithAdminContext(ctx context.Context, opts ...AdminContextOption) context.Context {
+	adminctx := new(AdminContext)
 
-			c.SetRequest(c.Request().WithContext(ctx))
-			return next(c)
-		}
+	for _, opt := range opts {
+		opt(adminctx)
 	}
+
+	return context.WithValue(ctx, &AdminContextKey{}, adminctx)
 }
 
 func (ctx *AdminContext) IsSuperAdmin() bool {
@@ -112,12 +104,7 @@ func WithAdmin(admin *ent.Admin) AdminContextOption {
 }
 
 func GetAdminContext(ctx context.Context) (*AdminContext, error) {
-	v, ok := ctx.(*AdminContext)
-	if ok {
-		return v, nil
-	}
-
-	v, ok = ctx.Value(AdminContextKey{}).(*AdminContext)
+	v, ok := ctx.Value(AdminContextKey{}).(*AdminContext)
 	if ok {
 		return v, nil
 	}

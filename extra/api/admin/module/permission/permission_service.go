@@ -3,7 +3,8 @@ package permission
 import (
 	"context"
 
-	repository "github.com/kimchhung/gva/extra/app/common/repository"
+	"github.com/kimchhung/gva/extra/api/admin/module/permission/dto"
+	"github.com/kimchhung/gva/extra/app/common/repository"
 	"github.com/kimchhung/gva/extra/internal/ent"
 )
 
@@ -17,6 +18,21 @@ func NewPermissionService(repository *repository.PermissionRepository) *Permissi
 	}
 }
 
-func (s *PermissionService) AllPermissions(ctx context.Context) ([]*ent.Permission, error) {
-	return s.repo.C().Query().All(ctx)
+func (s *PermissionService) toDto(value ...*ent.Permission) []*dto.PermissionResponse {
+	list := make([]*dto.PermissionResponse, len(value))
+	for i, v := range value {
+		list[i] = &dto.PermissionResponse{
+			Permission: v,
+		}
+	}
+
+	return list
+}
+
+func (s *PermissionService) AllPermissions(ctx context.Context) ([]*dto.PermissionResponse, error) {
+	data, err := s.repo.Q().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.toDto(data...), nil
 }

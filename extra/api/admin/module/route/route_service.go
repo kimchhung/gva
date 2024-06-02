@@ -2,7 +2,7 @@ package route
 
 import (
 	"github.com/kimchhung/gva/extra/api/admin/module/route/dto"
-	dbr "github.com/kimchhung/gva/extra/app/common/repository"
+	"github.com/kimchhung/gva/extra/app/common/repository"
 	"github.com/kimchhung/gva/extra/utils/pagi"
 	"github.com/kimchhung/gva/extra/utils/routeutil"
 
@@ -13,12 +13,12 @@ import (
 )
 
 type RouteService struct {
-	route_r *dbr.RouteRepository
+	repo *repository.RouteRepository
 }
 
-func NewRouteService(route_r *dbr.RouteRepository) *RouteService {
+func NewRouteService(repo *repository.RouteRepository) *RouteService {
 	return &RouteService{
-		route_r: route_r,
+		repo: repo,
 	}
 }
 
@@ -34,7 +34,7 @@ func (s *RouteService) toDto(value ...*ent.Route) []*dto.RouteResponse {
 }
 
 func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest) ([]*dto.RouteResponse, *pagi.Meta, error) {
-	query := s.route_r.Q(
+	query := s.repo.Q(
 		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
 		pagi.WithSort(p.Sort...),
 		pagi.WithSelect(p.Select...),
@@ -59,7 +59,7 @@ func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest
 }
 
 func (s *RouteService) GetRouteByID(ctx context.Context, id int) (*dto.RouteResponse, error) {
-	data, err := s.route_r.Q().Where(route.ID(id)).First(ctx)
+	data, err := s.repo.Q().Where(route.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (s *RouteService) GetRouteByID(ctx context.Context, id int) (*dto.RouteResp
 }
 
 func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*dto.RouteResponse, error) {
-	data, err := s.route_r.C().Create().
+	data, err := s.repo.C().Create().
 		SetComponent(r.Component).
 		SetPath(r.Path).
 		SetIsEnable(r.IsEnable).
@@ -84,7 +84,7 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*d
 }
 
 func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequest) (*dto.RouteResponse, error) {
-	data, err := s.route_r.C().UpdateOneID(id).
+	data, err := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
 		SetIsEnable(r.IsEnable).
@@ -101,5 +101,5 @@ func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequ
 }
 
 func (s *RouteService) DeleteRoute(ctx context.Context, id int) error {
-	return s.route_r.C().DeleteOneID(id).Exec(ctx)
+	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }

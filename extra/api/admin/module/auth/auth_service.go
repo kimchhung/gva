@@ -21,11 +21,11 @@ type AuthService struct {
 }
 
 // NewAuthService initializes a new AuthService with a JwtService and a UserStore.
-func NewAuthService(jwtService *service.JwtService, admin_r *repository.AdminRepository, passwordService *service.PasswordService) *AuthService {
+func NewAuthService(jwtService *service.JwtService, admin_r *repository.AdminRepository, password_s *service.PasswordService) *AuthService {
 	return &AuthService{
 		admin_r:    admin_r,
 		jwt_s:      jwtService,
-		password_s: passwordService,
+		password_s: password_s,
 	}
 }
 
@@ -51,8 +51,8 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, dto *dto.RegisterReques
 
 	// Generate a JWT token for the authenticated user
 	token, err := s.jwt_s.GenerateToken(
-		service.AddTokenPayload("id", fmt.Sprintf("%d", admin.ID)),
-		service.AddTokenExpiredAt(time.Now().Add(time.Hour*300)),
+		s.jwt_s.AddClaimPayload("id", fmt.Sprintf("%d", admin.ID)),
+		s.jwt_s.AddTokenExpiredAt(time.Now().Add(time.Hour*300)),
 	)
 
 	if err != nil {
@@ -85,8 +85,8 @@ func (s *AuthService) LoginAdmin(ctx context.Context, dto *dto.LoginRequest) (st
 
 	// Generate a JWT token for the authenticated user
 	token, err := s.jwt_s.GenerateToken(
-		service.AddTokenPayload("id", fmt.Sprintf("%d", admin.ID)),
-		service.AddTokenExpiredAt(time.Now().Add(time.Hour*300)),
+		s.jwt_s.AddClaimPayload("id", fmt.Sprintf("%d", admin.ID)),
+		s.jwt_s.AddTokenExpiredAt(time.Now().Add(time.Hour*300)),
 	)
 
 	if err != nil {

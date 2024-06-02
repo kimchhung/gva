@@ -17,25 +17,25 @@ type AuthController struct {
 	jwt_s   *service.JwtService
 }
 
+func NewAuthController(service *AuthService, jwt_s *service.JwtService) *AuthController {
+	return &AuthController{
+		service: service,
+		jwt_s:   jwt_s,
+	}
+}
+
 func (con *AuthController) Init(r *echo.Group) *echo.Group {
 	return r.Group("/auth")
 }
 
-func NewAuthController(service *AuthService, jwtService *service.JwtService) *AuthController {
-	return &AuthController{
-		service: service,
-		jwt_s:   jwtService,
-	}
-}
-
 // @Tags			Auth
-// @Summary		Authenticate a admin
-// @Description	Authenticate a admin with the provided credentials
+// @Summary			Authenticate a admin
+// @Description		Authenticate a admin with the provided credentials
 // @ID				create-Auth
 // @Accept			json
-// @Produce		json
-// @Param			Auth	body		dto.LoginRequest																true	"Auth data"
-// @Success		200		{object}	response.Response{data=map[string]dto.LoginResponse{list=[]dto.LoginResponse}}	"Successfully created Auth"
+// @Produce			json
+// @Param			Auth	body		dto.LoginRequest	true	"Auth data"
+// @Success			200		{object}	response.Response{data=dto.LoginRespons}	"Successfully created Auth"
 // @Router			/auth/login [post]
 func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/login").DoWithScope(func() []echo.HandlerFunc {
@@ -52,7 +52,7 @@ func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 					return err
 				}
 
-				res := dto.LoginResponse{
+				res := &dto.LoginResponse{
 					Token: token,
 					Admin: admin,
 				}
@@ -67,13 +67,13 @@ func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 }
 
 // @Tags			Auth
-// @Summary		Register a new admin
-// @Description	Register a new admin with the provided credentials
+// @Summary			Register a new admin
+// @Description		Register a new admin with the provided credentials
 // @ID				create-Auth-register
 // @Accept			json
-// @Produce		json
-// @Param			Auth	body		dto.RegisterRequest								true	"Registration data"
-// @Success		200		{object}	response.Response{data=dto.RegisterResponse}	"Successfully registered admin"
+// @Produce			json
+// @Param			Auth	body		dto.RegisterRequest		true	"Registration data"
+// @Success			200		{object}	response.Response{data=dto.RegisterResponse}	"Successfully registered admin"
 // @Router			/auth/register [post]
 func (con *AuthController) Register(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/register").DoWithScope(func() []echo.HandlerFunc {

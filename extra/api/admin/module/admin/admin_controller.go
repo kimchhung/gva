@@ -88,9 +88,9 @@ func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Accept		json
 // @Produce		json
 // @Success		200	{object}	response.Response{}	"Successfully retrieved Admin routes"
-// @Router		/admins/route [get]
+// @Router		/admins/routes [get]
 func (con *AdminController) AdminRoutes(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/route").DoWithScope(func() []echo.HandlerFunc {
+	return meta.Get("/routes").DoWithScope(func() []echo.HandlerFunc {
 		adminCtx := new(appctx.AdminContext)
 
 		return []echo.HandlerFunc{
@@ -118,10 +118,10 @@ func (con *AdminController) AdminRoutes(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Accept		json
 // @Produce		json
 // @Success		200	{object}	response.Response{}	"Successfully retrieved Admin permissionissions"
-// @Router		/admins/permission [get]
+// @Router		/admins/permissions [get]
 func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/permission").DoWithScope(func() []echo.HandlerFunc {
-		var admin *ent.Admin
+	return meta.Get("/permissions").DoWithScope(func() []echo.HandlerFunc {
+		admin := new(ent.Admin)
 
 		return []echo.HandlerFunc{
 			request.MustAdmin(admin),
@@ -152,10 +152,9 @@ func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHan
 // @Router		/admins/{id} [get]
 func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
-
-		param := &struct {
-			ID int `params:"id" validate:"gte=0"`
-		}{}
+		param := new(struct {
+			ID int `param:"id" validate:"gte=0"`
+		})
 
 		return []echo.HandlerFunc{
 			permission.RequireAny(
@@ -229,9 +228,9 @@ func (con *AdminController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Router		/admins/{id} [patch]
 func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Patch("/:id").DoWithScope(func() []echo.HandlerFunc {
-		req := new(dto.AdminRequest)
+		body := new(dto.AdminRequest)
 		param := new(struct {
-			ID int `params:"id" validate:"gt=0"`
+			ID int `param:"id" validate:"gt=0"`
 		})
 
 		return []echo.HandlerFunc{
@@ -241,10 +240,10 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 			),
 			request.Validate(
 				request.ParamsParser(param),
-				request.BodyParser(req),
+				request.BodyParser(body),
 			),
 			func(c echo.Context) error {
-				data, err := con.service.UpdateAdmin(c.Request().Context(), param.ID, req)
+				data, err := con.service.UpdateAdmin(c.Request().Context(), param.ID, body)
 				if err != nil {
 					return err
 				}
@@ -270,7 +269,7 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 func (con *AdminController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		param := new(struct {
-			ID int `params:"id" validate:"gte=0"`
+			ID int `param:"id" validate:"gte=0"`
 		})
 
 		return []echo.HandlerFunc{

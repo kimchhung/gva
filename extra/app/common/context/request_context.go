@@ -101,7 +101,7 @@ func defaultLogFields(c echo.Context) *logFields {
 }
 
 // a context help handling error
-func NewRequestContext() echo.MiddlewareFunc {
+func Middleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c echo.Context) (err error) {

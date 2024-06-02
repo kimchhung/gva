@@ -36,7 +36,7 @@ func (m *Middleware) Register() {
 
 	// language and recover error handling
 	m.app.Pre(
-		appctx.NewRequestContext(),
+		appctx.Middleware(),
 		lang.Middleware(),
 	)
 

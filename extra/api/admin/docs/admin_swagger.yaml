@@ -611,7 +611,7 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
-  /admins/permission:
+  /admins/permissions:
     get:
       consumes:
       - application/json
@@ -629,7 +629,7 @@ paths:
       summary: Get Admin permissionissions
       tags:
       - Admin
-  /admins/route:
+  /admins/routes:
     get:
       consumes:
       - application/json

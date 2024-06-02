@@ -69,7 +69,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHa
 func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
-			ID int %sparams:"id" validate:"gt=0"%s
+			ID int %sparam:"id" validate:"gt=0"%s
 		}{}
 
 		return []echo.HandlerFunc{
@@ -141,7 +141,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.{{.EntityPascal}}Request)
 		param := &struct {
-			ID int %sparams:"id" validate:"gt=0"%s
+			ID int %sparam:"id" validate:"gt=0"%s
 		}{}
 
 		return []echo.HandlerFunc{
@@ -177,7 +177,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
-			ID int %sparams:"id" validate:"gt=0"%s
+			ID int %sparam:"id" validate:"gt=0"%s
 		}{}
 
 		return []echo.HandlerFunc{

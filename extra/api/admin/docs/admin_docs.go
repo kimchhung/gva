@@ -112,7 +112,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admins/permission": {
+        "/admins/permissions": {
             "get": {
                 "security": [
                     {
@@ -141,7 +141,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admins/route": {
+        "/admins/routes": {
             "get": {
                 "security": [
                     {

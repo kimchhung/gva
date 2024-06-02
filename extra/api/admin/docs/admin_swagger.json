@@ -106,7 +106,7 @@
                 }
             }
         },
-        "/admins/permission": {
+        "/admins/permissions": {
             "get": {
                 "security": [
                     {
@@ -135,7 +135,7 @@
                 }
             }
         },
-        "/admins/route": {
+        "/admins/routes": {
             "get": {
                 "security": [
                     {

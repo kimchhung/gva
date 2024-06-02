@@ -43,8 +43,11 @@ func (s *JwtService) RequiredAdmin() echo.MiddlewareFunc {
 				return apperror.ErrUnauthorized
 			}
 
-			md := appctx.NewAdminContext(appctx.WithAdmin(admin))
-			return md(next)(c)
+			ctx := c.Request().Context()
+			ctx = appctx.WithAdminContext(ctx, appctx.WithAdmin(admin))
+
+			c.SetRequest(c.Request().WithContext(ctx))
+			return next(c)
 		}
 	}
 }
@@ -104,7 +107,6 @@ type ClaimValidator func(claims jwt.MapClaims) error
 
 // ValidateToken validates the provided JWT token and returns the user ID if valid.
 func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (jwt.MapClaims, error) {
-	fmt.Println("token", tokenString, s.cfg.Jwt)
 	// Parse the token
 	token, err := jwt.Parse(tokenString,
 		func(token *jwt.Token) (interface{}, error) {
@@ -133,13 +135,13 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 	return nil, fmt.Errorf("invalid token")
 }
 
-func AddTokenPayload(key string, value string) ClaimOption {
+func (s *JwtService) AddClaimPayload(key string, value string) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims[key] = value
 	}
 }
 
-func AddTokenExpiredAt(deadline time.Time) ClaimOption {
+func (s *JwtService) AddTokenExpiredAt(deadline time.Time) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims["exp"] = deadline.Unix()
 	}
