@@ -1,6 +1,7 @@
 package permission
 
 import (
+	"log"
 	"strings"
 
 	appctx "github.com/kimchhung/gva/extra/app/common/context"
@@ -43,6 +44,8 @@ func RequireAny(permissions ...PermissionKey) echo.HandlerFunc {
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}
+
+		log.Println(adminCtx.IsSuperAdmin(), adminCtx.Admin)
 
 		rolePermissionsSet := make(map[string]struct{})
 		for _, rolePermission := range adminCtx.PermissionNames() {

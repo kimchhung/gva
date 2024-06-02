@@ -67,6 +67,11 @@ func MessageFunc(fn func(message string) string) Option {
 // Add prefix to original message
 func Prefix(localeOpt lang.LocaleOption, prefix string) Option {
 	return func(err *Error) {
+		if localeOpt == nil {
+			err.Message = prefix + err.Message
+			return
+		}
+
 		translated := lang.T(localeOpt, err.Message)
 		err.isDisableTranslate = true
 		if !lang.Is(localeOpt, lang.LocaleZH) {
@@ -77,14 +82,19 @@ func Prefix(localeOpt lang.LocaleOption, prefix string) Option {
 }
 
 // Add sufic to original message
-func Suffix(localeOpt lang.LocaleOption, prefix string) Option {
+func Suffix(localeOpt lang.LocaleOption, suffic string) Option {
 	return func(err *Error) {
+		if localeOpt == nil {
+			err.Message = err.Message + suffic
+			return
+		}
+
 		translated := lang.T(localeOpt, err.Message)
 		err.isDisableTranslate = true
 		if !lang.Is(localeOpt, lang.LocaleZH) {
-			prefix = " " + prefix
+			suffic = " " + suffic
 		}
-		err.Message = translated + prefix
+		err.Message = translated + suffic
 	}
 }
 

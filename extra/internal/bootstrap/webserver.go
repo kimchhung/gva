@@ -29,7 +29,7 @@ func NewEcho(cfg *config.Config) *echo.Echo {
 	request.IsProduction = cfg.App.Production
 
 	e := echo.New()
-	e.Server.IdleTimeout = cfg.App.IdleTimeout * time.Second
+	e.Server.IdleTimeout = time.Duration(cfg.App.IdleTimeout) * time.Second
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		appctx.ErrorHandler(err, c)
 	}
@@ -50,11 +50,10 @@ func printStartupMessage(cfg *config.Config) {
 
 	if cfg.API.Web.Enable {
 		url := host + ":" + port + cfg.API.Web.BasePath
-
 		row := []any{"Web", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
-			row = append(row, color.Cyan(url+"/doc"))
+			row = append(row, color.Cyan(url+cfg.Middleware.Swagger.Path))
 		}
 
 		table.AddRow(row...)
@@ -65,7 +64,7 @@ func printStartupMessage(cfg *config.Config) {
 		row := []any{"Admin", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
-			row = append(row, color.Cyan(url+"/doc"))
+			row = append(row, color.Cyan(url+cfg.Middleware.Swagger.Path))
 		}
 
 		table.AddRow(row...)
@@ -77,18 +76,13 @@ func printStartupMessage(cfg *config.Config) {
 }
 
 func printRoutes(routes []*echo.Route) {
-	// Create a new table
 	table := uitable.New()
-
-	// Set the table headers
-
 	table.AddRow("Method", "Path", "Name")
 	for _, r := range routes {
 		table.AddRow(color.MethodColor(r.Method), color.Yellow(r.Path), color.Cyan(r.Name))
 	}
 
 	table.Wrap = true
-
 	// Print the table
 	fmt.Print("\n ------------- Routes --------------- \n\n")
 	fmt.Println(table)
@@ -104,25 +98,34 @@ func Start(
 	database *database.Database,
 	log *zerolog.Logger,
 ) {
+
+	isShuttingdown := false
 	lifecycle.Append(fx.StartHook(
 		func(ctx context.Context) error {
 			// Register middlewares & routes
 			middlewares.Register()
-			routers.Register(app, cfg, database)
+			routers.Register(app, cfg)
 
 			// Initailize validator and translator
 			if err := lang.InitializeTranslator(); err != nil {
-				return err
+				log.Panic().Err(err).Msg("failed to initialize translator!")
 			}
 
 			if err := validator.InitializeValidator(); err != nil {
-				return err
+				log.Panic().Err(err).Msg("failed to initialize validator!")
 			}
 
 			// Connect db
 			if err := database.ConnectDatabase(); err != nil {
-				return err
+				log.Panic().Err(err).Msg("failed to connect to db!")
 			}
+
+			app.Server.RegisterOnShutdown(func() {
+				log.Info().Msg("1- Shutdown the database")
+				if err := database.ShutdownDatabase(); err != nil {
+					log.Err(err).Msg("failed to shutdown db!")
+				}
+			})
 
 			if cfg.App.PrintRoutes {
 				printRoutes(app.Routes())
@@ -131,17 +134,25 @@ func Start(
 			printStartupMessage(cfg)
 
 			// Listen the app (with TLS Support)
-			if cfg.App.TLS.Enable {
+			if cfg.App.TLS.Auto {
+				log.Info().Msg("Auto TLS support was enabled.")
+
+				go func() {
+					if err := app.StartAutoTLS(cfg.App.Port); err != nil && !isShuttingdown {
+						log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
+					}
+				}()
+			} else if cfg.App.TLS.Enable {
 				log.Info().Msg("TLS support was enabled.")
 
 				go func() {
-					if err := app.StartTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil {
+					if err := app.StartTLS(cfg.App.Port, cfg.App.TLS.CertFile, cfg.App.TLS.KeyFile); err != nil && !isShuttingdown {
 						log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
 					}
 				}()
 			} else {
 				go func() {
-					if err := app.Start(cfg.App.Port); err != nil {
+					if err := app.Start(cfg.App.Port); err != nil && !isShuttingdown {
 						log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
 					}
 				}()
@@ -153,16 +164,15 @@ func Start(
 
 	lifecycle.Append(fx.StopHook(
 		func(ctx context.Context) error {
+			isShuttingdown = true
+			ctx, cancel := context.WithTimeout(ctx, time.Duration(cfg.App.ShutdownTimeout)*time.Second)
+			defer cancel()
+
 			log.Info().Msg("Shutting down the app...")
+			log.Info().Msg("Running cleanup tasks...")
+
 			if err := app.Shutdown(ctx); err != nil {
 				log.Panic().Err(err).Msg("")
-			}
-
-			log.Info().Msg("Running cleanup tasks...")
-			log.Info().Msg("1- Shutdown the database")
-
-			if err := database.ShutdownDatabase(); err != nil {
-				return err
 			}
 
 			log.Info().Msgf("%s was successful shutdown.", cfg.App.Name)

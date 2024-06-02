@@ -1,7 +1,6 @@
 package router
 
 import (
-	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/app/constant"
 	"github.com/kimchhung/gva/extra/internal/echoc"
 	"github.com/labstack/echo/v4"
@@ -26,10 +25,6 @@ func (r *Router) Register(app *echo.Echo, args ...any) {
 	for _, r := range r.modules {
 		r.Register(app, args...)
 	}
-
-	app.RouteNotFound("/*", func(c echo.Context) error {
-		return apperror.ErrNotFound
-	})
 }
 
 func WithRouter(modules ...fx.Option) []fx.Option {

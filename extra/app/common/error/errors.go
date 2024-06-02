@@ -53,6 +53,7 @@ var (
 	ErrNotFound        = newError(http.StatusNotFound, -9, "not_found")
 	ErrInvalidToken    = newError(http.StatusForbidden, -10, "invalid_token")
 	ErrTooManyRetries  = newError(http.StatusForbidden, -11, "too_many_retries")
+	ErrRoueNotFound    = newError(http.StatusNotFound, -12, "route_not_found")
 
 	// users
 	ErrPasswordValidationError = newError(http.StatusBadRequest, -501, "wrong_password")

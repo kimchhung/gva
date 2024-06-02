@@ -6,6 +6,11 @@
   },
   {
     "locale": "zh",
+    "key": "route_not_found",
+    "trans": "找不到路线"
+  },
+  {
+    "locale": "zh",
     "key": "validation_error",
     "trans": "验证错误"
   },

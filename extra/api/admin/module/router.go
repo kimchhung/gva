@@ -28,7 +28,7 @@ func (r *Router) Register(app *echo.Echo, args ...any) {
 	utils.SetIfEmpty(&cfg.API.Admin.BasePath, "/admin/v1")
 	docs.SwaggerInfoadmin.BasePath = cfg.API.Admin.BasePath
 
-	swagger.Register(app, cfg.API.Web.BasePath, cfg.Middleware.Swagger.Path,
+	swagger.Register(app, cfg.API.Admin.BasePath, cfg.Middleware.Swagger.Path,
 		echoSwagger.InstanceName(docs.SwaggerInfoadmin.InstanceName()),
 		echoSwagger.PersistAuthorization(true),
 		echoSwagger.SyntaxHighlight(true),

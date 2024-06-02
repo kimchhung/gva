@@ -93,7 +93,7 @@ func defaultLogFields(c echo.Context) *logFields {
 		RemoteIP: c.RealIP(),
 		Method:   req.Method,
 		Host:     req.Host,
-		Path:     c.Path(),
+		Path:     req.URL.Path,
 		Protocol: req.Proto,
 	}
 

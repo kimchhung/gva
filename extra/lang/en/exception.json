@@ -6,6 +6,11 @@
   },
   {
     "locale": "en",
+    "key": "route_not_found",
+    "trans": "Route not found"
+  },
+  {
+    "locale": "en",
     "key": "validation_error",
     "trans": "Validation error"
   },

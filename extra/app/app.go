@@ -21,14 +21,14 @@ func New(cfg *config.Config, opts ...fx.Option) *fx.App {
 		/* Common Module */
 		common.NewCommonModule,
 
-		// Start Application
-		fx.Invoke(bootstrap.Start),
-
 		// Define logger
 		fx.WithLogger(fxzerolog.InitPtr()),
 
 		/* add web or admin modules */
 		fx.Module("api", opts...),
+
+		// Start Application, execute on run
+		fx.Invoke(bootstrap.Start),
 	)
 }
 

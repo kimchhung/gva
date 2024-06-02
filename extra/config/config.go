@@ -1,24 +1,24 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strings"
-	"time"
 
-	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 type (
 	app = struct {
-		Name        string        `toml:"name"`
-		Port        string        `toml:"port"`
-		PrintRoutes bool          `toml:"print_routes"`
-		Production  bool          `toml:"production"`
-		IdleTimeout time.Duration `toml:"idle_timeout"`
-		TLS         struct {
+		Name            string `toml:"name"`
+		Port            string `toml:"port"`
+		PrintRoutes     bool   `toml:"print_routes"`
+		Production      bool   `toml:"production"`
+		IdleTimeout     int64  `toml:"idle_timeout"`
+		ShutdownTimeout int64  `toml:"shutdown_timeout"`
+		TLS             struct {
+			Auto     bool
 			Enable   bool
 			CertFile string `toml:"cert_file"`
 			KeyFile  string `toml:"key_file"`
@@ -60,7 +60,7 @@ type (
 		}
 		Compress struct {
 			Enable bool
-			Level  compress.Level
+			Level  int
 		}
 		Monitor struct {
 			Enable bool
@@ -73,13 +73,6 @@ type (
 			Enable  bool
 			Max     int
 			ExpSecs int64 `toml:"expiration_seconds"`
-		}
-		Filesystem struct {
-			Enable bool
-			Browse bool
-			MaxAge int `toml:"max_age"`
-			Index  string
-			Root   string
 		}
 	}
 
@@ -117,13 +110,12 @@ func ParseConfig(name string) (*Config, error) {
 func NewConfig() *Config {
 	config, err := ParseConfig(".env")
 	if err != nil {
-		fmt.Printf("errrr %v : %v", err, config)
+		log.Panic().Err(err).Msg("failed to parse config")
 	}
 
 	return config
 }
 
-// ParseAddr From https://github.com/gofiber/fiber/blob/master/helpers.go#L305.
 func ParseAddr(raw string) (host, port string) {
 	if i := strings.LastIndex(raw, ":"); i != -1 {
 		return raw[:i], raw[i+1:]

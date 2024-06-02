@@ -34,17 +34,13 @@ func NewMiddleware(app *echo.Echo, cfg *config.Config, log *zerolog.Logger) *Mid
 func (m *Middleware) Register() {
 	mdCfg := m.cfg.Middleware
 
-	if mdCfg.Filesystem.Enable {
-		m.app.Static("/public/", "storage/public")
-	}
-
-	m.app.Pre(middleware.RemoveTrailingSlash())
-
 	// language and recover error handling
 	m.app.Pre(
 		appctx.NewRequestContext(),
 		lang.Middleware(),
 	)
+
+	m.app.Use(middleware.RemoveTrailingSlash())
 
 	// cors
 	m.app.Use(middleware.CORS())
@@ -75,22 +71,15 @@ func (m *Middleware) Register() {
 
 	// compress
 	m.app.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Level: int(mdCfg.Compress.Level),
-		Skipper: func(c echo.Context) bool {
-			if !mdCfg.Compress.Enable {
-				return false
-			}
-
-			return strings.Contains(c.Path(), "/doc")
-		},
+		Level:   mdCfg.Compress.Level,
+		Skipper: utils.IsEnabled(mdCfg.Compress.Enable),
 	}))
 
 	// monitor
 	if mdCfg.Monitor.Enable {
 		m.app.Use(echoprometheus.NewMiddlewareWithConfig(echoprometheus.MiddlewareConfig{
 			Skipper: func(c echo.Context) bool {
-
-				return strings.Contains(c.Path(), "/doc") || strings.Contains(c.Path(), mdCfg.Monitor.Path)
+				return strings.Contains(c.Path(), mdCfg.Monitor.Path)
 			},
 		})) // adds middleware to gather metrics
 		m.app.GET(mdCfg.Monitor.Path, echoprometheus.NewHandler()) // adds route to serve gathered metrics

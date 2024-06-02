@@ -24,6 +24,7 @@ var (
 // @securityDefinitions.apikey	Bearer
 // @in							header
 // @name						Authorization
+// @Param   accept-language  header     string     false  "some description"
 func Run() {
 	// * Run only web api
 

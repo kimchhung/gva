@@ -2,6 +2,8 @@ package lang
 
 import (
 	"context"
+
+	"github.com/labstack/echo/v4"
 )
 
 func Locale(locale LocaleType) LocaleOption {
@@ -14,6 +16,14 @@ func Locale(locale LocaleType) LocaleOption {
 func ForContext(ctx context.Context) LocaleOption {
 	return func(c *Config) {
 		if locale, ok := ctx.Value(langKey{}).(string); ok {
+			c.locale = LocaleType(locale)
+		}
+	}
+}
+
+func ForEcho(ctx echo.Context) LocaleOption {
+	return func(c *Config) {
+		if locale, ok := ctx.Request().Context().Value(langKey{}).(string); ok {
 			c.locale = LocaleType(locale)
 		}
 	}

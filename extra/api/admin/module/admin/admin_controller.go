@@ -8,6 +8,7 @@ import (
 	"github.com/kimchhung/gva/extra/api/admin/module/admin/dto"
 	appctx "github.com/kimchhung/gva/extra/app/common/context"
 	"github.com/kimchhung/gva/extra/app/common/permission"
+	"github.com/kimchhung/gva/extra/app/common/service"
 	"github.com/kimchhung/gva/extra/internal/echoc"
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/request"
@@ -19,16 +20,18 @@ var _ interface{ echoc.Controller } = (*AdminController)(nil)
 
 type AdminController struct {
 	service *AdminService
+	jwt_s   *service.JwtService
+}
+
+func NewAdminController(service *AdminService, jwt_s *service.JwtService) *AdminController {
+	return &AdminController{
+		service: service,
+		jwt_s:   jwt_s,
+	}
 }
 
 func (con *AdminController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/admins")
-}
-
-func NewAdminController(service *AdminService) *AdminController {
-	return &AdminController{
-		service: service,
-	}
+	return r.Group("/admins", con.jwt_s.RequiredAdmin())
 }
 
 // @Tags		Admin
@@ -41,6 +44,7 @@ func NewAdminController(service *AdminService) *AdminController {
 // @Success		200	{object}	response.Response{data=[]ent.Admin,meta=pagi.Meta}	"Successfully retrieved Admins"
 // @Router		/admins [get]
 func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
+
 	// init parser once and reused
 	parser := request.MustRqlParser(rql.Config{
 		// Table:        admin.Table,
@@ -148,6 +152,7 @@ func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHan
 // @Router		/admins/{id} [get]
 func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
+
 		param := &struct {
 			ID int `params:"id" validate:"gte=0"`
 		}{}

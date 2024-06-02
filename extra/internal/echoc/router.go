@@ -145,13 +145,11 @@ func AddRoute(r *echo.Group, meta *RouteMeta) {
 		return nil
 	}
 
-	// fiber auto register route head with get
-	// uncomment if this if need
-
-	// if meta.method == http.MethodGet {
-	// 	r.Get(meta.path, append(meta.middlewares, handler)...).Name(meta.name)
-	// 	return
-	// }
+	if meta.path != "" {
+		if last := []rune(meta.path)[len(meta.path)-1]; last == '/' {
+			meta.path = strings.TrimSuffix(meta.path, "/")
+		}
+	}
 
 	e := r.Add(meta.method, meta.path, handler, meta.middlewares...)
 	e.Name = meta.name

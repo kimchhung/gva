@@ -119,9 +119,25 @@ https://github.com/a8m/rql
 */
 func RqlQueryParser(out *rql.Params, parser *rql.Parser) Parser {
 	return func(c echo.Context) (any, error) {
-		str := ParseUrlQuery(c.QueryString())
+		var (
+			param *rql.Params
+			err   error
+		)
 
-		param, err := parser.Parse([]byte(str))
+		query := c.QueryString()
+
+		if query != "" {
+			str := ParseUrlQuery(query)
+			param, err = parser.Parse([]byte(str))
+		} else {
+			param, err = parser.ParseQuery(
+				&rql.Query{
+					Limit:  20,
+					Offset: 0,
+				},
+			)
+		}
+
 		if err != nil {
 			return nil, app_err.NewError(
 				app_err.ErrBadRequest,
