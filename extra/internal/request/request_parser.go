@@ -1,17 +1,18 @@
 package request
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
-type Parser func(*fiber.Ctx) (any, error)
+type Parser func(c echo.Context) (any, error)
+
+var binder = &echo.DefaultBinder{}
 
 /*
 BodyParser(&Person{})
 
-	type Person struct {
-	    Name string `json:"name" xml:"name" form:"name"`
-	    Pass string `json:"pass" xml:"pass" form:"pass"`
+	type User struct {
+	  ID string `param:"id" query:"id" form:"id" json:"id" xml:"id"`
 	}
 
 Swagger
@@ -20,8 +21,8 @@ Swagger
 	// @Param 		info body dto.RouteRequest true "Route Info"
 */
 func BodyParser(out any) Parser {
-	return func(c *fiber.Ctx) (any, error) {
-		return out, c.BodyParser(out)
+	return func(c echo.Context) (any, error) {
+		return out, binder.BindBody(c, out)
 	}
 }
 
@@ -40,15 +41,15 @@ Swagger
 	// @Param       person query dto.Person true "person info"
 */
 func QueryParser(out any) Parser {
-	return func(c *fiber.Ctx) (any, error) {
-		return out, c.QueryParser(out)
+	return func(c echo.Context) (any, error) {
+		return out, binder.BindQueryParams(c, out)
 	}
 }
 
 /*
 ParamsParser(&param{})
 
-	param := new(struct {ID uint `params:"id"`})
+	param := new(struct {ID uint `param:"id"`})
 
 Swagger
 
@@ -56,7 +57,7 @@ Swagger
 	// @Param       id path int true "Route ID"
 */
 func ParamsParser(out any) Parser {
-	return func(c *fiber.Ctx) (any, error) {
-		return out, c.ParamsParser(out)
+	return func(c echo.Context) (any, error) {
+		return out, binder.BindPathParams(c, out)
 	}
 }

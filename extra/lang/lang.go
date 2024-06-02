@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 )
 
@@ -60,16 +60,21 @@ type (
 )
 
 // default locale
-func Middleware() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		preferredLanguage := c.AcceptsLanguages("en", "zh")
-		if preferredLanguage == "" {
-			preferredLanguage = "en"
-		}
+func Middleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			preferredLanguage := LocaleType(c.Request().Header.Get("Accept-Language"))
+			switch preferredLanguage {
+			case "zh", "zh-CN":
+				preferredLanguage = LocaleZH
+			default:
+				preferredLanguage = LocaleEN
+			}
 
-		ctx := context.WithValue(c.UserContext(), langKey{}, preferredLanguage)
-		c.SetUserContext(ctx)
-		return c.Next()
+			ctx := context.WithValue(c.Request().Context(), langKey{}, preferredLanguage)
+			c.SetRequest(c.Request().WithContext(ctx))
+			return next(c)
+		}
 	}
 }
 

@@ -14,7 +14,99 @@ const docTemplateweb = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/now": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Time"
+                ],
+                "summary": "Current Server Time",
+                "operationId": "now",
+                "responses": {
+                    "200": {
+                        "description": "format time.RFC3339",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/sse/now": {
+            "get": {
+                "consumes": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Time"
+                ],
+                "summary": "SSE Current Server Time",
+                "operationId": "sse-now",
+                "responses": {
+                    "200": {
+                        "description": "format time.RFC3339",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/ws/now": {
+            "get": {
+                "consumes": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Time"
+                ],
+                "summary": "WS Current Server Time",
+                "operationId": "ws-now",
+                "responses": {
+                    "200": {
+                        "description": "format time.RFC3339",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "The Data field contains the actual response data"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "description": "Meta provides additional information about the data, such as its type or kind.y."
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",
@@ -28,7 +120,7 @@ const docTemplateweb = `{
 var SwaggerInfoweb = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/web",
+	BasePath:         "/web/v1",
 	Schemes:          []string{},
 	Title:            "GVA Web API",
 	Description:      "GO VUE ADMIN Boilerplate",

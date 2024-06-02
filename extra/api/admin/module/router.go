@@ -1,44 +1,41 @@
 package module
 
 import (
-	"github.com/gofiber/contrib/swagger"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 
-	"github.com/kimchhung/gva/extra/api/admin/docs"
+	docs "github.com/kimchhung/gva/extra/api/admin/docs"
 	"github.com/kimchhung/gva/extra/config"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/echoc"
 	"github.com/kimchhung/gva/extra/utils"
+	"github.com/kimchhung/gva/extra/utils/swagger"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-var _ interface{ rctrl.ModuleRouter } = (*Router)(nil)
+var _ interface{ echoc.ModuleRouter } = (*Router)(nil)
 
 type Router struct {
-	controllers []rctrl.Controller
+	controllers []echoc.Controller
 }
 
-func NewRouter(controllers []rctrl.Controller) *Router {
+func NewRouter(controllers []echoc.Controller) *Router {
 	return &Router{controllers}
 }
 
-func (r *Router) Register(app fiber.Router, args ...any) {
+func (r *Router) Register(app *echo.Echo, args ...any) {
 	cfg := args[0].(*config.Config)
 
 	//default value if not exist in env config
-	utils.SetIfEmpty(&cfg.API.Admin.BasePath, "/admin")
+	utils.SetIfEmpty(&cfg.API.Admin.BasePath, "/admin/v1")
 	docs.SwaggerInfoadmin.BasePath = cfg.API.Admin.BasePath
 
-	api := app.Group(cfg.API.Admin.BasePath,
-		swagger.New(swagger.Config{
-			Next:     utils.IsEnabled(cfg.Middleware.Swagger.Enable),
-			BasePath: cfg.API.Admin.BasePath,
-			FilePath: "./api/admin/docs/admin_swagger.json",
-			Path:     "swagger",
-			Title:    "admin API Docs",
-			CacheAge: -1,
-		}),
+	swagger.Register(app, cfg.API.Web.BasePath, cfg.Middleware.Swagger.Path,
+		echoSwagger.InstanceName(docs.SwaggerInfoadmin.InstanceName()),
+		echoSwagger.PersistAuthorization(true),
+		echoSwagger.SyntaxHighlight(true),
 	)
 
+	api := app.Group(cfg.API.Admin.BasePath)
 	for _, controller := range r.controllers {
-		rctrl.Register(api, controller)
+		echoc.Register(api, controller)
 	}
 }

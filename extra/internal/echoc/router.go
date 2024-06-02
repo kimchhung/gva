@@ -1,4 +1,4 @@
-package rctrl
+package echoc
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
 type (
@@ -16,16 +16,16 @@ type (
 		path   string
 		name   string
 
-		middlewares []fiber.Handler
-		handlers    []fiber.Handler
+		middlewares []echo.MiddlewareFunc
+		handlers    []echo.HandlerFunc
 	}
 
-	MetaHandler = func() []fiber.Handler
+	MetaHandler = func() []echo.HandlerFunc
 	MetaFunc    = func(meta *RouteMeta) MetaHandler
 )
 
 // Set add middlewares to current route
-func (r *RouteMeta) Use(middlewares ...fiber.Handler) *RouteMeta {
+func (r *RouteMeta) Use(middlewares ...echo.MiddlewareFunc) *RouteMeta {
 	r.middlewares = append(r.middlewares, middlewares...)
 	return r
 }
@@ -77,9 +77,9 @@ func (r *RouteMeta) Patch(path string) *RouteMeta {
 	return r.Method(http.MethodPatch).Path(path)
 }
 
-func (r *RouteMeta) Do(fn fiber.Handler, more ...fiber.Handler) MetaHandler {
-	return func() []func(*fiber.Ctx) error {
-		return append([]fiber.Handler{fn}, more...)
+func (r *RouteMeta) Do(more ...echo.HandlerFunc) MetaHandler {
+	return func() []echo.HandlerFunc {
+		return more
 	}
 }
 
@@ -87,13 +87,13 @@ func (r *RouteMeta) Do(fn fiber.Handler, more ...fiber.Handler) MetaHandler {
 provide a scope to store middleware data and reuse
 
 	meta.Path("/all").MethodPost()
-	return meta.DoWithScope(func() []fiber.Handler {
+	return meta.DoWithScope(func() []echo.HandlerFunc {
 		// * middlewares safe storage
 		var ip string
-		return []fiber.Handler{
+		return []echo.HandlerFunc{
 			ParseIp(&ip), // parsers
 
-			func(c *fiber.Ctx) error { // handler
+			func(c echo.Context) error { // handler
 				return c.SendString(ip)
 			},
 		}
@@ -104,7 +104,8 @@ func (r *RouteMeta) DoWithScope(handler MetaHandler) MetaHandler {
 }
 
 // Register registers routes defined by the controller methods.
-func Register(app fiber.Router, controller Controller) {
+func Register(app *echo.Group, controller Controller) {
+
 	r := controller.Init(app)
 	controllerType := reflect.TypeOf(controller)
 	controllerValue := reflect.ValueOf(controller)
@@ -134,8 +135,8 @@ func Register(app fiber.Router, controller Controller) {
 	}
 }
 
-func AddRoute(r fiber.Router, meta *RouteMeta) {
-	handler := func(c *fiber.Ctx) error {
+func AddRoute(r *echo.Group, meta *RouteMeta) {
+	handler := func(c echo.Context) error {
 		for _, handler := range meta.handlers {
 			if err := handler(c); err != nil {
 				return err
@@ -152,5 +153,6 @@ func AddRoute(r fiber.Router, meta *RouteMeta) {
 	// 	return
 	// }
 
-	r.Add(meta.method, meta.path, append(meta.middlewares, handler)...).Name(meta.name)
+	e := r.Add(meta.method, meta.path, handler, meta.middlewares...)
+	e.Name = meta.name
 }

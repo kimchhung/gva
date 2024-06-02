@@ -26,7 +26,7 @@ var New{{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	fx.Provide(
 		fx.Annotate(
 			controller.New{{.EntityPascal}}Controller,
-			fx.As(new(rctrl.Controller)),
+			fx.As(new(echoc.Controller)),
 			fx.ResultTags(constant.APIAdminControllerGroup),
 		),
 	),

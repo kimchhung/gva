@@ -25,8 +25,11 @@ func (s *IndexService) Now(ctx context.Context) (time.Time, error) {
 	}
 
 	var now time.Time
-	if err := rows.Scan(&now); err != nil {
-		panic(err)
+
+	if rows.Next() {
+		if err := rows.Scan(&now); err != nil {
+			panic(err)
+		}
 	}
 
 	return now, nil

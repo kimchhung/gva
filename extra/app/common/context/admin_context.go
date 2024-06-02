@@ -5,9 +5,9 @@ import (
 	"errors"
 	"slices"
 
-	"github.com/gofiber/fiber/v2"
 	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/ent"
+	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -29,16 +29,18 @@ type AdminContext struct {
 }
 
 // a context help handling error
-func NewAdminContext(opts ...AdminContextOption) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		ctx := &AdminContext{}
-		ctx.Context = context.WithValue(c.UserContext(), AdminContextKey{}, ctx)
-		for _, opt := range opts {
-			opt(ctx)
-		}
+func NewAdminContext(opts ...AdminContextOption) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx := &AdminContext{}
+			ctx.Context = context.WithValue(c.Request().Context(), AdminContextKey{}, ctx)
+			for _, opt := range opts {
+				opt(ctx)
+			}
 
-		c.SetUserContext(ctx)
-		return c.Next()
+			c.SetRequest(c.Request().WithContext(ctx))
+			return next(c)
+		}
 	}
 }
 

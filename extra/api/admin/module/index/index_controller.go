@@ -3,19 +3,19 @@ package index
 import (
 	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/echoc"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"
+	"github.com/labstack/echo/v4"
 )
 
-var _ interface{ rctrl.Controller } = (*IndexController)(nil)
+var _ interface{ echoc.Controller } = (*IndexController)(nil)
 
 type IndexController struct {
 	index_s *IndexService
 }
 
-func (con *IndexController) Init(r fiber.Router) fiber.Router {
+func (con *IndexController) Init(r *echo.Group) *echo.Group {
 	return r
 }
 
@@ -25,9 +25,16 @@ func NewIndexController(index_s *IndexService) *IndexController {
 	}
 }
 
-func (con *IndexController) Now(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/now").Do(func(c *fiber.Ctx) error {
-		now, err := con.index_s.Now(c.UserContext())
+// @Tags        Time
+// @Summary     Current Server Time
+// @ID          now
+// @Produce     json
+// @Success     200 {object} response.Response{data=string} "format time.RFC3339"
+// @Router      /now [get]
+// @Security    Bearer
+func (con *IndexController) Now(meta *echoc.RouteMeta) echoc.MetaHandler {
+	return meta.Get("/now").Do(func(c echo.Context) error {
+		now, err := con.index_s.Now(c.Request().Context())
 		if err != nil {
 			return err
 		}

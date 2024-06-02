@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	appctx "github.com/kimchhung/gva/extra/app/common/context"
 	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/config"
+	"github.com/labstack/echo/v4"
 
 	"github.com/kimchhung/gva/extra/internal/bootstrap/database"
 	"github.com/kimchhung/gva/extra/internal/ent"
@@ -30,19 +30,22 @@ func NewJwtService(cfg *config.Config, db *database.Database) *JwtService {
 	}
 }
 
-func (s *JwtService) RequiredAdmin() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		token := strings.TrimSpace(strings.Replace(c.Get("authorization"), "Bearer ", "", 1))
-		if token == "" {
-			return apperror.ErrUnauthorized
-		}
+func (s *JwtService) RequiredAdmin() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			token := strings.TrimSpace(strings.Replace(c.Request().Header.Get("authorization"), "Bearer ", "", 1))
+			if token == "" {
+				return apperror.ErrUnauthorized
+			}
 
-		admin := new(ent.Admin)
-		if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
-			return apperror.ErrUnauthorized
-		}
+			admin := new(ent.Admin)
+			if _, err := s.ValidateToken(token, s.AdminValidator(admin)); err != nil {
+				return apperror.ErrUnauthorized
+			}
 
-		return appctx.NewAdminContext(appctx.WithAdmin(admin))(c)
+			md := appctx.NewAdminContext(appctx.WithAdmin(admin))
+			return md(next)(c)
+		}
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	permission "github.com/kimchhung/gva/extra/api/admin/module/permission"
 	route "github.com/kimchhung/gva/extra/api/admin/module/route"
 	"github.com/kimchhung/gva/extra/app/constant"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/echoc"
 	"go.uber.org/fx"
 )
 
@@ -22,10 +22,10 @@ var APIAdminModules = fx.Module("admin-module",
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
-			// convert type *Router => rctrl.ModuleRouter
-			fx.As(new(rctrl.ModuleRouter)),
+			// convert type *Router => echoc.ModuleRouter
+			fx.As(new(echoc.ModuleRouter)),
 
-			// take group params from container => []rctrl.Controller -> NewRouter
+			// take group params from container => []echoc.Controller -> NewRouter
 			fx.ParamTags(constant.TagAdminController),
 
 			// register to container as member of module group

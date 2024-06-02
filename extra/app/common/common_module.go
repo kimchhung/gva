@@ -11,7 +11,7 @@ import (
 
 var NewCommonModule = fx.Module("CommonModule",
 	fx.Provide(bootstrap.NewLogger),
-	fx.Provide(bootstrap.NewFiber),
+	fx.Provide(bootstrap.NewEcho),
 	fx.Provide(database.NewDatabase),
 	fx.Provide(middleware.NewMiddleware),
 

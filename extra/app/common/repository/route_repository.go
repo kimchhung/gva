@@ -20,10 +20,7 @@ func (r *RouteRepository) C() *ent.RouteClient {
 	return r.db.Route
 }
 
-func (r *RouteRepository) DB() *database.Database {
-	return r.db
-}
-
+// For query
 func (r *RouteRepository) Q(opts ...pagi.InterceptorOption) *ent.RouteQuery {
 	if len(opts) == 0 {
 		return r.C().Query()

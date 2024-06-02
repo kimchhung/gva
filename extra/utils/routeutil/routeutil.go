@@ -1,6 +1,13 @@
 package routeutil
 
-import "github.com/kimchhung/gva/extra/internal/ent"
+import (
+	"fmt"
+
+	"github.com/gosuri/uitable"
+	"github.com/kimchhung/gva/extra/internal/ent"
+	"github.com/kimchhung/gva/extra/utils/color"
+	"github.com/labstack/echo/v4"
+)
 
 func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
 	parentMapRoute := make(map[int][]*ent.Route)
@@ -45,4 +52,23 @@ func AppendRouteChildrens(parentID int, parentMapRoute map[int][]*ent.Route) (ch
 	}
 
 	return children
+}
+
+func PrintRoutes(routes []*echo.Route) {
+
+	// Create a new table
+	table := uitable.New()
+
+	// Set the table headers
+
+	table.AddRow("Method", "Path", "Name")
+	for _, r := range routes {
+		table.AddRow(color.MethodColor(r.Method), color.Yellow(r.Path), color.Cyan(r.Name))
+	}
+	table.Wrap = true
+
+	// Print the table
+	fmt.Print("\n ------------- Routes --------------- \n\n")
+	fmt.Println(table)
+	fmt.Print("\n")
 }

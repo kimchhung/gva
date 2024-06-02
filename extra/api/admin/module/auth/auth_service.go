@@ -70,7 +70,7 @@ func (s *AuthService) LoginAdmin(ctx context.Context, dto *dto.LoginRequest) (st
 			panic(
 				apperror.NewError(
 					apperror.ErrNotFound,
-					apperror.Prefix(lang.Ctx(ctx), "Admin"),
+					apperror.Prefix(lang.ForContext(ctx), "Admin"),
 				),
 			)
 		}

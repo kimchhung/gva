@@ -11,7 +11,6 @@ type IndexService struct {
 	db *database.Database
 }
 
-// NewAuthService initializes a new AuthService with a JwtService and a UserStore.
 func NewIndexService(db *database.Database) *IndexService {
 	return &IndexService{
 		db: db,

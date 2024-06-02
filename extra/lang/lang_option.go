@@ -2,8 +2,6 @@ package lang
 
 import (
 	"context"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 func Locale(locale LocaleType) LocaleOption {
@@ -13,18 +11,9 @@ func Locale(locale LocaleType) LocaleOption {
 }
 
 // get locale from context
-func Ctx(ctx context.Context) LocaleOption {
+func ForContext(ctx context.Context) LocaleOption {
 	return func(c *Config) {
 		if locale, ok := ctx.Value(langKey{}).(string); ok {
-			c.locale = LocaleType(locale)
-		}
-	}
-}
-
-// get locale from FiberCtx
-func FiberCtx(ctx *fiber.Ctx) LocaleOption {
-	return func(c *Config) {
-		if locale, ok := ctx.UserContext().Value(langKey{}).(string); ok {
 			c.locale = LocaleType(locale)
 		}
 	}

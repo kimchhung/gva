@@ -2,7 +2,7 @@ package rerror
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 
 	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	in_validator "github.com/kimchhung/gva/extra/utils/validator"
@@ -12,14 +12,15 @@ import (
 )
 
 // Default error handler
-func ParseError(c *fiber.Ctx, err error) (*apperror.Error, error) {
+func ParseError(c echo.Context, err error) (*apperror.Error, error) {
 
 	var resErr *apperror.Error
 
 	switch e := err.(type) {
 	case validator.ValidationErrors:
 		// error from request input validation
-		t := lang.GetTranslator(lang.FiberCtx(c))
+		t := lang.GetTranslator(lang.ForContext(c.Request().Context()))
+
 		translatedMsg := in_validator.RemoveTopStruct(e.Translate(t))
 		resErr = apperror.NewError(
 			apperror.ErrValidationError,
@@ -33,18 +34,18 @@ func ParseError(c *fiber.Ctx, err error) (*apperror.Error, error) {
 		} else {
 			resErr = apperror.NewError(e, apperror.MessageFunc(
 				func(message string) string {
-					return lang.T(lang.FiberCtx(c), message)
+					return lang.T(lang.ForContext(c.Request().Context()), message)
 				},
 			))
 		}
 
-	case *fiber.Error:
+	case *echo.HTTPError:
 		// wrong routing .....
 		resErr = apperror.NewError(
 			apperror.ErrBadRequest,
 			apperror.MessageFunc(
 				func(message string) string {
-					return lang.T(lang.FiberCtx(c), message)
+					return lang.T(lang.ForContext(c.Request().Context()), message)
 				},
 			),
 			apperror.Join(err),
@@ -59,7 +60,7 @@ func ParseError(c *fiber.Ctx, err error) (*apperror.Error, error) {
 			apperror.ErrUnknownError,
 			apperror.MessageFunc(
 				func(message string) string {
-					return lang.T(lang.FiberCtx(c), message)
+					return lang.T(lang.ForContext(c.Request().Context()), message)
 				},
 			),
 		)

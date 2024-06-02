@@ -10,7 +10,6 @@ import (
 
 	"github.com/kimchhung/gva/extra/internal/ent"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
-	"github.com/kimchhung/gva/extra/internal/rql"
 )
 
 type RouteService struct {
@@ -23,49 +22,53 @@ func NewRouteService(route_r *dbr.RouteRepository) *RouteService {
 	}
 }
 
-func (s *RouteService) RQL(ctx context.Context, p *rql.Params) (any, error) {
-	data := []any{}
+func (s *RouteService) toDto(value ...*ent.Route) []*dto.RouteResponse {
+	list := make([]*dto.RouteResponse, len(value))
+	for i, v := range value {
+		list[i] = &dto.RouteResponse{
+			Route: v,
+		}
+	}
 
-	s.route_r.Q(
-		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
-		pagi.WithSort(p.Sort...),
-		pagi.WithSelect(p.Select...),
-	).Modify().Where(
-		route.HasChildrenWith(route.TypeIn("menu")),
-	).WithChildren().AllX(ctx)
-
-	return data, nil
+	return list
 }
 
-func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest) ([]*ent.Route, *pagi.Meta, error) {
-	q := s.route_r.Q(
+func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest) ([]*dto.RouteResponse, *pagi.Meta, error) {
+	query := s.route_r.Q(
 		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
 		pagi.WithSort(p.Sort...),
 		pagi.WithSelect(p.Select...),
-	).Modify()
-
-	total := q.CountX(ctx)
-	list := q.Modify(pagi.WithLimitOffset(p.Limit, p.Offset)).AllX(ctx)
+	)
 
 	meta := &pagi.Meta{
 		Limit:  p.Limit,
 		Offset: p.Offset,
-		Total:  total,
 	}
 
+	if p.IsCount {
+		total := query.CountX(ctx)
+		meta.Total = &total
+	}
+
+	list := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset)).AllX(ctx)
 	if p.IsGroupNested {
 		list = routeutil.GroupRouteToNested(list)
 	}
 
-	return list, meta, nil
+	return s.toDto(list...), meta, nil
 }
 
-func (s *RouteService) GetRouteByID(ctx context.Context, id int) (*ent.Route, error) {
-	return s.route_r.C().Query().Where(route.IDEQ(id)).First(ctx)
+func (s *RouteService) GetRouteByID(ctx context.Context, id int) (*dto.RouteResponse, error) {
+	data, err := s.route_r.Q().Where(route.ID(id)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.toDto(data)[0], nil
 }
 
 func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*dto.RouteResponse, error) {
-	route, err := s.route_r.C().Create().
+	data, err := s.route_r.C().Create().
 		SetComponent(r.Component).
 		SetPath(r.Path).
 		SetIsEnable(r.IsEnable).
@@ -77,11 +80,11 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*d
 		return nil, err
 	}
 
-	return &dto.RouteResponse{Route: route}, nil
+	return s.toDto(data)[0], nil
 }
 
 func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequest) (*dto.RouteResponse, error) {
-	route, err := s.route_r.C().UpdateOneID(id).
+	data, err := s.route_r.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
 		SetIsEnable(r.IsEnable).
@@ -89,11 +92,12 @@ func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequ
 		SetName(r.Name).
 		SetType(r.Type).
 		Save(ctx)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return &dto.RouteResponse{Route: route}, nil
+	return s.toDto(data)[0], nil
 }
 
 func (s *RouteService) DeleteRoute(ctx context.Context, id int) error {

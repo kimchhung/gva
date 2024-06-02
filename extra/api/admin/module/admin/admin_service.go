@@ -12,14 +12,13 @@ import (
 	"github.com/kimchhung/gva/extra/internal/ent/admin"
 	"github.com/kimchhung/gva/extra/internal/ent/role"
 	"github.com/kimchhung/gva/extra/internal/ent/route"
-	"github.com/kimchhung/gva/extra/internal/rql"
 	"github.com/kimchhung/gva/extra/utils/pagi"
 	"github.com/kimchhung/gva/extra/utils/routeutil"
 )
 
 type AdminService struct {
-	repo *repository.AdminRepository
-	db   *database.Database
+	admin_r *repository.AdminRepository
+	db      *database.Database
 }
 
 func NewAdminService(
@@ -27,44 +26,80 @@ func NewAdminService(
 	repo *repository.AdminRepository,
 ) *AdminService {
 	return &AdminService{
-		db:   db,
-		repo: repo,
+		db:      db,
+		admin_r: repo,
 	}
 }
 
-func (s *AdminService) Paginate(ctx context.Context, p *rql.Params) ([]*ent.Admin, *pagi.Meta, error) {
-	q := s.repo.Q()
-	list := q.WithRoles().AllX(ctx)
-	total := q.CountX(ctx)
+func (s *AdminService) toDto(value ...*ent.Admin) []*dto.AdminResponse {
+	list := make([]*dto.AdminResponse, len(value))
+	for i, v := range value {
+		list[i] = &dto.AdminResponse{
+			Admin: v,
+		}
+	}
 
-	return list, &pagi.Meta{
-		Total:  total,
+	return list
+}
+
+func (s *AdminService) Paginate(ctx context.Context, p *dto.AdminPaginateRequest) ([]*dto.AdminResponse, *pagi.Meta, error) {
+	query := s.admin_r.Q(
+		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
+		pagi.WithSort(p.Sort...),
+		pagi.WithSelect(p.Select...),
+	)
+
+	meta := &pagi.Meta{
 		Limit:  p.Limit,
 		Offset: p.Offset,
-	}, nil
+	}
+
+	if p.IsCount {
+		total := query.CountX(ctx)
+		meta.Total = &total
+	}
+
+	list := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset)).AllX(ctx)
+	return s.toDto(list...), meta, nil
 }
 
-func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*ent.Admin, error) {
-	return s.repo.C().Query().Where(admin.IDEQ(id)).First(ctx)
+func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*dto.AdminResponse, error) {
+	data, err := s.admin_r.C().Query().Where(admin.IDEQ(id)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.toDto(data)[0], nil
 }
 
-func (s *AdminService) CreateAdmin(ctx context.Context, request *dto.AdminRequest) (*ent.Admin, error) {
-	return s.repo.C().Create().
+func (s *AdminService) CreateAdmin(ctx context.Context, request *dto.AdminRequest) (*dto.AdminResponse, error) {
+	data, err := s.admin_r.C().Create().
 		SetPassword(request.Password).
 		SetUsername(request.Username).
 		SetDisplayName(request.DisplayName).
 		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return s.toDto(data)[0], nil
 }
 
-func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request *dto.AdminRequest) (*ent.Admin, error) {
-	return s.repo.C().UpdateOneID(id).
+func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request *dto.AdminRequest) (*dto.AdminResponse, error) {
+	data, err := s.admin_r.C().UpdateOneID(id).
 		SetDisplayName(request.DisplayName).
 		SetUsername(request.Username).
 		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return s.toDto(data)[0], nil
 }
 
 func (s *AdminService) DeleteAdmin(ctx context.Context, id int) error {
-	return s.repo.C().DeleteOneID(id).Exec(ctx)
+	return s.admin_r.C().DeleteOneID(id).Exec(ctx)
 }
 
 func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int) ([]*ent.Route, error) {
@@ -79,7 +114,9 @@ func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int)
 
 	routes, err := s.db.Role.Query().
 		Where(role.HasAdminsWith(admin.ID(adminId))).
-		QueryRoutes().Where(route.IsEnable(true)).All(ctx)
+		QueryRoutes().
+		Where(route.IsEnable(true)).
+		All(ctx)
 
 	if err != nil {
 		return nil, err

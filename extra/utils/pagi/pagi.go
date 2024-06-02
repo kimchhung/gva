@@ -6,9 +6,9 @@
 package pagi
 
 type Meta struct {
-	Limit  int `json:"limit"`
-	Offset int `json:"offset"`
-	Total  int `json:"total"`
+	Limit  int  `json:"limit"`
+	Offset int  `json:"offset"`
+	Total  *int `json:"total"`
 }
 
 type Response[T any] struct {

@@ -1,23 +1,23 @@
 package permission
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 
 	permissions "github.com/kimchhung/gva/extra/app/common/permission"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/echoc"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"
 )
 
 // don't remove for runtime type checking
-var _ interface{ rctrl.Controller } = (*PermissionController)(nil)
+var _ interface{ echoc.Controller } = (*PermissionController)(nil)
 
 type PermissionController struct {
 	permission_s *PermissionService
 }
 
-func (con *PermissionController) Init(r fiber.Router) fiber.Router {
-	return r.Group("permission")
+func (con *PermissionController) Init(r *echo.Group) *echo.Group {
+	return r.Group("/permissions")
 }
 
 func NewPermissionController(permission_s *PermissionService) *PermissionController {
@@ -32,14 +32,14 @@ func NewPermissionController(permission_s *PermissionService) *PermissionControl
 // @ID          list-all-permissions
 // @Produce     json
 // @Success     200 {object} response.Response{data=[]dto.PermissionResponse} "Successfully retrieved Routes"
-// @Router      /permission [get]
+// @Router      /permissions [get]
 // @Security    Bearer
-func (con *PermissionController) Permissions(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Get("/").DoWithScope(func() []fiber.Handler {
-		return []fiber.Handler{
-			permissions.RequireSuperAdmin(),
-			func(c *fiber.Ctx) error {
-				list, err := con.permission_s.AllPermissions(c.UserContext())
+func (con *PermissionController) Permissions(meta *echoc.RouteMeta) echoc.MetaHandler {
+	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
+			func(c echo.Context) error {
+				list, err := con.permission_s.AllPermissions(c.Request().Context())
 				if err != nil {
 					return err
 				}

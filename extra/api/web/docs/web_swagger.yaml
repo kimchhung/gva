@@ -1,11 +1,68 @@
-basePath: /web
+basePath: /web/v1
+definitions:
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        description: The Data field contains the actual response data
+      message:
+        type: string
+      meta:
+        description: Meta provides additional information about the data, such as
+          its type or kind.y.
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: GO VUE ADMIN Boilerplate
   title: GVA Web API
   version: "1.0"
-paths: {}
+paths:
+  /now:
+    get:
+      operationId: now
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Current Server Time
+      tags:
+      - Time
+  /sse/now:
+    get:
+      consumes:
+      - text/event-stream
+      operationId: sse-now
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            type: string
+      summary: SSE Current Server Time
+      tags:
+      - Time
+  /ws/now:
+    get:
+      consumes:
+      - text/event-stream
+      operationId: ws-now
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            type: string
+      summary: WS Current Server Time
+      tags:
+      - Time
 securityDefinitions:
   Bearer:
     in: header

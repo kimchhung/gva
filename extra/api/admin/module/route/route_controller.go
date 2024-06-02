@@ -1,31 +1,27 @@
 package route
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 
 	"github.com/kimchhung/gva/extra/api/admin/module/route/dto"
 
 	permissions "github.com/kimchhung/gva/extra/app/common/permission"
 	"github.com/kimchhung/gva/extra/app/common/service"
+	"github.com/kimchhung/gva/extra/internal/echoc"
 	"github.com/kimchhung/gva/extra/internal/ent"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
 	"github.com/kimchhung/gva/extra/internal/request"
 	"github.com/kimchhung/gva/extra/internal/response"
 	"github.com/kimchhung/gva/extra/internal/rql"
 )
 
 // don't remove for runtime type checking
-var _ interface{ rctrl.Controller } = (*RouteController)(nil)
+var _ interface{ echoc.Controller } = (*RouteController)(nil)
 
 type RouteController struct {
 	route_s *RouteService
 	jwt_s   *service.JwtService
 	log     *zerolog.Logger
-}
-
-func (con *RouteController) Init(r fiber.Router) fiber.Router {
-	return r.Group("route")
 }
 
 func NewRouteController(
@@ -40,16 +36,21 @@ func NewRouteController(
 	}
 }
 
+func (con *RouteController) Init(r *echo.Group) *echo.Group {
+	// return r.Group("routes").Use(con.jwt_s.RequiredAdmin())
+	return r
+}
+
 // @Tags        Route
 // @Summary     List all Routes
 // @Description Get a list of all Routes
 // @ID          list-all-routes
 // @Produce     json
 // @Success     200 {object} response.Response{data=map[string]dto.RouteResponse{list=[]dto.RouteResponse}} "Successfully retrieved Routes"
-// @Router      /route [get]
+// @Router      /routes [get]
 // @Security    Bearer
 // @Param   	limit     query     int     false  "string default"     default(A)
-func (con *RouteController) Routes(m *rctrl.RouteMeta) rctrl.MetaHandler {
+func (con *RouteController) Routes(m *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
 		// Table:        route.Table,
 		Model:        ent.Route{},
@@ -58,16 +59,16 @@ func (con *RouteController) Routes(m *rctrl.RouteMeta) rctrl.MetaHandler {
 		FieldSep:     ".",
 	})
 
-	return m.Get("/").DoWithScope(func() []fiber.Handler {
+	return m.Get("/").DoWithScope(func() []echo.HandlerFunc {
 		params := new(dto.RoutePaginateRequest)
-
-		return []fiber.Handler{
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
 			request.Parse(
 				request.RqlQueryParser(&params.Params, parser),
 				request.QueryParser(params),
 			),
-			func(c *fiber.Ctx) error {
-				list, meta, err := con.route_s.Paginate(c.UserContext(), params)
+			func(c echo.Context) error {
+				list, meta, err := con.route_s.Paginate(c.Request().Context(), params)
 				if err != nil {
 					return err
 				}
@@ -88,26 +89,60 @@ func (con *RouteController) Routes(m *rctrl.RouteMeta) rctrl.MetaHandler {
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully created Routes"
-// @Router      /route [post]
+// @Router      /routes [post]
 // @Security    Bearer
 // @Param 		info body dto.RouteRequest true "Route Info"
-func (con *RouteController) CreateRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Post("/").DoWithScope(func() []fiber.Handler {
+func (con *RouteController) CreateRoute(m *echoc.RouteMeta) echoc.MetaHandler {
+	return m.Post("/").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.RouteRequest)
 
-		return []fiber.Handler{
-			permissions.RequireSuperAdmin(),
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
 			request.Validate(request.BodyParser(body)),
-
-			func(c *fiber.Ctx) error {
-				data, err := con.route_s.CreateRoute(c.UserContext(), body)
+			func(c echo.Context) error {
+				data, err := con.route_s.CreateRoute(c.Request().Context(), body)
 				if err != nil {
 					return err
 				}
 
 				return request.Response(c,
 					response.Data(data),
-					response.Meta(meta),
+				)
+			},
+		}
+	})
+}
+
+// @Tags        Route
+// @Summary     Get a Route
+// @Description Get a Route
+// @ID          Get-a-route
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully Getd Routes"
+// @Router      /routes/{id} [put]
+// @Security    Bearer
+// @Param 		info body dto.RouteRequest true "Route Info"
+// @Param 		id path int true "Route ID"
+func (con *RouteController) GetRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
+	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
+		params := new(struct {
+			ID int `params:"id" validate:"required,min=0"`
+		})
+
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
+			request.Validate(
+				request.ParamsParser(params),
+			),
+			func(c echo.Context) error {
+				data, err := con.route_s.GetRouteByID(c.Request().Context(), params.ID)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(data),
 				)
 			},
 		}
@@ -121,25 +156,25 @@ func (con *RouteController) CreateRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.Response{data=dto.RouteResponse} "Successfully updated Routes"
-// @Router      /route [put]
+// @Router      /routes/{id} [put]
 // @Security    Bearer
 // @Param 		info body dto.RouteRequest true "Route Info"
 // @Param 		id path int true "Route ID"
-func (con *RouteController) UpdateRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Put("/:id").DoWithScope(func() []fiber.Handler {
+func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
+	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.RouteRequest)
 		params := new(struct {
 			ID int `params:"id" validate:"required,min=0"`
 		})
 
-		return []fiber.Handler{
-			permissions.RequireSuperAdmin(),
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
 			request.Validate(
 				request.BodyParser(body),
 				request.ParamsParser(params),
 			),
-			func(c *fiber.Ctx) error {
-				data, err := con.route_s.UpdateRoute(c.UserContext(), params.ID, body)
+			func(c echo.Context) error {
+				data, err := con.route_s.UpdateRoute(c.Request().Context(), params.ID, body)
 				if err != nil {
 					return err
 				}
@@ -159,22 +194,22 @@ func (con *RouteController) UpdateRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.Response{} "Successfully Delete Routes"
-// @Router      /route [delete]
+// @Router      /routes/{id} [delete]
 // @Security    Bearer
 // @Param 		id path int true "Route ID"
-func (con *RouteController) DeleteRoute(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Delete("/:id").DoWithScope(func() []fiber.Handler {
+func (con *RouteController) DeleteRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
+	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
 			ID int `params:"id" validate:"required,min=0"`
 		})
 
-		return []fiber.Handler{
-			permissions.RequireSuperAdmin(),
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
 			request.Validate(
 				request.ParamsParser(params),
 			),
-			func(c *fiber.Ctx) error {
-				err := con.route_s.DeleteRoute(c.UserContext(), params.ID)
+			func(c echo.Context) error {
+				err := con.route_s.DeleteRoute(c.Request().Context(), params.ID)
 				if err != nil {
 					return err
 				}

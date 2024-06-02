@@ -1,7 +1,7 @@
 package constant
 
 import (
-	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/echoc"
 	"go.uber.org/fx"
 )
 
@@ -12,23 +12,23 @@ const (
 	TagModule = `group:"modules"`
 )
 
-// register to container  type rctrl.Controller and tag as admin module
+// register to container  type echoc.Controller and tag as admin module
 func ProvideAdminController(contructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			contructor,
-			fx.As(new(rctrl.Controller)),
+			fx.As(new(echoc.Controller)),
 			fx.ResultTags(TagAdminController),
 		),
 	)
 }
 
-// register to container as type rctrl.Controller and tag as web module
+// register to container as type echoc.Controller and tag as web module
 func ProvideWebController(contructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			contructor,
-			fx.As(new(rctrl.Controller)),
+			fx.As(new(echoc.Controller)),
 			fx.ResultTags(TagWebController),
 		),
 	)

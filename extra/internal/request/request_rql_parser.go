@@ -4,12 +4,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	app_err "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/rql"
 	"github.com/kimchhung/gva/extra/utils"
 	"github.com/kimchhung/gva/extra/utils/json"
 	ustrings "github.com/kimchhung/gva/extra/utils/strings"
+	"github.com/labstack/echo/v4"
 
 	"github.com/tidwall/sjson"
 )
@@ -118,9 +118,8 @@ https://github.com/a8m/rql
 	}
 */
 func RqlQueryParser(out *rql.Params, parser *rql.Parser) Parser {
-	return func(c *fiber.Ctx) (any, error) {
-		urlQ := string(c.Request().URI().QueryString())
-		str := ParseUrlQuery(urlQ)
+	return func(c echo.Context) (any, error) {
+		str := ParseUrlQuery(c.QueryString())
 
 		param, err := parser.Parse([]byte(str))
 		if err != nil {

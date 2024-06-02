@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/rs/zerolog"
@@ -17,7 +16,6 @@ type (
 		Name        string        `toml:"name"`
 		Port        string        `toml:"port"`
 		PrintRoutes bool          `toml:"print_routes"`
-		Prefork     bool          `toml:"prefork"`
 		Production  bool          `toml:"production"`
 		IdleTimeout time.Duration `toml:"idle_timeout"`
 		TLS         struct {
@@ -58,6 +56,7 @@ type (
 	middleware = struct {
 		Swagger struct {
 			Enable bool
+			Path   string
 		}
 		Compress struct {
 			Enable bool
@@ -73,7 +72,7 @@ type (
 		Limiter struct {
 			Enable  bool
 			Max     int
-			ExpSecs time.Duration `toml:"expiration_seconds"`
+			ExpSecs int64 `toml:"expiration_seconds"`
 		}
 		Filesystem struct {
 			Enable bool
@@ -117,7 +116,7 @@ func ParseConfig(name string) (*Config, error) {
 
 func NewConfig() *Config {
 	config, err := ParseConfig(".env")
-	if err != nil && !fiber.IsChild() {
+	if err != nil {
 		fmt.Printf("errrr %v : %v", err, config)
 	}
 

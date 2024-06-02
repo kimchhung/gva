@@ -15,7 +15,7 @@ const docTemplateadmin = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin": {
+        "/admins": {
             "get": {
                 "security": [
                     {
@@ -112,7 +112,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admin/route": {
+        "/admins/permission": {
             "get": {
                 "security": [
                     {
@@ -141,7 +141,36 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admin/{id}": {
+        "/admins/route": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of routes for an Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get Admin Routes",
+                "operationId": "get-Admin-routes",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Admin routes",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/{id}": {
             "get": {
                 "security": [
                     {
@@ -440,7 +469,44 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/permission": {
+        "/now": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Time"
+                ],
+                "summary": "Current Server Time",
+                "operationId": "now",
+                "responses": {
+                    "200": {
+                        "description": "format time.RFC3339",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/permissions": {
             "get": {
                 "security": [
                     {
@@ -481,7 +547,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/route": {
+        "/routes": {
             "get": {
                 "security": [
                     {
@@ -544,6 +610,58 @@ const docTemplateadmin = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Create a Route",
+                "operationId": "create-a-route",
+                "parameters": [
+                    {
+                        "description": "Route Info",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RouteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.RouteResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/routes/{id}": {
             "put": {
                 "security": [
                     {
@@ -583,56 +701,6 @@ const docTemplateadmin = `{
                 "responses": {
                     "200": {
                         "description": "Successfully updated Routes",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.RouteResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a Route",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Route"
-                ],
-                "summary": "Create a Route",
-                "operationId": "create-a-route",
-                "parameters": [
-                    {
-                        "description": "Route Info",
-                        "name": "info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.RouteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully created Routes",
                         "schema": {
                             "allOf": [
                                 {
@@ -1360,7 +1428,7 @@ const docTemplateadmin = `{
 var SwaggerInfoadmin = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/admin",
+	BasePath:         "/admin/v1",
 	Schemes:          []string{},
 	Title:            "GVA admin API",
 	Description:      "GO VUE ADMIN Boilerplate",

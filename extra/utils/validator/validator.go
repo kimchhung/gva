@@ -9,7 +9,6 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	ent "github.com/go-playground/validator/v10/translations/en"
-	"github.com/gofiber/fiber/v2"
 
 	zht "github.com/go-playground/validator/v10/translations/zh"
 )
@@ -23,11 +22,11 @@ func InitializeValidator() error {
 	enTranslator := lang.GetTranslator(lang.Locale(lang.LocaleEN))
 	zhTranslator := lang.GetTranslator(lang.Locale(lang.LocaleZH))
 
-	if err := ent.RegisterDefaultTranslations(validate, enTranslator); err != nil && !fiber.IsChild() {
+	if err := ent.RegisterDefaultTranslations(validate, enTranslator); err != nil {
 		return err
 	}
 
-	if err := zht.RegisterDefaultTranslations(validate, zhTranslator); err != nil && !fiber.IsChild() {
+	if err := zht.RegisterDefaultTranslations(validate, zhTranslator); err != nil {
 		return err
 	}
 

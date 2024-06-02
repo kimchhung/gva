@@ -3,15 +3,15 @@ package utils
 import (
 	"fmt"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
-func IsEnabled(key bool) func(c *fiber.Ctx) bool {
+func IsEnabled(key bool) func(c echo.Context) bool {
 	if key {
 		return nil
 	}
 
-	return func(c *fiber.Ctx) bool { return true }
+	return func(c echo.Context) bool { return true }
 }
 
 func SetIfEmpty[T comparable](dest *T, value T) {

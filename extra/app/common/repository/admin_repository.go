@@ -16,11 +16,12 @@ func NewAdminRepository(database *database.Database) *AdminRepository {
 	}
 }
 
+// For mutation
 func (r *AdminRepository) C() *ent.AdminClient {
 	return r.db.Admin
 }
 
-// query
+// For query
 func (r *AdminRepository) Q(opts ...pagi.InterceptorOption) *ent.AdminQuery {
 	if len(opts) == 0 {
 		return r.C().Query()

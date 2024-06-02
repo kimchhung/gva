@@ -23,7 +23,7 @@ var (
 // @version						1.0
 // @description					GO VUE ADMIN Boilerplate
 // @host						localhost:8080
-// @BasePath					/admin
+// @BasePath					/admin/v1
 // @securityDefinitions.apikey	Bearer
 // @in							header
 // @name						Authorization

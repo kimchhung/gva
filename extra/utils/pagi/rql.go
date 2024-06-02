@@ -52,7 +52,7 @@ func WithLimitOffset(limit int, offset int) InterceptorOption {
 func WithInterceptor[T any](query T, opts ...InterceptorOption) T {
 	q, err := intercept.NewQuery(query)
 	if err != nil {
-		panic(fmt.Errorf("invalid rql %v", err))
+		panic(fmt.Errorf("can't user interceptor %v", err))
 	}
 
 	for _, opt := range opts {

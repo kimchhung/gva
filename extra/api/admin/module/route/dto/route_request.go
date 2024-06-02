@@ -21,5 +21,6 @@ type RouteRequest struct {
 
 type RoutePaginateRequest struct {
 	rql.Params
+	IsCount       bool `query:"isCount"`
 	IsGroupNested bool `query:"isGroupNested"`
 }

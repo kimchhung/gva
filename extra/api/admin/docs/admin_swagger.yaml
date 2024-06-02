@@ -1,4 +1,4 @@
-basePath: /admin
+basePath: /admin/v1
 definitions:
   dto.AdminRequest:
     properties:
@@ -468,7 +468,7 @@ info:
   title: GVA admin API
   version: "1.0"
 paths:
-  /admin:
+  /admins:
     get:
       consumes:
       - application/json
@@ -524,7 +524,7 @@ paths:
       summary: Create a Admin
       tags:
       - Admin
-  /admin/{id}:
+  /admins/{id}:
     delete:
       consumes:
       - application/json
@@ -611,7 +611,7 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
-  /admin/route:
+  /admins/permission:
     get:
       consumes:
       - application/json
@@ -627,6 +627,24 @@ paths:
       security:
       - Bearer: []
       summary: Get Admin permissionissions
+      tags:
+      - Admin
+  /admins/route:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of routes for an Admin by ID
+      operationId: get-Admin-routes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admin routes
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Admin Routes
       tags:
       - Admin
   /auth/login:
@@ -717,7 +735,27 @@ paths:
       summary: Register a new admin
       tags:
       - Auth
-  /permission:
+  /now:
+    get:
+      operationId: now
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Current Server Time
+      tags:
+      - Time
+  /permissions:
     get:
       description: Get a list of all permissions
       operationId: list-all-permissions
@@ -740,30 +778,7 @@ paths:
       summary: List all permissions
       tags:
       - Permission
-  /route:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a Route
-      operationId: Delete-a-route
-      parameters:
-      - description: Route ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully Delete Routes
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Delete a Route
-      tags:
-      - Route
+  /routes:
     get:
       description: Get a list of all Routes
       operationId: list-all-routes
@@ -825,6 +840,30 @@ paths:
       security:
       - Bearer: []
       summary: Create a Route
+      tags:
+      - Route
+  /routes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Route
+      operationId: Delete-a-route
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully Delete Routes
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Route
       tags:
       - Route
     put:

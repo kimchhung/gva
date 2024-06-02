@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	rerror "github.com/kimchhung/gva/extra/internal/response/error"
+	"github.com/labstack/echo/v4"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
@@ -80,62 +80,66 @@ func (ctx *RequestContext) PrintLog() {
 	}
 }
 
-func defaultLogFields(c *fiber.Ctx) *logFields {
-	rid := c.Get(fiber.HeaderXRequestID)
+func defaultLogFields(c echo.Context) *logFields {
+	req := c.Request()
+	rid := req.Header.Get(echo.HeaderXRequestID)
 	if rid == "" {
 		rid = uuid.New().String()
-		c.Set(fiber.HeaderXRequestID, rid)
+		c.Set(echo.HeaderXRequestID, rid)
 	}
 
 	fields := &logFields{
 		ID:       rid,
-		RemoteIP: c.IP(),
-		Method:   c.Method(),
-		Host:     c.Hostname(),
+		RemoteIP: c.RealIP(),
+		Method:   req.Method,
+		Host:     req.Host,
 		Path:     c.Path(),
-		Protocol: c.Protocol(),
+		Protocol: req.Proto,
 	}
 
 	return fields
 }
 
 // a context help handling error
-func NewRequestContext() fiber.Handler {
-	return func(c *fiber.Ctx) (err error) {
-		ctx := &RequestContext{}
-		ctx.Context = context.WithValue(c.Context(), RequestContextKey{}, ctx)
-		ctx.startTime = time.Now()
-		ctx.logFields = defaultLogFields(c)
-		c.SetUserContext(ctx)
+func NewRequestContext() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
-		defer func() {
-			if rvr := recover(); rvr != nil {
+		return func(c echo.Context) (err error) {
+			ctx := &RequestContext{}
+			ctx.Context = context.WithValue(c.Request().Context(), RequestContextKey{}, ctx)
+			ctx.startTime = time.Now()
+			ctx.logFields = defaultLogFields(c)
+			c.SetRequest(c.Request().WithContext(ctx))
 
-				var ok bool
+			defer func() {
+				if rvr := recover(); rvr != nil {
 
-				if err, ok = rvr.(*apperror.Error); !ok {
-					// unknown internal error stacks
-					ctx.logFields.Stack = debug.Stack()
+					var ok bool
+
+					if err, ok = rvr.(*apperror.Error); !ok {
+						// unknown internal error stacks
+						ctx.logFields.Stack = debug.Stack()
+					}
+
+					if err, ok = rvr.(error); !ok {
+						// internal error stacks
+						err = fmt.Errorf("%v", rvr)
+					}
+
 				}
 
-				if err, ok = rvr.(error); !ok {
-					// internal error stacks
-					err = fmt.Errorf("%v", rvr)
+				if err != nil {
+
+					// case using panic to handler error instead of return error
+					err = ErrorHandler(err, c)
 				}
 
-			}
+				ctx.logFields.Latency = time.Since(ctx.startTime)
 
-			if err != nil {
+			}()
 
-				// case using panic to handler error instead of return error
-				err = ErrorHandler(c, err)
-			}
-
-			ctx.logFields.Latency = time.Since(ctx.startTime)
-
-		}()
-
-		return c.Next()
+			return next(c)
+		}
 	}
 }
 
@@ -174,10 +178,11 @@ func SetRequestStatus(ctx context.Context, errorCode int, httpCode int) *Request
 }
 
 // Default error handler
-func ErrorHandler(c *fiber.Ctx, anyErr error) error {
+func ErrorHandler(anyErr error, c echo.Context) error {
 	perr, err := rerror.ParseError(c, anyErr)
+	ctx := c.Request().Context()
 
-	rctx, rerr := GetRequestContext(c.UserContext())
+	rctx, rerr := GetRequestContext(ctx)
 	if rerr != nil {
 		log.Error().Err(rerr).Msg("GetRequestContext")
 		return err

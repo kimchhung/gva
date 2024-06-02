@@ -16,10 +16,12 @@ func NewPermissionRepository(database *database.Database) *PermissionRepository 
 	}
 }
 
+// For mutation
 func (r *PermissionRepository) C() *ent.PermissionClient {
 	return r.db.Permission
 }
 
+// For query
 func (r *PermissionRepository) Q(opts ...pagi.InterceptorOption) *ent.PermissionQuery {
 	if len(opts) == 0 {
 		return r.C().Query()

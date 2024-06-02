@@ -1,19 +1,20 @@
 package router
 
 import (
-	"github.com/gofiber/fiber/v2"
+	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/app/constant"
-	"github.com/kimchhung/gva/extra/internal/rctrl"
+	"github.com/kimchhung/gva/extra/internal/echoc"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
 
-var _ interface{ rctrl.ModuleRouter } = (*Router)(nil)
+var _ interface{ echoc.ModuleRouter } = (*Router)(nil)
 
 type Router struct {
-	modules []rctrl.ModuleRouter
+	modules []echoc.ModuleRouter
 }
 
-func NewRouter(modules []rctrl.ModuleRouter) *Router {
+func NewRouter(modules []echoc.ModuleRouter) *Router {
 	r := &Router{
 		modules: modules,
 	}
@@ -21,17 +22,21 @@ func NewRouter(modules []rctrl.ModuleRouter) *Router {
 	return r
 }
 
-func (r *Router) Register(app fiber.Router, args ...any) {
+func (r *Router) Register(app *echo.Echo, args ...any) {
 	for _, r := range r.modules {
 		r.Register(app, args...)
 	}
+
+	app.RouteNotFound("/*", func(c echo.Context) error {
+		return apperror.ErrNotFound
+	})
 }
 
 func WithRouter(modules ...fx.Option) []fx.Option {
 	app := append(modules, fx.Provide(
 		// register as *Router
 		fx.Annotate(NewRouter,
-			// take group params from container => []rctrl.ModuleRouter -> NewRouter
+			// take group params from container => []echoc.ModuleRouter -> NewRouter
 			fx.ParamTags(constant.TagModule),
 		),
 	))

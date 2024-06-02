@@ -16,11 +16,11 @@ var (
 	cfg = config.NewConfig()
 )
 
-// @title					GVA Web API
-// @version					1.0
-// @description				GO VUE ADMIN Boilerplate
+// @title					    GVA Web API
+// @version				     	1.0
+// @description				    GO VUE ADMIN Boilerplate
 // @host						localhost:8080
-// @BasePath					/web
+// @BasePath					/web/v1
 // @securityDefinitions.apikey	Bearer
 // @in							header
 // @name						Authorization

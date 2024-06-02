@@ -3,10 +3,11 @@ package permission
 import (
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	appctx "github.com/kimchhung/gva/extra/app/common/context"
 	apperror "github.com/kimchhung/gva/extra/app/common/error"
 	"github.com/kimchhung/gva/extra/internal/ent"
+
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -36,9 +37,9 @@ func Keys() []PermissionKey {
 	return list
 }
 
-func RequireAny(permissions ...PermissionKey) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		adminCtx := appctx.MustAdminContext(c.UserContext())
+func RequireAny(permissions ...PermissionKey) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		adminCtx := appctx.MustAdminContext(c.Request().Context())
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}
@@ -58,9 +59,9 @@ func RequireAny(permissions ...PermissionKey) fiber.Handler {
 	}
 }
 
-func RequireAll(permissions ...PermissionKey) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		adminCtx := appctx.MustAdminContext(c.UserContext())
+func RequireAll(permissions ...PermissionKey) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		adminCtx := appctx.MustAdminContext(c.Request().Context())
 
 		if adminCtx.IsSuperAdmin() {
 			return nil
@@ -83,9 +84,10 @@ func RequireAll(permissions ...PermissionKey) fiber.Handler {
 	}
 }
 
-func RequireSuperAdmin() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		adminCtx := appctx.MustAdminContext(c.UserContext())
+// only supper admin can access
+func OnlySuperAdmin() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		adminCtx := appctx.MustAdminContext(c.Request().Context())
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}

@@ -3,7 +3,7 @@ package response
 import (
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -48,6 +48,6 @@ type (
 	}
 )
 
-func (r *Response) Parse(c *fiber.Ctx) error {
-	return c.Status(r.httpStatus).JSON(r, fiber.MIMEApplicationJSONCharsetUTF8)
+func (r *Response) Parse(c echo.Context) error {
+	return c.JSON(r.httpStatus, r)
 }
