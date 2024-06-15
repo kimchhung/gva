@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/kimchhung/gva/backend-echo/config"
+	"github.com/kimchhung/gva/backend/config"
 	"golang.org/x/crypto/bcrypt"
 )
 

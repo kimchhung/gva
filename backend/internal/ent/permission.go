@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/permission"
+	"github.com/kimchhung/gva/backend/internal/ent/permission"
 )
 
 // Permission is the model entity for the Permission schema.

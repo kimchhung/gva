@@ -6,12 +6,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/kimchhung/gva/backend-echo/app/database/schema/softdelete"
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/route"
-	"github.com/kimchhung/gva/backend-echo/utils/json"
-	"github.com/kimchhung/gva/backend-echo/utils/routeutil"
+	"github.com/kimchhung/gva/backend/app/database/schema/softdelete"
+	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/kimchhung/gva/backend/utils/json"
+	"github.com/kimchhung/gva/backend/utils/routeutil"
 )
 
 func LoadRouteFromFile(filePath string) (routes []*ent.Route) {

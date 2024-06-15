@@ -1,12 +1,12 @@
 package auth
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app/common/service"
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/request"
-	"github.com/kimchhung/gva/backend-echo/internal/response"
 	"github.com/kimchhung/gva/backend/api/admin/module/auth/dto"
+	"github.com/kimchhung/gva/backend/app/common/service"
+	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/kimchhung/gva/backend/internal/response"
 	"github.com/labstack/echo/v4"
 )
 

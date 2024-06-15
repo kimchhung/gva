@@ -3,9 +3,9 @@ package index
 import (
 	"time"
 
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
-	"github.com/kimchhung/gva/backend-echo/internal/request"
-	"github.com/kimchhung/gva/backend-echo/internal/response"
+	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/kimchhung/gva/backend/internal/response"
 	"github.com/labstack/echo/v4"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap/database"
+	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
 )
 
 type IndexService struct {

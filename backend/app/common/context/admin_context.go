@@ -5,8 +5,8 @@ import (
 	"errors"
 	"slices"
 
-	apperror "github.com/kimchhung/gva/backend-echo/app/common/error"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
+	apperror "github.com/kimchhung/gva/backend/app/common/error"
+	"github.com/kimchhung/gva/backend/internal/ent"
 )
 
 const (

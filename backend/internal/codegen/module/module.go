@@ -10,8 +10,8 @@ import (
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/controller"
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/repository"
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/service"
-	"github.com/kimchhung/gva/backend-echo/internal/rctrl"
-	"github.com/kimchhung/gva/backend-echo/app/constant"
+	"github.com/kimchhung/gva/backend/internal/rctrl"
+	"github.com/kimchhung/gva/backend/app/constant"
 
 	"go.uber.org/fx"
 )

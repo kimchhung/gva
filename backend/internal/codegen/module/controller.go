@@ -10,9 +10,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/dto"
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/service"
-	"github.com/kimchhung/gva/backend-echo/internal/rctrl"
-	"github.com/kimchhung/gva/backend-echo/internal/request"
-	"github.com/kimchhung/gva/backend-echo/internal/response"
+	"github.com/kimchhung/gva/backend/internal/rctrl"
+	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/kimchhung/gva/backend/internal/response"
 )
 
 // don't remove for runtime type checking

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app"
-	"github.com/kimchhung/gva/backend-echo/app/router"
 	"github.com/kimchhung/gva/backend/api/web/docs"
 	web "github.com/kimchhung/gva/backend/api/web/module"
+	"github.com/kimchhung/gva/backend/app"
+	"github.com/kimchhung/gva/backend/app/router"
 
-	"github.com/kimchhung/gva/backend-echo/config"
+	"github.com/kimchhung/gva/backend/config"
 
-	_ "github.com/kimchhung/gva/backend-echo/internal/ent/runtime"
+	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 	_ "github.com/swaggo/swag"
 )
 

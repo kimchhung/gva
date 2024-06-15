@@ -3,9 +3,9 @@ package request
 import (
 	"github.com/labstack/echo/v4"
 
-	appctx "github.com/kimchhung/gva/backend-echo/app/common/context"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/utils/validator"
+	appctx "github.com/kimchhung/gva/backend/app/common/context"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/utils/validator"
 )
 
 // use as middleware Validate(BodyParser(&body),ParamsParser(out))

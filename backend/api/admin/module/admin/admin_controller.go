@@ -5,15 +5,15 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	appctx "github.com/kimchhung/gva/backend-echo/app/common/context"
-	"github.com/kimchhung/gva/backend-echo/app/common/permission"
-	"github.com/kimchhung/gva/backend-echo/app/common/service"
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/request"
-	"github.com/kimchhung/gva/backend-echo/internal/response"
-	"github.com/kimchhung/gva/backend-echo/internal/rql"
 	"github.com/kimchhung/gva/backend/api/admin/module/admin/dto"
+	appctx "github.com/kimchhung/gva/backend/app/common/context"
+	"github.com/kimchhung/gva/backend/app/common/permission"
+	"github.com/kimchhung/gva/backend/app/common/service"
+	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/kimchhung/gva/backend/internal/response"
+	"github.com/kimchhung/gva/backend/internal/rql"
 )
 
 var _ interface{ echoc.Controller } = (*AdminController)(nil)

@@ -4,8 +4,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend-echo/app/database/schema/mixins"
-	"github.com/kimchhung/gva/backend-echo/app/database/schema/softdelete"
+	"github.com/kimchhung/gva/backend/app/database/schema/mixins"
+	"github.com/kimchhung/gva/backend/app/database/schema/softdelete"
 )
 
 type Admin struct {

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app"
-	"github.com/kimchhung/gva/backend-echo/app/router"
 	admin "github.com/kimchhung/gva/backend/api/admin/module"
 	web "github.com/kimchhung/gva/backend/api/web/module"
+	"github.com/kimchhung/gva/backend/app"
+	"github.com/kimchhung/gva/backend/app/router"
 
-	"github.com/kimchhung/gva/backend-echo/config"
-	_ "github.com/kimchhung/gva/backend-echo/internal/ent/runtime"
+	"github.com/kimchhung/gva/backend/config"
+	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 )
 
 var (

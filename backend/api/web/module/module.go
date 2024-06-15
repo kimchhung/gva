@@ -1,9 +1,9 @@
 package module
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app/constant"
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
 	index "github.com/kimchhung/gva/backend/api/web/module/index"
+	"github.com/kimchhung/gva/backend/app/constant"
+	"github.com/kimchhung/gva/backend/internal/echoc"
 	"go.uber.org/fx"
 )
 

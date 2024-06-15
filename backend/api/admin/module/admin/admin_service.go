@@ -3,17 +3,17 @@ package admin
 import (
 	"context"
 
-	appctx "github.com/kimchhung/gva/backend-echo/app/common/context"
-	"github.com/kimchhung/gva/backend-echo/app/common/repository"
 	"github.com/kimchhung/gva/backend/api/admin/module/admin/dto"
+	appctx "github.com/kimchhung/gva/backend/app/common/context"
+	"github.com/kimchhung/gva/backend/app/common/repository"
 
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/admin"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/route"
-	"github.com/kimchhung/gva/backend-echo/utils/pagi"
-	"github.com/kimchhung/gva/backend-echo/utils/routeutil"
+	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/kimchhung/gva/backend/utils/pagi"
+	"github.com/kimchhung/gva/backend/utils/routeutil"
 )
 
 type AdminService struct {

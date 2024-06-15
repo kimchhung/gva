@@ -9,9 +9,9 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql"
 
-	gen "github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/hook"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/intercept"
+	gen "github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/ent/hook"
+	"github.com/kimchhung/gva/backend/internal/ent/intercept"
 
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"

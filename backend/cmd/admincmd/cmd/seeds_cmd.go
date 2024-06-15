@@ -3,11 +3,11 @@ package cmd
 import (
 	"context"
 
-	"github.com/kimchhung/gva/backend-echo/app/common/service"
-	"github.com/kimchhung/gva/backend-echo/app/database/seeds"
-	"github.com/kimchhung/gva/backend-echo/config"
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap"
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap/database"
+	"github.com/kimchhung/gva/backend/app/common/service"
+	"github.com/kimchhung/gva/backend/app/database/seeds"
+	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/internal/bootstrap"
+	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
 	"github.com/spf13/cobra"
 )
 

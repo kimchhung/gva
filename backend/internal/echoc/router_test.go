@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
+	"github.com/kimchhung/gva/backend/internal/echoc"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )

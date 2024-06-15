@@ -5,11 +5,11 @@ package runtime
 import (
 	"time"
 
-	"github.com/kimchhung/gva/backend-echo/app/database/schema"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/admin"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/permission"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/route"
+	"github.com/kimchhung/gva/backend/app/database/schema"
+	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/permission"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/route"
 )
 
 // The init function reads all schema descriptors with runtime code

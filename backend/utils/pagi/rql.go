@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/intercept"
+	"github.com/kimchhung/gva/backend/internal/ent/intercept"
 )
 
 type InterceptorOption func(*sql.Selector)

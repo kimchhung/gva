@@ -4,14 +4,14 @@ import (
 	"github.com/kimchhung/gva/backend/api/admin/docs"
 	admin "github.com/kimchhung/gva/backend/api/admin/module"
 
-	"github.com/kimchhung/gva/backend-echo/app"
-	"github.com/kimchhung/gva/backend-echo/app/router"
+	"github.com/kimchhung/gva/backend/app"
+	"github.com/kimchhung/gva/backend/app/router"
 
-	"github.com/kimchhung/gva/backend-echo/config"
+	"github.com/kimchhung/gva/backend/config"
 
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 
-	_ "github.com/kimchhung/gva/backend-echo/internal/ent/runtime"
+	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 	_ "github.com/swaggo/swag"
 )
 

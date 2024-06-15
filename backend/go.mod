@@ -1,4 +1,4 @@
-module github.com/kimchhung/gva/backend-echo
+module github.com/kimchhung/gva/backend
 
 go 1.22
 

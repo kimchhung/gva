@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	module_template "github.com/kimchhung/gva/backend-echo/internal/codegen/module"
+	module_template "github.com/kimchhung/gva/backend/internal/codegen/module"
 )
 
 type CodeGenParams struct {

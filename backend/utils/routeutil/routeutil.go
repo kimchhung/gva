@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gosuri/uitable"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/utils/color"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/utils/color"
 	"github.com/labstack/echo/v4"
 )
 

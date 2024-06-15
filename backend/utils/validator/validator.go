@@ -3,7 +3,7 @@ package validator
 import (
 	"strings"
 
-	"github.com/kimchhung/gva/backend-echo/lang"
+	"github.com/kimchhung/gva/backend/internal/lang"
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-playground/validator/v10"

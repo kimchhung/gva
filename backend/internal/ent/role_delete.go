@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/predicate"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
 )
 
 // RoleDelete is the builder for deleting a Role entity.

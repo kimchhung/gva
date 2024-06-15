@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/kimchhung/gva/backend-echo/cmd/admincmd/cmd"
-	_ "github.com/kimchhung/gva/backend-echo/internal/ent/runtime"
+	"github.com/kimchhung/gva/backend/cmd/admincmd/cmd"
+	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 )
 
 func main() {

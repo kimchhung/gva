@@ -6,9 +6,9 @@ import (
 	"time"
 
 	fxzerolog "github.com/efectn/fx-zerolog"
-	"github.com/kimchhung/gva/backend-echo/app/common"
-	"github.com/kimchhung/gva/backend-echo/config"
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap"
+	"github.com/kimchhung/gva/backend/app/common"
+	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/internal/bootstrap"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
 )

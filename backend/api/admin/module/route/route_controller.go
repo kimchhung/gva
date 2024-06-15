@@ -6,13 +6,13 @@ import (
 
 	"github.com/kimchhung/gva/backend/api/admin/module/route/dto"
 
-	permissions "github.com/kimchhung/gva/backend-echo/app/common/permission"
-	"github.com/kimchhung/gva/backend-echo/app/common/service"
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/request"
-	"github.com/kimchhung/gva/backend-echo/internal/response"
-	"github.com/kimchhung/gva/backend-echo/internal/rql"
+	permissions "github.com/kimchhung/gva/backend/app/common/permission"
+	"github.com/kimchhung/gva/backend/app/common/service"
+	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/kimchhung/gva/backend/internal/response"
+	"github.com/kimchhung/gva/backend/internal/rql"
 )
 
 // don't remove for runtime type checking

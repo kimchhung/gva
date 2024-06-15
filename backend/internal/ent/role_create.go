@@ -10,10 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/admin"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/permission"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/route"
+	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/permission"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/route"
 )
 
 // RoleCreate is the builder for creating a Role entity.

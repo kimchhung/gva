@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 
-	"github.com/kimchhung/gva/backend-echo/config"
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap"
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend-echo/internal/menu"
+	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/internal/bootstrap"
+	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/kimchhung/gva/backend/internal/menu"
 	"github.com/spf13/cobra"
 )
 

@@ -3,7 +3,7 @@ package apperror
 import (
 	"strings"
 
-	"github.com/kimchhung/gva/backend-echo/lang"
+	"github.com/kimchhung/gva/backend/internal/lang"
 )
 
 type Error struct {

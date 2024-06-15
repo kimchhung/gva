@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/permission"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/permission"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
 )
 
 // PermissionCreate is the builder for creating a Permission entity.

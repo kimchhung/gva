@@ -1,7 +1,7 @@
 package route
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app/constant"
+	"github.com/kimchhung/gva/backend/app/constant"
 	"go.uber.org/fx"
 )
 

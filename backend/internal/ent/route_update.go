@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend-echo/app/database/schema/types"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/predicate"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/route"
+	"github.com/kimchhung/gva/backend/app/database/schema/types"
+	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/route"
 )
 
 // RouteUpdate is the builder for updating Route entities.

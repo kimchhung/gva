@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
-	"github.com/kimchhung/gva/backend-echo/internal/request"
-	"github.com/kimchhung/gva/backend-echo/internal/response"
-	"github.com/kimchhung/gva/backend-echo/utils/sse"
+	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/kimchhung/gva/backend/internal/response"
+	"github.com/kimchhung/gva/backend/utils/sse"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )

@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/admin"
 )
 
 // Admin is the model entity for the Admin schema.

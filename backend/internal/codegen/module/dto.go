@@ -2,7 +2,7 @@ package module_template
 
 var DtoRequest = `package dto
 
-import "github.com/kimchhung/gva/backend-echo/internal/ent"
+import "github.com/kimchhung/gva/backend/internal/ent"
 
 // Requests & responses Data Transfer Object
 type {{.EntityPascal}}Request struct {
@@ -12,7 +12,7 @@ type {{.EntityPascal}}Request struct {
 
 var DtoResponse = `package dto
 
-import "github.com/kimchhung/gva/backend-echo/internal/ent"
+import "github.com/kimchhung/gva/backend/internal/ent"
 
 // Requests & responses Data Transfer Object
 type {{.EntityPascal}}Response struct {

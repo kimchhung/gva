@@ -1,15 +1,15 @@
 package route
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app/common/repository"
-	"github.com/kimchhung/gva/backend-echo/utils/pagi"
-	"github.com/kimchhung/gva/backend-echo/utils/routeutil"
 	"github.com/kimchhung/gva/backend/api/admin/module/route/dto"
+	"github.com/kimchhung/gva/backend/app/common/repository"
+	"github.com/kimchhung/gva/backend/utils/pagi"
+	"github.com/kimchhung/gva/backend/utils/routeutil"
 
 	"context"
 
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/route"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/ent/route"
 )
 
 type RouteService struct {

@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"strings"
 
-	app_err "github.com/kimchhung/gva/backend-echo/app/common/error"
-	"github.com/kimchhung/gva/backend-echo/internal/rql"
-	"github.com/kimchhung/gva/backend-echo/utils"
-	"github.com/kimchhung/gva/backend-echo/utils/json"
-	ustrings "github.com/kimchhung/gva/backend-echo/utils/strings"
+	app_err "github.com/kimchhung/gva/backend/app/common/error"
+	"github.com/kimchhung/gva/backend/internal/rql"
+	"github.com/kimchhung/gva/backend/utils"
+	"github.com/kimchhung/gva/backend/utils/json"
+	ustrings "github.com/kimchhung/gva/backend/utils/strings"
 	"github.com/labstack/echo/v4"
 
 	"github.com/tidwall/sjson"

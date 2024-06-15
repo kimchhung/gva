@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"os"
 
-	"github.com/kimchhung/gva/backend-echo/config"
+	"github.com/kimchhung/gva/backend/config"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"

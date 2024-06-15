@@ -1,13 +1,13 @@
 package module
 
 import (
-	"github.com/kimchhung/gva/backend-echo/app/constant"
-	"github.com/kimchhung/gva/backend-echo/internal/echoc"
 	admin "github.com/kimchhung/gva/backend/api/admin/module/admin"
 	auth "github.com/kimchhung/gva/backend/api/admin/module/auth"
 	index "github.com/kimchhung/gva/backend/api/admin/module/index"
 	permission "github.com/kimchhung/gva/backend/api/admin/module/permission"
 	route "github.com/kimchhung/gva/backend/api/admin/module/route"
+	"github.com/kimchhung/gva/backend/app/constant"
+	"github.com/kimchhung/gva/backend/internal/echoc"
 	"go.uber.org/fx"
 )
 

@@ -6,8 +6,8 @@ import (
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/repository"
 	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/dto"
 
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/{{.EntityAllLower}}"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/ent/{{.EntityAllLower}}"
 	"context"
 )
 

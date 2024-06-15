@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/role"
+	"github.com/kimchhung/gva/backend/internal/ent/role"
 )
 
 // Role is the model entity for the Role schema.

@@ -3,9 +3,9 @@ package permission
 import (
 	"context"
 
-	"github.com/kimchhung/gva/backend-echo/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend-echo/internal/ent"
-	"github.com/kimchhung/gva/backend-echo/internal/ent/permission"
+	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/kimchhung/gva/backend/internal/ent/permission"
 )
 
 const (
