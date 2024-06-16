@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "createdAt": "2024-04-30T07:05:33Z",
-    "updatedAt": "2024-04-30T07:05:33Z",
+    "createdAt": "2024-06-16T06:06:04Z",
+    "updatedAt": "2024-06-16T06:06:04Z",
     "isEnable": true,
     "path": "/dashboard",
     "component": "#",
@@ -12,14 +12,14 @@
     "meta": {
       "alwaysShow": true,
       "title": "router.dashboard",
-      "icon": "ant-design:admin-filled"
+      "icon": "ep:home-filled"
     },
     "edges": {
       "children": [
         {
           "id": 2,
-          "createdAt": "2024-04-30T07:05:33Z",
-          "updatedAt": "2024-04-30T07:05:33Z",
+          "createdAt": "2024-06-16T06:06:04Z",
+          "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
           "parentId": 1,
           "path": "welcome",
@@ -28,14 +28,32 @@
           "type": "menu",
           "meta": { "title": "router.welcome", "noCache": true, "affix": true },
           "edges": {}
+        },
+        {
+          "id": 7,
+          "parentId": 1,
+          "createdAt": "2024-06-16T06:10:24Z",
+          "updatedAt": "2024-06-16T06:10:24Z",
+          "isEnable": true,
+          "path": "icon",
+          "component": "views/Dashboard/Icon",
+          "name": "Icon",
+          "type": "menu",
+          "meta": {
+            "hidden": false,
+            "title": "Icon",
+            "icon": "ep:brush",
+            "breadcrumb": true
+          },
+          "edges": {}
         }
       ]
     }
   },
   {
     "id": 3,
-    "createdAt": "2024-04-30T07:05:33Z",
-    "updatedAt": "2024-04-30T07:05:33Z",
+    "createdAt": "2024-06-16T06:06:04Z",
+    "updatedAt": "2024-06-16T06:06:04Z",
     "isEnable": true,
     "path": "/authorization",
     "component": "#",
@@ -51,8 +69,8 @@
       "children": [
         {
           "id": 4,
-          "createdAt": "2024-04-30T07:05:33Z",
-          "updatedAt": "2024-04-30T07:05:33Z",
+          "createdAt": "2024-06-16T06:06:04Z",
+          "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
           "parentId": 3,
           "path": "admin",
@@ -64,8 +82,8 @@
         },
         {
           "id": 5,
-          "createdAt": "2024-04-30T07:05:33Z",
-          "updatedAt": "2024-04-30T07:05:33Z",
+          "createdAt": "2024-06-16T06:06:04Z",
+          "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
           "parentId": 3,
           "path": "menu",
@@ -77,8 +95,8 @@
         },
         {
           "id": 6,
-          "createdAt": "2024-04-30T07:05:33Z",
-          "updatedAt": "2024-04-30T07:05:33Z",
+          "createdAt": "2024-06-16T06:06:04Z",
+          "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
           "parentId": 3,
           "path": "role",

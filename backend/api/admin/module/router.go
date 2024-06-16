@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	docs "github.com/kimchhung/gva/backend/api/admin/docs"
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/echoc"
 	"github.com/kimchhung/gva/backend/utils"
 	"github.com/kimchhung/gva/backend/utils/swagger"
@@ -22,7 +22,7 @@ func NewRouter(controllers []echoc.Controller) *Router {
 }
 
 func (r *Router) Register(app *echo.Echo, args ...any) {
-	cfg := args[0].(*config.Config)
+	cfg := args[0].(*env.Config)
 
 	//default value if not exist in env config
 	utils.SetIfEmpty(&cfg.API.Admin.BasePath, "/admin/v1")

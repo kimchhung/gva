@@ -6,7 +6,7 @@ import (
 
 	"reflect"
 
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/ent"
 
 	"github.com/rs/zerolog"
@@ -23,7 +23,7 @@ type Database struct {
 	*ent.Client
 	sql *sql.Driver
 	Log *zerolog.Logger
-	Cfg *config.Config
+	Cfg *env.Config
 }
 
 type Seeder interface {
@@ -31,7 +31,7 @@ type Seeder interface {
 	Seed(ctx context.Context, conn *ent.Client) error
 }
 
-func NewDatabase(cfg *config.Config, log *zerolog.Logger) *Database {
+func NewDatabase(cfg *env.Config, log *zerolog.Logger) *Database {
 	db := &Database{
 		Cfg: cfg,
 		Log: log,
@@ -41,8 +41,6 @@ func NewDatabase(cfg *config.Config, log *zerolog.Logger) *Database {
 }
 
 func (db *Database) ConnectDatabase() error {
-	defer db.Log.Info().Msg("Database is connected")
-
 	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
 	if err != nil {
 		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
@@ -56,6 +54,11 @@ func (db *Database) ConnectDatabase() error {
 		ent.Log(log.Print),
 	)
 
+	if err := drv.DB().Ping(); err != nil {
+		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
+	}
+
+	db.Log.Info().Msg("Database is connected")
 	return nil
 }
 

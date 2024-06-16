@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -10,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	appctx "github.com/kimchhung/gva/backend/app/common/context"
 	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/labstack/echo/v4"
 
 	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
@@ -19,11 +20,11 @@ import (
 )
 
 type JwtService struct {
-	cfg *config.Config
+	cfg *env.Config
 	db  *database.Database
 }
 
-func NewJwtService(cfg *config.Config, db *database.Database) *JwtService {
+func NewJwtService(cfg *env.Config, db *database.Database) *JwtService {
 	return &JwtService{
 		cfg: cfg,
 		db:  db,
@@ -44,7 +45,9 @@ func (s *JwtService) RequiredAdmin() echo.MiddlewareFunc {
 			}
 
 			ctx := c.Request().Context()
-			ctx = appctx.WithAdminContext(ctx, appctx.WithAdmin(admin))
+			ctx = appctx.NewAdminContext(ctx, appctx.WithAdmin(admin))
+
+			log.Println("RequiredAdmin")
 
 			c.SetRequest(c.Request().WithContext(ctx))
 			return next(c)

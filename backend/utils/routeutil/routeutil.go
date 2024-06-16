@@ -2,6 +2,7 @@ package routeutil
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/gosuri/uitable"
 	"github.com/kimchhung/gva/backend/internal/ent"
@@ -25,6 +26,10 @@ func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
 			parentRoutes = append(parentRoutes, route)
 		}
 	}
+
+	slices.SortFunc(parentRoutes, func(a *ent.Route, b *ent.Route) int {
+		return a.ID - b.ID
+	})
 
 	return parentRoutes
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kimchhung/gva/backend/app/common/service"
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
 	"github.com/kimchhung/gva/backend/internal/ent"
 	"github.com/kimchhung/gva/backend/internal/ent/admin"
@@ -19,7 +19,7 @@ type SuperAdminSeeder struct {
 }
 
 func (s SuperAdminSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
-	cfg := ctx.Value(config.Config{}).(*config.Config)
+	cfg := ctx.Value(env.Config{}).(*env.Config)
 
 	return conn.Admin.Query().
 		Where(admin.Username(cfg.Seed.SuperAdmin.Username)).
@@ -27,7 +27,7 @@ func (s SuperAdminSeeder) Count(ctx context.Context, conn *ent.Client) (int, err
 }
 
 func (s SuperAdminSeeder) Seed(ctx context.Context, conn *ent.Client) error {
-	cfg := ctx.Value(config.Config{}).(*config.Config)
+	cfg := ctx.Value(env.Config{}).(*env.Config)
 	password_ := ctx.Value(service.PasswordService{}).(*service.PasswordService)
 
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {

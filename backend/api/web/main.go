@@ -5,15 +5,14 @@ import (
 	web "github.com/kimchhung/gva/backend/api/web/module"
 	"github.com/kimchhung/gva/backend/app"
 	"github.com/kimchhung/gva/backend/app/router"
-
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 
 	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 	_ "github.com/swaggo/swag"
 )
 
 var (
-	cfg = config.NewConfig()
+	cfg = env.NewConfig()
 )
 
 // @title					    GVA Web API

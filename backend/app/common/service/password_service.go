@@ -1,15 +1,15 @@
 package service
 
 import (
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type PasswordService struct {
-	cfg *config.Config
+	cfg *env.Config
 }
 
-func NewPasswordService(cfg *config.Config) *PasswordService {
+func NewPasswordService(cfg *env.Config) *PasswordService {
 	return &PasswordService{
 		cfg: cfg,
 	}

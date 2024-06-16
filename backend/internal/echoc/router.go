@@ -107,6 +107,7 @@ func (r *RouteMeta) DoWithScope(handler MetaHandler) MetaHandler {
 func Register(app *echo.Group, controller Controller) {
 
 	r := controller.Init(app)
+
 	controllerType := reflect.TypeOf(controller)
 	controllerValue := reflect.ValueOf(controller)
 
@@ -128,8 +129,6 @@ func Register(app *echo.Group, controller Controller) {
 			}
 
 			meta.handlers = metaHandlerFunc(meta)()
-
-			// fiber endpoint
 			AddRoute(r, meta)
 		}
 	}

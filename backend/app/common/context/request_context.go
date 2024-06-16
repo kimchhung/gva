@@ -105,10 +105,13 @@ func Middleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c echo.Context) (err error) {
+			log.Print("Request_context")
 			ctx := &RequestContext{}
 			ctx.Context = context.WithValue(c.Request().Context(), RequestContextKey{}, ctx)
 			ctx.startTime = time.Now()
 			ctx.logFields = defaultLogFields(c)
+
+			//logger set context
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			defer func() {
@@ -120,6 +123,8 @@ func Middleware() echo.MiddlewareFunc {
 						// unknown internal error stacks
 						ctx.logFields.Stack = debug.Stack()
 					}
+
+					ctx.logFields.Stack = debug.Stack()
 
 					if err, ok = rvr.(error); !ok {
 						// internal error stacks

@@ -2,11 +2,11 @@ package module
 
 import (
 	"github.com/kimchhung/gva/backend/api/web/docs"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/utils/swagger"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
-	"github.com/kimchhung/gva/backend/config"
 	"github.com/kimchhung/gva/backend/internal/echoc"
 	"github.com/kimchhung/gva/backend/utils"
 )
@@ -22,7 +22,7 @@ func NewRouter(controllers ...echoc.Controller) *Router {
 }
 
 func (r *Router) Register(app *echo.Echo, args ...any) {
-	cfg := args[0].(*config.Config)
+	cfg := args[0].(*env.Config)
 
 	//default value if not exist in env config
 	utils.SetIfEmpty(&cfg.API.Web.BasePath, "/web/v1")

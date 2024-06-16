@@ -6,7 +6,7 @@ import (
 
 	appctx "github.com/kimchhung/gva/backend/app/common/context"
 	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/lang"
 	"github.com/kimchhung/gva/backend/utils"
 	"github.com/labstack/echo-contrib/echoprometheus"
@@ -19,11 +19,11 @@ import (
 
 type Middleware struct {
 	app *echo.Echo
-	cfg *config.Config
+	cfg *env.Config
 	log *zerolog.Logger
 }
 
-func NewMiddleware(app *echo.Echo, cfg *config.Config, log *zerolog.Logger) *Middleware {
+func NewMiddleware(app *echo.Echo, cfg *env.Config, log *zerolog.Logger) *Middleware {
 	return &Middleware{
 		app: app,
 		cfg: cfg,
@@ -34,13 +34,12 @@ func NewMiddleware(app *echo.Echo, cfg *config.Config, log *zerolog.Logger) *Mid
 func (m *Middleware) Register() {
 	mdCfg := m.cfg.Middleware
 
-	// language and recover error handling
-	m.app.Pre(
-		appctx.Middleware(),
-		lang.Middleware(),
-	)
+	m.app.Pre(appctx.Middleware())
 
-	m.app.Use(middleware.RemoveTrailingSlash())
+	m.app.Use(
+		lang.Middleware(),
+		middleware.RemoveTrailingSlash(),
+	)
 
 	// cors
 	m.app.Use(middleware.CORS())

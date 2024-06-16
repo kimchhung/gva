@@ -9,11 +9,11 @@ import (
 	appctx "github.com/kimchhung/gva/backend/app/common/context"
 	"github.com/kimchhung/gva/backend/app/middleware"
 	"github.com/kimchhung/gva/backend/app/router"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/lang"
 	"github.com/kimchhung/gva/backend/utils/color"
 	"github.com/kimchhung/gva/backend/utils/validator"
 
-	"github.com/kimchhung/gva/backend/config"
 	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
 
 	"github.com/kimchhung/gva/backend/internal/request"
@@ -22,11 +22,11 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewEcho(cfg *config.Config) *echo.Echo {
+func NewEcho(cfg *env.Config) *echo.Echo {
 	// Setup Webserver
 
 	// Pass production config to check it
-	request.IsProduction = cfg.App.Production
+	request.IsProduction = cfg.IsProd()
 
 	e := echo.New()
 	e.Server.IdleTimeout = time.Duration(cfg.App.IdleTimeout) * time.Second
@@ -37,10 +37,10 @@ func NewEcho(cfg *config.Config) *echo.Echo {
 	return e
 }
 
-func printStartupMessage(cfg *config.Config) {
+func printStartupMessage(cfg *env.Config) {
 
 	// Custom Startup Messages
-	host, port := config.ParseAddr(cfg.App.Port)
+	host, port := env.ParseAddr(cfg.App.Port)
 	if host == "" {
 		host = "http://localhost"
 	}
@@ -91,7 +91,7 @@ func printRoutes(routes []*echo.Route) {
 
 func Start(
 	lifecycle fx.Lifecycle,
-	cfg *config.Config,
+	cfg *env.Config,
 	routers *router.Router,
 	app *echo.Echo,
 	middlewares *middleware.Middleware,
@@ -101,7 +101,7 @@ func Start(
 
 	isShuttingdown := false
 	lifecycle.Append(fx.StartHook(
-		func(ctx context.Context) error {
+		func(ctx context.Context) {
 			// Register middlewares & routes
 			middlewares.Register()
 			routers.Register(app, cfg)
@@ -158,12 +158,11 @@ func Start(
 				}()
 			}
 
-			return nil
 		},
 	))
 
 	lifecycle.Append(fx.StopHook(
-		func(ctx context.Context) error {
+		func(ctx context.Context) {
 			isShuttingdown = true
 			ctx, cancel := context.WithTimeout(ctx, time.Duration(cfg.App.ShutdownTimeout)*time.Second)
 			defer cancel()
@@ -177,7 +176,6 @@ func Start(
 
 			log.Info().Msgf("%s was successful shutdown.", cfg.App.Name)
 			log.Info().Msg("\u001b[96mSee you again👋\u001b[0m")
-			return nil
 		},
 	))
 

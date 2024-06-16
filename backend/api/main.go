@@ -5,13 +5,13 @@ import (
 	web "github.com/kimchhung/gva/backend/api/web/module"
 	"github.com/kimchhung/gva/backend/app"
 	"github.com/kimchhung/gva/backend/app/router"
+	"github.com/kimchhung/gva/backend/env"
 
-	"github.com/kimchhung/gva/backend/config"
 	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 )
 
 var (
-	cfg = config.NewConfig()
+	cfg = env.NewConfig()
 )
 
 // Run both web and admin api

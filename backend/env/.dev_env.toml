@@ -1,9 +1,10 @@
 # Configuration vars for cmd/app
 [app]
+env = "dev"           # dev | staging | prod
 name = "Go Vue Admin"
 port = ":8080"
 idle_timeout = 5      # As seconds
-shutdown_timeout = 10      # As seconds
+shutdown_timeout = 10 # As seconds
 print_routes = true
 production = false
 
@@ -55,4 +56,3 @@ expiration_seconds = 60
 [middleware.swagger]
 enable = true
 path = "/docs"
-

@@ -3,11 +3,10 @@ package main
 import (
 	"github.com/kimchhung/gva/backend/api/admin/docs"
 	admin "github.com/kimchhung/gva/backend/api/admin/module"
+	"github.com/kimchhung/gva/backend/env"
 
 	"github.com/kimchhung/gva/backend/app"
 	"github.com/kimchhung/gva/backend/app/router"
-
-	"github.com/kimchhung/gva/backend/config"
 
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 
@@ -16,7 +15,7 @@ import (
 )
 
 var (
-	cfg = config.NewConfig()
+	cfg = env.NewConfig()
 )
 
 // @title						GVA admin API

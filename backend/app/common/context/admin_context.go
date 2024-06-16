@@ -19,6 +19,7 @@ type (
 )
 
 type AdminContext struct {
+	context.Context
 	Admin *ent.Admin
 
 	isSuperAdmin bool
@@ -26,14 +27,32 @@ type AdminContext struct {
 }
 
 // a context help handling error
-func WithAdminContext(ctx context.Context, opts ...AdminContextOption) context.Context {
+func NewAdminContext(ctx context.Context, opts ...AdminContextOption) *AdminContext {
 	adminctx := new(AdminContext)
+	adminctx.Modify(opts...)
 
+	adminctx.Context = context.WithValue(ctx, AdminContextKey{}, adminctx)
+	return adminctx
+}
+
+func (c *AdminContext) Modify(opts ...AdminContextOption) {
 	for _, opt := range opts {
-		opt(adminctx)
+		opt(c)
+	}
+}
+
+func GetAdminContext(ctx context.Context) (*AdminContext, error) {
+	v, ok := ctx.(*AdminContext)
+	if ok {
+		return v, nil
 	}
 
-	return context.WithValue(ctx, &AdminContextKey{}, adminctx)
+	v, ok = ctx.Value(AdminContextKey{}).(*AdminContext)
+	if ok {
+		return v, nil
+	}
+
+	return nil, errors.New("context does not contain AdminContext")
 }
 
 func (ctx *AdminContext) IsSuperAdmin() bool {
@@ -101,15 +120,6 @@ func WithAdmin(admin *ent.Admin) AdminContextOption {
 	return func(ac *AdminContext) {
 		ac.Admin = admin
 	}
-}
-
-func GetAdminContext(ctx context.Context) (*AdminContext, error) {
-	v, ok := ctx.Value(AdminContextKey{}).(*AdminContext)
-	if ok {
-		return v, nil
-	}
-
-	return nil, errors.New("context does not contain AdminContext")
 }
 
 func MustAdminContext(ctx context.Context) *AdminContext {

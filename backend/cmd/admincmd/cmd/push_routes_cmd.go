@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/bootstrap"
 	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
 	"github.com/kimchhung/gva/backend/internal/menu"
@@ -20,13 +20,13 @@ var pushRouteCmd = &cobra.Command{
 	Long:  `This command pulls routes from the database and performs necessary operations.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		cfg := config.NewConfig()
+		cfg := env.NewConfig()
 		log := bootstrap.NewLogger(cfg)
 
 		log.Info().Msg("Pushing routes...")
 		defer log.Info().Msg("Push routes is completed")
 
-		db := database.NewDatabase(config.NewConfig(), log)
+		db := database.NewDatabase(env.NewConfig(), log)
 		db.ConnectDatabase()
 
 		menu.PushRouters(ctx, db.Client, routeDataPath)

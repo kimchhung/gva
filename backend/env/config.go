@@ -1,4 +1,4 @@
-package config
+package env
 
 import (
 	"os"
@@ -9,12 +9,30 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const (
+	Dev     = "dev"
+	Staging = "staging"
+	Prod    = "prod"
+)
+
+func (c *Config) IsProd() bool {
+	return c.App.Env == Prod
+}
+
+func (c *Config) IsDev() bool {
+	return c.App.Env == Dev
+}
+
+func (c *Config) IsStaging() bool {
+	return c.App.Env == Staging
+}
+
 type (
 	app = struct {
 		Name            string `toml:"name"`
 		Port            string `toml:"port"`
 		PrintRoutes     bool   `toml:"print_routes"`
-		Production      bool   `toml:"production"`
+		Env             string `toml:"env"`
 		IdleTimeout     int64  `toml:"idle_timeout"`
 		ShutdownTimeout int64  `toml:"shutdown_timeout"`
 		TLS             struct {
@@ -95,10 +113,10 @@ type Config struct {
 	Password   password
 }
 
-func ParseConfig(name string) (*Config, error) {
+func ParseEnv(name string) (*Config, error) {
 	var contents *Config
 
-	file, err := os.ReadFile("./" + name + ".toml")
+	file, err := os.ReadFile("./env/." + name + "_env.toml")
 	if err != nil {
 		return &Config{}, err
 	}
@@ -108,7 +126,15 @@ func ParseConfig(name string) (*Config, error) {
 }
 
 func NewConfig() *Config {
-	config, err := ParseConfig(".env")
+	filename := "dev"
+	envName := os.Getenv("APP_ENV")
+
+	switch envName {
+	case "local", "dev", "staging", "prod":
+		filename = envName
+	}
+
+	config, err := ParseEnv(filename)
 	if err != nil {
 		log.Panic().Err(err).Msg("failed to parse config")
 	}

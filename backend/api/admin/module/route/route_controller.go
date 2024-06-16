@@ -37,7 +37,7 @@ func NewRouteController(
 }
 
 func (con *RouteController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/routes")
+	return r.Group("/routes", con.jwt_s.RequiredAdmin())
 }
 
 // @Tags        Route

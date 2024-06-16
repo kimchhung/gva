@@ -7,13 +7,13 @@ import (
 
 	fxzerolog "github.com/efectn/fx-zerolog"
 	"github.com/kimchhung/gva/backend/app/common"
-	"github.com/kimchhung/gva/backend/config"
+	"github.com/kimchhung/gva/backend/env"
 	"github.com/kimchhung/gva/backend/internal/bootstrap"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
 )
 
-func New(cfg *config.Config, opts ...fx.Option) *fx.App {
+func New(cfg *env.Config, opts ...fx.Option) *fx.App {
 	return fx.New(
 		// Provide config
 		fx.Supply(cfg),
