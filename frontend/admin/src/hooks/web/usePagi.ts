@@ -96,10 +96,12 @@ export const setQuerySort = <T extends object>(query: QueryPagi, msort: SingleSo
   })
 }
 
-export const createQueryPayload = (query: QueryPagi = { limit: 20, page: 1 }) => {
+export const createQueryPayload = (query: QueryPagi) => {
+  const { limit, page, ...more } = query
   const payload = {
-    offset: (query.page - 1) * query.limit,
-    limit: query.limit * query.page
+    offset: (page - 1) * limit,
+    limit: limit * page,
+    ...more
   } as Recordable
 
   if (query.search) {

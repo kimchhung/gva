@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { api } from '@/api'
+import { getRouters } from '@/api/route'
 import { useApi } from '@/axios'
 import { Descriptions, DescriptionsSchema } from '@/components/Descriptions'
 import { findIndex } from '@/utils'
@@ -33,7 +33,7 @@ const nodeClick = (treeData: any) => {
 
 const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const [list] = await useApi(() => api().getRouters())
+  const [list] = await useApi(() => getRouters())
   if (list) {
     treeData.value = list
     await nextTick()

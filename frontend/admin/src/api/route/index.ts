@@ -2,7 +2,9 @@ import request from '@/axios'
 import { QueryPagi, createQueryPayload } from '@/hooks/web/usePagi'
 import { MenuRoute } from './types'
 
-export const getRouters = (query: QueryPagi = { limit: 500, page: 1 }) => {
+type getTypeQuery = QueryPagi & { isGroupNested?: boolean }
+
+export const getRouters = (query: getTypeQuery = { limit: 100, page: 1 }) => {
   return request.get<MenuRoute[]>({
     url: '/routes',
     params: createQueryPayload(query)

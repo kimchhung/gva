@@ -6,7 +6,7 @@ import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import type { RouteRecordRaw } from 'vue-router'
-import router from './router'
+import router, { addRouter } from './router'
 
 const { start, done } = useNProgress()
 
@@ -44,7 +44,8 @@ router.beforeEach(async (to, from, next) => {
       }
 
       permissionStore.getAddRouters.forEach((route) => {
-        router.addRoute(route as unknown as RouteRecordRaw) // Dynamic adding accessable routing table
+        addRouter(route as unknown as RouteRecordRaw)
+        // router.addRoute(route as unknown as RouteRecordRaw) // Dynamic adding accessable routing table
       })
 
       const redirectPath = from.query.redirect || to.path
@@ -65,6 +66,6 @@ router.beforeEach(async (to, from, next) => {
 
 router.afterEach((to) => {
   useTitle(to?.meta?.title as string)
-  done() // 结束Progress
+  done() // Progress
   loadDone()
 })

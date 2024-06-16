@@ -56,7 +56,7 @@ export const useValidator = () => {
       validator: (_, val, callback) => {
         if (!val) return callback()
         if (!/^1[3456789]\d{9}$/.test(val)) {
-          callback(new Error(message || '请输入正确的手机号码'))
+          callback(new Error(message || 'Please correct your phone'))
         } else {
           callback()
         }
@@ -69,7 +69,7 @@ export const useValidator = () => {
       validator: (_, val, callback) => {
         if (!val) return callback()
         if (!/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/.test(val)) {
-          callback(new Error(message || '请输入正确的邮箱'))
+          callback(new Error(message || 'please enter your vaild email'))
         } else {
           callback()
         }
@@ -80,7 +80,7 @@ export const useValidator = () => {
   const maxlength = (max: number): FormItemRule => {
     return {
       max,
-      message: '长度不能超过' + max + '个字符'
+      message: 'The length cannot exceed' + max + 'Individual character'
     }
   }
 

@@ -20,6 +20,14 @@ export const resetRouter = (): void => {
   })
 }
 
+export const addRouter = (route: RouteRecordRaw): void => {
+  if (!route.path.startsWith('/')) {
+    route.path = '/' + route.path
+  }
+
+  router.addRoute(route)
+}
+
 export const setupRouter = (app: App<Element>) => {
   app.use(router)
 }

@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { api } from '@/api'
+import { getRouters } from '@/api/route'
 import { useApi } from '@/axios'
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
@@ -110,7 +110,7 @@ const { setValues, getFormData, getElFormExpose } = formMethods
 
 const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const [list] = await useApi(() => api().getRouters())
+  const [list] = await useApi(() => getRouters())
   if (!list) {
     return
   }

@@ -39,7 +39,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       }),
       Vue({
         script: {
-          // 开启defineModel
+          // defineModel
           defineModel: true
         }
       }),
@@ -129,7 +129,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // brotliSize: false,
       rollupOptions: {
         plugins: env.VITE_USE_BUNDLE_ANALYZER === 'true' ? [visualizer()] : undefined,
-        // 拆包
+        // Dismantle
         output: {
           manualChunks: {
             'vue-chunks': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
@@ -143,14 +143,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     },
     server: {
       port: 4000,
-      proxy: {
-        // 选项写法
-        '/api': {
-          target: 'http://127.0.0.1:8000',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      },
       hmr: {
         overlay: false
       },

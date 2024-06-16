@@ -245,6 +245,7 @@ const signIn = async () => {
 // Get role information
 const getRoleRouterAndAddRoute = async () => {
   const routers = await adminStore.fetchAdminRouters()
+
   if (routers) {
     appStore.getDynamicRouter && appStore.getServerDynamicRouter
       ? permissionStore.generateRoutes('server', routers)
@@ -254,8 +255,6 @@ const getRoleRouterAndAddRoute = async () => {
       addRoute(route as RouteRecordRaw) // Dynamic adding accessable routing table
     })
     permissionStore.setIsAddRouters(true)
-
-    console.log({ path: permissionStore.addRouters[0].path })
 
     push({ path: permissionStore.addRouters[0].path })
   }
