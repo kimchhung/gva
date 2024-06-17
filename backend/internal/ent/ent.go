@@ -13,6 +13,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/comic"
+	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
+	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
+	"github.com/kimchhung/gva/backend/internal/ent/genre"
 	"github.com/kimchhung/gva/backend/internal/ent/permission"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
 	"github.com/kimchhung/gva/backend/internal/ent/route"
@@ -76,10 +80,14 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			admin.Table:      admin.ValidColumn,
-			permission.Table: permission.ValidColumn,
-			role.Table:       role.ValidColumn,
-			route.Table:      route.ValidColumn,
+			admin.Table:        admin.ValidColumn,
+			comic.Table:        comic.ValidColumn,
+			comicchapter.Table: comicchapter.ValidColumn,
+			comicimg.Table:     comicimg.ValidColumn,
+			genre.Table:        genre.ValidColumn,
+			permission.Table:   permission.ValidColumn,
+			role.Table:         role.ValidColumn,
+			route.Table:        route.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

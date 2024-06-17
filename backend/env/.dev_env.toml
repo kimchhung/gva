@@ -32,6 +32,10 @@ base_path = "/web/v1"
 enable = true
 base_path = "/admin/v1"
 
+[api.crawler]
+enable = true
+base_path = "/crawler/v1"
+
 [logger]
 time_format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10
 level = 0        # panic -> 5, fatal -> 4, error -> 3, warn -> 2, info -> 1, debug -> 0, trace -> -1

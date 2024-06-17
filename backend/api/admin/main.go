@@ -44,7 +44,7 @@ func Run() {
 
 	/* Admin |> module <| */
 	modules := router.WithRouter(
-		admin.APIAdminModules,
+		admin.NewAdminModules,
 	)
 
 	app.New(

@@ -16,6 +16,14 @@ type Tx struct {
 	config
 	// Admin is the client for interacting with the Admin builders.
 	Admin *AdminClient
+	// Comic is the client for interacting with the Comic builders.
+	Comic *ComicClient
+	// ComicChapter is the client for interacting with the ComicChapter builders.
+	ComicChapter *ComicChapterClient
+	// ComicImg is the client for interacting with the ComicImg builders.
+	ComicImg *ComicImgClient
+	// Genre is the client for interacting with the Genre builders.
+	Genre *GenreClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Role is the client for interacting with the Role builders.
@@ -154,6 +162,10 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
+	tx.Comic = NewComicClient(tx.config)
+	tx.ComicChapter = NewComicChapterClient(tx.config)
+	tx.ComicImg = NewComicImgClient(tx.config)
+	tx.Genre = NewGenreClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Route = NewRouteClient(tx.config)

@@ -1,0 +1,47 @@
+basePath: /crawler/v1
+definitions:
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        description: The Data field contains the actual response data
+      message:
+        type: string
+      meta:
+        description: Meta provides additional information about the data, such as
+          its type or kind.y.
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: GO VUE ADMIN Boilerplate
+  title: GVA Crawler API
+  version: "1.0"
+paths:
+  /now:
+    get:
+      operationId: now
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Current Server Time
+      tags:
+      - Time
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

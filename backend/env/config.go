@@ -65,6 +65,11 @@ type (
 			Port     string
 			BasePath string `toml:"base_path"`
 		}
+		Crawler struct {
+			Enable   bool
+			Port     string
+			BasePath string `toml:"base_path"`
+		}
 	}
 	logger = struct {
 		TimeFormat string        `toml:"time_format"`

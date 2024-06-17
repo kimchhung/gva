@@ -1,7 +1,9 @@
-h1:F7kOq+GHhDIl8TAcABCRUBbaqLKhZKzBYWeIwgOJwuY=
+h1:COU4hU3QofGkFZyyketFs6LGPlqVoWZiXPs3Ni3UYD4=
 20240303101307_init.sql h1:QbO/rJ2tJMJvrXQnBAK+B61nDr7OlV1zJX+wc5Izzy8=
 20240303101818_super_admin_seed.sql h1:JRzWBxwSh9qfKFre3q8wyLh3kPcKvBvRmDFFwQNf8lo=
 20240430043452_add_types_enum_route.sql h1:VC/3sizNQWNNlJBCwmfMeKq/J1GIo805OazIk3ksiqU=
 20240430063239_remove_title.sql h1:c6YqaJl1CzEnO/i8hcNOUSavIxeMmWcD0E/+J31oZRc=
 20240430064030_nullable_route.sql h1:CaX+/6ICYo2EOMoQcC21HQPkGDzlKgRFpijQb8is410=
 20240430090244_perm_create.sql h1:TG2hEBwuRKgUuG5ZDoKNi1PRTCOS/p0ZlITivd2fbWQ=
+20240617180532_comic_table.sql h1:wGHZQjgZWW56tlUFVPzWpjdTUvqIT66unpM7rkFAfMU=
+20240617181801_comic_table_last_final.sql h1:smWE5ua8qujwfjJQuCXXxM+pDqFR4333yaxacxr8cbs=

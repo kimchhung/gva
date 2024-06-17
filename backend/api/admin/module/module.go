@@ -11,7 +11,7 @@ import (
 	"go.uber.org/fx"
 )
 
-var APIAdminModules = fx.Module("admin-module",
+var NewAdminModules = fx.Module("admin-module",
 	admin.AdminModule,
 	auth.AuthModule,
 	route.RouteModule,

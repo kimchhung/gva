@@ -9,6 +9,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/kimchhung/gva/backend/internal/ent"
 	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/comic"
+	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
+	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
+	"github.com/kimchhung/gva/backend/internal/ent/genre"
 	"github.com/kimchhung/gva/backend/internal/ent/permission"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
@@ -98,6 +102,114 @@ func (f TraverseAdmin) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.AdminQuery", q)
 }
 
+// The ComicFunc type is an adapter to allow the use of ordinary function as a Querier.
+type ComicFunc func(context.Context, *ent.ComicQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f ComicFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.ComicQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.ComicQuery", q)
+}
+
+// The TraverseComic type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseComic func(context.Context, *ent.ComicQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseComic) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseComic) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ComicQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.ComicQuery", q)
+}
+
+// The ComicChapterFunc type is an adapter to allow the use of ordinary function as a Querier.
+type ComicChapterFunc func(context.Context, *ent.ComicChapterQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f ComicChapterFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.ComicChapterQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.ComicChapterQuery", q)
+}
+
+// The TraverseComicChapter type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseComicChapter func(context.Context, *ent.ComicChapterQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseComicChapter) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseComicChapter) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ComicChapterQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.ComicChapterQuery", q)
+}
+
+// The ComicImgFunc type is an adapter to allow the use of ordinary function as a Querier.
+type ComicImgFunc func(context.Context, *ent.ComicImgQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f ComicImgFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.ComicImgQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.ComicImgQuery", q)
+}
+
+// The TraverseComicImg type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseComicImg func(context.Context, *ent.ComicImgQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseComicImg) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseComicImg) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ComicImgQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.ComicImgQuery", q)
+}
+
+// The GenreFunc type is an adapter to allow the use of ordinary function as a Querier.
+type GenreFunc func(context.Context, *ent.GenreQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f GenreFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.GenreQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.GenreQuery", q)
+}
+
+// The TraverseGenre type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseGenre func(context.Context, *ent.GenreQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseGenre) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseGenre) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.GenreQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.GenreQuery", q)
+}
+
 // The PermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
 type PermissionFunc func(context.Context, *ent.PermissionQuery) (ent.Value, error)
 
@@ -184,6 +296,14 @@ func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
 	case *ent.AdminQuery:
 		return &query[*ent.AdminQuery, predicate.Admin, admin.OrderOption]{typ: ent.TypeAdmin, tq: q}, nil
+	case *ent.ComicQuery:
+		return &query[*ent.ComicQuery, predicate.Comic, comic.OrderOption]{typ: ent.TypeComic, tq: q}, nil
+	case *ent.ComicChapterQuery:
+		return &query[*ent.ComicChapterQuery, predicate.ComicChapter, comicchapter.OrderOption]{typ: ent.TypeComicChapter, tq: q}, nil
+	case *ent.ComicImgQuery:
+		return &query[*ent.ComicImgQuery, predicate.ComicImg, comicimg.OrderOption]{typ: ent.TypeComicImg, tq: q}, nil
+	case *ent.GenreQuery:
+		return &query[*ent.GenreQuery, predicate.Genre, genre.OrderOption]{typ: ent.TypeGenre, tq: q}, nil
 	case *ent.PermissionQuery:
 		return &query[*ent.PermissionQuery, predicate.Permission, permission.OrderOption]{typ: ent.TypePermission, tq: q}, nil
 	case *ent.RoleQuery:

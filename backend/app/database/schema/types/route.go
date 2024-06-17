@@ -13,3 +13,9 @@ type RouteMeta struct {
 	CanTo      *bool    `json:"canTo,omitempty"`
 	Permission []string `json:"permission,omitempty"`
 }
+
+type CoverImg struct {
+	X     int    `json:"x"`
+	Y     int    `json:"y"`
+	B2key string `json:"b2key"`
+}
