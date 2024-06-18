@@ -397,8 +397,7 @@ func (c *AdminClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *AdminClient) Interceptors() []Interceptor {
-	inters := c.inters.Admin
-	return append(inters[:len(inters):len(inters)], admin.Interceptors[:]...)
+	return c.inters.Admin
 }
 
 func (c *AdminClient) mutate(ctx context.Context, m *AdminMutation) (Value, error) {
@@ -1357,8 +1356,7 @@ func (c *RoleClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *RoleClient) Interceptors() []Interceptor {
-	inters := c.inters.Role
-	return append(inters[:len(inters):len(inters)], role.Interceptors[:]...)
+	return c.inters.Role
 }
 
 func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error) {
@@ -1540,8 +1538,7 @@ func (c *RouteClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *RouteClient) Interceptors() []Interceptor {
-	inters := c.inters.Route
-	return append(inters[:len(inters):len(inters)], route.Interceptors[:]...)
+	return c.inters.Route
 }
 
 func (c *RouteClient) mutate(ctx context.Context, m *RouteMutation) (Value, error) {

@@ -23,8 +23,6 @@ func init() {
 	adminMixin := schema.Admin{}.Mixin()
 	adminMixinHooks2 := adminMixin[2].Hooks()
 	admin.Hooks[0] = adminMixinHooks2[0]
-	adminMixinInters2 := adminMixin[2].Interceptors()
-	admin.Interceptors[0] = adminMixinInters2[0]
 	adminMixinFields0 := adminMixin[0].Fields()
 	_ = adminMixinFields0
 	adminMixinFields1 := adminMixin[1].Fields()
@@ -149,8 +147,6 @@ func init() {
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinHooks2 := roleMixin[2].Hooks()
 	role.Hooks[0] = roleMixinHooks2[0]
-	roleMixinInters2 := roleMixin[2].Interceptors()
-	role.Interceptors[0] = roleMixinInters2[0]
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0
 	roleMixinFields1 := roleMixin[1].Fields()
@@ -180,8 +176,6 @@ func init() {
 	routeMixin := schema.Route{}.Mixin()
 	routeMixinHooks2 := routeMixin[2].Hooks()
 	route.Hooks[0] = routeMixinHooks2[0]
-	routeMixinInters2 := routeMixin[2].Interceptors()
-	route.Interceptors[0] = routeMixinInters2[0]
 	routeMixinFields0 := routeMixin[0].Fields()
 	_ = routeMixinFields0
 	routeMixinFields1 := routeMixin[1].Fields()

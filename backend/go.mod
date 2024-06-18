@@ -26,6 +26,7 @@ require (
 
 require (
 	ariga.io/atlas v0.22.0 // indirect
+	entgo.io/contrib v0.5.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
