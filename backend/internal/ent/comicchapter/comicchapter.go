@@ -102,6 +102,8 @@ var (
 	DefaultDownCount uint
 	// DefaultIsLastChapter holds the default value on creation for the "is_last_chapter" field.
 	DefaultIsLastChapter bool
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the ComicChapter queries.

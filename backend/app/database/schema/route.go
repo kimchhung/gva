@@ -15,6 +15,7 @@ type Route struct {
 
 func (Route) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		mixins.NanoID{},
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},
@@ -23,7 +24,9 @@ func (Route) Mixin() []ent.Mixin {
 
 func (Route) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("parent_id").
+		field.String("parent_id").
+			SchemaType(mixins.NanoSchemaType).
+			DefaultFunc(mixins.NewNanoId).
 			Optional().
 			Nillable().
 			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),
@@ -42,7 +45,7 @@ func (Route) Fields() []ent.Field {
 		field.String("name").
 			StructTag(`rql:"filter,sort"`),
 
-		field.Int("id").
+		field.Int("order").
 			StructTag(`rql:"filter,sort"`),
 
 		field.Enum("type").

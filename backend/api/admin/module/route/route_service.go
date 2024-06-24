@@ -58,7 +58,7 @@ func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest
 	return s.toDto(list...), meta, nil
 }
 
-func (s *RouteService) GetRouteByID(ctx context.Context, id int) (*dto.RouteResponse, error) {
+func (s *RouteService) GetRouteByID(ctx context.Context, id string) (*dto.RouteResponse, error) {
 	data, err := s.repo.Q().Where(route.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*d
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequest) (*dto.RouteResponse, error) {
+func (s *RouteService) UpdateRoute(ctx context.Context, id string, r *dto.RouteRequest) (*dto.RouteResponse, error) {
 	data, err := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -100,6 +100,6 @@ func (s *RouteService) UpdateRoute(ctx context.Context, id int, r *dto.RouteRequ
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) DeleteRoute(ctx context.Context, id int) error {
+func (s *RouteService) DeleteRoute(ctx context.Context, id string) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }

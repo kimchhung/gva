@@ -16,6 +16,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/comic"
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicUpdate is the builder for updating Comic entities.
@@ -365,6 +367,7 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.ComicChapter
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cu.mutation.RemovedChaptersIDs(); len(nodes) > 0 && !cu.mutation.ChaptersCleared() {
@@ -378,6 +381,7 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -394,6 +398,7 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -410,6 +415,7 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.Comic
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cu.mutation.LastChapterIDs(); len(nodes) > 0 {
@@ -423,6 +429,7 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.Comic
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -439,6 +446,7 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.Comic
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cu.mutation.FinalChapterIDs(); len(nodes) > 0 {
@@ -452,11 +460,14 @@ func (cu *ComicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cu.schemaConfig.Comic
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = cu.schemaConfig.Comic
+	ctx = internal.NewSchemaConfigContext(ctx, cu.schemaConfig)
 	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -842,6 +853,7 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.ComicChapter
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cuo.mutation.RemovedChaptersIDs(); len(nodes) > 0 && !cuo.mutation.ChaptersCleared() {
@@ -855,6 +867,7 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -871,6 +884,7 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -887,6 +901,7 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.Comic
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cuo.mutation.LastChapterIDs(); len(nodes) > 0 {
@@ -900,6 +915,7 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.Comic
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -916,6 +932,7 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.Comic
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cuo.mutation.FinalChapterIDs(); len(nodes) > 0 {
@@ -929,11 +946,14 @@ func (cuo *ComicUpdateOne) sqlSave(ctx context.Context) (_node *Comic, err error
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cuo.schemaConfig.Comic
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = cuo.schemaConfig.Comic
+	ctx = internal.NewSchemaConfigContext(ctx, cuo.schemaConfig)
 	_spec.AddModifiers(cuo.modifiers...)
 	_node = &Comic{config: cuo.config}
 	_spec.Assign = _node.assignValues

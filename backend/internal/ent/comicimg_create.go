@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
@@ -19,6 +21,7 @@ type ComicImgCreate struct {
 	config
 	mutation *ComicImgMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -91,6 +94,14 @@ func (cic *ComicImgCreate) SetID(s string) *ComicImgCreate {
 	return cic
 }
 
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cic *ComicImgCreate) SetNillableID(s *string) *ComicImgCreate {
+	if s != nil {
+		cic.SetID(*s)
+	}
+	return cic
+}
+
 // SetChapterID sets the "chapter" edge to the ComicChapter entity by ID.
 func (cic *ComicImgCreate) SetChapterID(id string) *ComicImgCreate {
 	cic.mutation.SetChapterID(id)
@@ -153,6 +164,10 @@ func (cic *ComicImgCreate) defaults() {
 		v := comicimg.DefaultUpdatedAt()
 		cic.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := cic.mutation.ID(); !ok {
+		v := comicimg.DefaultID()
+		cic.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -212,6 +227,8 @@ func (cic *ComicImgCreate) createSpec() (*ComicImg, *sqlgraph.CreateSpec) {
 		_node = &ComicImg{config: cic.config}
 		_spec = sqlgraph.NewCreateSpec(comicimg.Table, sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString))
 	)
+	_spec.Schema = cic.schemaConfig.ComicImg
+	_spec.OnConflict = cic.conflict
 	if id, ok := cic.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -259,6 +276,7 @@ func (cic *ComicImgCreate) createSpec() (*ComicImg, *sqlgraph.CreateSpec) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cic.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -268,11 +286,407 @@ func (cic *ComicImgCreate) createSpec() (*ComicImg, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.ComicImg.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ComicImgUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+func (cic *ComicImgCreate) OnConflict(opts ...sql.ConflictOption) *ComicImgUpsertOne {
+	cic.conflict = opts
+	return &ComicImgUpsertOne{
+		create: cic,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.ComicImg.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (cic *ComicImgCreate) OnConflictColumns(columns ...string) *ComicImgUpsertOne {
+	cic.conflict = append(cic.conflict, sql.ConflictColumns(columns...))
+	return &ComicImgUpsertOne{
+		create: cic,
+	}
+}
+
+type (
+	// ComicImgUpsertOne is the builder for "upsert"-ing
+	//  one ComicImg node.
+	ComicImgUpsertOne struct {
+		create *ComicImgCreate
+	}
+
+	// ComicImgUpsert is the "OnConflict" setter.
+	ComicImgUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ComicImgUpsert) SetCreatedAt(v time.Time) *ComicImgUpsert {
+	u.Set(comicimg.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateCreatedAt() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ComicImgUpsert) SetUpdatedAt(v time.Time) *ComicImgUpsert {
+	u.Set(comicimg.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateUpdatedAt() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldUpdatedAt)
+	return u
+}
+
+// SetB2key sets the "b2key" field.
+func (u *ComicImgUpsert) SetB2key(v string) *ComicImgUpsert {
+	u.Set(comicimg.FieldB2key, v)
+	return u
+}
+
+// UpdateB2key sets the "b2key" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateB2key() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldB2key)
+	return u
+}
+
+// SetHeight sets the "height" field.
+func (u *ComicImgUpsert) SetHeight(v int) *ComicImgUpsert {
+	u.Set(comicimg.FieldHeight, v)
+	return u
+}
+
+// UpdateHeight sets the "height" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateHeight() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldHeight)
+	return u
+}
+
+// AddHeight adds v to the "height" field.
+func (u *ComicImgUpsert) AddHeight(v int) *ComicImgUpsert {
+	u.Add(comicimg.FieldHeight, v)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *ComicImgUpsert) SetName(v string) *ComicImgUpsert {
+	u.Set(comicimg.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateName() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldName)
+	return u
+}
+
+// SetOptimizedSize sets the "optimized_size" field.
+func (u *ComicImgUpsert) SetOptimizedSize(v int64) *ComicImgUpsert {
+	u.Set(comicimg.FieldOptimizedSize, v)
+	return u
+}
+
+// UpdateOptimizedSize sets the "optimized_size" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateOptimizedSize() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldOptimizedSize)
+	return u
+}
+
+// AddOptimizedSize adds v to the "optimized_size" field.
+func (u *ComicImgUpsert) AddOptimizedSize(v int64) *ComicImgUpsert {
+	u.Add(comicimg.FieldOptimizedSize, v)
+	return u
+}
+
+// SetSize sets the "size" field.
+func (u *ComicImgUpsert) SetSize(v int64) *ComicImgUpsert {
+	u.Set(comicimg.FieldSize, v)
+	return u
+}
+
+// UpdateSize sets the "size" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateSize() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldSize)
+	return u
+}
+
+// AddSize adds v to the "size" field.
+func (u *ComicImgUpsert) AddSize(v int64) *ComicImgUpsert {
+	u.Add(comicimg.FieldSize, v)
+	return u
+}
+
+// SetWidth sets the "width" field.
+func (u *ComicImgUpsert) SetWidth(v int) *ComicImgUpsert {
+	u.Set(comicimg.FieldWidth, v)
+	return u
+}
+
+// UpdateWidth sets the "width" field to the value that was provided on create.
+func (u *ComicImgUpsert) UpdateWidth() *ComicImgUpsert {
+	u.SetExcluded(comicimg.FieldWidth)
+	return u
+}
+
+// AddWidth adds v to the "width" field.
+func (u *ComicImgUpsert) AddWidth(v int) *ComicImgUpsert {
+	u.Add(comicimg.FieldWidth, v)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.ComicImg.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(comicimg.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+func (u *ComicImgUpsertOne) UpdateNewValues() *ComicImgUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(comicimg.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.ComicImg.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *ComicImgUpsertOne) Ignore() *ComicImgUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ComicImgUpsertOne) DoNothing() *ComicImgUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ComicImgCreate.OnConflict
+// documentation for more info.
+func (u *ComicImgUpsertOne) Update(set func(*ComicImgUpsert)) *ComicImgUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ComicImgUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ComicImgUpsertOne) SetCreatedAt(v time.Time) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateCreatedAt() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ComicImgUpsertOne) SetUpdatedAt(v time.Time) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateUpdatedAt() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetB2key sets the "b2key" field.
+func (u *ComicImgUpsertOne) SetB2key(v string) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetB2key(v)
+	})
+}
+
+// UpdateB2key sets the "b2key" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateB2key() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateB2key()
+	})
+}
+
+// SetHeight sets the "height" field.
+func (u *ComicImgUpsertOne) SetHeight(v int) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetHeight(v)
+	})
+}
+
+// AddHeight adds v to the "height" field.
+func (u *ComicImgUpsertOne) AddHeight(v int) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddHeight(v)
+	})
+}
+
+// UpdateHeight sets the "height" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateHeight() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateHeight()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *ComicImgUpsertOne) SetName(v string) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateName() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetOptimizedSize sets the "optimized_size" field.
+func (u *ComicImgUpsertOne) SetOptimizedSize(v int64) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetOptimizedSize(v)
+	})
+}
+
+// AddOptimizedSize adds v to the "optimized_size" field.
+func (u *ComicImgUpsertOne) AddOptimizedSize(v int64) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddOptimizedSize(v)
+	})
+}
+
+// UpdateOptimizedSize sets the "optimized_size" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateOptimizedSize() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateOptimizedSize()
+	})
+}
+
+// SetSize sets the "size" field.
+func (u *ComicImgUpsertOne) SetSize(v int64) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetSize(v)
+	})
+}
+
+// AddSize adds v to the "size" field.
+func (u *ComicImgUpsertOne) AddSize(v int64) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddSize(v)
+	})
+}
+
+// UpdateSize sets the "size" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateSize() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateSize()
+	})
+}
+
+// SetWidth sets the "width" field.
+func (u *ComicImgUpsertOne) SetWidth(v int) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetWidth(v)
+	})
+}
+
+// AddWidth adds v to the "width" field.
+func (u *ComicImgUpsertOne) AddWidth(v int) *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddWidth(v)
+	})
+}
+
+// UpdateWidth sets the "width" field to the value that was provided on create.
+func (u *ComicImgUpsertOne) UpdateWidth() *ComicImgUpsertOne {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateWidth()
+	})
+}
+
+// Exec executes the query.
+func (u *ComicImgUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ComicImgCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ComicImgUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *ComicImgUpsertOne) ID(ctx context.Context) (id string, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: ComicImgUpsertOne.ID is not supported by MySQL driver. Use ComicImgUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *ComicImgUpsertOne) IDX(ctx context.Context) string {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // ComicImgCreateBulk is the builder for creating many ComicImg entities in bulk.
 type ComicImgCreateBulk struct {
 	config
 	err      error
 	builders []*ComicImgCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the ComicImg entities in the database.
@@ -302,6 +716,7 @@ func (cicb *ComicImgCreateBulk) Save(ctx context.Context) ([]*ComicImg, error) {
 					_, err = mutators[i+1].Mutate(root, cicb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = cicb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, cicb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -348,6 +763,260 @@ func (cicb *ComicImgCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (cicb *ComicImgCreateBulk) ExecX(ctx context.Context) {
 	if err := cicb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.ComicImg.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ComicImgUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+func (cicb *ComicImgCreateBulk) OnConflict(opts ...sql.ConflictOption) *ComicImgUpsertBulk {
+	cicb.conflict = opts
+	return &ComicImgUpsertBulk{
+		create: cicb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.ComicImg.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (cicb *ComicImgCreateBulk) OnConflictColumns(columns ...string) *ComicImgUpsertBulk {
+	cicb.conflict = append(cicb.conflict, sql.ConflictColumns(columns...))
+	return &ComicImgUpsertBulk{
+		create: cicb,
+	}
+}
+
+// ComicImgUpsertBulk is the builder for "upsert"-ing
+// a bulk of ComicImg nodes.
+type ComicImgUpsertBulk struct {
+	create *ComicImgCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.ComicImg.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(comicimg.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+func (u *ComicImgUpsertBulk) UpdateNewValues() *ComicImgUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(comicimg.FieldID)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.ComicImg.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *ComicImgUpsertBulk) Ignore() *ComicImgUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ComicImgUpsertBulk) DoNothing() *ComicImgUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ComicImgCreateBulk.OnConflict
+// documentation for more info.
+func (u *ComicImgUpsertBulk) Update(set func(*ComicImgUpsert)) *ComicImgUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ComicImgUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ComicImgUpsertBulk) SetCreatedAt(v time.Time) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateCreatedAt() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ComicImgUpsertBulk) SetUpdatedAt(v time.Time) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateUpdatedAt() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetB2key sets the "b2key" field.
+func (u *ComicImgUpsertBulk) SetB2key(v string) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetB2key(v)
+	})
+}
+
+// UpdateB2key sets the "b2key" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateB2key() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateB2key()
+	})
+}
+
+// SetHeight sets the "height" field.
+func (u *ComicImgUpsertBulk) SetHeight(v int) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetHeight(v)
+	})
+}
+
+// AddHeight adds v to the "height" field.
+func (u *ComicImgUpsertBulk) AddHeight(v int) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddHeight(v)
+	})
+}
+
+// UpdateHeight sets the "height" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateHeight() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateHeight()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *ComicImgUpsertBulk) SetName(v string) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateName() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetOptimizedSize sets the "optimized_size" field.
+func (u *ComicImgUpsertBulk) SetOptimizedSize(v int64) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetOptimizedSize(v)
+	})
+}
+
+// AddOptimizedSize adds v to the "optimized_size" field.
+func (u *ComicImgUpsertBulk) AddOptimizedSize(v int64) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddOptimizedSize(v)
+	})
+}
+
+// UpdateOptimizedSize sets the "optimized_size" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateOptimizedSize() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateOptimizedSize()
+	})
+}
+
+// SetSize sets the "size" field.
+func (u *ComicImgUpsertBulk) SetSize(v int64) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetSize(v)
+	})
+}
+
+// AddSize adds v to the "size" field.
+func (u *ComicImgUpsertBulk) AddSize(v int64) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddSize(v)
+	})
+}
+
+// UpdateSize sets the "size" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateSize() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateSize()
+	})
+}
+
+// SetWidth sets the "width" field.
+func (u *ComicImgUpsertBulk) SetWidth(v int) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.SetWidth(v)
+	})
+}
+
+// AddWidth adds v to the "width" field.
+func (u *ComicImgUpsertBulk) AddWidth(v int) *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.AddWidth(v)
+	})
+}
+
+// UpdateWidth sets the "width" field to the value that was provided on create.
+func (u *ComicImgUpsertBulk) UpdateWidth() *ComicImgUpsertBulk {
+	return u.Update(func(s *ComicImgUpsert) {
+		s.UpdateWidth()
+	})
+}
+
+// Exec executes the query.
+func (u *ComicImgUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ComicImgCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ComicImgCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ComicImgUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

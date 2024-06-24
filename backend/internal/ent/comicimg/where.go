@@ -8,6 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
@@ -482,6 +484,9 @@ func HasChapter() predicate.ComicImg {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ChapterTable, ChapterColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicImg
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -490,6 +495,9 @@ func HasChapter() predicate.ComicImg {
 func HasChapterWith(preds ...predicate.ComicChapter) predicate.ComicImg {
 	return predicate.ComicImg(func(s *sql.Selector) {
 		step := newChapterStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicImg
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

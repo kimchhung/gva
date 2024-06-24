@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicImgQuery is the builder for querying ComicImg entities.
@@ -24,6 +27,7 @@ type ComicImgQuery struct {
 	predicates  []predicate.ComicImg
 	withChapter *ComicChapterQuery
 	withFKs     bool
+	loadTotal   []func(context.Context, []*ComicImg) error
 	modifiers   []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -77,6 +81,9 @@ func (ciq *ComicImgQuery) QueryChapter() *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, comicimg.ChapterTable, comicimg.ChapterColumn),
 		)
+		schemaConfig := ciq.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicImg
 		fromU = sqlgraph.SetNeighbors(ciq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -391,6 +398,8 @@ func (ciq *ComicImgQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Co
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = ciq.schemaConfig.ComicImg
+	ctx = internal.NewSchemaConfigContext(ctx, ciq.schemaConfig)
 	if len(ciq.modifiers) > 0 {
 		_spec.Modifiers = ciq.modifiers
 	}
@@ -406,6 +415,11 @@ func (ciq *ComicImgQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Co
 	if query := ciq.withChapter; query != nil {
 		if err := ciq.loadChapter(ctx, query, nodes, nil,
 			func(n *ComicImg, e *ComicChapter) { n.Edges.Chapter = e }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range ciq.loadTotal {
+		if err := ciq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -447,6 +461,8 @@ func (ciq *ComicImgQuery) loadChapter(ctx context.Context, query *ComicChapterQu
 
 func (ciq *ComicImgQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ciq.querySpec()
+	_spec.Node.Schema = ciq.schemaConfig.ComicImg
+	ctx = internal.NewSchemaConfigContext(ctx, ciq.schemaConfig)
 	if len(ciq.modifiers) > 0 {
 		_spec.Modifiers = ciq.modifiers
 	}
@@ -512,6 +528,9 @@ func (ciq *ComicImgQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ciq.ctx.Unique != nil && *ciq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(ciq.schemaConfig.ComicImg)
+	ctx = internal.NewSchemaConfigContext(ctx, ciq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range ciq.modifiers {
 		m(selector)
 	}
@@ -530,6 +549,32 @@ func (ciq *ComicImgQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (ciq *ComicImgQuery) ForUpdate(opts ...sql.LockOption) *ComicImgQuery {
+	if ciq.driver.Dialect() == dialect.Postgres {
+		ciq.Unique(false)
+	}
+	ciq.modifiers = append(ciq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return ciq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (ciq *ComicImgQuery) ForShare(opts ...sql.LockOption) *ComicImgQuery {
+	if ciq.driver.Dialect() == dialect.Postgres {
+		ciq.Unique(false)
+	}
+	ciq.modifiers = append(ciq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return ciq
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.

@@ -41,7 +41,7 @@ func (RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 	routers := getRouteData()
 	flats := routeutil.FlattenNestedRoutes(routers)
 
-	childToParent := map[int]int{}
+	childToParent := map[string]string{}
 
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 

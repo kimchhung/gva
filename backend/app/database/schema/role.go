@@ -14,6 +14,7 @@ type Role struct {
 
 func (Role) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		mixins.NanoID{},
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},

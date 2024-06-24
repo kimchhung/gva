@@ -7,11 +7,14 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/genre"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // GenreQuery is the builder for querying Genre entities.
@@ -21,6 +24,7 @@ type GenreQuery struct {
 	order      []genre.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Genre
+	loadTotal  []func(context.Context, []*Genre) error
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -343,6 +347,8 @@ func (gq *GenreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Genre,
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = gq.schemaConfig.Genre
+	ctx = internal.NewSchemaConfigContext(ctx, gq.schemaConfig)
 	if len(gq.modifiers) > 0 {
 		_spec.Modifiers = gq.modifiers
 	}
@@ -355,11 +361,18 @@ func (gq *GenreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Genre,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	for i := range gq.loadTotal {
+		if err := gq.loadTotal[i](ctx, nodes); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
 func (gq *GenreQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := gq.querySpec()
+	_spec.Node.Schema = gq.schemaConfig.Genre
+	ctx = internal.NewSchemaConfigContext(ctx, gq.schemaConfig)
 	if len(gq.modifiers) > 0 {
 		_spec.Modifiers = gq.modifiers
 	}
@@ -425,6 +438,9 @@ func (gq *GenreQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if gq.ctx.Unique != nil && *gq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(gq.schemaConfig.Genre)
+	ctx = internal.NewSchemaConfigContext(ctx, gq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range gq.modifiers {
 		m(selector)
 	}
@@ -443,6 +459,32 @@ func (gq *GenreQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (gq *GenreQuery) ForUpdate(opts ...sql.LockOption) *GenreQuery {
+	if gq.driver.Dialect() == dialect.Postgres {
+		gq.Unique(false)
+	}
+	gq.modifiers = append(gq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return gq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (gq *GenreQuery) ForShare(opts ...sql.LockOption) *GenreQuery {
+	if gq.driver.Dialect() == dialect.Postgres {
+		gq.Unique(false)
+	}
+	gq.modifiers = append(gq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return gq
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.

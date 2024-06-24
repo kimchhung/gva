@@ -8,6 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
@@ -542,6 +544,9 @@ func HasImgs() predicate.ComicChapter {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ImgsTable, ImgsColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicImg
+		step.Edge.Schema = schemaConfig.ComicImg
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -550,6 +555,9 @@ func HasImgs() predicate.ComicChapter {
 func HasImgsWith(preds ...predicate.ComicImg) predicate.ComicChapter {
 	return predicate.ComicChapter(func(s *sql.Selector) {
 		step := newImgsStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicImg
+		step.Edge.Schema = schemaConfig.ComicImg
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -565,6 +573,9 @@ func HasComic() predicate.ComicChapter {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ComicTable, ComicColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Comic
+		step.Edge.Schema = schemaConfig.ComicChapter
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -573,6 +584,9 @@ func HasComic() predicate.ComicChapter {
 func HasComicWith(preds ...predicate.Comic) predicate.ComicChapter {
 	return predicate.ComicChapter(func(s *sql.Selector) {
 		step := newComicStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Comic
+		step.Edge.Schema = schemaConfig.ComicChapter
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

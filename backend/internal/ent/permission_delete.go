@@ -8,8 +8,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/kimchhung/gva/backend/internal/ent/permission"
 )
 
 // PermissionDelete is the builder for deleting a Permission entity.
@@ -40,7 +42,9 @@ func (pd *PermissionDelete) ExecX(ctx context.Context) int {
 }
 
 func (pd *PermissionDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(permission.Table, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(permission.Table, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString))
+	_spec.Node.Schema = pd.schemaConfig.Permission
+	ctx = internal.NewSchemaConfigContext(ctx, pd.schemaConfig)
 	if ps := pd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

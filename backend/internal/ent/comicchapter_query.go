@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -15,19 +16,23 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicChapterQuery is the builder for querying ComicChapter entities.
 type ComicChapterQuery struct {
 	config
-	ctx        *QueryContext
-	order      []comicchapter.OrderOption
-	inters     []Interceptor
-	predicates []predicate.ComicChapter
-	withImgs   *ComicImgQuery
-	withComic  *ComicQuery
-	withFKs    bool
-	modifiers  []func(*sql.Selector)
+	ctx           *QueryContext
+	order         []comicchapter.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.ComicChapter
+	withImgs      *ComicImgQuery
+	withComic     *ComicQuery
+	withFKs       bool
+	loadTotal     []func(context.Context, []*ComicChapter) error
+	modifiers     []func(*sql.Selector)
+	withNamedImgs map[string]*ComicImgQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +85,9 @@ func (ccq *ComicChapterQuery) QueryImgs() *ComicImgQuery {
 			sqlgraph.To(comicimg.Table, comicimg.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, comicchapter.ImgsTable, comicchapter.ImgsColumn),
 		)
+		schemaConfig := ccq.schemaConfig
+		step.To.Schema = schemaConfig.ComicImg
+		step.Edge.Schema = schemaConfig.ComicImg
 		fromU = sqlgraph.SetNeighbors(ccq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -102,6 +110,9 @@ func (ccq *ComicChapterQuery) QueryComic() *ComicQuery {
 			sqlgraph.To(comic.Table, comic.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, comicchapter.ComicTable, comicchapter.ComicColumn),
 		)
+		schemaConfig := ccq.schemaConfig
+		step.To.Schema = schemaConfig.Comic
+		step.Edge.Schema = schemaConfig.ComicChapter
 		fromU = sqlgraph.SetNeighbors(ccq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -429,6 +440,8 @@ func (ccq *ComicChapterQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = ccq.schemaConfig.ComicChapter
+	ctx = internal.NewSchemaConfigContext(ctx, ccq.schemaConfig)
 	if len(ccq.modifiers) > 0 {
 		_spec.Modifiers = ccq.modifiers
 	}
@@ -444,13 +457,35 @@ func (ccq *ComicChapterQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if query := ccq.withImgs; query != nil {
 		if err := ccq.loadImgs(ctx, query, nodes,
 			func(n *ComicChapter) { n.Edges.Imgs = []*ComicImg{} },
-			func(n *ComicChapter, e *ComicImg) { n.Edges.Imgs = append(n.Edges.Imgs, e) }); err != nil {
+			func(n *ComicChapter, e *ComicImg) {
+				n.Edges.Imgs = append(n.Edges.Imgs, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Chapter = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
 	if query := ccq.withComic; query != nil {
 		if err := ccq.loadComic(ctx, query, nodes, nil,
 			func(n *ComicChapter, e *Comic) { n.Edges.Comic = e }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range ccq.withNamedImgs {
+		if err := ccq.loadImgs(ctx, query, nodes,
+			func(n *ComicChapter) { n.appendNamedImgs(name) },
+			func(n *ComicChapter, e *ComicImg) {
+				n.appendNamedImgs(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Chapter = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for i := range ccq.loadTotal {
+		if err := ccq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -523,6 +558,8 @@ func (ccq *ComicChapterQuery) loadComic(ctx context.Context, query *ComicQuery, 
 
 func (ccq *ComicChapterQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ccq.querySpec()
+	_spec.Node.Schema = ccq.schemaConfig.ComicChapter
+	ctx = internal.NewSchemaConfigContext(ctx, ccq.schemaConfig)
 	if len(ccq.modifiers) > 0 {
 		_spec.Modifiers = ccq.modifiers
 	}
@@ -588,6 +625,9 @@ func (ccq *ComicChapterQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ccq.ctx.Unique != nil && *ccq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(ccq.schemaConfig.ComicChapter)
+	ctx = internal.NewSchemaConfigContext(ctx, ccq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range ccq.modifiers {
 		m(selector)
 	}
@@ -608,10 +648,50 @@ func (ccq *ComicChapterQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (ccq *ComicChapterQuery) ForUpdate(opts ...sql.LockOption) *ComicChapterQuery {
+	if ccq.driver.Dialect() == dialect.Postgres {
+		ccq.Unique(false)
+	}
+	ccq.modifiers = append(ccq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return ccq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (ccq *ComicChapterQuery) ForShare(opts ...sql.LockOption) *ComicChapterQuery {
+	if ccq.driver.Dialect() == dialect.Postgres {
+		ccq.Unique(false)
+	}
+	ccq.modifiers = append(ccq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return ccq
+}
+
 // Modify adds a query modifier for attaching custom logic to queries.
 func (ccq *ComicChapterQuery) Modify(modifiers ...func(s *sql.Selector)) *ComicChapterSelect {
 	ccq.modifiers = append(ccq.modifiers, modifiers...)
 	return ccq.Select()
+}
+
+// WithNamedImgs tells the query-builder to eager-load the nodes that are connected to the "imgs"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (ccq *ComicChapterQuery) WithNamedImgs(name string, opts ...func(*ComicImgQuery)) *ComicChapterQuery {
+	query := (&ComicImgClient{config: ccq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if ccq.withNamedImgs == nil {
+		ccq.withNamedImgs = make(map[string]*ComicImgQuery)
+	}
+	ccq.withNamedImgs[name] = query
+	return ccq
 }
 
 // ComicChapterGroupBy is the group-by builder for ComicChapter entities.

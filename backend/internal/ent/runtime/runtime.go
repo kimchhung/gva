@@ -21,35 +21,45 @@ import (
 // to their package variables.
 func init() {
 	adminMixin := schema.Admin{}.Mixin()
-	adminMixinHooks2 := adminMixin[2].Hooks()
-	admin.Hooks[0] = adminMixinHooks2[0]
+	adminMixinHooks3 := adminMixin[3].Hooks()
+	admin.Hooks[0] = adminMixinHooks3[0]
+	adminMixinInters3 := adminMixin[3].Interceptors()
+	admin.Interceptors[0] = adminMixinInters3[0]
 	adminMixinFields0 := adminMixin[0].Fields()
 	_ = adminMixinFields0
 	adminMixinFields1 := adminMixin[1].Fields()
 	_ = adminMixinFields1
 	adminMixinFields2 := adminMixin[2].Fields()
 	_ = adminMixinFields2
+	adminMixinFields3 := adminMixin[3].Fields()
+	_ = adminMixinFields3
 	adminFields := schema.Admin{}.Fields()
 	_ = adminFields
 	// adminDescCreatedAt is the schema descriptor for created_at field.
-	adminDescCreatedAt := adminMixinFields0[0].Descriptor()
+	adminDescCreatedAt := adminMixinFields1[0].Descriptor()
 	// admin.DefaultCreatedAt holds the default value on creation for the created_at field.
 	admin.DefaultCreatedAt = adminDescCreatedAt.Default.(func() time.Time)
 	// adminDescUpdatedAt is the schema descriptor for updated_at field.
-	adminDescUpdatedAt := adminMixinFields0[1].Descriptor()
+	adminDescUpdatedAt := adminMixinFields1[1].Descriptor()
 	// admin.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	admin.DefaultUpdatedAt = adminDescUpdatedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	admin.UpdateDefaultUpdatedAt = adminDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// adminDescIsEnable is the schema descriptor for is_enable field.
-	adminDescIsEnable := adminMixinFields1[0].Descriptor()
+	adminDescIsEnable := adminMixinFields2[0].Descriptor()
 	// admin.DefaultIsEnable holds the default value on creation for the is_enable field.
 	admin.DefaultIsEnable = adminDescIsEnable.Default.(bool)
 	// adminDescDeletedAt is the schema descriptor for deleted_at field.
-	adminDescDeletedAt := adminMixinFields2[0].Descriptor()
+	adminDescDeletedAt := adminMixinFields3[0].Descriptor()
 	// admin.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	admin.DefaultDeletedAt = adminDescDeletedAt.Default.(int)
+	// adminDescID is the schema descriptor for id field.
+	adminDescID := adminMixinFields0[0].Descriptor()
+	// admin.DefaultID holds the default value on creation for the id field.
+	admin.DefaultID = adminDescID.Default.(func() string)
 	comicMixin := schema.Comic{}.Mixin()
+	comicMixinFields0 := comicMixin[0].Fields()
+	_ = comicMixinFields0
 	comicMixinFields1 := comicMixin[1].Fields()
 	_ = comicMixinFields1
 	comicFields := schema.Comic{}.Fields()
@@ -72,7 +82,13 @@ func init() {
 	comicDescUpCount := comicFields[6].Descriptor()
 	// comic.DefaultUpCount holds the default value on creation for the up_count field.
 	comic.DefaultUpCount = comicDescUpCount.Default.(uint)
+	// comicDescID is the schema descriptor for id field.
+	comicDescID := comicMixinFields0[0].Descriptor()
+	// comic.DefaultID holds the default value on creation for the id field.
+	comic.DefaultID = comicDescID.Default.(func() string)
 	comicchapterMixin := schema.ComicChapter{}.Mixin()
+	comicchapterMixinFields0 := comicchapterMixin[0].Fields()
+	_ = comicchapterMixinFields0
 	comicchapterMixinFields1 := comicchapterMixin[1].Fields()
 	_ = comicchapterMixinFields1
 	comicchapterFields := schema.ComicChapter{}.Fields()
@@ -99,7 +115,13 @@ func init() {
 	comicchapterDescIsLastChapter := comicchapterFields[6].Descriptor()
 	// comicchapter.DefaultIsLastChapter holds the default value on creation for the is_last_chapter field.
 	comicchapter.DefaultIsLastChapter = comicchapterDescIsLastChapter.Default.(bool)
+	// comicchapterDescID is the schema descriptor for id field.
+	comicchapterDescID := comicchapterMixinFields0[0].Descriptor()
+	// comicchapter.DefaultID holds the default value on creation for the id field.
+	comicchapter.DefaultID = comicchapterDescID.Default.(func() string)
 	comicimgMixin := schema.ComicImg{}.Mixin()
+	comicimgMixinFields0 := comicimgMixin[0].Fields()
+	_ = comicimgMixinFields0
 	comicimgMixinFields1 := comicimgMixin[1].Fields()
 	_ = comicimgMixinFields1
 	comicimgFields := schema.ComicImg{}.Fields()
@@ -114,7 +136,13 @@ func init() {
 	comicimg.DefaultUpdatedAt = comicimgDescUpdatedAt.Default.(func() time.Time)
 	// comicimg.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	comicimg.UpdateDefaultUpdatedAt = comicimgDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// comicimgDescID is the schema descriptor for id field.
+	comicimgDescID := comicimgMixinFields0[0].Descriptor()
+	// comicimg.DefaultID holds the default value on creation for the id field.
+	comicimg.DefaultID = comicimgDescID.Default.(func() string)
 	genreMixin := schema.Genre{}.Mixin()
+	genreMixinFields0 := genreMixin[0].Fields()
+	_ = genreMixinFields0
 	genreMixinFields1 := genreMixin[1].Fields()
 	_ = genreMixinFields1
 	genreFields := schema.Genre{}.Fields()
@@ -129,79 +157,109 @@ func init() {
 	genre.DefaultUpdatedAt = genreDescUpdatedAt.Default.(func() time.Time)
 	// genre.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	genre.UpdateDefaultUpdatedAt = genreDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// genreDescID is the schema descriptor for id field.
+	genreDescID := genreMixinFields0[0].Descriptor()
+	// genre.DefaultID holds the default value on creation for the id field.
+	genre.DefaultID = genreDescID.Default.(func() string)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
+	permissionMixinFields1 := permissionMixin[1].Fields()
+	_ = permissionMixinFields1
 	permissionFields := schema.Permission{}.Fields()
 	_ = permissionFields
 	// permissionDescCreatedAt is the schema descriptor for created_at field.
-	permissionDescCreatedAt := permissionMixinFields0[0].Descriptor()
+	permissionDescCreatedAt := permissionMixinFields1[0].Descriptor()
 	// permission.DefaultCreatedAt holds the default value on creation for the created_at field.
 	permission.DefaultCreatedAt = permissionDescCreatedAt.Default.(func() time.Time)
 	// permissionDescUpdatedAt is the schema descriptor for updated_at field.
-	permissionDescUpdatedAt := permissionMixinFields0[1].Descriptor()
+	permissionDescUpdatedAt := permissionMixinFields1[1].Descriptor()
 	// permission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	permission.DefaultUpdatedAt = permissionDescUpdatedAt.Default.(func() time.Time)
 	// permission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	permission.UpdateDefaultUpdatedAt = permissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// permissionDescID is the schema descriptor for id field.
+	permissionDescID := permissionMixinFields0[0].Descriptor()
+	// permission.DefaultID holds the default value on creation for the id field.
+	permission.DefaultID = permissionDescID.Default.(func() string)
 	roleMixin := schema.Role{}.Mixin()
-	roleMixinHooks2 := roleMixin[2].Hooks()
-	role.Hooks[0] = roleMixinHooks2[0]
+	roleMixinHooks3 := roleMixin[3].Hooks()
+	role.Hooks[0] = roleMixinHooks3[0]
+	roleMixinInters3 := roleMixin[3].Interceptors()
+	role.Interceptors[0] = roleMixinInters3[0]
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0
 	roleMixinFields1 := roleMixin[1].Fields()
 	_ = roleMixinFields1
 	roleMixinFields2 := roleMixin[2].Fields()
 	_ = roleMixinFields2
+	roleMixinFields3 := roleMixin[3].Fields()
+	_ = roleMixinFields3
 	roleFields := schema.Role{}.Fields()
 	_ = roleFields
 	// roleDescCreatedAt is the schema descriptor for created_at field.
-	roleDescCreatedAt := roleMixinFields0[0].Descriptor()
+	roleDescCreatedAt := roleMixinFields1[0].Descriptor()
 	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
 	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
 	// roleDescUpdatedAt is the schema descriptor for updated_at field.
-	roleDescUpdatedAt := roleMixinFields0[1].Descriptor()
+	roleDescUpdatedAt := roleMixinFields1[1].Descriptor()
 	// role.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
 	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// roleDescIsEnable is the schema descriptor for is_enable field.
-	roleDescIsEnable := roleMixinFields1[0].Descriptor()
+	roleDescIsEnable := roleMixinFields2[0].Descriptor()
 	// role.DefaultIsEnable holds the default value on creation for the is_enable field.
 	role.DefaultIsEnable = roleDescIsEnable.Default.(bool)
 	// roleDescDeletedAt is the schema descriptor for deleted_at field.
-	roleDescDeletedAt := roleMixinFields2[0].Descriptor()
+	roleDescDeletedAt := roleMixinFields3[0].Descriptor()
 	// role.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	role.DefaultDeletedAt = roleDescDeletedAt.Default.(int)
+	// roleDescID is the schema descriptor for id field.
+	roleDescID := roleMixinFields0[0].Descriptor()
+	// role.DefaultID holds the default value on creation for the id field.
+	role.DefaultID = roleDescID.Default.(func() string)
 	routeMixin := schema.Route{}.Mixin()
-	routeMixinHooks2 := routeMixin[2].Hooks()
-	route.Hooks[0] = routeMixinHooks2[0]
+	routeMixinHooks3 := routeMixin[3].Hooks()
+	route.Hooks[0] = routeMixinHooks3[0]
+	routeMixinInters3 := routeMixin[3].Interceptors()
+	route.Interceptors[0] = routeMixinInters3[0]
 	routeMixinFields0 := routeMixin[0].Fields()
 	_ = routeMixinFields0
 	routeMixinFields1 := routeMixin[1].Fields()
 	_ = routeMixinFields1
 	routeMixinFields2 := routeMixin[2].Fields()
 	_ = routeMixinFields2
+	routeMixinFields3 := routeMixin[3].Fields()
+	_ = routeMixinFields3
 	routeFields := schema.Route{}.Fields()
 	_ = routeFields
 	// routeDescCreatedAt is the schema descriptor for created_at field.
-	routeDescCreatedAt := routeMixinFields0[0].Descriptor()
+	routeDescCreatedAt := routeMixinFields1[0].Descriptor()
 	// route.DefaultCreatedAt holds the default value on creation for the created_at field.
 	route.DefaultCreatedAt = routeDescCreatedAt.Default.(func() time.Time)
 	// routeDescUpdatedAt is the schema descriptor for updated_at field.
-	routeDescUpdatedAt := routeMixinFields0[1].Descriptor()
+	routeDescUpdatedAt := routeMixinFields1[1].Descriptor()
 	// route.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	route.DefaultUpdatedAt = routeDescUpdatedAt.Default.(func() time.Time)
 	// route.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	route.UpdateDefaultUpdatedAt = routeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// routeDescIsEnable is the schema descriptor for is_enable field.
-	routeDescIsEnable := routeMixinFields1[0].Descriptor()
+	routeDescIsEnable := routeMixinFields2[0].Descriptor()
 	// route.DefaultIsEnable holds the default value on creation for the is_enable field.
 	route.DefaultIsEnable = routeDescIsEnable.Default.(bool)
 	// routeDescDeletedAt is the schema descriptor for deleted_at field.
-	routeDescDeletedAt := routeMixinFields2[0].Descriptor()
+	routeDescDeletedAt := routeMixinFields3[0].Descriptor()
 	// route.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	route.DefaultDeletedAt = routeDescDeletedAt.Default.(int)
+	// routeDescParentID is the schema descriptor for parent_id field.
+	routeDescParentID := routeFields[0].Descriptor()
+	// route.DefaultParentID holds the default value on creation for the parent_id field.
+	route.DefaultParentID = routeDescParentID.Default.(func() string)
+	// routeDescID is the schema descriptor for id field.
+	routeDescID := routeMixinFields0[0].Descriptor()
+	// route.DefaultID holds the default value on creation for the id field.
+	route.DefaultID = routeDescID.Default.(func() string)
 }
 
 const (

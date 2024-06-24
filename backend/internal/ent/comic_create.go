@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/app/database/schema/types"
@@ -20,6 +22,7 @@ type ComicCreate struct {
 	config
 	mutation *ComicMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -142,6 +145,14 @@ func (cc *ComicCreate) SetID(s string) *ComicCreate {
 	return cc
 }
 
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cc *ComicCreate) SetNillableID(s *string) *ComicCreate {
+	if s != nil {
+		cc.SetID(*s)
+	}
+	return cc
+}
+
 // AddChapterIDs adds the "chapters" edge to the ComicChapter entity by IDs.
 func (cc *ComicCreate) AddChapterIDs(ids ...string) *ComicCreate {
 	cc.mutation.AddChapterIDs(ids...)
@@ -218,6 +229,10 @@ func (cc *ComicCreate) defaults() {
 		v := comic.DefaultUpCount
 		cc.mutation.SetUpCount(v)
 	}
+	if _, ok := cc.mutation.ID(); !ok {
+		v := comic.DefaultID()
+		cc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -280,6 +295,8 @@ func (cc *ComicCreate) createSpec() (*Comic, *sqlgraph.CreateSpec) {
 		_node = &Comic{config: cc.config}
 		_spec = sqlgraph.NewCreateSpec(comic.Table, sqlgraph.NewFieldSpec(comic.FieldID, field.TypeString))
 	)
+	_spec.Schema = cc.schemaConfig.Comic
+	_spec.OnConflict = cc.conflict
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -331,6 +348,7 @@ func (cc *ComicCreate) createSpec() (*Comic, *sqlgraph.CreateSpec) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cc.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -347,6 +365,7 @@ func (cc *ComicCreate) createSpec() (*Comic, *sqlgraph.CreateSpec) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cc.schemaConfig.Comic
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -364,6 +383,7 @@ func (cc *ComicCreate) createSpec() (*Comic, *sqlgraph.CreateSpec) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = cc.schemaConfig.Comic
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -373,11 +393,485 @@ func (cc *ComicCreate) createSpec() (*Comic, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Comic.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ComicUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+func (cc *ComicCreate) OnConflict(opts ...sql.ConflictOption) *ComicUpsertOne {
+	cc.conflict = opts
+	return &ComicUpsertOne{
+		create: cc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Comic.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (cc *ComicCreate) OnConflictColumns(columns ...string) *ComicUpsertOne {
+	cc.conflict = append(cc.conflict, sql.ConflictColumns(columns...))
+	return &ComicUpsertOne{
+		create: cc,
+	}
+}
+
+type (
+	// ComicUpsertOne is the builder for "upsert"-ing
+	//  one Comic node.
+	ComicUpsertOne struct {
+		create *ComicCreate
+	}
+
+	// ComicUpsert is the "OnConflict" setter.
+	ComicUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ComicUpsert) SetCreatedAt(v time.Time) *ComicUpsert {
+	u.Set(comic.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateCreatedAt() *ComicUpsert {
+	u.SetExcluded(comic.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ComicUpsert) SetUpdatedAt(v time.Time) *ComicUpsert {
+	u.Set(comic.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateUpdatedAt() *ComicUpsert {
+	u.SetExcluded(comic.FieldUpdatedAt)
+	return u
+}
+
+// SetChapter sets the "chapter" field.
+func (u *ComicUpsert) SetChapter(v uint) *ComicUpsert {
+	u.Set(comic.FieldChapter, v)
+	return u
+}
+
+// UpdateChapter sets the "chapter" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateChapter() *ComicUpsert {
+	u.SetExcluded(comic.FieldChapter)
+	return u
+}
+
+// AddChapter adds v to the "chapter" field.
+func (u *ComicUpsert) AddChapter(v uint) *ComicUpsert {
+	u.Add(comic.FieldChapter, v)
+	return u
+}
+
+// SetTitle sets the "title" field.
+func (u *ComicUpsert) SetTitle(v string) *ComicUpsert {
+	u.Set(comic.FieldTitle, v)
+	return u
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateTitle() *ComicUpsert {
+	u.SetExcluded(comic.FieldTitle)
+	return u
+}
+
+// SetSlug sets the "slug" field.
+func (u *ComicUpsert) SetSlug(v string) *ComicUpsert {
+	u.Set(comic.FieldSlug, v)
+	return u
+}
+
+// UpdateSlug sets the "slug" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateSlug() *ComicUpsert {
+	u.SetExcluded(comic.FieldSlug)
+	return u
+}
+
+// SetCovers sets the "covers" field.
+func (u *ComicUpsert) SetCovers(v []types.CoverImg) *ComicUpsert {
+	u.Set(comic.FieldCovers, v)
+	return u
+}
+
+// UpdateCovers sets the "covers" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateCovers() *ComicUpsert {
+	u.SetExcluded(comic.FieldCovers)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *ComicUpsert) SetStatus(v string) *ComicUpsert {
+	u.Set(comic.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateStatus() *ComicUpsert {
+	u.SetExcluded(comic.FieldStatus)
+	return u
+}
+
+// SetIsTranslateCompleted sets the "isTranslateCompleted" field.
+func (u *ComicUpsert) SetIsTranslateCompleted(v bool) *ComicUpsert {
+	u.Set(comic.FieldIsTranslateCompleted, v)
+	return u
+}
+
+// UpdateIsTranslateCompleted sets the "isTranslateCompleted" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateIsTranslateCompleted() *ComicUpsert {
+	u.SetExcluded(comic.FieldIsTranslateCompleted)
+	return u
+}
+
+// SetUpCount sets the "up_count" field.
+func (u *ComicUpsert) SetUpCount(v uint) *ComicUpsert {
+	u.Set(comic.FieldUpCount, v)
+	return u
+}
+
+// UpdateUpCount sets the "up_count" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateUpCount() *ComicUpsert {
+	u.SetExcluded(comic.FieldUpCount)
+	return u
+}
+
+// AddUpCount adds v to the "up_count" field.
+func (u *ComicUpsert) AddUpCount(v uint) *ComicUpsert {
+	u.Add(comic.FieldUpCount, v)
+	return u
+}
+
+// SetFinalChapterID sets the "final_chapter_id" field.
+func (u *ComicUpsert) SetFinalChapterID(v string) *ComicUpsert {
+	u.Set(comic.FieldFinalChapterID, v)
+	return u
+}
+
+// UpdateFinalChapterID sets the "final_chapter_id" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateFinalChapterID() *ComicUpsert {
+	u.SetExcluded(comic.FieldFinalChapterID)
+	return u
+}
+
+// ClearFinalChapterID clears the value of the "final_chapter_id" field.
+func (u *ComicUpsert) ClearFinalChapterID() *ComicUpsert {
+	u.SetNull(comic.FieldFinalChapterID)
+	return u
+}
+
+// SetLastChapterID sets the "last_chapter_id" field.
+func (u *ComicUpsert) SetLastChapterID(v string) *ComicUpsert {
+	u.Set(comic.FieldLastChapterID, v)
+	return u
+}
+
+// UpdateLastChapterID sets the "last_chapter_id" field to the value that was provided on create.
+func (u *ComicUpsert) UpdateLastChapterID() *ComicUpsert {
+	u.SetExcluded(comic.FieldLastChapterID)
+	return u
+}
+
+// ClearLastChapterID clears the value of the "last_chapter_id" field.
+func (u *ComicUpsert) ClearLastChapterID() *ComicUpsert {
+	u.SetNull(comic.FieldLastChapterID)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.Comic.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(comic.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+func (u *ComicUpsertOne) UpdateNewValues() *ComicUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(comic.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Comic.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *ComicUpsertOne) Ignore() *ComicUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ComicUpsertOne) DoNothing() *ComicUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ComicCreate.OnConflict
+// documentation for more info.
+func (u *ComicUpsertOne) Update(set func(*ComicUpsert)) *ComicUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ComicUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ComicUpsertOne) SetCreatedAt(v time.Time) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateCreatedAt() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ComicUpsertOne) SetUpdatedAt(v time.Time) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateUpdatedAt() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetChapter sets the "chapter" field.
+func (u *ComicUpsertOne) SetChapter(v uint) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetChapter(v)
+	})
+}
+
+// AddChapter adds v to the "chapter" field.
+func (u *ComicUpsertOne) AddChapter(v uint) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.AddChapter(v)
+	})
+}
+
+// UpdateChapter sets the "chapter" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateChapter() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateChapter()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *ComicUpsertOne) SetTitle(v string) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateTitle() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetSlug sets the "slug" field.
+func (u *ComicUpsertOne) SetSlug(v string) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetSlug(v)
+	})
+}
+
+// UpdateSlug sets the "slug" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateSlug() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateSlug()
+	})
+}
+
+// SetCovers sets the "covers" field.
+func (u *ComicUpsertOne) SetCovers(v []types.CoverImg) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetCovers(v)
+	})
+}
+
+// UpdateCovers sets the "covers" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateCovers() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateCovers()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *ComicUpsertOne) SetStatus(v string) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateStatus() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetIsTranslateCompleted sets the "isTranslateCompleted" field.
+func (u *ComicUpsertOne) SetIsTranslateCompleted(v bool) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetIsTranslateCompleted(v)
+	})
+}
+
+// UpdateIsTranslateCompleted sets the "isTranslateCompleted" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateIsTranslateCompleted() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateIsTranslateCompleted()
+	})
+}
+
+// SetUpCount sets the "up_count" field.
+func (u *ComicUpsertOne) SetUpCount(v uint) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetUpCount(v)
+	})
+}
+
+// AddUpCount adds v to the "up_count" field.
+func (u *ComicUpsertOne) AddUpCount(v uint) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.AddUpCount(v)
+	})
+}
+
+// UpdateUpCount sets the "up_count" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateUpCount() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateUpCount()
+	})
+}
+
+// SetFinalChapterID sets the "final_chapter_id" field.
+func (u *ComicUpsertOne) SetFinalChapterID(v string) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetFinalChapterID(v)
+	})
+}
+
+// UpdateFinalChapterID sets the "final_chapter_id" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateFinalChapterID() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateFinalChapterID()
+	})
+}
+
+// ClearFinalChapterID clears the value of the "final_chapter_id" field.
+func (u *ComicUpsertOne) ClearFinalChapterID() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.ClearFinalChapterID()
+	})
+}
+
+// SetLastChapterID sets the "last_chapter_id" field.
+func (u *ComicUpsertOne) SetLastChapterID(v string) *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetLastChapterID(v)
+	})
+}
+
+// UpdateLastChapterID sets the "last_chapter_id" field to the value that was provided on create.
+func (u *ComicUpsertOne) UpdateLastChapterID() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateLastChapterID()
+	})
+}
+
+// ClearLastChapterID clears the value of the "last_chapter_id" field.
+func (u *ComicUpsertOne) ClearLastChapterID() *ComicUpsertOne {
+	return u.Update(func(s *ComicUpsert) {
+		s.ClearLastChapterID()
+	})
+}
+
+// Exec executes the query.
+func (u *ComicUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ComicCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ComicUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *ComicUpsertOne) ID(ctx context.Context) (id string, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: ComicUpsertOne.ID is not supported by MySQL driver. Use ComicUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *ComicUpsertOne) IDX(ctx context.Context) string {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // ComicCreateBulk is the builder for creating many Comic entities in bulk.
 type ComicCreateBulk struct {
 	config
 	err      error
 	builders []*ComicCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Comic entities in the database.
@@ -407,6 +901,7 @@ func (ccb *ComicCreateBulk) Save(ctx context.Context) ([]*Comic, error) {
 					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ccb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -453,6 +948,302 @@ func (ccb *ComicCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ccb *ComicCreateBulk) ExecX(ctx context.Context) {
 	if err := ccb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Comic.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ComicUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+func (ccb *ComicCreateBulk) OnConflict(opts ...sql.ConflictOption) *ComicUpsertBulk {
+	ccb.conflict = opts
+	return &ComicUpsertBulk{
+		create: ccb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Comic.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ccb *ComicCreateBulk) OnConflictColumns(columns ...string) *ComicUpsertBulk {
+	ccb.conflict = append(ccb.conflict, sql.ConflictColumns(columns...))
+	return &ComicUpsertBulk{
+		create: ccb,
+	}
+}
+
+// ComicUpsertBulk is the builder for "upsert"-ing
+// a bulk of Comic nodes.
+type ComicUpsertBulk struct {
+	create *ComicCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Comic.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(comic.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+func (u *ComicUpsertBulk) UpdateNewValues() *ComicUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(comic.FieldID)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Comic.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *ComicUpsertBulk) Ignore() *ComicUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ComicUpsertBulk) DoNothing() *ComicUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ComicCreateBulk.OnConflict
+// documentation for more info.
+func (u *ComicUpsertBulk) Update(set func(*ComicUpsert)) *ComicUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ComicUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ComicUpsertBulk) SetCreatedAt(v time.Time) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateCreatedAt() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ComicUpsertBulk) SetUpdatedAt(v time.Time) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateUpdatedAt() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetChapter sets the "chapter" field.
+func (u *ComicUpsertBulk) SetChapter(v uint) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetChapter(v)
+	})
+}
+
+// AddChapter adds v to the "chapter" field.
+func (u *ComicUpsertBulk) AddChapter(v uint) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.AddChapter(v)
+	})
+}
+
+// UpdateChapter sets the "chapter" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateChapter() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateChapter()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *ComicUpsertBulk) SetTitle(v string) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateTitle() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetSlug sets the "slug" field.
+func (u *ComicUpsertBulk) SetSlug(v string) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetSlug(v)
+	})
+}
+
+// UpdateSlug sets the "slug" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateSlug() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateSlug()
+	})
+}
+
+// SetCovers sets the "covers" field.
+func (u *ComicUpsertBulk) SetCovers(v []types.CoverImg) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetCovers(v)
+	})
+}
+
+// UpdateCovers sets the "covers" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateCovers() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateCovers()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *ComicUpsertBulk) SetStatus(v string) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateStatus() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetIsTranslateCompleted sets the "isTranslateCompleted" field.
+func (u *ComicUpsertBulk) SetIsTranslateCompleted(v bool) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetIsTranslateCompleted(v)
+	})
+}
+
+// UpdateIsTranslateCompleted sets the "isTranslateCompleted" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateIsTranslateCompleted() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateIsTranslateCompleted()
+	})
+}
+
+// SetUpCount sets the "up_count" field.
+func (u *ComicUpsertBulk) SetUpCount(v uint) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetUpCount(v)
+	})
+}
+
+// AddUpCount adds v to the "up_count" field.
+func (u *ComicUpsertBulk) AddUpCount(v uint) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.AddUpCount(v)
+	})
+}
+
+// UpdateUpCount sets the "up_count" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateUpCount() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateUpCount()
+	})
+}
+
+// SetFinalChapterID sets the "final_chapter_id" field.
+func (u *ComicUpsertBulk) SetFinalChapterID(v string) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetFinalChapterID(v)
+	})
+}
+
+// UpdateFinalChapterID sets the "final_chapter_id" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateFinalChapterID() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateFinalChapterID()
+	})
+}
+
+// ClearFinalChapterID clears the value of the "final_chapter_id" field.
+func (u *ComicUpsertBulk) ClearFinalChapterID() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.ClearFinalChapterID()
+	})
+}
+
+// SetLastChapterID sets the "last_chapter_id" field.
+func (u *ComicUpsertBulk) SetLastChapterID(v string) *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.SetLastChapterID(v)
+	})
+}
+
+// UpdateLastChapterID sets the "last_chapter_id" field to the value that was provided on create.
+func (u *ComicUpsertBulk) UpdateLastChapterID() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.UpdateLastChapterID()
+	})
+}
+
+// ClearLastChapterID clears the value of the "last_chapter_id" field.
+func (u *ComicUpsertBulk) ClearLastChapterID() *ComicUpsertBulk {
+	return u.Update(func(s *ComicUpsert) {
+		s.ClearLastChapterID()
+	})
+}
+
+// Exec executes the query.
+func (u *ComicUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ComicCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ComicCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ComicUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

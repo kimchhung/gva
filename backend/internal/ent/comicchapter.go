@@ -52,6 +52,10 @@ type ComicChapterEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
+	// totalCount holds the count of the edges above.
+	totalCount [2]map[string]int
+
+	namedImgs map[string][]*ComicImg
 }
 
 // ImgsOrErr returns the Imgs value or an error if the edge
@@ -251,6 +255,30 @@ func (cc *ComicChapter) String() string {
 	builder.WriteString(fmt.Sprintf("%v", cc.IsLastChapter))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedImgs returns the Imgs named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (cc *ComicChapter) NamedImgs(name string) ([]*ComicImg, error) {
+	if cc.Edges.namedImgs == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := cc.Edges.namedImgs[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (cc *ComicChapter) appendNamedImgs(name string, edges ...*ComicImg) {
+	if cc.Edges.namedImgs == nil {
+		cc.Edges.namedImgs = make(map[string][]*ComicImg)
+	}
+	if len(edges) == 0 {
+		cc.Edges.namedImgs[name] = []*ComicImg{}
+	} else {
+		cc.Edges.namedImgs[name] = append(cc.Edges.namedImgs[name], edges...)
+	}
 }
 
 // ComicChapters is a parsable slice of ComicChapter.

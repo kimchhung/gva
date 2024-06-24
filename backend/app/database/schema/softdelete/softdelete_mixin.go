@@ -12,7 +12,7 @@ import (
 	gen "github.com/kimchhung/gva/backend/internal/ent"
 	"github.com/kimchhung/gva/backend/internal/ent/hook"
 
-	// "github.com/kimchhung/gva/backend/internal/ent/intercept"
+	"github.com/kimchhung/gva/backend/internal/ent/intercept"
 
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -55,15 +55,15 @@ func SkipSoftDelete(parent context.Context) context.Context {
 
 func (d SoftDeleteMixin) Interceptors() []ent.Interceptor {
 	return []ent.Interceptor{
-		// intercept.TraverseFunc(func(ctx context.Context, q intercept.Query) error {
-		// 	// Skip soft-delete, means include soft-deleted entities.
-		// 	if skip, _ := ctx.Value(softDeleteKey{}).(bool); skip {
-		// 		return nil
-		// 	}
+		intercept.TraverseFunc(func(ctx context.Context, q intercept.Query) error {
+			// Skip soft-delete, means include soft-deleted entities.
+			if skip, _ := ctx.Value(softDeleteKey{}).(bool); skip {
+				return nil
+			}
 
-		// 	d.P(q)
-		// 	return nil
-		// }),
+			d.P(q)
+			return nil
+		}),
 	}
 }
 

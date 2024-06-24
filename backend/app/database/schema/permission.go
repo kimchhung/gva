@@ -13,6 +13,7 @@ type Permission struct {
 
 func (Permission) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		mixins.NanoID{},
 		mixins.TimeMixin{},
 	}
 }

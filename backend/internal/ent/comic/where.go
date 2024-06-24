@@ -8,6 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
@@ -637,6 +639,9 @@ func HasChapters() predicate.Comic {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ChaptersTable, ChaptersColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicChapter
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -645,6 +650,9 @@ func HasChapters() predicate.Comic {
 func HasChaptersWith(preds ...predicate.ComicChapter) predicate.Comic {
 	return predicate.Comic(func(s *sql.Selector) {
 		step := newChaptersStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicChapter
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -660,6 +668,9 @@ func HasLastChapter() predicate.Comic {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, LastChapterTable, LastChapterColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -668,6 +679,9 @@ func HasLastChapter() predicate.Comic {
 func HasLastChapterWith(preds ...predicate.ComicChapter) predicate.Comic {
 	return predicate.Comic(func(s *sql.Selector) {
 		step := newLastChapterStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -683,6 +697,9 @@ func HasFinalChapter() predicate.Comic {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, FinalChapterTable, FinalChapterColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -691,6 +708,9 @@ func HasFinalChapter() predicate.Comic {
 func HasFinalChapterWith(preds ...predicate.ComicChapter) predicate.Comic {
 	return predicate.Comic(func(s *sql.Selector) {
 		step := newFinalChapterStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

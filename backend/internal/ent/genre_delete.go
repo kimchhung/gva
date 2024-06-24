@@ -8,8 +8,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/genre"
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // GenreDelete is the builder for deleting a Genre entity.
@@ -41,6 +43,8 @@ func (gd *GenreDelete) ExecX(ctx context.Context) int {
 
 func (gd *GenreDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(genre.Table, sqlgraph.NewFieldSpec(genre.FieldID, field.TypeString))
+	_spec.Node.Schema = gd.schemaConfig.Genre
+	ctx = internal.NewSchemaConfigContext(ctx, gd.schemaConfig)
 	if ps := gd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

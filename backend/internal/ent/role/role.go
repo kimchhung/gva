@@ -97,7 +97,8 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
+	Hooks        [1]ent.Hook
+	Interceptors [1]ent.Interceptor
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -108,6 +109,8 @@ var (
 	DefaultIsEnable bool
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt int
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the Role queries.

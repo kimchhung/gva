@@ -8,51 +8,63 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Route {
+func ID(id string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Route {
+func IDEQ(id string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Route {
+func IDNEQ(id string) predicate.Route {
 	return predicate.Route(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Route {
+func IDIn(ids ...string) predicate.Route {
 	return predicate.Route(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Route {
+func IDNotIn(ids ...string) predicate.Route {
 	return predicate.Route(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Route {
+func IDGT(id string) predicate.Route {
 	return predicate.Route(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Route {
+func IDGTE(id string) predicate.Route {
 	return predicate.Route(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Route {
+func IDLT(id string) predicate.Route {
 	return predicate.Route(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Route {
+func IDLTE(id string) predicate.Route {
 	return predicate.Route(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Route {
+	return predicate.Route(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Route {
+	return predicate.Route(sql.FieldContainsFold(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -76,7 +88,7 @@ func DeletedAt(v int) predicate.Route {
 }
 
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v int) predicate.Route {
+func ParentID(v string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldParentID, v))
 }
 
@@ -98,6 +110,11 @@ func Redirect(v string) predicate.Route {
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldName, v))
+}
+
+// Order applies equality check predicate on the "order" field. It's identical to OrderEQ.
+func Order(v int) predicate.Route {
+	return predicate.Route(sql.FieldEQ(FieldOrder, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -231,23 +248,58 @@ func DeletedAtLTE(v int) predicate.Route {
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v int) predicate.Route {
+func ParentIDEQ(v string) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldParentID, v))
 }
 
 // ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v int) predicate.Route {
+func ParentIDNEQ(v string) predicate.Route {
 	return predicate.Route(sql.FieldNEQ(FieldParentID, v))
 }
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...int) predicate.Route {
+func ParentIDIn(vs ...string) predicate.Route {
 	return predicate.Route(sql.FieldIn(FieldParentID, vs...))
 }
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...int) predicate.Route {
+func ParentIDNotIn(vs ...string) predicate.Route {
 	return predicate.Route(sql.FieldNotIn(FieldParentID, vs...))
+}
+
+// ParentIDGT applies the GT predicate on the "parent_id" field.
+func ParentIDGT(v string) predicate.Route {
+	return predicate.Route(sql.FieldGT(FieldParentID, v))
+}
+
+// ParentIDGTE applies the GTE predicate on the "parent_id" field.
+func ParentIDGTE(v string) predicate.Route {
+	return predicate.Route(sql.FieldGTE(FieldParentID, v))
+}
+
+// ParentIDLT applies the LT predicate on the "parent_id" field.
+func ParentIDLT(v string) predicate.Route {
+	return predicate.Route(sql.FieldLT(FieldParentID, v))
+}
+
+// ParentIDLTE applies the LTE predicate on the "parent_id" field.
+func ParentIDLTE(v string) predicate.Route {
+	return predicate.Route(sql.FieldLTE(FieldParentID, v))
+}
+
+// ParentIDContains applies the Contains predicate on the "parent_id" field.
+func ParentIDContains(v string) predicate.Route {
+	return predicate.Route(sql.FieldContains(FieldParentID, v))
+}
+
+// ParentIDHasPrefix applies the HasPrefix predicate on the "parent_id" field.
+func ParentIDHasPrefix(v string) predicate.Route {
+	return predicate.Route(sql.FieldHasPrefix(FieldParentID, v))
+}
+
+// ParentIDHasSuffix applies the HasSuffix predicate on the "parent_id" field.
+func ParentIDHasSuffix(v string) predicate.Route {
+	return predicate.Route(sql.FieldHasSuffix(FieldParentID, v))
 }
 
 // ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
@@ -258,6 +310,16 @@ func ParentIDIsNil() predicate.Route {
 // ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
 func ParentIDNotNil() predicate.Route {
 	return predicate.Route(sql.FieldNotNull(FieldParentID))
+}
+
+// ParentIDEqualFold applies the EqualFold predicate on the "parent_id" field.
+func ParentIDEqualFold(v string) predicate.Route {
+	return predicate.Route(sql.FieldEqualFold(FieldParentID, v))
+}
+
+// ParentIDContainsFold applies the ContainsFold predicate on the "parent_id" field.
+func ParentIDContainsFold(v string) predicate.Route {
+	return predicate.Route(sql.FieldContainsFold(FieldParentID, v))
 }
 
 // PathEQ applies the EQ predicate on the "path" field.
@@ -530,6 +592,46 @@ func NameContainsFold(v string) predicate.Route {
 	return predicate.Route(sql.FieldContainsFold(FieldName, v))
 }
 
+// OrderEQ applies the EQ predicate on the "order" field.
+func OrderEQ(v int) predicate.Route {
+	return predicate.Route(sql.FieldEQ(FieldOrder, v))
+}
+
+// OrderNEQ applies the NEQ predicate on the "order" field.
+func OrderNEQ(v int) predicate.Route {
+	return predicate.Route(sql.FieldNEQ(FieldOrder, v))
+}
+
+// OrderIn applies the In predicate on the "order" field.
+func OrderIn(vs ...int) predicate.Route {
+	return predicate.Route(sql.FieldIn(FieldOrder, vs...))
+}
+
+// OrderNotIn applies the NotIn predicate on the "order" field.
+func OrderNotIn(vs ...int) predicate.Route {
+	return predicate.Route(sql.FieldNotIn(FieldOrder, vs...))
+}
+
+// OrderGT applies the GT predicate on the "order" field.
+func OrderGT(v int) predicate.Route {
+	return predicate.Route(sql.FieldGT(FieldOrder, v))
+}
+
+// OrderGTE applies the GTE predicate on the "order" field.
+func OrderGTE(v int) predicate.Route {
+	return predicate.Route(sql.FieldGTE(FieldOrder, v))
+}
+
+// OrderLT applies the LT predicate on the "order" field.
+func OrderLT(v int) predicate.Route {
+	return predicate.Route(sql.FieldLT(FieldOrder, v))
+}
+
+// OrderLTE applies the LTE predicate on the "order" field.
+func OrderLTE(v int) predicate.Route {
+	return predicate.Route(sql.FieldLTE(FieldOrder, v))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldType, v))
@@ -557,6 +659,9 @@ func HasParent() predicate.Route {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.Route
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -565,6 +670,9 @@ func HasParent() predicate.Route {
 func HasParentWith(preds ...predicate.Route) predicate.Route {
 	return predicate.Route(func(s *sql.Selector) {
 		step := newParentStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.Route
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -580,6 +688,9 @@ func HasChildren() predicate.Route {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.Route
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -588,6 +699,9 @@ func HasChildren() predicate.Route {
 func HasChildrenWith(preds ...predicate.Route) predicate.Route {
 	return predicate.Route(func(s *sql.Selector) {
 		step := newChildrenStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.Route
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -603,6 +717,9 @@ func HasRoles() predicate.Route {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, RolesTable, RolesPrimaryKey...),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.RoleRoutes
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -611,6 +728,9 @@ func HasRoles() predicate.Route {
 func HasRolesWith(preds ...predicate.Role) predicate.Route {
 	return predicate.Route(func(s *sql.Selector) {
 		step := newRolesStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.RoleRoutes
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

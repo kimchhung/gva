@@ -12,11 +12,27 @@ import (
 )
 
 func main() {
-	ex, err := entgql.NewExtension()
+	ex, err := entgql.NewExtension(
+		entgql.WithSchemaGenerator(),
+	)
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
 	}
-	if err := entc.Generate("../../app/database/schema", &gen.Config{}, entc.Extensions(ex)); err != nil {
+	if err := entc.Generate(
+		"../../app/database/schema",
+		&gen.Config{
+			Target:   "../../internal/ent",
+			Schema:   "../../app/database/schema",
+			Features: gen.AllFeatures,
+			Package:  "github.com/kimchhung/gva/backend/internal/ent",
+		},
+		entc.Extensions(ex),
+	); err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
+
+	//go:generate go run -mod=mod entgo.io/ent/cmd/ent
+	// generate --target=../../internal/ent ../../app/database/schema
+	// --feature sql/versioned-migration,intercept,sql/execquery,sql/modifier,schema/snapshot,privacy,entql
+
 }

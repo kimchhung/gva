@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/genre"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // GenreUpdate is the builder for updating Genre entities.
@@ -158,6 +160,8 @@ func (gu *GenreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := gu.mutation.GetType(); ok {
 		_spec.SetField(genre.FieldType, field.TypeEnum, value)
 	}
+	_spec.Node.Schema = gu.schemaConfig.Genre
+	ctx = internal.NewSchemaConfigContext(ctx, gu.schemaConfig)
 	_spec.AddModifiers(gu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -339,6 +343,8 @@ func (guo *GenreUpdateOne) sqlSave(ctx context.Context) (_node *Genre, err error
 	if value, ok := guo.mutation.GetType(); ok {
 		_spec.SetField(genre.FieldType, field.TypeEnum, value)
 	}
+	_spec.Node.Schema = guo.schemaConfig.Genre
+	ctx = internal.NewSchemaConfigContext(ctx, guo.schemaConfig)
 	_spec.AddModifiers(guo.modifiers...)
 	_node = &Genre{config: guo.config}
 	_spec.Assign = _node.assignValues

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 
@@ -62,13 +61,8 @@ func (s *JwtService) AdminValidator(out *ent.Admin) ClaimValidator {
 			return apperror.ErrUnauthorized
 		}
 
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			return apperror.ErrUnauthorized
-		}
-
 		admin, err := s.db.Admin.Query().
-			Where(admin.IDEQ(id)).
+			Where(admin.ID(idStr)).
 			WithRoles(
 				func(rq *ent.RoleQuery) {
 					rq.WithPermissions()

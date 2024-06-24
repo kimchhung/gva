@@ -15,6 +15,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicChapterUpdate is the builder for updating ComicChapter entities.
@@ -352,6 +354,7 @@ func (ccu *ComicChapterUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccu.schemaConfig.ComicImg
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ccu.mutation.RemovedImgsIDs(); len(nodes) > 0 && !ccu.mutation.ImgsCleared() {
@@ -365,6 +368,7 @@ func (ccu *ComicChapterUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccu.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -381,6 +385,7 @@ func (ccu *ComicChapterUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccu.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -397,6 +402,7 @@ func (ccu *ComicChapterUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comic.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccu.schemaConfig.ComicChapter
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ccu.mutation.ComicIDs(); len(nodes) > 0 {
@@ -410,11 +416,14 @@ func (ccu *ComicChapterUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comic.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccu.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ccu.schemaConfig.ComicChapter
+	ctx = internal.NewSchemaConfigContext(ctx, ccu.schemaConfig)
 	_spec.AddModifiers(ccu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ccu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -788,6 +797,7 @@ func (ccuo *ComicChapterUpdateOne) sqlSave(ctx context.Context) (_node *ComicCha
 				IDSpec: sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccuo.schemaConfig.ComicImg
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ccuo.mutation.RemovedImgsIDs(); len(nodes) > 0 && !ccuo.mutation.ImgsCleared() {
@@ -801,6 +811,7 @@ func (ccuo *ComicChapterUpdateOne) sqlSave(ctx context.Context) (_node *ComicCha
 				IDSpec: sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccuo.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -817,6 +828,7 @@ func (ccuo *ComicChapterUpdateOne) sqlSave(ctx context.Context) (_node *ComicCha
 				IDSpec: sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccuo.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -833,6 +845,7 @@ func (ccuo *ComicChapterUpdateOne) sqlSave(ctx context.Context) (_node *ComicCha
 				IDSpec: sqlgraph.NewFieldSpec(comic.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccuo.schemaConfig.ComicChapter
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ccuo.mutation.ComicIDs(); len(nodes) > 0 {
@@ -846,11 +859,14 @@ func (ccuo *ComicChapterUpdateOne) sqlSave(ctx context.Context) (_node *ComicCha
 				IDSpec: sqlgraph.NewFieldSpec(comic.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ccuo.schemaConfig.ComicChapter
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ccuo.schemaConfig.ComicChapter
+	ctx = internal.NewSchemaConfigContext(ctx, ccuo.schemaConfig)
 	_spec.AddModifiers(ccuo.modifiers...)
 	_node = &ComicChapter{config: ccuo.config}
 	_spec.Assign = _node.assignValues

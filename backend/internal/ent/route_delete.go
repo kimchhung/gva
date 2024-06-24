@@ -9,6 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 	"github.com/kimchhung/gva/backend/internal/ent/route"
 )
 
@@ -40,7 +42,9 @@ func (rd *RouteDelete) ExecX(ctx context.Context) int {
 }
 
 func (rd *RouteDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(route.Table, sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(route.Table, sqlgraph.NewFieldSpec(route.FieldID, field.TypeString))
+	_spec.Node.Schema = rd.schemaConfig.Route
+	ctx = internal.NewSchemaConfigContext(ctx, rd.schemaConfig)
 	if ps := rd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

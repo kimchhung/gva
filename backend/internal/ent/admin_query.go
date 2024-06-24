@@ -8,23 +8,28 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/admin"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // AdminQuery is the builder for querying Admin entities.
 type AdminQuery struct {
 	config
-	ctx        *QueryContext
-	order      []admin.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Admin
-	withRoles  *RoleQuery
-	modifiers  []func(*sql.Selector)
+	ctx            *QueryContext
+	order          []admin.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Admin
+	withRoles      *RoleQuery
+	loadTotal      []func(context.Context, []*Admin) error
+	modifiers      []func(*sql.Selector)
+	withNamedRoles map[string]*RoleQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +82,9 @@ func (aq *AdminQuery) QueryRoles() *RoleQuery {
 			sqlgraph.To(role.Table, role.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, admin.RolesTable, admin.RolesPrimaryKey...),
 		)
+		schemaConfig := aq.schemaConfig
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.AdminRoles
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -107,8 +115,8 @@ func (aq *AdminQuery) FirstX(ctx context.Context) *Admin {
 
 // FirstID returns the first Admin ID from the query.
 // Returns a *NotFoundError when no Admin ID was found.
-func (aq *AdminQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (aq *AdminQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -120,7 +128,7 @@ func (aq *AdminQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (aq *AdminQuery) FirstIDX(ctx context.Context) int {
+func (aq *AdminQuery) FirstIDX(ctx context.Context) string {
 	id, err := aq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -158,8 +166,8 @@ func (aq *AdminQuery) OnlyX(ctx context.Context) *Admin {
 // OnlyID is like Only, but returns the only Admin ID in the query.
 // Returns a *NotSingularError when more than one Admin ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (aq *AdminQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (aq *AdminQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -175,7 +183,7 @@ func (aq *AdminQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (aq *AdminQuery) OnlyIDX(ctx context.Context) int {
+func (aq *AdminQuery) OnlyIDX(ctx context.Context) string {
 	id, err := aq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,7 +211,7 @@ func (aq *AdminQuery) AllX(ctx context.Context) []*Admin {
 }
 
 // IDs executes the query and returns a list of Admin IDs.
-func (aq *AdminQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (aq *AdminQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if aq.ctx.Unique == nil && aq.path != nil {
 		aq.Unique(true)
 	}
@@ -215,7 +223,7 @@ func (aq *AdminQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (aq *AdminQuery) IDsX(ctx context.Context) []int {
+func (aq *AdminQuery) IDsX(ctx context.Context) []string {
 	ids, err := aq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -384,6 +392,8 @@ func (aq *AdminQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Admin,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = aq.schemaConfig.Admin
+	ctx = internal.NewSchemaConfigContext(ctx, aq.schemaConfig)
 	if len(aq.modifiers) > 0 {
 		_spec.Modifiers = aq.modifiers
 	}
@@ -403,13 +413,25 @@ func (aq *AdminQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Admin,
 			return nil, err
 		}
 	}
+	for name, query := range aq.withNamedRoles {
+		if err := aq.loadRoles(ctx, query, nodes,
+			func(n *Admin) { n.appendNamedRoles(name) },
+			func(n *Admin, e *Role) { n.appendNamedRoles(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range aq.loadTotal {
+		if err := aq.loadTotal[i](ctx, nodes); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
 func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Admin, init func(*Admin), assign func(*Admin, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Admin)
-	nids := make(map[int]map[*Admin]struct{})
+	byID := make(map[string]*Admin)
+	nids := make(map[string]map[*Admin]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -419,6 +441,7 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 	}
 	query.Where(func(s *sql.Selector) {
 		joinT := sql.Table(admin.RolesTable)
+		joinT.Schema(aq.schemaConfig.AdminRoles)
 		s.Join(joinT).On(s.C(role.FieldID), joinT.C(admin.RolesPrimaryKey[1]))
 		s.Where(sql.InValues(joinT.C(admin.RolesPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
@@ -438,11 +461,11 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
+				return append([]any{new(sql.NullString)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Admin]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -470,6 +493,8 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 
 func (aq *AdminQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
+	_spec.Node.Schema = aq.schemaConfig.Admin
+	ctx = internal.NewSchemaConfigContext(ctx, aq.schemaConfig)
 	if len(aq.modifiers) > 0 {
 		_spec.Modifiers = aq.modifiers
 	}
@@ -481,7 +506,7 @@ func (aq *AdminQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (aq *AdminQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	_spec.From = aq.sql
 	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -535,6 +560,9 @@ func (aq *AdminQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(aq.schemaConfig.Admin)
+	ctx = internal.NewSchemaConfigContext(ctx, aq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range aq.modifiers {
 		m(selector)
 	}
@@ -555,10 +583,50 @@ func (aq *AdminQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aq *AdminQuery) ForUpdate(opts ...sql.LockOption) *AdminQuery {
+	if aq.driver.Dialect() == dialect.Postgres {
+		aq.Unique(false)
+	}
+	aq.modifiers = append(aq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aq *AdminQuery) ForShare(opts ...sql.LockOption) *AdminQuery {
+	if aq.driver.Dialect() == dialect.Postgres {
+		aq.Unique(false)
+	}
+	aq.modifiers = append(aq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aq
+}
+
 // Modify adds a query modifier for attaching custom logic to queries.
 func (aq *AdminQuery) Modify(modifiers ...func(s *sql.Selector)) *AdminSelect {
 	aq.modifiers = append(aq.modifiers, modifiers...)
 	return aq.Select()
+}
+
+// WithNamedRoles tells the query-builder to eager-load the nodes that are connected to the "roles"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (aq *AdminQuery) WithNamedRoles(name string, opts ...func(*RoleQuery)) *AdminQuery {
+	query := (&RoleClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if aq.withNamedRoles == nil {
+		aq.withNamedRoles = make(map[string]*RoleQuery)
+	}
+	aq.withNamedRoles[name] = query
+	return aq
 }
 
 // AdminGroupBy is the group-by builder for Admin entities.

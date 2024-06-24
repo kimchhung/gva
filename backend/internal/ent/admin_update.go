@@ -15,6 +15,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/admin"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // AdminUpdate is the builder for updating Admin entities.
@@ -147,14 +149,14 @@ func (au *AdminUpdate) ClearDisplayName() *AdminUpdate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (au *AdminUpdate) AddRoleIDs(ids ...int) *AdminUpdate {
+func (au *AdminUpdate) AddRoleIDs(ids ...string) *AdminUpdate {
 	au.mutation.AddRoleIDs(ids...)
 	return au
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (au *AdminUpdate) AddRoles(r ...*Role) *AdminUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -173,14 +175,14 @@ func (au *AdminUpdate) ClearRoles() *AdminUpdate {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (au *AdminUpdate) RemoveRoleIDs(ids ...int) *AdminUpdate {
+func (au *AdminUpdate) RemoveRoleIDs(ids ...string) *AdminUpdate {
 	au.mutation.RemoveRoleIDs(ids...)
 	return au
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (au *AdminUpdate) RemoveRoles(r ...*Role) *AdminUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -236,7 +238,7 @@ func (au *AdminUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AdminUpd
 }
 
 func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -287,9 +289,10 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = au.schemaConfig.AdminRoles
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := au.mutation.RemovedRolesIDs(); len(nodes) > 0 && !au.mutation.RolesCleared() {
@@ -300,9 +303,10 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = au.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -316,14 +320,17 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = au.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = au.schemaConfig.Admin
+	ctx = internal.NewSchemaConfigContext(ctx, au.schemaConfig)
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -462,14 +469,14 @@ func (auo *AdminUpdateOne) ClearDisplayName() *AdminUpdateOne {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (auo *AdminUpdateOne) AddRoleIDs(ids ...int) *AdminUpdateOne {
+func (auo *AdminUpdateOne) AddRoleIDs(ids ...string) *AdminUpdateOne {
 	auo.mutation.AddRoleIDs(ids...)
 	return auo
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (auo *AdminUpdateOne) AddRoles(r ...*Role) *AdminUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -488,14 +495,14 @@ func (auo *AdminUpdateOne) ClearRoles() *AdminUpdateOne {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (auo *AdminUpdateOne) RemoveRoleIDs(ids ...int) *AdminUpdateOne {
+func (auo *AdminUpdateOne) RemoveRoleIDs(ids ...string) *AdminUpdateOne {
 	auo.mutation.RemoveRoleIDs(ids...)
 	return auo
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (auo *AdminUpdateOne) RemoveRoles(r ...*Role) *AdminUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -564,7 +571,7 @@ func (auo *AdminUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Admi
 }
 
 func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error) {
-	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Admin.id" for update`)}
@@ -632,9 +639,10 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = auo.schemaConfig.AdminRoles
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auo.mutation.RemovedRolesIDs(); len(nodes) > 0 && !auo.mutation.RolesCleared() {
@@ -645,9 +653,10 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = auo.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -661,14 +670,17 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = auo.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = auo.schemaConfig.Admin
+	ctx = internal.NewSchemaConfigContext(ctx, auo.schemaConfig)
 	_spec.AddModifiers(auo.modifiers...)
 	_node = &Admin{config: auo.config}
 	_spec.Assign = _node.assignValues

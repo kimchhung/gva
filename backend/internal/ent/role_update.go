@@ -16,6 +16,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
 	"github.com/kimchhung/gva/backend/internal/ent/route"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // RoleUpdate is the builder for updating Role entities.
@@ -151,14 +153,14 @@ func (ru *RoleUpdate) SetNillableIsChangeable(b *bool) *RoleUpdate {
 }
 
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
-func (ru *RoleUpdate) AddAdminIDs(ids ...int) *RoleUpdate {
+func (ru *RoleUpdate) AddAdminIDs(ids ...string) *RoleUpdate {
 	ru.mutation.AddAdminIDs(ids...)
 	return ru
 }
 
 // AddAdmins adds the "admins" edges to the Admin entity.
 func (ru *RoleUpdate) AddAdmins(a ...*Admin) *RoleUpdate {
-	ids := make([]int, len(a))
+	ids := make([]string, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -166,14 +168,14 @@ func (ru *RoleUpdate) AddAdmins(a ...*Admin) *RoleUpdate {
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
-func (ru *RoleUpdate) AddPermissionIDs(ids ...int) *RoleUpdate {
+func (ru *RoleUpdate) AddPermissionIDs(ids ...string) *RoleUpdate {
 	ru.mutation.AddPermissionIDs(ids...)
 	return ru
 }
 
 // AddPermissions adds the "permissions" edges to the Permission entity.
 func (ru *RoleUpdate) AddPermissions(p ...*Permission) *RoleUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -181,14 +183,14 @@ func (ru *RoleUpdate) AddPermissions(p ...*Permission) *RoleUpdate {
 }
 
 // AddRouteIDs adds the "routes" edge to the Route entity by IDs.
-func (ru *RoleUpdate) AddRouteIDs(ids ...int) *RoleUpdate {
+func (ru *RoleUpdate) AddRouteIDs(ids ...string) *RoleUpdate {
 	ru.mutation.AddRouteIDs(ids...)
 	return ru
 }
 
 // AddRoutes adds the "routes" edges to the Route entity.
 func (ru *RoleUpdate) AddRoutes(r ...*Route) *RoleUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -207,14 +209,14 @@ func (ru *RoleUpdate) ClearAdmins() *RoleUpdate {
 }
 
 // RemoveAdminIDs removes the "admins" edge to Admin entities by IDs.
-func (ru *RoleUpdate) RemoveAdminIDs(ids ...int) *RoleUpdate {
+func (ru *RoleUpdate) RemoveAdminIDs(ids ...string) *RoleUpdate {
 	ru.mutation.RemoveAdminIDs(ids...)
 	return ru
 }
 
 // RemoveAdmins removes "admins" edges to Admin entities.
 func (ru *RoleUpdate) RemoveAdmins(a ...*Admin) *RoleUpdate {
-	ids := make([]int, len(a))
+	ids := make([]string, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -228,14 +230,14 @@ func (ru *RoleUpdate) ClearPermissions() *RoleUpdate {
 }
 
 // RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
-func (ru *RoleUpdate) RemovePermissionIDs(ids ...int) *RoleUpdate {
+func (ru *RoleUpdate) RemovePermissionIDs(ids ...string) *RoleUpdate {
 	ru.mutation.RemovePermissionIDs(ids...)
 	return ru
 }
 
 // RemovePermissions removes "permissions" edges to Permission entities.
 func (ru *RoleUpdate) RemovePermissions(p ...*Permission) *RoleUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -249,14 +251,14 @@ func (ru *RoleUpdate) ClearRoutes() *RoleUpdate {
 }
 
 // RemoveRouteIDs removes the "routes" edge to Route entities by IDs.
-func (ru *RoleUpdate) RemoveRouteIDs(ids ...int) *RoleUpdate {
+func (ru *RoleUpdate) RemoveRouteIDs(ids ...string) *RoleUpdate {
 	ru.mutation.RemoveRouteIDs(ids...)
 	return ru
 }
 
 // RemoveRoutes removes "routes" edges to Route entities.
 func (ru *RoleUpdate) RemoveRoutes(r ...*Route) *RoleUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -312,7 +314,7 @@ func (ru *RoleUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *RoleUpdat
 }
 
 func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -358,9 +360,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.AdminsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.AdminRoles
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.RemovedAdminsIDs(); len(nodes) > 0 && !ru.mutation.AdminsCleared() {
@@ -371,9 +374,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.AdminsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -387,9 +391,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.AdminsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -403,9 +408,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.PermissionsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RolePermissions
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !ru.mutation.PermissionsCleared() {
@@ -416,9 +422,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.PermissionsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RolePermissions
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -432,9 +439,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.PermissionsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RolePermissions
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -448,9 +456,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ru.mutation.RoutesCleared() {
@@ -461,9 +470,10 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -477,14 +487,17 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ru.schemaConfig.Role
+	ctx = internal.NewSchemaConfigContext(ctx, ru.schemaConfig)
 	_spec.AddModifiers(ru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -626,14 +639,14 @@ func (ruo *RoleUpdateOne) SetNillableIsChangeable(b *bool) *RoleUpdateOne {
 }
 
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
-func (ruo *RoleUpdateOne) AddAdminIDs(ids ...int) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) AddAdminIDs(ids ...string) *RoleUpdateOne {
 	ruo.mutation.AddAdminIDs(ids...)
 	return ruo
 }
 
 // AddAdmins adds the "admins" edges to the Admin entity.
 func (ruo *RoleUpdateOne) AddAdmins(a ...*Admin) *RoleUpdateOne {
-	ids := make([]int, len(a))
+	ids := make([]string, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -641,14 +654,14 @@ func (ruo *RoleUpdateOne) AddAdmins(a ...*Admin) *RoleUpdateOne {
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
-func (ruo *RoleUpdateOne) AddPermissionIDs(ids ...int) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) AddPermissionIDs(ids ...string) *RoleUpdateOne {
 	ruo.mutation.AddPermissionIDs(ids...)
 	return ruo
 }
 
 // AddPermissions adds the "permissions" edges to the Permission entity.
 func (ruo *RoleUpdateOne) AddPermissions(p ...*Permission) *RoleUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -656,14 +669,14 @@ func (ruo *RoleUpdateOne) AddPermissions(p ...*Permission) *RoleUpdateOne {
 }
 
 // AddRouteIDs adds the "routes" edge to the Route entity by IDs.
-func (ruo *RoleUpdateOne) AddRouteIDs(ids ...int) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) AddRouteIDs(ids ...string) *RoleUpdateOne {
 	ruo.mutation.AddRouteIDs(ids...)
 	return ruo
 }
 
 // AddRoutes adds the "routes" edges to the Route entity.
 func (ruo *RoleUpdateOne) AddRoutes(r ...*Route) *RoleUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -682,14 +695,14 @@ func (ruo *RoleUpdateOne) ClearAdmins() *RoleUpdateOne {
 }
 
 // RemoveAdminIDs removes the "admins" edge to Admin entities by IDs.
-func (ruo *RoleUpdateOne) RemoveAdminIDs(ids ...int) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) RemoveAdminIDs(ids ...string) *RoleUpdateOne {
 	ruo.mutation.RemoveAdminIDs(ids...)
 	return ruo
 }
 
 // RemoveAdmins removes "admins" edges to Admin entities.
 func (ruo *RoleUpdateOne) RemoveAdmins(a ...*Admin) *RoleUpdateOne {
-	ids := make([]int, len(a))
+	ids := make([]string, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -703,14 +716,14 @@ func (ruo *RoleUpdateOne) ClearPermissions() *RoleUpdateOne {
 }
 
 // RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
-func (ruo *RoleUpdateOne) RemovePermissionIDs(ids ...int) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) RemovePermissionIDs(ids ...string) *RoleUpdateOne {
 	ruo.mutation.RemovePermissionIDs(ids...)
 	return ruo
 }
 
 // RemovePermissions removes "permissions" edges to Permission entities.
 func (ruo *RoleUpdateOne) RemovePermissions(p ...*Permission) *RoleUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -724,14 +737,14 @@ func (ruo *RoleUpdateOne) ClearRoutes() *RoleUpdateOne {
 }
 
 // RemoveRouteIDs removes the "routes" edge to Route entities by IDs.
-func (ruo *RoleUpdateOne) RemoveRouteIDs(ids ...int) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) RemoveRouteIDs(ids ...string) *RoleUpdateOne {
 	ruo.mutation.RemoveRouteIDs(ids...)
 	return ruo
 }
 
 // RemoveRoutes removes "routes" edges to Route entities.
 func (ruo *RoleUpdateOne) RemoveRoutes(r ...*Route) *RoleUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -800,7 +813,7 @@ func (ruo *RoleUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *RoleU
 }
 
 func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
-	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Role.id" for update`)}
@@ -863,9 +876,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.AdminsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.AdminRoles
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.RemovedAdminsIDs(); len(nodes) > 0 && !ruo.mutation.AdminsCleared() {
@@ -876,9 +890,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.AdminsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -892,9 +907,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.AdminsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -908,9 +924,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.PermissionsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RolePermissions
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.RemovedPermissionsIDs(); len(nodes) > 0 && !ruo.mutation.PermissionsCleared() {
@@ -921,9 +938,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.PermissionsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RolePermissions
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -937,9 +955,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.PermissionsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RolePermissions
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -953,9 +972,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ruo.mutation.RoutesCleared() {
@@ -966,9 +986,10 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -982,14 +1003,17 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ruo.schemaConfig.Role
+	ctx = internal.NewSchemaConfigContext(ctx, ruo.schemaConfig)
 	_spec.AddModifiers(ruo.modifiers...)
 	_node = &Role{config: ruo.config}
 	_spec.Assign = _node.assignValues

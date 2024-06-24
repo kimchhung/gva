@@ -48,7 +48,7 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 		return
 	}
 
-	childToParent := map[int]int{}
+	childToParent := map[string]string{}
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 		tx.Route.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
 

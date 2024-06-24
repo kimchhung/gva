@@ -63,7 +63,7 @@ func (s *AdminService) Paginate(ctx context.Context, p *dto.AdminPaginateRequest
 	return s.toDto(list...), meta, nil
 }
 
-func (s *AdminService) GetAdminByID(ctx context.Context, id int) (*dto.AdminResponse, error) {
+func (s *AdminService) GetAdminByID(ctx context.Context, id string) (*dto.AdminResponse, error) {
 	data, err := s.admin_r.C().Query().Where(admin.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -85,7 +85,7 @@ func (s *AdminService) CreateAdmin(ctx context.Context, request *dto.AdminReques
 	return s.toDto(data)[0], nil
 }
 
-func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request *dto.AdminRequest) (*dto.AdminResponse, error) {
+func (s *AdminService) UpdateAdmin(ctx context.Context, id string, request *dto.AdminRequest) (*dto.AdminResponse, error) {
 	data, err := s.admin_r.C().UpdateOneID(id).
 		SetDisplayName(request.DisplayName).
 		SetUsername(request.Username).
@@ -98,11 +98,11 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, id int, request *dto.Adm
 	return s.toDto(data)[0], nil
 }
 
-func (s *AdminService) DeleteAdmin(ctx context.Context, id int) error {
+func (s *AdminService) DeleteAdmin(ctx context.Context, id string) error {
 	return s.admin_r.C().DeleteOneID(id).Exec(ctx)
 }
 
-func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int) ([]*ent.Route, error) {
+func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId string) ([]*ent.Route, error) {
 	if appctx.MustAdminContext(ctx).IsSuperAdmin() {
 		routes, err := s.db.Route.Query().Where(route.IsEnable(true)).All(ctx)
 		if err != nil {
@@ -125,7 +125,7 @@ func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId int)
 	return routeutil.GroupRouteToNested(routes), nil
 }
 
-func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId int) ([]*ent.Permission, error) {
+func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId string) ([]*ent.Permission, error) {
 	routes, err := s.db.Role.Query().
 		Where(
 			role.HasAdminsWith(admin.ID(adminId)),

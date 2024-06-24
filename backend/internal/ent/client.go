@@ -25,6 +25,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/route"
 
 	stdsql "database/sql"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // Client is the client that holds all ent builders.
@@ -82,6 +84,8 @@ type (
 		hooks *hooks
 		// interceptors to execute on queries.
 		inters *inters
+		// schemaConfig contains alternative names for all tables.
+		schemaConfig SchemaConfig
 	}
 	// Option function to configure the client.
 	Option func(*config)
@@ -326,7 +330,7 @@ func (c *AdminClient) UpdateOne(a *Admin) *AdminUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AdminClient) UpdateOneID(id int) *AdminUpdateOne {
+func (c *AdminClient) UpdateOneID(id string) *AdminUpdateOne {
 	mutation := newAdminMutation(c.config, OpUpdateOne, withAdminID(id))
 	return &AdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -343,7 +347,7 @@ func (c *AdminClient) DeleteOne(a *Admin) *AdminDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AdminClient) DeleteOneID(id int) *AdminDeleteOne {
+func (c *AdminClient) DeleteOneID(id string) *AdminDeleteOne {
 	builder := c.Delete().Where(admin.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -360,12 +364,12 @@ func (c *AdminClient) Query() *AdminQuery {
 }
 
 // Get returns a Admin entity by its id.
-func (c *AdminClient) Get(ctx context.Context, id int) (*Admin, error) {
+func (c *AdminClient) Get(ctx context.Context, id string) (*Admin, error) {
 	return c.Query().Where(admin.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AdminClient) GetX(ctx context.Context, id int) *Admin {
+func (c *AdminClient) GetX(ctx context.Context, id string) *Admin {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -383,6 +387,9 @@ func (c *AdminClient) QueryRoles(a *Admin) *RoleQuery {
 			sqlgraph.To(role.Table, role.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, admin.RolesTable, admin.RolesPrimaryKey...),
 		)
+		schemaConfig := a.schemaConfig
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.AdminRoles
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -397,7 +404,8 @@ func (c *AdminClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *AdminClient) Interceptors() []Interceptor {
-	return c.inters.Admin
+	inters := c.inters.Admin
+	return append(inters[:len(inters):len(inters)], admin.Interceptors[:]...)
 }
 
 func (c *AdminClient) mutate(ctx context.Context, m *AdminMutation) (Value, error) {
@@ -533,6 +541,9 @@ func (c *ComicClient) QueryChapters(co *Comic) *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, comic.ChaptersTable, comic.ChaptersColumn),
 		)
+		schemaConfig := co.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicChapter
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -549,6 +560,9 @@ func (c *ComicClient) QueryLastChapter(co *Comic) *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, comic.LastChapterTable, comic.LastChapterColumn),
 		)
+		schemaConfig := co.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -565,6 +579,9 @@ func (c *ComicClient) QueryFinalChapter(co *Comic) *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, comic.FinalChapterTable, comic.FinalChapterColumn),
 		)
+		schemaConfig := co.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -714,6 +731,9 @@ func (c *ComicChapterClient) QueryImgs(cc *ComicChapter) *ComicImgQuery {
 			sqlgraph.To(comicimg.Table, comicimg.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, comicchapter.ImgsTable, comicchapter.ImgsColumn),
 		)
+		schemaConfig := cc.schemaConfig
+		step.To.Schema = schemaConfig.ComicImg
+		step.Edge.Schema = schemaConfig.ComicImg
 		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -730,6 +750,9 @@ func (c *ComicChapterClient) QueryComic(cc *ComicChapter) *ComicQuery {
 			sqlgraph.To(comic.Table, comic.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, comicchapter.ComicTable, comicchapter.ComicColumn),
 		)
+		schemaConfig := cc.schemaConfig
+		step.To.Schema = schemaConfig.Comic
+		step.Edge.Schema = schemaConfig.ComicChapter
 		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -879,6 +902,9 @@ func (c *ComicImgClient) QueryChapter(ci *ComicImg) *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, comicimg.ChapterTable, comicimg.ChapterColumn),
 		)
+		schemaConfig := ci.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicImg
 		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1104,7 +1130,7 @@ func (c *PermissionClient) UpdateOne(pe *Permission) *PermissionUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PermissionClient) UpdateOneID(id int) *PermissionUpdateOne {
+func (c *PermissionClient) UpdateOneID(id string) *PermissionUpdateOne {
 	mutation := newPermissionMutation(c.config, OpUpdateOne, withPermissionID(id))
 	return &PermissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1121,7 +1147,7 @@ func (c *PermissionClient) DeleteOne(pe *Permission) *PermissionDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PermissionClient) DeleteOneID(id int) *PermissionDeleteOne {
+func (c *PermissionClient) DeleteOneID(id string) *PermissionDeleteOne {
 	builder := c.Delete().Where(permission.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1138,12 +1164,12 @@ func (c *PermissionClient) Query() *PermissionQuery {
 }
 
 // Get returns a Permission entity by its id.
-func (c *PermissionClient) Get(ctx context.Context, id int) (*Permission, error) {
+func (c *PermissionClient) Get(ctx context.Context, id string) (*Permission, error) {
 	return c.Query().Where(permission.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PermissionClient) GetX(ctx context.Context, id int) *Permission {
+func (c *PermissionClient) GetX(ctx context.Context, id string) *Permission {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1161,6 +1187,9 @@ func (c *PermissionClient) QueryRoles(pe *Permission) *RoleQuery {
 			sqlgraph.To(role.Table, role.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, permission.RolesTable, permission.RolesPrimaryKey...),
 		)
+		schemaConfig := pe.schemaConfig
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.RolePermissions
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1253,7 +1282,7 @@ func (c *RoleClient) UpdateOne(r *Role) *RoleUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RoleClient) UpdateOneID(id int) *RoleUpdateOne {
+func (c *RoleClient) UpdateOneID(id string) *RoleUpdateOne {
 	mutation := newRoleMutation(c.config, OpUpdateOne, withRoleID(id))
 	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1270,7 +1299,7 @@ func (c *RoleClient) DeleteOne(r *Role) *RoleDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RoleClient) DeleteOneID(id int) *RoleDeleteOne {
+func (c *RoleClient) DeleteOneID(id string) *RoleDeleteOne {
 	builder := c.Delete().Where(role.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1287,12 +1316,12 @@ func (c *RoleClient) Query() *RoleQuery {
 }
 
 // Get returns a Role entity by its id.
-func (c *RoleClient) Get(ctx context.Context, id int) (*Role, error) {
+func (c *RoleClient) Get(ctx context.Context, id string) (*Role, error) {
 	return c.Query().Where(role.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RoleClient) GetX(ctx context.Context, id int) *Role {
+func (c *RoleClient) GetX(ctx context.Context, id string) *Role {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1310,6 +1339,9 @@ func (c *RoleClient) QueryAdmins(r *Role) *AdminQuery {
 			sqlgraph.To(admin.Table, admin.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, role.AdminsTable, role.AdminsPrimaryKey...),
 		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Admin
+		step.Edge.Schema = schemaConfig.AdminRoles
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1326,6 +1358,9 @@ func (c *RoleClient) QueryPermissions(r *Role) *PermissionQuery {
 			sqlgraph.To(permission.Table, permission.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, role.PermissionsTable, role.PermissionsPrimaryKey...),
 		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Permission
+		step.Edge.Schema = schemaConfig.RolePermissions
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1342,6 +1377,9 @@ func (c *RoleClient) QueryRoutes(r *Role) *RouteQuery {
 			sqlgraph.To(route.Table, route.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
 		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.RoleRoutes
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1356,7 +1394,8 @@ func (c *RoleClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *RoleClient) Interceptors() []Interceptor {
-	return c.inters.Role
+	inters := c.inters.Role
+	return append(inters[:len(inters):len(inters)], role.Interceptors[:]...)
 }
 
 func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error) {
@@ -1435,7 +1474,7 @@ func (c *RouteClient) UpdateOne(r *Route) *RouteUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RouteClient) UpdateOneID(id int) *RouteUpdateOne {
+func (c *RouteClient) UpdateOneID(id string) *RouteUpdateOne {
 	mutation := newRouteMutation(c.config, OpUpdateOne, withRouteID(id))
 	return &RouteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1452,7 +1491,7 @@ func (c *RouteClient) DeleteOne(r *Route) *RouteDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RouteClient) DeleteOneID(id int) *RouteDeleteOne {
+func (c *RouteClient) DeleteOneID(id string) *RouteDeleteOne {
 	builder := c.Delete().Where(route.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1469,12 +1508,12 @@ func (c *RouteClient) Query() *RouteQuery {
 }
 
 // Get returns a Route entity by its id.
-func (c *RouteClient) Get(ctx context.Context, id int) (*Route, error) {
+func (c *RouteClient) Get(ctx context.Context, id string) (*Route, error) {
 	return c.Query().Where(route.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RouteClient) GetX(ctx context.Context, id int) *Route {
+func (c *RouteClient) GetX(ctx context.Context, id string) *Route {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1492,6 +1531,9 @@ func (c *RouteClient) QueryParent(r *Route) *RouteQuery {
 			sqlgraph.To(route.Table, route.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, route.ParentTable, route.ParentColumn),
 		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.Route
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1508,6 +1550,9 @@ func (c *RouteClient) QueryChildren(r *Route) *RouteQuery {
 			sqlgraph.To(route.Table, route.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, route.ChildrenTable, route.ChildrenColumn),
 		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.Route
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1524,6 +1569,9 @@ func (c *RouteClient) QueryRoles(r *Route) *RoleQuery {
 			sqlgraph.To(role.Table, role.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, route.RolesTable, route.RolesPrimaryKey...),
 		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.RoleRoutes
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1538,7 +1586,8 @@ func (c *RouteClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *RouteClient) Interceptors() []Interceptor {
-	return c.inters.Route
+	inters := c.inters.Route
+	return append(inters[:len(inters):len(inters)], route.Interceptors[:]...)
 }
 
 func (c *RouteClient) mutate(ctx context.Context, m *RouteMutation) (Value, error) {
@@ -1566,6 +1615,18 @@ type (
 		Route []ent.Interceptor
 	}
 )
+
+// SchemaConfig represents alternative schema names for all tables
+// that can be passed at runtime.
+type SchemaConfig = internal.SchemaConfig
+
+// AlternateSchemas allows alternate schema names to be
+// passed into ent operations.
+func AlternateSchema(schemaConfig SchemaConfig) Option {
+	return func(c *config) {
+		c.schemaConfig = schemaConfig
+	}
+}
 
 // ExecContext allows calling the underlying ExecContext method of the driver if it is supported by it.
 // See, database/sql#DB.ExecContext for more information.

@@ -4,6 +4,8 @@ package route
 
 import (
 	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"entgo.io/ent"
@@ -34,6 +36,8 @@ const (
 	FieldRedirect = "redirect"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldOrder holds the string denoting the order field in the database.
+	FieldOrder = "order"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldMeta holds the string denoting the meta field in the database.
@@ -73,6 +77,7 @@ var Columns = []string{
 	FieldComponent,
 	FieldRedirect,
 	FieldName,
+	FieldOrder,
 	FieldType,
 	FieldMeta,
 }
@@ -99,7 +104,8 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/kimchhung/gva/backend/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
+	Hooks        [1]ent.Hook
+	Interceptors [1]ent.Interceptor
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -110,6 +116,10 @@ var (
 	DefaultIsEnable bool
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt int
+	// DefaultParentID holds the default value on creation for the "parent_id" field.
+	DefaultParentID func() string
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // Type defines the type for the "type" enum field.
@@ -193,6 +203,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
+// ByOrder orders the results by the order field.
+func ByOrder(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrder, opts...).ToFunc()
+}
+
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
@@ -252,4 +267,22 @@ func newRolesStep() *sqlgraph.Step {
 		sqlgraph.To(RolesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, RolesTable, RolesPrimaryKey...),
 	)
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (e Type) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(e.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (e *Type) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("enum %T must be a string", val)
+	}
+	*e = Type(str)
+	if err := TypeValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Type", str)
+	}
+	return nil
 }

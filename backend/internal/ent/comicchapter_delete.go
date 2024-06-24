@@ -8,8 +8,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicChapterDelete is the builder for deleting a ComicChapter entity.
@@ -41,6 +43,8 @@ func (ccd *ComicChapterDelete) ExecX(ctx context.Context) int {
 
 func (ccd *ComicChapterDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(comicchapter.Table, sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString))
+	_spec.Node.Schema = ccd.schemaConfig.ComicChapter
+	ctx = internal.NewSchemaConfigContext(ctx, ccd.schemaConfig)
 	if ps := ccd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

@@ -11,7 +11,7 @@ import (
 )
 
 func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
-	parentMapRoute := make(map[int][]*ent.Route)
+	parentMapRoute := make(map[string][]*ent.Route)
 
 	for _, route := range flatRoutes {
 		if route.ParentID != nil {
@@ -28,7 +28,7 @@ func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
 	}
 
 	slices.SortFunc(parentRoutes, func(a *ent.Route, b *ent.Route) int {
-		return a.ID - b.ID
+		return a.Order - b.Order
 	})
 
 	return parentRoutes
@@ -46,7 +46,7 @@ func FlattenNestedRoutes(parentRoutes []*ent.Route) (flatRoutes []*ent.Route) {
 	return flatRoutes
 }
 
-func AppendRouteChildrens(parentID int, parentMapRoute map[int][]*ent.Route) (children []*ent.Route) {
+func AppendRouteChildrens(parentID string, parentMapRoute map[string][]*ent.Route) (children []*ent.Route) {
 	children, ok := parentMapRoute[parentID]
 	if !ok {
 		return nil

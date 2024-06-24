@@ -47,7 +47,7 @@ type AdminMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *int
+	id                  *string
 	created_at          *time.Time
 	updated_at          *time.Time
 	is_enable           *bool
@@ -59,8 +59,8 @@ type AdminMutation struct {
 	appendwhitelist_ips []string
 	display_name        *string
 	clearedFields       map[string]struct{}
-	roles               map[int]struct{}
-	removedroles        map[int]struct{}
+	roles               map[string]struct{}
+	removedroles        map[string]struct{}
 	clearedroles        bool
 	done                bool
 	oldValue            func(context.Context) (*Admin, error)
@@ -87,7 +87,7 @@ func newAdminMutation(c config, op Op, opts ...adminOption) *AdminMutation {
 }
 
 // withAdminID sets the ID field of the mutation.
-func withAdminID(id int) adminOption {
+func withAdminID(id string) adminOption {
 	return func(m *AdminMutation) {
 		var (
 			err   error
@@ -137,9 +137,15 @@ func (m AdminMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Admin entities.
+func (m *AdminMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AdminMutation) ID() (id int, exists bool) {
+func (m *AdminMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -150,12 +156,12 @@ func (m *AdminMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AdminMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *AdminMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -502,9 +508,9 @@ func (m *AdminMutation) ResetDisplayName() {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by ids.
-func (m *AdminMutation) AddRoleIDs(ids ...int) {
+func (m *AdminMutation) AddRoleIDs(ids ...string) {
 	if m.roles == nil {
-		m.roles = make(map[int]struct{})
+		m.roles = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.roles[ids[i]] = struct{}{}
@@ -522,9 +528,9 @@ func (m *AdminMutation) RolesCleared() bool {
 }
 
 // RemoveRoleIDs removes the "roles" edge to the Role entity by IDs.
-func (m *AdminMutation) RemoveRoleIDs(ids ...int) {
+func (m *AdminMutation) RemoveRoleIDs(ids ...string) {
 	if m.removedroles == nil {
-		m.removedroles = make(map[int]struct{})
+		m.removedroles = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.roles, ids[i])
@@ -533,7 +539,7 @@ func (m *AdminMutation) RemoveRoleIDs(ids ...int) {
 }
 
 // RemovedRoles returns the removed IDs of the "roles" edge to the Role entity.
-func (m *AdminMutation) RemovedRolesIDs() (ids []int) {
+func (m *AdminMutation) RemovedRolesIDs() (ids []string) {
 	for id := range m.removedroles {
 		ids = append(ids, id)
 	}
@@ -541,7 +547,7 @@ func (m *AdminMutation) RemovedRolesIDs() (ids []int) {
 }
 
 // RolesIDs returns the "roles" edge IDs in the mutation.
-func (m *AdminMutation) RolesIDs() (ids []int) {
+func (m *AdminMutation) RolesIDs() (ids []string) {
 	for id := range m.roles {
 		ids = append(ids, id)
 	}
@@ -4566,7 +4572,7 @@ type PermissionMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	created_at    *time.Time
 	updated_at    *time.Time
 	group         *string
@@ -4575,8 +4581,8 @@ type PermissionMutation struct {
 	_order        *int
 	add_order     *int
 	clearedFields map[string]struct{}
-	roles         map[int]struct{}
-	removedroles  map[int]struct{}
+	roles         map[string]struct{}
+	removedroles  map[string]struct{}
 	clearedroles  bool
 	done          bool
 	oldValue      func(context.Context) (*Permission, error)
@@ -4603,7 +4609,7 @@ func newPermissionMutation(c config, op Op, opts ...permissionOption) *Permissio
 }
 
 // withPermissionID sets the ID field of the mutation.
-func withPermissionID(id int) permissionOption {
+func withPermissionID(id string) permissionOption {
 	return func(m *PermissionMutation) {
 		var (
 			err   error
@@ -4653,9 +4659,15 @@ func (m PermissionMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Permission entities.
+func (m *PermissionMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PermissionMutation) ID() (id int, exists bool) {
+func (m *PermissionMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -4666,12 +4678,12 @@ func (m *PermissionMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PermissionMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PermissionMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -4918,9 +4930,9 @@ func (m *PermissionMutation) ResetOrder() {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by ids.
-func (m *PermissionMutation) AddRoleIDs(ids ...int) {
+func (m *PermissionMutation) AddRoleIDs(ids ...string) {
 	if m.roles == nil {
-		m.roles = make(map[int]struct{})
+		m.roles = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.roles[ids[i]] = struct{}{}
@@ -4938,9 +4950,9 @@ func (m *PermissionMutation) RolesCleared() bool {
 }
 
 // RemoveRoleIDs removes the "roles" edge to the Role entity by IDs.
-func (m *PermissionMutation) RemoveRoleIDs(ids ...int) {
+func (m *PermissionMutation) RemoveRoleIDs(ids ...string) {
 	if m.removedroles == nil {
-		m.removedroles = make(map[int]struct{})
+		m.removedroles = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.roles, ids[i])
@@ -4949,7 +4961,7 @@ func (m *PermissionMutation) RemoveRoleIDs(ids ...int) {
 }
 
 // RemovedRoles returns the removed IDs of the "roles" edge to the Role entity.
-func (m *PermissionMutation) RemovedRolesIDs() (ids []int) {
+func (m *PermissionMutation) RemovedRolesIDs() (ids []string) {
 	for id := range m.removedroles {
 		ids = append(ids, id)
 	}
@@ -4957,7 +4969,7 @@ func (m *PermissionMutation) RemovedRolesIDs() (ids []int) {
 }
 
 // RolesIDs returns the "roles" edge IDs in the mutation.
-func (m *PermissionMutation) RolesIDs() (ids []int) {
+func (m *PermissionMutation) RolesIDs() (ids []string) {
 	for id := range m.roles {
 		ids = append(ids, id)
 	}
@@ -5291,7 +5303,7 @@ type RoleMutation struct {
 	config
 	op                 Op
 	typ                string
-	id                 *int
+	id                 *string
 	created_at         *time.Time
 	updated_at         *time.Time
 	is_enable          *bool
@@ -5303,14 +5315,14 @@ type RoleMutation struct {
 	add_order          *int
 	is_changeable      *bool
 	clearedFields      map[string]struct{}
-	admins             map[int]struct{}
-	removedadmins      map[int]struct{}
+	admins             map[string]struct{}
+	removedadmins      map[string]struct{}
 	clearedadmins      bool
-	permissions        map[int]struct{}
-	removedpermissions map[int]struct{}
+	permissions        map[string]struct{}
+	removedpermissions map[string]struct{}
 	clearedpermissions bool
-	routes             map[int]struct{}
-	removedroutes      map[int]struct{}
+	routes             map[string]struct{}
+	removedroutes      map[string]struct{}
 	clearedroutes      bool
 	done               bool
 	oldValue           func(context.Context) (*Role, error)
@@ -5337,7 +5349,7 @@ func newRoleMutation(c config, op Op, opts ...roleOption) *RoleMutation {
 }
 
 // withRoleID sets the ID field of the mutation.
-func withRoleID(id int) roleOption {
+func withRoleID(id string) roleOption {
 	return func(m *RoleMutation) {
 		var (
 			err   error
@@ -5387,9 +5399,15 @@ func (m RoleMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Role entities.
+func (m *RoleMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RoleMutation) ID() (id int, exists bool) {
+func (m *RoleMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -5400,12 +5418,12 @@ func (m *RoleMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RoleMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *RoleMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -5744,9 +5762,9 @@ func (m *RoleMutation) ResetIsChangeable() {
 }
 
 // AddAdminIDs adds the "admins" edge to the Admin entity by ids.
-func (m *RoleMutation) AddAdminIDs(ids ...int) {
+func (m *RoleMutation) AddAdminIDs(ids ...string) {
 	if m.admins == nil {
-		m.admins = make(map[int]struct{})
+		m.admins = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.admins[ids[i]] = struct{}{}
@@ -5764,9 +5782,9 @@ func (m *RoleMutation) AdminsCleared() bool {
 }
 
 // RemoveAdminIDs removes the "admins" edge to the Admin entity by IDs.
-func (m *RoleMutation) RemoveAdminIDs(ids ...int) {
+func (m *RoleMutation) RemoveAdminIDs(ids ...string) {
 	if m.removedadmins == nil {
-		m.removedadmins = make(map[int]struct{})
+		m.removedadmins = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.admins, ids[i])
@@ -5775,7 +5793,7 @@ func (m *RoleMutation) RemoveAdminIDs(ids ...int) {
 }
 
 // RemovedAdmins returns the removed IDs of the "admins" edge to the Admin entity.
-func (m *RoleMutation) RemovedAdminsIDs() (ids []int) {
+func (m *RoleMutation) RemovedAdminsIDs() (ids []string) {
 	for id := range m.removedadmins {
 		ids = append(ids, id)
 	}
@@ -5783,7 +5801,7 @@ func (m *RoleMutation) RemovedAdminsIDs() (ids []int) {
 }
 
 // AdminsIDs returns the "admins" edge IDs in the mutation.
-func (m *RoleMutation) AdminsIDs() (ids []int) {
+func (m *RoleMutation) AdminsIDs() (ids []string) {
 	for id := range m.admins {
 		ids = append(ids, id)
 	}
@@ -5798,9 +5816,9 @@ func (m *RoleMutation) ResetAdmins() {
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by ids.
-func (m *RoleMutation) AddPermissionIDs(ids ...int) {
+func (m *RoleMutation) AddPermissionIDs(ids ...string) {
 	if m.permissions == nil {
-		m.permissions = make(map[int]struct{})
+		m.permissions = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.permissions[ids[i]] = struct{}{}
@@ -5818,9 +5836,9 @@ func (m *RoleMutation) PermissionsCleared() bool {
 }
 
 // RemovePermissionIDs removes the "permissions" edge to the Permission entity by IDs.
-func (m *RoleMutation) RemovePermissionIDs(ids ...int) {
+func (m *RoleMutation) RemovePermissionIDs(ids ...string) {
 	if m.removedpermissions == nil {
-		m.removedpermissions = make(map[int]struct{})
+		m.removedpermissions = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.permissions, ids[i])
@@ -5829,7 +5847,7 @@ func (m *RoleMutation) RemovePermissionIDs(ids ...int) {
 }
 
 // RemovedPermissions returns the removed IDs of the "permissions" edge to the Permission entity.
-func (m *RoleMutation) RemovedPermissionsIDs() (ids []int) {
+func (m *RoleMutation) RemovedPermissionsIDs() (ids []string) {
 	for id := range m.removedpermissions {
 		ids = append(ids, id)
 	}
@@ -5837,7 +5855,7 @@ func (m *RoleMutation) RemovedPermissionsIDs() (ids []int) {
 }
 
 // PermissionsIDs returns the "permissions" edge IDs in the mutation.
-func (m *RoleMutation) PermissionsIDs() (ids []int) {
+func (m *RoleMutation) PermissionsIDs() (ids []string) {
 	for id := range m.permissions {
 		ids = append(ids, id)
 	}
@@ -5852,9 +5870,9 @@ func (m *RoleMutation) ResetPermissions() {
 }
 
 // AddRouteIDs adds the "routes" edge to the Route entity by ids.
-func (m *RoleMutation) AddRouteIDs(ids ...int) {
+func (m *RoleMutation) AddRouteIDs(ids ...string) {
 	if m.routes == nil {
-		m.routes = make(map[int]struct{})
+		m.routes = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.routes[ids[i]] = struct{}{}
@@ -5872,9 +5890,9 @@ func (m *RoleMutation) RoutesCleared() bool {
 }
 
 // RemoveRouteIDs removes the "routes" edge to the Route entity by IDs.
-func (m *RoleMutation) RemoveRouteIDs(ids ...int) {
+func (m *RoleMutation) RemoveRouteIDs(ids ...string) {
 	if m.removedroutes == nil {
-		m.removedroutes = make(map[int]struct{})
+		m.removedroutes = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.routes, ids[i])
@@ -5883,7 +5901,7 @@ func (m *RoleMutation) RemoveRouteIDs(ids ...int) {
 }
 
 // RemovedRoutes returns the removed IDs of the "routes" edge to the Route entity.
-func (m *RoleMutation) RemovedRoutesIDs() (ids []int) {
+func (m *RoleMutation) RemovedRoutesIDs() (ids []string) {
 	for id := range m.removedroutes {
 		ids = append(ids, id)
 	}
@@ -5891,7 +5909,7 @@ func (m *RoleMutation) RemovedRoutesIDs() (ids []int) {
 }
 
 // RoutesIDs returns the "routes" edge IDs in the mutation.
-func (m *RoleMutation) RoutesIDs() (ids []int) {
+func (m *RoleMutation) RoutesIDs() (ids []string) {
 	for id := range m.routes {
 		ids = append(ids, id)
 	}
@@ -6323,7 +6341,7 @@ type RouteMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *int
+	id              *string
 	created_at      *time.Time
 	updated_at      *time.Time
 	is_enable       *bool
@@ -6333,16 +6351,18 @@ type RouteMutation struct {
 	component       *string
 	redirect        *string
 	name            *string
+	_order          *int
+	add_order       *int
 	_type           *route.Type
 	meta            *types.RouteMeta
 	clearedFields   map[string]struct{}
-	parent          *int
+	parent          *string
 	clearedparent   bool
-	children        map[int]struct{}
-	removedchildren map[int]struct{}
+	children        map[string]struct{}
+	removedchildren map[string]struct{}
 	clearedchildren bool
-	roles           map[int]struct{}
-	removedroles    map[int]struct{}
+	roles           map[string]struct{}
+	removedroles    map[string]struct{}
 	clearedroles    bool
 	done            bool
 	oldValue        func(context.Context) (*Route, error)
@@ -6369,7 +6389,7 @@ func newRouteMutation(c config, op Op, opts ...routeOption) *RouteMutation {
 }
 
 // withRouteID sets the ID field of the mutation.
-func withRouteID(id int) routeOption {
+func withRouteID(id string) routeOption {
 	return func(m *RouteMutation) {
 		var (
 			err   error
@@ -6421,13 +6441,13 @@ func (m RouteMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Route entities.
-func (m *RouteMutation) SetID(id int) {
+func (m *RouteMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RouteMutation) ID() (id int, exists bool) {
+func (m *RouteMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -6438,12 +6458,12 @@ func (m *RouteMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RouteMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *RouteMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -6618,12 +6638,12 @@ func (m *RouteMutation) ResetDeletedAt() {
 }
 
 // SetParentID sets the "parent_id" field.
-func (m *RouteMutation) SetParentID(i int) {
-	m.parent = &i
+func (m *RouteMutation) SetParentID(s string) {
+	m.parent = &s
 }
 
 // ParentID returns the value of the "parent_id" field in the mutation.
-func (m *RouteMutation) ParentID() (r int, exists bool) {
+func (m *RouteMutation) ParentID() (r string, exists bool) {
 	v := m.parent
 	if v == nil {
 		return
@@ -6634,7 +6654,7 @@ func (m *RouteMutation) ParentID() (r int, exists bool) {
 // OldParentID returns the old "parent_id" field's value of the Route entity.
 // If the Route object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RouteMutation) OldParentID(ctx context.Context) (v *int, err error) {
+func (m *RouteMutation) OldParentID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
 	}
@@ -6823,6 +6843,62 @@ func (m *RouteMutation) ResetName() {
 	m.name = nil
 }
 
+// SetOrder sets the "order" field.
+func (m *RouteMutation) SetOrder(i int) {
+	m._order = &i
+	m.add_order = nil
+}
+
+// Order returns the value of the "order" field in the mutation.
+func (m *RouteMutation) Order() (r int, exists bool) {
+	v := m._order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrder returns the old "order" field's value of the Route entity.
+// If the Route object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RouteMutation) OldOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrder: %w", err)
+	}
+	return oldValue.Order, nil
+}
+
+// AddOrder adds i to the "order" field.
+func (m *RouteMutation) AddOrder(i int) {
+	if m.add_order != nil {
+		*m.add_order += i
+	} else {
+		m.add_order = &i
+	}
+}
+
+// AddedOrder returns the value that was added to the "order" field in this mutation.
+func (m *RouteMutation) AddedOrder() (r int, exists bool) {
+	v := m.add_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrder resets all changes to the "order" field.
+func (m *RouteMutation) ResetOrder() {
+	m._order = nil
+	m.add_order = nil
+}
+
 // SetType sets the "type" field.
 func (m *RouteMutation) SetType(r route.Type) {
 	m._type = &r
@@ -6909,7 +6985,7 @@ func (m *RouteMutation) ParentCleared() bool {
 // ParentIDs returns the "parent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ParentID instead. It exists only for internal usage by the builders.
-func (m *RouteMutation) ParentIDs() (ids []int) {
+func (m *RouteMutation) ParentIDs() (ids []string) {
 	if id := m.parent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -6923,9 +6999,9 @@ func (m *RouteMutation) ResetParent() {
 }
 
 // AddChildIDs adds the "children" edge to the Route entity by ids.
-func (m *RouteMutation) AddChildIDs(ids ...int) {
+func (m *RouteMutation) AddChildIDs(ids ...string) {
 	if m.children == nil {
-		m.children = make(map[int]struct{})
+		m.children = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.children[ids[i]] = struct{}{}
@@ -6943,9 +7019,9 @@ func (m *RouteMutation) ChildrenCleared() bool {
 }
 
 // RemoveChildIDs removes the "children" edge to the Route entity by IDs.
-func (m *RouteMutation) RemoveChildIDs(ids ...int) {
+func (m *RouteMutation) RemoveChildIDs(ids ...string) {
 	if m.removedchildren == nil {
-		m.removedchildren = make(map[int]struct{})
+		m.removedchildren = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.children, ids[i])
@@ -6954,7 +7030,7 @@ func (m *RouteMutation) RemoveChildIDs(ids ...int) {
 }
 
 // RemovedChildren returns the removed IDs of the "children" edge to the Route entity.
-func (m *RouteMutation) RemovedChildrenIDs() (ids []int) {
+func (m *RouteMutation) RemovedChildrenIDs() (ids []string) {
 	for id := range m.removedchildren {
 		ids = append(ids, id)
 	}
@@ -6962,7 +7038,7 @@ func (m *RouteMutation) RemovedChildrenIDs() (ids []int) {
 }
 
 // ChildrenIDs returns the "children" edge IDs in the mutation.
-func (m *RouteMutation) ChildrenIDs() (ids []int) {
+func (m *RouteMutation) ChildrenIDs() (ids []string) {
 	for id := range m.children {
 		ids = append(ids, id)
 	}
@@ -6977,9 +7053,9 @@ func (m *RouteMutation) ResetChildren() {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by ids.
-func (m *RouteMutation) AddRoleIDs(ids ...int) {
+func (m *RouteMutation) AddRoleIDs(ids ...string) {
 	if m.roles == nil {
-		m.roles = make(map[int]struct{})
+		m.roles = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.roles[ids[i]] = struct{}{}
@@ -6997,9 +7073,9 @@ func (m *RouteMutation) RolesCleared() bool {
 }
 
 // RemoveRoleIDs removes the "roles" edge to the Role entity by IDs.
-func (m *RouteMutation) RemoveRoleIDs(ids ...int) {
+func (m *RouteMutation) RemoveRoleIDs(ids ...string) {
 	if m.removedroles == nil {
-		m.removedroles = make(map[int]struct{})
+		m.removedroles = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.roles, ids[i])
@@ -7008,7 +7084,7 @@ func (m *RouteMutation) RemoveRoleIDs(ids ...int) {
 }
 
 // RemovedRoles returns the removed IDs of the "roles" edge to the Role entity.
-func (m *RouteMutation) RemovedRolesIDs() (ids []int) {
+func (m *RouteMutation) RemovedRolesIDs() (ids []string) {
 	for id := range m.removedroles {
 		ids = append(ids, id)
 	}
@@ -7016,7 +7092,7 @@ func (m *RouteMutation) RemovedRolesIDs() (ids []int) {
 }
 
 // RolesIDs returns the "roles" edge IDs in the mutation.
-func (m *RouteMutation) RolesIDs() (ids []int) {
+func (m *RouteMutation) RolesIDs() (ids []string) {
 	for id := range m.roles {
 		ids = append(ids, id)
 	}
@@ -7064,7 +7140,7 @@ func (m *RouteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RouteMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, route.FieldCreatedAt)
 	}
@@ -7091,6 +7167,9 @@ func (m *RouteMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, route.FieldName)
+	}
+	if m._order != nil {
+		fields = append(fields, route.FieldOrder)
 	}
 	if m._type != nil {
 		fields = append(fields, route.FieldType)
@@ -7124,6 +7203,8 @@ func (m *RouteMutation) Field(name string) (ent.Value, bool) {
 		return m.Redirect()
 	case route.FieldName:
 		return m.Name()
+	case route.FieldOrder:
+		return m.Order()
 	case route.FieldType:
 		return m.GetType()
 	case route.FieldMeta:
@@ -7155,6 +7236,8 @@ func (m *RouteMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRedirect(ctx)
 	case route.FieldName:
 		return m.OldName(ctx)
+	case route.FieldOrder:
+		return m.OldOrder(ctx)
 	case route.FieldType:
 		return m.OldType(ctx)
 	case route.FieldMeta:
@@ -7197,7 +7280,7 @@ func (m *RouteMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case route.FieldParentID:
-		v, ok := value.(int)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -7231,6 +7314,13 @@ func (m *RouteMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
+	case route.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrder(v)
+		return nil
 	case route.FieldType:
 		v, ok := value.(route.Type)
 		if !ok {
@@ -7256,6 +7346,9 @@ func (m *RouteMutation) AddedFields() []string {
 	if m.adddeleted_at != nil {
 		fields = append(fields, route.FieldDeletedAt)
 	}
+	if m.add_order != nil {
+		fields = append(fields, route.FieldOrder)
+	}
 	return fields
 }
 
@@ -7266,6 +7359,8 @@ func (m *RouteMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case route.FieldDeletedAt:
 		return m.AddedDeletedAt()
+	case route.FieldOrder:
+		return m.AddedOrder()
 	}
 	return nil, false
 }
@@ -7281,6 +7376,13 @@ func (m *RouteMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
+		return nil
+	case route.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrder(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Route numeric field %s", name)
@@ -7350,6 +7452,9 @@ func (m *RouteMutation) ResetField(name string) error {
 		return nil
 	case route.FieldName:
 		m.ResetName()
+		return nil
+	case route.FieldOrder:
+		m.ResetOrder()
 		return nil
 	case route.FieldType:
 		m.ResetType()

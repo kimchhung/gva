@@ -15,6 +15,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
 	"github.com/kimchhung/gva/backend/internal/ent/route"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // RouteUpdate is the builder for updating Route entities.
@@ -87,15 +89,15 @@ func (ru *RouteUpdate) AddDeletedAt(i int) *RouteUpdate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (ru *RouteUpdate) SetParentID(i int) *RouteUpdate {
-	ru.mutation.SetParentID(i)
+func (ru *RouteUpdate) SetParentID(s string) *RouteUpdate {
+	ru.mutation.SetParentID(s)
 	return ru
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (ru *RouteUpdate) SetNillableParentID(i *int) *RouteUpdate {
-	if i != nil {
-		ru.SetParentID(*i)
+func (ru *RouteUpdate) SetNillableParentID(s *string) *RouteUpdate {
+	if s != nil {
+		ru.SetParentID(*s)
 	}
 	return ru
 }
@@ -168,6 +170,27 @@ func (ru *RouteUpdate) SetNillableName(s *string) *RouteUpdate {
 	return ru
 }
 
+// SetOrder sets the "order" field.
+func (ru *RouteUpdate) SetOrder(i int) *RouteUpdate {
+	ru.mutation.ResetOrder()
+	ru.mutation.SetOrder(i)
+	return ru
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (ru *RouteUpdate) SetNillableOrder(i *int) *RouteUpdate {
+	if i != nil {
+		ru.SetOrder(*i)
+	}
+	return ru
+}
+
+// AddOrder adds i to the "order" field.
+func (ru *RouteUpdate) AddOrder(i int) *RouteUpdate {
+	ru.mutation.AddOrder(i)
+	return ru
+}
+
 // SetType sets the "type" field.
 func (ru *RouteUpdate) SetType(r route.Type) *RouteUpdate {
 	ru.mutation.SetType(r)
@@ -202,14 +225,14 @@ func (ru *RouteUpdate) SetParent(r *Route) *RouteUpdate {
 }
 
 // AddChildIDs adds the "children" edge to the Route entity by IDs.
-func (ru *RouteUpdate) AddChildIDs(ids ...int) *RouteUpdate {
+func (ru *RouteUpdate) AddChildIDs(ids ...string) *RouteUpdate {
 	ru.mutation.AddChildIDs(ids...)
 	return ru
 }
 
 // AddChildren adds the "children" edges to the Route entity.
 func (ru *RouteUpdate) AddChildren(r ...*Route) *RouteUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -217,14 +240,14 @@ func (ru *RouteUpdate) AddChildren(r ...*Route) *RouteUpdate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ru *RouteUpdate) AddRoleIDs(ids ...int) *RouteUpdate {
+func (ru *RouteUpdate) AddRoleIDs(ids ...string) *RouteUpdate {
 	ru.mutation.AddRoleIDs(ids...)
 	return ru
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ru *RouteUpdate) AddRoles(r ...*Role) *RouteUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -249,14 +272,14 @@ func (ru *RouteUpdate) ClearChildren() *RouteUpdate {
 }
 
 // RemoveChildIDs removes the "children" edge to Route entities by IDs.
-func (ru *RouteUpdate) RemoveChildIDs(ids ...int) *RouteUpdate {
+func (ru *RouteUpdate) RemoveChildIDs(ids ...string) *RouteUpdate {
 	ru.mutation.RemoveChildIDs(ids...)
 	return ru
 }
 
 // RemoveChildren removes "children" edges to Route entities.
 func (ru *RouteUpdate) RemoveChildren(r ...*Route) *RouteUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -270,14 +293,14 @@ func (ru *RouteUpdate) ClearRoles() *RouteUpdate {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (ru *RouteUpdate) RemoveRoleIDs(ids ...int) *RouteUpdate {
+func (ru *RouteUpdate) RemoveRoleIDs(ids ...string) *RouteUpdate {
 	ru.mutation.RemoveRoleIDs(ids...)
 	return ru
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (ru *RouteUpdate) RemoveRoles(r ...*Role) *RouteUpdate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -346,7 +369,7 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ru.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(route.Table, route.Columns, sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(route.Table, route.Columns, sqlgraph.NewFieldSpec(route.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -384,6 +407,12 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.Name(); ok {
 		_spec.SetField(route.FieldName, field.TypeString, value)
 	}
+	if value, ok := ru.mutation.Order(); ok {
+		_spec.SetField(route.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := ru.mutation.AddedOrder(); ok {
+		_spec.AddField(route.FieldOrder, field.TypeInt, value)
+	}
 	if value, ok := ru.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)
 	}
@@ -398,9 +427,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{route.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.Route
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.ParentIDs(); len(nodes) > 0 {
@@ -411,9 +441,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{route.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.Route
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -427,9 +458,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{route.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.Route
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !ru.mutation.ChildrenCleared() {
@@ -440,9 +472,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{route.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.Route
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -456,9 +489,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{route.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.Route
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -472,9 +506,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: route.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.RemovedRolesIDs(); len(nodes) > 0 && !ru.mutation.RolesCleared() {
@@ -485,9 +520,10 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: route.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -501,14 +537,17 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: route.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ru.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ru.schemaConfig.Route
+	ctx = internal.NewSchemaConfigContext(ctx, ru.schemaConfig)
 	_spec.AddModifiers(ru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -587,15 +626,15 @@ func (ruo *RouteUpdateOne) AddDeletedAt(i int) *RouteUpdateOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (ruo *RouteUpdateOne) SetParentID(i int) *RouteUpdateOne {
-	ruo.mutation.SetParentID(i)
+func (ruo *RouteUpdateOne) SetParentID(s string) *RouteUpdateOne {
+	ruo.mutation.SetParentID(s)
 	return ruo
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (ruo *RouteUpdateOne) SetNillableParentID(i *int) *RouteUpdateOne {
-	if i != nil {
-		ruo.SetParentID(*i)
+func (ruo *RouteUpdateOne) SetNillableParentID(s *string) *RouteUpdateOne {
+	if s != nil {
+		ruo.SetParentID(*s)
 	}
 	return ruo
 }
@@ -668,6 +707,27 @@ func (ruo *RouteUpdateOne) SetNillableName(s *string) *RouteUpdateOne {
 	return ruo
 }
 
+// SetOrder sets the "order" field.
+func (ruo *RouteUpdateOne) SetOrder(i int) *RouteUpdateOne {
+	ruo.mutation.ResetOrder()
+	ruo.mutation.SetOrder(i)
+	return ruo
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (ruo *RouteUpdateOne) SetNillableOrder(i *int) *RouteUpdateOne {
+	if i != nil {
+		ruo.SetOrder(*i)
+	}
+	return ruo
+}
+
+// AddOrder adds i to the "order" field.
+func (ruo *RouteUpdateOne) AddOrder(i int) *RouteUpdateOne {
+	ruo.mutation.AddOrder(i)
+	return ruo
+}
+
 // SetType sets the "type" field.
 func (ruo *RouteUpdateOne) SetType(r route.Type) *RouteUpdateOne {
 	ruo.mutation.SetType(r)
@@ -702,14 +762,14 @@ func (ruo *RouteUpdateOne) SetParent(r *Route) *RouteUpdateOne {
 }
 
 // AddChildIDs adds the "children" edge to the Route entity by IDs.
-func (ruo *RouteUpdateOne) AddChildIDs(ids ...int) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) AddChildIDs(ids ...string) *RouteUpdateOne {
 	ruo.mutation.AddChildIDs(ids...)
 	return ruo
 }
 
 // AddChildren adds the "children" edges to the Route entity.
 func (ruo *RouteUpdateOne) AddChildren(r ...*Route) *RouteUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -717,14 +777,14 @@ func (ruo *RouteUpdateOne) AddChildren(r ...*Route) *RouteUpdateOne {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ruo *RouteUpdateOne) AddRoleIDs(ids ...int) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) AddRoleIDs(ids ...string) *RouteUpdateOne {
 	ruo.mutation.AddRoleIDs(ids...)
 	return ruo
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ruo *RouteUpdateOne) AddRoles(r ...*Role) *RouteUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -749,14 +809,14 @@ func (ruo *RouteUpdateOne) ClearChildren() *RouteUpdateOne {
 }
 
 // RemoveChildIDs removes the "children" edge to Route entities by IDs.
-func (ruo *RouteUpdateOne) RemoveChildIDs(ids ...int) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) RemoveChildIDs(ids ...string) *RouteUpdateOne {
 	ruo.mutation.RemoveChildIDs(ids...)
 	return ruo
 }
 
 // RemoveChildren removes "children" edges to Route entities.
 func (ruo *RouteUpdateOne) RemoveChildren(r ...*Route) *RouteUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -770,14 +830,14 @@ func (ruo *RouteUpdateOne) ClearRoles() *RouteUpdateOne {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (ruo *RouteUpdateOne) RemoveRoleIDs(ids ...int) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) RemoveRoleIDs(ids ...string) *RouteUpdateOne {
 	ruo.mutation.RemoveRoleIDs(ids...)
 	return ruo
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (ruo *RouteUpdateOne) RemoveRoles(r ...*Role) *RouteUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -859,7 +919,7 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 	if err := ruo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(route.Table, route.Columns, sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(route.Table, route.Columns, sqlgraph.NewFieldSpec(route.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Route.id" for update`)}
@@ -914,6 +974,12 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 	if value, ok := ruo.mutation.Name(); ok {
 		_spec.SetField(route.FieldName, field.TypeString, value)
 	}
+	if value, ok := ruo.mutation.Order(); ok {
+		_spec.SetField(route.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := ruo.mutation.AddedOrder(); ok {
+		_spec.AddField(route.FieldOrder, field.TypeInt, value)
+	}
 	if value, ok := ruo.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)
 	}
@@ -928,9 +994,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: []string{route.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.Route
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.ParentIDs(); len(nodes) > 0 {
@@ -941,9 +1008,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: []string{route.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.Route
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -957,9 +1025,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: []string{route.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.Route
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !ruo.mutation.ChildrenCleared() {
@@ -970,9 +1039,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: []string{route.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.Route
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -986,9 +1056,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: []string{route.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.Route
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -1002,9 +1073,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: route.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.RemovedRolesIDs(); len(nodes) > 0 && !ruo.mutation.RolesCleared() {
@@ -1015,9 +1087,10 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: route.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -1031,14 +1104,17 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 			Columns: route.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ruo.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ruo.schemaConfig.Route
+	ctx = internal.NewSchemaConfigContext(ctx, ruo.schemaConfig)
 	_spec.AddModifiers(ruo.modifiers...)
 	_node = &Route{config: ruo.config}
 	_spec.Assign = _node.assignValues

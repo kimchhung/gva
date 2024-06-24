@@ -8,8 +8,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // AdminDelete is the builder for deleting a Admin entity.
@@ -40,7 +42,9 @@ func (ad *AdminDelete) ExecX(ctx context.Context) int {
 }
 
 func (ad *AdminDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
+	_spec.Node.Schema = ad.schemaConfig.Admin
+	ctx = internal.NewSchemaConfigContext(ctx, ad.schemaConfig)
 	if ps := ad.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

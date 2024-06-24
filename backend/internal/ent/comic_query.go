@@ -8,25 +8,30 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/comic"
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicQuery is the builder for querying Comic entities.
 type ComicQuery struct {
 	config
-	ctx              *QueryContext
-	order            []comic.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.Comic
-	withChapters     *ComicChapterQuery
-	withLastChapter  *ComicChapterQuery
-	withFinalChapter *ComicChapterQuery
-	modifiers        []func(*sql.Selector)
+	ctx               *QueryContext
+	order             []comic.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.Comic
+	withChapters      *ComicChapterQuery
+	withLastChapter   *ComicChapterQuery
+	withFinalChapter  *ComicChapterQuery
+	loadTotal         []func(context.Context, []*Comic) error
+	modifiers         []func(*sql.Selector)
+	withNamedChapters map[string]*ComicChapterQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +84,9 @@ func (cq *ComicQuery) QueryChapters() *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, comic.ChaptersTable, comic.ChaptersColumn),
 		)
+		schemaConfig := cq.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.ComicChapter
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -101,6 +109,9 @@ func (cq *ComicQuery) QueryLastChapter() *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, comic.LastChapterTable, comic.LastChapterColumn),
 		)
+		schemaConfig := cq.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -123,6 +134,9 @@ func (cq *ComicQuery) QueryFinalChapter() *ComicChapterQuery {
 			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, comic.FinalChapterTable, comic.FinalChapterColumn),
 		)
+		schemaConfig := cq.schemaConfig
+		step.To.Schema = schemaConfig.ComicChapter
+		step.Edge.Schema = schemaConfig.Comic
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -456,6 +470,8 @@ func (cq *ComicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Comic,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = cq.schemaConfig.Comic
+	ctx = internal.NewSchemaConfigContext(ctx, cq.schemaConfig)
 	if len(cq.modifiers) > 0 {
 		_spec.Modifiers = cq.modifiers
 	}
@@ -471,7 +487,12 @@ func (cq *ComicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Comic,
 	if query := cq.withChapters; query != nil {
 		if err := cq.loadChapters(ctx, query, nodes,
 			func(n *Comic) { n.Edges.Chapters = []*ComicChapter{} },
-			func(n *Comic, e *ComicChapter) { n.Edges.Chapters = append(n.Edges.Chapters, e) }); err != nil {
+			func(n *Comic, e *ComicChapter) {
+				n.Edges.Chapters = append(n.Edges.Chapters, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.Comic = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -484,6 +505,23 @@ func (cq *ComicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Comic,
 	if query := cq.withFinalChapter; query != nil {
 		if err := cq.loadFinalChapter(ctx, query, nodes, nil,
 			func(n *Comic, e *ComicChapter) { n.Edges.FinalChapter = e }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range cq.withNamedChapters {
+		if err := cq.loadChapters(ctx, query, nodes,
+			func(n *Comic) { n.appendNamedChapters(name) },
+			func(n *Comic, e *ComicChapter) {
+				n.appendNamedChapters(name, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.Comic = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for i := range cq.loadTotal {
+		if err := cq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -588,6 +626,8 @@ func (cq *ComicQuery) loadFinalChapter(ctx context.Context, query *ComicChapterQ
 
 func (cq *ComicQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
+	_spec.Node.Schema = cq.schemaConfig.Comic
+	ctx = internal.NewSchemaConfigContext(ctx, cq.schemaConfig)
 	if len(cq.modifiers) > 0 {
 		_spec.Modifiers = cq.modifiers
 	}
@@ -659,6 +699,9 @@ func (cq *ComicQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if cq.ctx.Unique != nil && *cq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(cq.schemaConfig.Comic)
+	ctx = internal.NewSchemaConfigContext(ctx, cq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range cq.modifiers {
 		m(selector)
 	}
@@ -679,10 +722,50 @@ func (cq *ComicQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (cq *ComicQuery) ForUpdate(opts ...sql.LockOption) *ComicQuery {
+	if cq.driver.Dialect() == dialect.Postgres {
+		cq.Unique(false)
+	}
+	cq.modifiers = append(cq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return cq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (cq *ComicQuery) ForShare(opts ...sql.LockOption) *ComicQuery {
+	if cq.driver.Dialect() == dialect.Postgres {
+		cq.Unique(false)
+	}
+	cq.modifiers = append(cq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return cq
+}
+
 // Modify adds a query modifier for attaching custom logic to queries.
 func (cq *ComicQuery) Modify(modifiers ...func(s *sql.Selector)) *ComicSelect {
 	cq.modifiers = append(cq.modifiers, modifiers...)
 	return cq.Select()
+}
+
+// WithNamedChapters tells the query-builder to eager-load the nodes that are connected to the "chapters"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (cq *ComicQuery) WithNamedChapters(name string, opts ...func(*ComicChapterQuery)) *ComicQuery {
+	query := (&ComicChapterClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if cq.withNamedChapters == nil {
+		cq.withNamedChapters = make(map[string]*ComicChapterQuery)
+	}
+	cq.withNamedChapters[name] = query
+	return cq
 }
 
 // ComicGroupBy is the group-by builder for Comic entities.

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/admin"
@@ -19,6 +21,7 @@ type AdminCreate struct {
 	config
 	mutation *AdminMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -109,15 +112,29 @@ func (ac *AdminCreate) SetNillableDisplayName(s *string) *AdminCreate {
 	return ac
 }
 
+// SetID sets the "id" field.
+func (ac *AdminCreate) SetID(s string) *AdminCreate {
+	ac.mutation.SetID(s)
+	return ac
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ac *AdminCreate) SetNillableID(s *string) *AdminCreate {
+	if s != nil {
+		ac.SetID(*s)
+	}
+	return ac
+}
+
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ac *AdminCreate) AddRoleIDs(ids ...int) *AdminCreate {
+func (ac *AdminCreate) AddRoleIDs(ids ...string) *AdminCreate {
 	ac.mutation.AddRoleIDs(ids...)
 	return ac
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ac *AdminCreate) AddRoles(r ...*Role) *AdminCreate {
-	ids := make([]int, len(r))
+	ids := make([]string, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -183,6 +200,13 @@ func (ac *AdminCreate) defaults() error {
 		v := admin.DefaultDeletedAt
 		ac.mutation.SetDeletedAt(v)
 	}
+	if _, ok := ac.mutation.ID(); !ok {
+		if admin.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized admin.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := admin.DefaultID()
+		ac.mutation.SetID(v)
+	}
 	return nil
 }
 
@@ -223,8 +247,13 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Admin.ID type: %T", _spec.ID.Value)
+		}
+	}
 	ac.mutation.id = &_node.ID
 	ac.mutation.done = true
 	return _node, nil
@@ -233,8 +262,14 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Admin{config: ac.config}
-		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	)
+	_spec.Schema = ac.schemaConfig.Admin
+	_spec.OnConflict = ac.conflict
+	if id, ok := ac.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(admin.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -275,9 +310,10 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 			Columns: admin.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ac.schemaConfig.AdminRoles
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -286,11 +322,381 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Admin.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AdminUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+func (ac *AdminCreate) OnConflict(opts ...sql.ConflictOption) *AdminUpsertOne {
+	ac.conflict = opts
+	return &AdminUpsertOne{
+		create: ac,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Admin.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ac *AdminCreate) OnConflictColumns(columns ...string) *AdminUpsertOne {
+	ac.conflict = append(ac.conflict, sql.ConflictColumns(columns...))
+	return &AdminUpsertOne{
+		create: ac,
+	}
+}
+
+type (
+	// AdminUpsertOne is the builder for "upsert"-ing
+	//  one Admin node.
+	AdminUpsertOne struct {
+		create *AdminCreate
+	}
+
+	// AdminUpsert is the "OnConflict" setter.
+	AdminUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *AdminUpsert) SetCreatedAt(v time.Time) *AdminUpsert {
+	u.Set(admin.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateCreatedAt() *AdminUpsert {
+	u.SetExcluded(admin.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AdminUpsert) SetUpdatedAt(v time.Time) *AdminUpsert {
+	u.Set(admin.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateUpdatedAt() *AdminUpsert {
+	u.SetExcluded(admin.FieldUpdatedAt)
+	return u
+}
+
+// SetIsEnable sets the "is_enable" field.
+func (u *AdminUpsert) SetIsEnable(v bool) *AdminUpsert {
+	u.Set(admin.FieldIsEnable, v)
+	return u
+}
+
+// UpdateIsEnable sets the "is_enable" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateIsEnable() *AdminUpsert {
+	u.SetExcluded(admin.FieldIsEnable)
+	return u
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *AdminUpsert) SetDeletedAt(v int) *AdminUpsert {
+	u.Set(admin.FieldDeletedAt, v)
+	return u
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateDeletedAt() *AdminUpsert {
+	u.SetExcluded(admin.FieldDeletedAt)
+	return u
+}
+
+// AddDeletedAt adds v to the "deleted_at" field.
+func (u *AdminUpsert) AddDeletedAt(v int) *AdminUpsert {
+	u.Add(admin.FieldDeletedAt, v)
+	return u
+}
+
+// SetUsername sets the "username" field.
+func (u *AdminUpsert) SetUsername(v string) *AdminUpsert {
+	u.Set(admin.FieldUsername, v)
+	return u
+}
+
+// UpdateUsername sets the "username" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateUsername() *AdminUpsert {
+	u.SetExcluded(admin.FieldUsername)
+	return u
+}
+
+// SetPassword sets the "password" field.
+func (u *AdminUpsert) SetPassword(v string) *AdminUpsert {
+	u.Set(admin.FieldPassword, v)
+	return u
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *AdminUpsert) UpdatePassword() *AdminUpsert {
+	u.SetExcluded(admin.FieldPassword)
+	return u
+}
+
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (u *AdminUpsert) SetWhitelistIps(v []string) *AdminUpsert {
+	u.Set(admin.FieldWhitelistIps, v)
+	return u
+}
+
+// UpdateWhitelistIps sets the "whitelist_ips" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateWhitelistIps() *AdminUpsert {
+	u.SetExcluded(admin.FieldWhitelistIps)
+	return u
+}
+
+// SetDisplayName sets the "display_name" field.
+func (u *AdminUpsert) SetDisplayName(v string) *AdminUpsert {
+	u.Set(admin.FieldDisplayName, v)
+	return u
+}
+
+// UpdateDisplayName sets the "display_name" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateDisplayName() *AdminUpsert {
+	u.SetExcluded(admin.FieldDisplayName)
+	return u
+}
+
+// ClearDisplayName clears the value of the "display_name" field.
+func (u *AdminUpsert) ClearDisplayName() *AdminUpsert {
+	u.SetNull(admin.FieldDisplayName)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.Admin.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(admin.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+func (u *AdminUpsertOne) UpdateNewValues() *AdminUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(admin.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Admin.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *AdminUpsertOne) Ignore() *AdminUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AdminUpsertOne) DoNothing() *AdminUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AdminCreate.OnConflict
+// documentation for more info.
+func (u *AdminUpsertOne) Update(set func(*AdminUpsert)) *AdminUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AdminUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *AdminUpsertOne) SetCreatedAt(v time.Time) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateCreatedAt() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AdminUpsertOne) SetUpdatedAt(v time.Time) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateUpdatedAt() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetIsEnable sets the "is_enable" field.
+func (u *AdminUpsertOne) SetIsEnable(v bool) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetIsEnable(v)
+	})
+}
+
+// UpdateIsEnable sets the "is_enable" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateIsEnable() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateIsEnable()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *AdminUpsertOne) SetDeletedAt(v int) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// AddDeletedAt adds v to the "deleted_at" field.
+func (u *AdminUpsertOne) AddDeletedAt(v int) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.AddDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateDeletedAt() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// SetUsername sets the "username" field.
+func (u *AdminUpsertOne) SetUsername(v string) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetUsername(v)
+	})
+}
+
+// UpdateUsername sets the "username" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateUsername() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateUsername()
+	})
+}
+
+// SetPassword sets the "password" field.
+func (u *AdminUpsertOne) SetPassword(v string) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetPassword(v)
+	})
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdatePassword() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdatePassword()
+	})
+}
+
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (u *AdminUpsertOne) SetWhitelistIps(v []string) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetWhitelistIps(v)
+	})
+}
+
+// UpdateWhitelistIps sets the "whitelist_ips" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateWhitelistIps() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateWhitelistIps()
+	})
+}
+
+// SetDisplayName sets the "display_name" field.
+func (u *AdminUpsertOne) SetDisplayName(v string) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetDisplayName(v)
+	})
+}
+
+// UpdateDisplayName sets the "display_name" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateDisplayName() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateDisplayName()
+	})
+}
+
+// ClearDisplayName clears the value of the "display_name" field.
+func (u *AdminUpsertOne) ClearDisplayName() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.ClearDisplayName()
+	})
+}
+
+// Exec executes the query.
+func (u *AdminUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AdminCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AdminUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *AdminUpsertOne) ID(ctx context.Context) (id string, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: AdminUpsertOne.ID is not supported by MySQL driver. Use AdminUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *AdminUpsertOne) IDX(ctx context.Context) string {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // AdminCreateBulk is the builder for creating many Admin entities in bulk.
 type AdminCreateBulk struct {
 	config
 	err      error
 	builders []*AdminCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Admin entities in the database.
@@ -320,6 +726,7 @@ func (acb *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 					_, err = mutators[i+1].Mutate(root, acb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = acb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, acb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -331,10 +738,6 @@ func (acb *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -370,6 +773,246 @@ func (acb *AdminCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (acb *AdminCreateBulk) ExecX(ctx context.Context) {
 	if err := acb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Admin.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AdminUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+func (acb *AdminCreateBulk) OnConflict(opts ...sql.ConflictOption) *AdminUpsertBulk {
+	acb.conflict = opts
+	return &AdminUpsertBulk{
+		create: acb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Admin.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (acb *AdminCreateBulk) OnConflictColumns(columns ...string) *AdminUpsertBulk {
+	acb.conflict = append(acb.conflict, sql.ConflictColumns(columns...))
+	return &AdminUpsertBulk{
+		create: acb,
+	}
+}
+
+// AdminUpsertBulk is the builder for "upsert"-ing
+// a bulk of Admin nodes.
+type AdminUpsertBulk struct {
+	create *AdminCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Admin.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(admin.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+func (u *AdminUpsertBulk) UpdateNewValues() *AdminUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(admin.FieldID)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Admin.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *AdminUpsertBulk) Ignore() *AdminUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AdminUpsertBulk) DoNothing() *AdminUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AdminCreateBulk.OnConflict
+// documentation for more info.
+func (u *AdminUpsertBulk) Update(set func(*AdminUpsert)) *AdminUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AdminUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *AdminUpsertBulk) SetCreatedAt(v time.Time) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateCreatedAt() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AdminUpsertBulk) SetUpdatedAt(v time.Time) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateUpdatedAt() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetIsEnable sets the "is_enable" field.
+func (u *AdminUpsertBulk) SetIsEnable(v bool) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetIsEnable(v)
+	})
+}
+
+// UpdateIsEnable sets the "is_enable" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateIsEnable() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateIsEnable()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *AdminUpsertBulk) SetDeletedAt(v int) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// AddDeletedAt adds v to the "deleted_at" field.
+func (u *AdminUpsertBulk) AddDeletedAt(v int) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.AddDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateDeletedAt() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// SetUsername sets the "username" field.
+func (u *AdminUpsertBulk) SetUsername(v string) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetUsername(v)
+	})
+}
+
+// UpdateUsername sets the "username" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateUsername() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateUsername()
+	})
+}
+
+// SetPassword sets the "password" field.
+func (u *AdminUpsertBulk) SetPassword(v string) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetPassword(v)
+	})
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdatePassword() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdatePassword()
+	})
+}
+
+// SetWhitelistIps sets the "whitelist_ips" field.
+func (u *AdminUpsertBulk) SetWhitelistIps(v []string) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetWhitelistIps(v)
+	})
+}
+
+// UpdateWhitelistIps sets the "whitelist_ips" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateWhitelistIps() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateWhitelistIps()
+	})
+}
+
+// SetDisplayName sets the "display_name" field.
+func (u *AdminUpsertBulk) SetDisplayName(v string) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetDisplayName(v)
+	})
+}
+
+// UpdateDisplayName sets the "display_name" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateDisplayName() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateDisplayName()
+	})
+}
+
+// ClearDisplayName clears the value of the "display_name" field.
+func (u *AdminUpsertBulk) ClearDisplayName() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.ClearDisplayName()
+	})
+}
+
+// Exec executes the query.
+func (u *AdminUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AdminCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AdminCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AdminUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

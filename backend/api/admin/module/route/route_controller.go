@@ -126,7 +126,7 @@ func (con *RouteController) CreateRoute(m *echoc.RouteMeta) echoc.MetaHandler {
 func (con *RouteController) GetRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
-			ID int `param:"id" validate:"required,min=0"`
+			ID string `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{
@@ -163,7 +163,7 @@ func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.RouteRequest)
 		params := new(struct {
-			ID int `param:"id" validate:"required,min=0"`
+			ID string `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{
@@ -199,7 +199,7 @@ func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 func (con *RouteController) DeleteRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
-			ID int `param:"id" validate:"required,min=0"`
+			ID string `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{

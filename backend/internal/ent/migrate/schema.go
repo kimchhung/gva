@@ -10,7 +10,7 @@ import (
 var (
 	// AdminsColumns holds the columns for the "admins" table.
 	AdminsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
@@ -144,7 +144,7 @@ var (
 	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "group", Type: field.TypeString},
@@ -160,7 +160,7 @@ var (
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
@@ -185,7 +185,7 @@ var (
 	}
 	// RoutesColumns holds the columns for the "routes" table.
 	RoutesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
@@ -194,9 +194,10 @@ var (
 		{Name: "component", Type: field.TypeString},
 		{Name: "redirect", Type: field.TypeString, Nullable: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "order", Type: field.TypeInt},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
 		{Name: "meta", Type: field.TypeJSON},
-		{Name: "parent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "parent_id", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 	}
 	// RoutesTable holds the schema information for the "routes" table.
 	RoutesTable = &schema.Table{
@@ -206,7 +207,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "routes_routes_children",
-				Columns:    []*schema.Column{RoutesColumns[11]},
+				Columns:    []*schema.Column{RoutesColumns[12]},
 				RefColumns: []*schema.Column{RoutesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -221,8 +222,8 @@ var (
 	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
-		{Name: "admin_id", Type: field.TypeInt},
-		{Name: "role_id", Type: field.TypeInt},
+		{Name: "admin_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "role_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 	}
 	// AdminRolesTable holds the schema information for the "admin_roles" table.
 	AdminRolesTable = &schema.Table{
@@ -246,8 +247,8 @@ var (
 	}
 	// RolePermissionsColumns holds the columns for the "role_permissions" table.
 	RolePermissionsColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeInt},
-		{Name: "permission_id", Type: field.TypeInt},
+		{Name: "role_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "permission_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 	}
 	// RolePermissionsTable holds the schema information for the "role_permissions" table.
 	RolePermissionsTable = &schema.Table{
@@ -271,8 +272,8 @@ var (
 	}
 	// RoleRoutesColumns holds the columns for the "role_routes" table.
 	RoleRoutesColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeInt},
-		{Name: "route_id", Type: field.TypeInt},
+		{Name: "role_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "route_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
 	}
 	// RoleRoutesTable holds the schema information for the "role_routes" table.
 	RoleRoutesTable = &schema.Table{

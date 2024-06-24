@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -16,19 +17,25 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
 	"github.com/kimchhung/gva/backend/internal/ent/route"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // RoleQuery is the builder for querying Role entities.
 type RoleQuery struct {
 	config
-	ctx             *QueryContext
-	order           []role.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.Role
-	withAdmins      *AdminQuery
-	withPermissions *PermissionQuery
-	withRoutes      *RouteQuery
-	modifiers       []func(*sql.Selector)
+	ctx                  *QueryContext
+	order                []role.OrderOption
+	inters               []Interceptor
+	predicates           []predicate.Role
+	withAdmins           *AdminQuery
+	withPermissions      *PermissionQuery
+	withRoutes           *RouteQuery
+	loadTotal            []func(context.Context, []*Role) error
+	modifiers            []func(*sql.Selector)
+	withNamedAdmins      map[string]*AdminQuery
+	withNamedPermissions map[string]*PermissionQuery
+	withNamedRoutes      map[string]*RouteQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -81,6 +88,9 @@ func (rq *RoleQuery) QueryAdmins() *AdminQuery {
 			sqlgraph.To(admin.Table, admin.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, role.AdminsTable, role.AdminsPrimaryKey...),
 		)
+		schemaConfig := rq.schemaConfig
+		step.To.Schema = schemaConfig.Admin
+		step.Edge.Schema = schemaConfig.AdminRoles
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -103,6 +113,9 @@ func (rq *RoleQuery) QueryPermissions() *PermissionQuery {
 			sqlgraph.To(permission.Table, permission.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, role.PermissionsTable, role.PermissionsPrimaryKey...),
 		)
+		schemaConfig := rq.schemaConfig
+		step.To.Schema = schemaConfig.Permission
+		step.Edge.Schema = schemaConfig.RolePermissions
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -125,6 +138,9 @@ func (rq *RoleQuery) QueryRoutes() *RouteQuery {
 			sqlgraph.To(route.Table, route.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
 		)
+		schemaConfig := rq.schemaConfig
+		step.To.Schema = schemaConfig.Route
+		step.Edge.Schema = schemaConfig.RoleRoutes
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -155,8 +171,8 @@ func (rq *RoleQuery) FirstX(ctx context.Context) *Role {
 
 // FirstID returns the first Role ID from the query.
 // Returns a *NotFoundError when no Role ID was found.
-func (rq *RoleQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (rq *RoleQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -168,7 +184,7 @@ func (rq *RoleQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rq *RoleQuery) FirstIDX(ctx context.Context) int {
+func (rq *RoleQuery) FirstIDX(ctx context.Context) string {
 	id, err := rq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -206,8 +222,8 @@ func (rq *RoleQuery) OnlyX(ctx context.Context) *Role {
 // OnlyID is like Only, but returns the only Role ID in the query.
 // Returns a *NotSingularError when more than one Role ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rq *RoleQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (rq *RoleQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -223,7 +239,7 @@ func (rq *RoleQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rq *RoleQuery) OnlyIDX(ctx context.Context) int {
+func (rq *RoleQuery) OnlyIDX(ctx context.Context) string {
 	id, err := rq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -251,7 +267,7 @@ func (rq *RoleQuery) AllX(ctx context.Context) []*Role {
 }
 
 // IDs executes the query and returns a list of Role IDs.
-func (rq *RoleQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (rq *RoleQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
@@ -263,7 +279,7 @@ func (rq *RoleQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rq *RoleQuery) IDsX(ctx context.Context) []int {
+func (rq *RoleQuery) IDsX(ctx context.Context) []string {
 	ids, err := rq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -458,6 +474,8 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = rq.schemaConfig.Role
+	ctx = internal.NewSchemaConfigContext(ctx, rq.schemaConfig)
 	if len(rq.modifiers) > 0 {
 		_spec.Modifiers = rq.modifiers
 	}
@@ -491,13 +509,39 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 			return nil, err
 		}
 	}
+	for name, query := range rq.withNamedAdmins {
+		if err := rq.loadAdmins(ctx, query, nodes,
+			func(n *Role) { n.appendNamedAdmins(name) },
+			func(n *Role, e *Admin) { n.appendNamedAdmins(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range rq.withNamedPermissions {
+		if err := rq.loadPermissions(ctx, query, nodes,
+			func(n *Role) { n.appendNamedPermissions(name) },
+			func(n *Role, e *Permission) { n.appendNamedPermissions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range rq.withNamedRoutes {
+		if err := rq.loadRoutes(ctx, query, nodes,
+			func(n *Role) { n.appendNamedRoutes(name) },
+			func(n *Role, e *Route) { n.appendNamedRoutes(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range rq.loadTotal {
+		if err := rq.loadTotal[i](ctx, nodes); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
 func (rq *RoleQuery) loadAdmins(ctx context.Context, query *AdminQuery, nodes []*Role, init func(*Role), assign func(*Role, *Admin)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Role)
-	nids := make(map[int]map[*Role]struct{})
+	byID := make(map[string]*Role)
+	nids := make(map[string]map[*Role]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -507,6 +551,7 @@ func (rq *RoleQuery) loadAdmins(ctx context.Context, query *AdminQuery, nodes []
 	}
 	query.Where(func(s *sql.Selector) {
 		joinT := sql.Table(role.AdminsTable)
+		joinT.Schema(rq.schemaConfig.AdminRoles)
 		s.Join(joinT).On(s.C(admin.FieldID), joinT.C(role.AdminsPrimaryKey[0]))
 		s.Where(sql.InValues(joinT.C(role.AdminsPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
@@ -526,11 +571,11 @@ func (rq *RoleQuery) loadAdmins(ctx context.Context, query *AdminQuery, nodes []
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
+				return append([]any{new(sql.NullString)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Role]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -557,8 +602,8 @@ func (rq *RoleQuery) loadAdmins(ctx context.Context, query *AdminQuery, nodes []
 }
 func (rq *RoleQuery) loadPermissions(ctx context.Context, query *PermissionQuery, nodes []*Role, init func(*Role), assign func(*Role, *Permission)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Role)
-	nids := make(map[int]map[*Role]struct{})
+	byID := make(map[string]*Role)
+	nids := make(map[string]map[*Role]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -568,6 +613,7 @@ func (rq *RoleQuery) loadPermissions(ctx context.Context, query *PermissionQuery
 	}
 	query.Where(func(s *sql.Selector) {
 		joinT := sql.Table(role.PermissionsTable)
+		joinT.Schema(rq.schemaConfig.RolePermissions)
 		s.Join(joinT).On(s.C(permission.FieldID), joinT.C(role.PermissionsPrimaryKey[1]))
 		s.Where(sql.InValues(joinT.C(role.PermissionsPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
@@ -587,11 +633,11 @@ func (rq *RoleQuery) loadPermissions(ctx context.Context, query *PermissionQuery
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
+				return append([]any{new(sql.NullString)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Role]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -618,8 +664,8 @@ func (rq *RoleQuery) loadPermissions(ctx context.Context, query *PermissionQuery
 }
 func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []*Role, init func(*Role), assign func(*Role, *Route)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Role)
-	nids := make(map[int]map[*Role]struct{})
+	byID := make(map[string]*Role)
+	nids := make(map[string]map[*Role]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -629,6 +675,7 @@ func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []
 	}
 	query.Where(func(s *sql.Selector) {
 		joinT := sql.Table(role.RoutesTable)
+		joinT.Schema(rq.schemaConfig.RoleRoutes)
 		s.Join(joinT).On(s.C(route.FieldID), joinT.C(role.RoutesPrimaryKey[1]))
 		s.Where(sql.InValues(joinT.C(role.RoutesPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
@@ -648,11 +695,11 @@ func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
+				return append([]any{new(sql.NullString)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Role]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -680,6 +727,8 @@ func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []
 
 func (rq *RoleQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := rq.querySpec()
+	_spec.Node.Schema = rq.schemaConfig.Role
+	ctx = internal.NewSchemaConfigContext(ctx, rq.schemaConfig)
 	if len(rq.modifiers) > 0 {
 		_spec.Modifiers = rq.modifiers
 	}
@@ -691,7 +740,7 @@ func (rq *RoleQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rq *RoleQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	_spec.From = rq.sql
 	if unique := rq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -745,6 +794,9 @@ func (rq *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if rq.ctx.Unique != nil && *rq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(rq.schemaConfig.Role)
+	ctx = internal.NewSchemaConfigContext(ctx, rq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range rq.modifiers {
 		m(selector)
 	}
@@ -765,10 +817,78 @@ func (rq *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (rq *RoleQuery) ForUpdate(opts ...sql.LockOption) *RoleQuery {
+	if rq.driver.Dialect() == dialect.Postgres {
+		rq.Unique(false)
+	}
+	rq.modifiers = append(rq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return rq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (rq *RoleQuery) ForShare(opts ...sql.LockOption) *RoleQuery {
+	if rq.driver.Dialect() == dialect.Postgres {
+		rq.Unique(false)
+	}
+	rq.modifiers = append(rq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return rq
+}
+
 // Modify adds a query modifier for attaching custom logic to queries.
 func (rq *RoleQuery) Modify(modifiers ...func(s *sql.Selector)) *RoleSelect {
 	rq.modifiers = append(rq.modifiers, modifiers...)
 	return rq.Select()
+}
+
+// WithNamedAdmins tells the query-builder to eager-load the nodes that are connected to the "admins"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoleQuery) WithNamedAdmins(name string, opts ...func(*AdminQuery)) *RoleQuery {
+	query := (&AdminClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if rq.withNamedAdmins == nil {
+		rq.withNamedAdmins = make(map[string]*AdminQuery)
+	}
+	rq.withNamedAdmins[name] = query
+	return rq
+}
+
+// WithNamedPermissions tells the query-builder to eager-load the nodes that are connected to the "permissions"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoleQuery) WithNamedPermissions(name string, opts ...func(*PermissionQuery)) *RoleQuery {
+	query := (&PermissionClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if rq.withNamedPermissions == nil {
+		rq.withNamedPermissions = make(map[string]*PermissionQuery)
+	}
+	rq.withNamedPermissions[name] = query
+	return rq
+}
+
+// WithNamedRoutes tells the query-builder to eager-load the nodes that are connected to the "routes"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoleQuery) WithNamedRoutes(name string, opts ...func(*RouteQuery)) *RoleQuery {
+	query := (&RouteClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if rq.withNamedRoutes == nil {
+		rq.withNamedRoutes = make(map[string]*RouteQuery)
+	}
+	rq.withNamedRoutes[name] = query
+	return rq
 }
 
 // RoleGroupBy is the group-by builder for Role entities.

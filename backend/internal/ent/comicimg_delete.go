@@ -8,8 +8,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicImgDelete is the builder for deleting a ComicImg entity.
@@ -41,6 +43,8 @@ func (cid *ComicImgDelete) ExecX(ctx context.Context) int {
 
 func (cid *ComicImgDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(comicimg.Table, sqlgraph.NewFieldSpec(comicimg.FieldID, field.TypeString))
+	_spec.Node.Schema = cid.schemaConfig.ComicImg
+	ctx = internal.NewSchemaConfigContext(ctx, cid.schemaConfig)
 	if ps := cid.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

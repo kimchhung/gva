@@ -104,6 +104,8 @@ var (
 	DefaultIsTranslateCompleted bool
 	// DefaultUpCount holds the default value on creation for the "up_count" field.
 	DefaultUpCount uint
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the Comic queries.

@@ -153,7 +153,7 @@ func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHan
 func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
 		param := new(struct {
-			ID int `param:"id" validate:"gte=0"`
+			ID string `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{
@@ -230,7 +230,7 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Patch("/:id").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.AdminRequest)
 		param := new(struct {
-			ID int `param:"id" validate:"gt=0"`
+			ID string `param:"id" validate:"gt=0"`
 		})
 
 		return []echo.HandlerFunc{
@@ -269,7 +269,7 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 func (con *AdminController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		param := new(struct {
-			ID int `param:"id" validate:"gte=0"`
+			ID string `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{

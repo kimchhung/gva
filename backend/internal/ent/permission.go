@@ -16,7 +16,7 @@ import (
 type Permission struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id" rql:"filter,sort"`
+	ID string `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -42,6 +42,10 @@ type PermissionEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
+	// totalCount holds the count of the edges above.
+	totalCount [1]map[string]int
+
+	namedRoles map[string][]*Role
 }
 
 // RolesOrErr returns the Roles value or an error if the edge
@@ -58,9 +62,9 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permission.FieldID, permission.FieldOrder:
+		case permission.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case permission.FieldGroup, permission.FieldName, permission.FieldKey:
+		case permission.FieldID, permission.FieldGroup, permission.FieldName, permission.FieldKey:
 			values[i] = new(sql.NullString)
 		case permission.FieldCreatedAt, permission.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -80,11 +84,11 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case permission.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				pe.ID = value.String
 			}
-			pe.ID = int(value.Int64)
 		case permission.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -181,6 +185,30 @@ func (pe *Permission) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pe.Order))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedRoles returns the Roles named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (pe *Permission) NamedRoles(name string) ([]*Role, error) {
+	if pe.Edges.namedRoles == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := pe.Edges.namedRoles[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (pe *Permission) appendNamedRoles(name string, edges ...*Role) {
+	if pe.Edges.namedRoles == nil {
+		pe.Edges.namedRoles = make(map[string][]*Role)
+	}
+	if len(edges) == 0 {
+		pe.Edges.namedRoles[name] = []*Role{}
+	} else {
+		pe.Edges.namedRoles[name] = append(pe.Edges.namedRoles[name], edges...)
+	}
 }
 
 // Permissions is a parsable slice of Permission.

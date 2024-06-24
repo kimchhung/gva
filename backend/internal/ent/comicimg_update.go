@@ -14,6 +14,8 @@ import (
 	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
 	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // ComicImgUpdate is the builder for updating ComicImg entities.
@@ -290,6 +292,7 @@ func (ciu *ComicImgUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ciu.schemaConfig.ComicImg
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ciu.mutation.ChapterIDs(); len(nodes) > 0 {
@@ -303,11 +306,14 @@ func (ciu *ComicImgUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ciu.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ciu.schemaConfig.ComicImg
+	ctx = internal.NewSchemaConfigContext(ctx, ciu.schemaConfig)
 	_spec.AddModifiers(ciu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ciu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -620,6 +626,7 @@ func (ciuo *ComicImgUpdateOne) sqlSave(ctx context.Context) (_node *ComicImg, er
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ciuo.schemaConfig.ComicImg
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ciuo.mutation.ChapterIDs(); len(nodes) > 0 {
@@ -633,11 +640,14 @@ func (ciuo *ComicImgUpdateOne) sqlSave(ctx context.Context) (_node *ComicImg, er
 				IDSpec: sqlgraph.NewFieldSpec(comicchapter.FieldID, field.TypeString),
 			},
 		}
+		edge.Schema = ciuo.schemaConfig.ComicImg
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = ciuo.schemaConfig.ComicImg
+	ctx = internal.NewSchemaConfigContext(ctx, ciuo.schemaConfig)
 	_spec.AddModifiers(ciuo.modifiers...)
 	_node = &ComicImg{config: ciuo.config}
 	_spec.Assign = _node.assignValues

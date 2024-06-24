@@ -18,7 +18,7 @@ import (
 type Route struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id" rql:"filter,sort"`
+	ID string `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,7 +28,7 @@ type Route struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// ParentID holds the value of the "parent_id" field.
-	ParentID *int `json:"parentId,omitempty" rql:"filter,sort"`
+	ParentID *string `json:"parentId,omitempty" rql:"filter,sort"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty" rql:"filter,sort"`
 	// Component holds the value of the "component" field.
@@ -37,6 +37,8 @@ type Route struct {
 	Redirect *string `json:"redirect,omitempty" rql:"filter,sort"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty" rql:"filter,sort"`
+	// Order holds the value of the "order" field.
+	Order int `json:"order,omitempty" rql:"filter,sort"`
 	// Type holds the value of the "type" field.
 	Type route.Type `json:"type,omitempty" rql:"filter,sort"`
 	// Meta holds the value of the "meta" field.
@@ -58,6 +60,11 @@ type RouteEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
+	// totalCount holds the count of the edges above.
+	totalCount [3]map[string]int
+
+	namedChildren map[string][]*Route
+	namedRoles    map[string][]*Role
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -98,9 +105,9 @@ func (*Route) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case route.FieldIsEnable:
 			values[i] = new(sql.NullBool)
-		case route.FieldID, route.FieldDeletedAt, route.FieldParentID:
+		case route.FieldDeletedAt, route.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType:
+		case route.FieldID, route.FieldParentID, route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType:
 			values[i] = new(sql.NullString)
 		case route.FieldCreatedAt, route.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -120,11 +127,11 @@ func (r *Route) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case route.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				r.ID = value.String
 			}
-			r.ID = int(value.Int64)
 		case route.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -150,11 +157,11 @@ func (r *Route) assignValues(columns []string, values []any) error {
 				r.DeletedAt = int(value.Int64)
 			}
 		case route.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				r.ParentID = new(int)
-				*r.ParentID = int(value.Int64)
+				r.ParentID = new(string)
+				*r.ParentID = value.String
 			}
 		case route.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -180,6 +187,12 @@ func (r *Route) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				r.Name = value.String
+			}
+		case route.FieldOrder:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field order", values[i])
+			} else if value.Valid {
+				r.Order = int(value.Int64)
 			}
 		case route.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -260,7 +273,7 @@ func (r *Route) String() string {
 	builder.WriteString(", ")
 	if v := r.ParentID; v != nil {
 		builder.WriteString("parent_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("path=")
@@ -277,6 +290,9 @@ func (r *Route) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(r.Name)
 	builder.WriteString(", ")
+	builder.WriteString("order=")
+	builder.WriteString(fmt.Sprintf("%v", r.Order))
+	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", r.Type))
 	builder.WriteString(", ")
@@ -284,6 +300,54 @@ func (r *Route) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.Meta))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedChildren returns the Children named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (r *Route) NamedChildren(name string) ([]*Route, error) {
+	if r.Edges.namedChildren == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := r.Edges.namedChildren[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (r *Route) appendNamedChildren(name string, edges ...*Route) {
+	if r.Edges.namedChildren == nil {
+		r.Edges.namedChildren = make(map[string][]*Route)
+	}
+	if len(edges) == 0 {
+		r.Edges.namedChildren[name] = []*Route{}
+	} else {
+		r.Edges.namedChildren[name] = append(r.Edges.namedChildren[name], edges...)
+	}
+}
+
+// NamedRoles returns the Roles named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (r *Route) NamedRoles(name string) ([]*Role, error) {
+	if r.Edges.namedRoles == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := r.Edges.namedRoles[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (r *Route) appendNamedRoles(name string, edges ...*Role) {
+	if r.Edges.namedRoles == nil {
+		r.Edges.namedRoles = make(map[string][]*Role)
+	}
+	if len(edges) == 0 {
+		r.Edges.namedRoles[name] = []*Role{}
+	} else {
+		r.Edges.namedRoles[name] = append(r.Edges.namedRoles[name], edges...)
+	}
 }
 
 // Routes is a parsable slice of Route.

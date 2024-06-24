@@ -16,7 +16,7 @@ import (
 type Role struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID int `json:"id" rql:"filter,sort"`
+	ID string `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -50,6 +50,12 @@ type RoleEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
+	// totalCount holds the count of the edges above.
+	totalCount [3]map[string]int
+
+	namedAdmins      map[string][]*Admin
+	namedPermissions map[string][]*Permission
+	namedRoutes      map[string][]*Route
 }
 
 // AdminsOrErr returns the Admins value or an error if the edge
@@ -86,9 +92,9 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case role.FieldIsEnable, role.FieldIsChangeable:
 			values[i] = new(sql.NullBool)
-		case role.FieldID, role.FieldDeletedAt, role.FieldOrder:
+		case role.FieldDeletedAt, role.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case role.FieldName, role.FieldDescription:
+		case role.FieldID, role.FieldName, role.FieldDescription:
 			values[i] = new(sql.NullString)
 		case role.FieldCreatedAt, role.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -108,11 +114,11 @@ func (r *Role) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case role.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				r.ID = value.String
 			}
-			r.ID = int(value.Int64)
 		case role.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -237,6 +243,78 @@ func (r *Role) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.IsChangeable))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedAdmins returns the Admins named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (r *Role) NamedAdmins(name string) ([]*Admin, error) {
+	if r.Edges.namedAdmins == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := r.Edges.namedAdmins[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (r *Role) appendNamedAdmins(name string, edges ...*Admin) {
+	if r.Edges.namedAdmins == nil {
+		r.Edges.namedAdmins = make(map[string][]*Admin)
+	}
+	if len(edges) == 0 {
+		r.Edges.namedAdmins[name] = []*Admin{}
+	} else {
+		r.Edges.namedAdmins[name] = append(r.Edges.namedAdmins[name], edges...)
+	}
+}
+
+// NamedPermissions returns the Permissions named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (r *Role) NamedPermissions(name string) ([]*Permission, error) {
+	if r.Edges.namedPermissions == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := r.Edges.namedPermissions[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (r *Role) appendNamedPermissions(name string, edges ...*Permission) {
+	if r.Edges.namedPermissions == nil {
+		r.Edges.namedPermissions = make(map[string][]*Permission)
+	}
+	if len(edges) == 0 {
+		r.Edges.namedPermissions[name] = []*Permission{}
+	} else {
+		r.Edges.namedPermissions[name] = append(r.Edges.namedPermissions[name], edges...)
+	}
+}
+
+// NamedRoutes returns the Routes named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (r *Role) NamedRoutes(name string) ([]*Route, error) {
+	if r.Edges.namedRoutes == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := r.Edges.namedRoutes[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (r *Role) appendNamedRoutes(name string, edges ...*Route) {
+	if r.Edges.namedRoutes == nil {
+		r.Edges.namedRoutes = make(map[string][]*Route)
+	}
+	if len(edges) == 0 {
+		r.Edges.namedRoutes[name] = []*Route{}
+	} else {
+		r.Edges.namedRoutes[name] = append(r.Edges.namedRoutes[name], edges...)
+	}
 }
 
 // Roles is a parsable slice of Role.

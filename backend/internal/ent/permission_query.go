@@ -8,23 +8,28 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/kimchhung/gva/backend/internal/ent/permission"
 	"github.com/kimchhung/gva/backend/internal/ent/predicate"
 	"github.com/kimchhung/gva/backend/internal/ent/role"
+
+	"github.com/kimchhung/gva/backend/internal/ent/internal"
 )
 
 // PermissionQuery is the builder for querying Permission entities.
 type PermissionQuery struct {
 	config
-	ctx        *QueryContext
-	order      []permission.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Permission
-	withRoles  *RoleQuery
-	modifiers  []func(*sql.Selector)
+	ctx            *QueryContext
+	order          []permission.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Permission
+	withRoles      *RoleQuery
+	loadTotal      []func(context.Context, []*Permission) error
+	modifiers      []func(*sql.Selector)
+	withNamedRoles map[string]*RoleQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +82,9 @@ func (pq *PermissionQuery) QueryRoles() *RoleQuery {
 			sqlgraph.To(role.Table, role.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, permission.RolesTable, permission.RolesPrimaryKey...),
 		)
+		schemaConfig := pq.schemaConfig
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.RolePermissions
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -107,8 +115,8 @@ func (pq *PermissionQuery) FirstX(ctx context.Context) *Permission {
 
 // FirstID returns the first Permission ID from the query.
 // Returns a *NotFoundError when no Permission ID was found.
-func (pq *PermissionQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PermissionQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -120,7 +128,7 @@ func (pq *PermissionQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PermissionQuery) FirstIDX(ctx context.Context) int {
+func (pq *PermissionQuery) FirstIDX(ctx context.Context) string {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -158,8 +166,8 @@ func (pq *PermissionQuery) OnlyX(ctx context.Context) *Permission {
 // OnlyID is like Only, but returns the only Permission ID in the query.
 // Returns a *NotSingularError when more than one Permission ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PermissionQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PermissionQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -175,7 +183,7 @@ func (pq *PermissionQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PermissionQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PermissionQuery) OnlyIDX(ctx context.Context) string {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,7 +211,7 @@ func (pq *PermissionQuery) AllX(ctx context.Context) []*Permission {
 }
 
 // IDs executes the query and returns a list of Permission IDs.
-func (pq *PermissionQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (pq *PermissionQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if pq.ctx.Unique == nil && pq.path != nil {
 		pq.Unique(true)
 	}
@@ -215,7 +223,7 @@ func (pq *PermissionQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PermissionQuery) IDsX(ctx context.Context) []int {
+func (pq *PermissionQuery) IDsX(ctx context.Context) []string {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -384,6 +392,8 @@ func (pq *PermissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*P
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	_spec.Node.Schema = pq.schemaConfig.Permission
+	ctx = internal.NewSchemaConfigContext(ctx, pq.schemaConfig)
 	if len(pq.modifiers) > 0 {
 		_spec.Modifiers = pq.modifiers
 	}
@@ -403,13 +413,25 @@ func (pq *PermissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*P
 			return nil, err
 		}
 	}
+	for name, query := range pq.withNamedRoles {
+		if err := pq.loadRoles(ctx, query, nodes,
+			func(n *Permission) { n.appendNamedRoles(name) },
+			func(n *Permission, e *Role) { n.appendNamedRoles(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range pq.loadTotal {
+		if err := pq.loadTotal[i](ctx, nodes); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
 func (pq *PermissionQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Permission, init func(*Permission), assign func(*Permission, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Permission)
-	nids := make(map[int]map[*Permission]struct{})
+	byID := make(map[string]*Permission)
+	nids := make(map[string]map[*Permission]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -419,6 +441,7 @@ func (pq *PermissionQuery) loadRoles(ctx context.Context, query *RoleQuery, node
 	}
 	query.Where(func(s *sql.Selector) {
 		joinT := sql.Table(permission.RolesTable)
+		joinT.Schema(pq.schemaConfig.RolePermissions)
 		s.Join(joinT).On(s.C(role.FieldID), joinT.C(permission.RolesPrimaryKey[0]))
 		s.Where(sql.InValues(joinT.C(permission.RolesPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
@@ -438,11 +461,11 @@ func (pq *PermissionQuery) loadRoles(ctx context.Context, query *RoleQuery, node
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
+				return append([]any{new(sql.NullString)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Permission]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -470,6 +493,8 @@ func (pq *PermissionQuery) loadRoles(ctx context.Context, query *RoleQuery, node
 
 func (pq *PermissionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
+	_spec.Node.Schema = pq.schemaConfig.Permission
+	ctx = internal.NewSchemaConfigContext(ctx, pq.schemaConfig)
 	if len(pq.modifiers) > 0 {
 		_spec.Modifiers = pq.modifiers
 	}
@@ -481,7 +506,7 @@ func (pq *PermissionQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PermissionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString))
 	_spec.From = pq.sql
 	if unique := pq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -535,6 +560,9 @@ func (pq *PermissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if pq.ctx.Unique != nil && *pq.ctx.Unique {
 		selector.Distinct()
 	}
+	t1.Schema(pq.schemaConfig.Permission)
+	ctx = internal.NewSchemaConfigContext(ctx, pq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, m := range pq.modifiers {
 		m(selector)
 	}
@@ -555,10 +583,50 @@ func (pq *PermissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (pq *PermissionQuery) ForUpdate(opts ...sql.LockOption) *PermissionQuery {
+	if pq.driver.Dialect() == dialect.Postgres {
+		pq.Unique(false)
+	}
+	pq.modifiers = append(pq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return pq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (pq *PermissionQuery) ForShare(opts ...sql.LockOption) *PermissionQuery {
+	if pq.driver.Dialect() == dialect.Postgres {
+		pq.Unique(false)
+	}
+	pq.modifiers = append(pq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return pq
+}
+
 // Modify adds a query modifier for attaching custom logic to queries.
 func (pq *PermissionQuery) Modify(modifiers ...func(s *sql.Selector)) *PermissionSelect {
 	pq.modifiers = append(pq.modifiers, modifiers...)
 	return pq.Select()
+}
+
+// WithNamedRoles tells the query-builder to eager-load the nodes that are connected to the "roles"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (pq *PermissionQuery) WithNamedRoles(name string, opts ...func(*RoleQuery)) *PermissionQuery {
+	query := (&RoleClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if pq.withNamedRoles == nil {
+		pq.withNamedRoles = make(map[string]*RoleQuery)
+	}
+	pq.withNamedRoles[name] = query
+	return pq
 }
 
 // PermissionGroupBy is the group-by builder for Permission entities.
