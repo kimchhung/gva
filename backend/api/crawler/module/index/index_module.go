@@ -1,7 +1,8 @@
 package index
 
 import (
-	"github.com/kimchhung/gva/backend/app/constant"
+	"github.com/gva/app/constant"
+
 	"go.uber.org/fx"
 )
 

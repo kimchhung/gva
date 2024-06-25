@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kimchhung/gva/backend/api/admin/module/auth/dto"
-	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	repository "github.com/kimchhung/gva/backend/app/common/repository"
-	"github.com/kimchhung/gva/backend/app/common/service"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/lang"
+	"github.com/gva/api/admin/module/auth/dto"
+	apperror "github.com/gva/app/common/error"
+	repository "github.com/gva/app/common/repository"
+	"github.com/gva/app/common/service"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/lang"
 )
 
 type AuthService struct {

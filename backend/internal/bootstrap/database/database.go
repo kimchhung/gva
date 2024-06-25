@@ -6,8 +6,8 @@ import (
 
 	"reflect"
 
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/gva/env"
+	"github.com/gva/internal/ent"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"

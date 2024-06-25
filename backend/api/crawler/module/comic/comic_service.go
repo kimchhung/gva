@@ -1,7 +1,7 @@
 package comic
 
 import (
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/gva/internal/bootstrap/database"
 )
 
 type ComicService struct {

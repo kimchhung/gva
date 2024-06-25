@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/rql"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/rql"
 )
 
 // Requests & responses Data Transfer Object

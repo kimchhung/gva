@@ -3,11 +3,12 @@ package module
 import (
 	"github.com/labstack/echo/v4"
 
-	docs "github.com/kimchhung/gva/backend/api/crawler/docs"
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/internal/echoc"
-	"github.com/kimchhung/gva/backend/utils"
-	"github.com/kimchhung/gva/backend/utils/swagger"
+	docs "github.com/gva/api/crawler/docs"
+	"github.com/gva/env"
+	"github.com/gva/internal/echoc"
+	"github.com/gva/utils"
+	"github.com/gva/utils/swagger"
+
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 

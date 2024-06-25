@@ -6,11 +6,11 @@ import (
 	"log"
 	"strings"
 
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
-	"github.com/kimchhung/gva/backend/utils/json"
-	"github.com/kimchhung/gva/backend/utils/routeutil"
+	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/ent/route"
+	"github.com/gva/utils/json"
+	"github.com/gva/utils/routeutil"
 )
 
 var _ interface {

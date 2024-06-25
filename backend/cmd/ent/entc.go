@@ -14,6 +14,9 @@ import (
 func main() {
 	ex, err := entgql.NewExtension(
 		entgql.WithSchemaGenerator(),
+		entgql.WithWhereInputs(true),
+		entgql.WithConfigPath("../../gqlgen.yml"),
+		entgql.WithSchemaPath("../../api/web/graph/schema/ent.gql"),
 	)
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
@@ -24,7 +27,7 @@ func main() {
 			Target:   "../../internal/ent",
 			Schema:   "../../app/database/schema",
 			Features: gen.AllFeatures,
-			Package:  "github.com/kimchhung/gva/backend/internal/ent",
+			Package:  "github.com/gva/internal/ent",
 		},
 		entc.Extensions(ex),
 	); err != nil {

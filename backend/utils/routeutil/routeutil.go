@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/gva/internal/ent"
+	"github.com/gva/utils/color"
+
 	"github.com/gosuri/uitable"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/utils/color"
 	"github.com/labstack/echo/v4"
 )
 

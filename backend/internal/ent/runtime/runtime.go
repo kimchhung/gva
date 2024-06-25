@@ -5,15 +5,15 @@ package runtime
 import (
 	"time"
 
-	"github.com/kimchhung/gva/backend/app/database/schema"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/gva/app/database/schema"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/route"
 )
 
 // The init function reads all schema descriptors with runtime code

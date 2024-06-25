@@ -11,12 +11,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/predicate"
 
-	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/gva/internal/ent/internal"
 )
 
 // ComicChapterUpdate is the builder for updating ComicChapter entities.

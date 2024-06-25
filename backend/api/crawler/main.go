@@ -1,13 +1,14 @@
 package main
 
 import (
-	crawler "github.com/kimchhung/gva/backend/api/crawler/module"
-	"github.com/kimchhung/gva/backend/api/web/docs"
-	"github.com/kimchhung/gva/backend/app"
-	"github.com/kimchhung/gva/backend/app/router"
-	"github.com/kimchhung/gva/backend/env"
+	crawler "github.com/gva/api/crawler/module"
+	"github.com/gva/api/web/docs"
+	"github.com/gva/app"
+	"github.com/gva/app/router"
+	"github.com/gva/env"
 
-	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
+	_ "github.com/gva/internal/ent/runtime"
+
 	_ "github.com/swaggo/swag"
 )
 

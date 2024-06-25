@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
 )
 
 // ComicChapterCreate is the builder for creating a ComicChapter entity.

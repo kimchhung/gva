@@ -5,18 +5,21 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gva/api/web/graph"
+	appctx "github.com/gva/app/common/context"
+	"github.com/gva/app/middleware"
+	"github.com/gva/app/router"
+	"github.com/gva/env"
+	"github.com/gva/internal/lang"
+	"github.com/gva/utils/color"
+	"github.com/gva/utils/validator"
+
 	"github.com/gosuri/uitable"
-	appctx "github.com/kimchhung/gva/backend/app/common/context"
-	"github.com/kimchhung/gva/backend/app/middleware"
-	"github.com/kimchhung/gva/backend/app/router"
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/internal/lang"
-	"github.com/kimchhung/gva/backend/utils/color"
-	"github.com/kimchhung/gva/backend/utils/validator"
 
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/gva/internal/bootstrap/database"
 
-	"github.com/kimchhung/gva/backend/internal/request"
+	"github.com/gva/internal/request"
+
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
@@ -97,15 +100,12 @@ func Start(
 	middlewares *middleware.Middleware,
 	database *database.Database,
 	log *zerolog.Logger,
+	gql *graph.Server,
 ) {
 
 	isShuttingdown := false
 	lifecycle.Append(fx.StartHook(
 		func(ctx context.Context) {
-			// Register middlewares & routes
-			middlewares.Register()
-			routers.Register(app, cfg)
-
 			// Initailize validator and translator
 			if err := lang.InitializeTranslator(); err != nil {
 				log.Panic().Err(err).Msg("failed to initialize translator!")
@@ -119,6 +119,11 @@ func Start(
 			if err := database.ConnectDatabase(); err != nil {
 				log.Panic().Err(err).Msg("failed to connect to db!")
 			}
+
+			// Register middlewares & routes
+			middlewares.Register()
+			routers.Register(app, cfg)
+			gql.Register(cfg.API.Web.BasePath)
 
 			app.Server.RegisterOnShutdown(func() {
 				log.Info().Msg("1- Shutdown the database")

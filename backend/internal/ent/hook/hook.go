@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/gva/internal/ent"
 )
 
 // The AdminFunc type is an adapter to allow the use of ordinary

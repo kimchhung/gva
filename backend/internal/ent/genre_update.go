@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
-	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/predicate"
 
-	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/gva/internal/ent/internal"
 )
 
 // GenreUpdate is the builder for updating Genre entities.

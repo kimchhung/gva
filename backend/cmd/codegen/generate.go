@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"strings"
 
-	codegen "github.com/kimchhung/gva/backend/internal/codegen"
-	ustrings "github.com/kimchhung/gva/backend/utils/strings"
+	codegen "github.com/gva/internal/codegen"
+	ustrings "github.com/gva/utils/strings"
 )
 
 func main() {

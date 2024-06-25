@@ -1,14 +1,13 @@
 package resolver
 
 import (
-	"github.com/99designs/gqlgen/graphql"
-	"github.com/kimchhung/gva/backend/api/web/graph/generated"
+	"github.com/gva/internal/bootstrap/database"
 )
 
-type Resolver struct{}
+type Resolver struct {
+	db *database.Database
+}
 
-func NewSchema() graphql.ExecutableSchema {
-	return generated.NewExecutableSchema(generated.Config{
-		Resolvers: &Resolver{},
-	})
+func NewResolver(db *database.Database) *Resolver {
+	return &Resolver{db: db}
 }

@@ -7,16 +7,9 @@ package resolver
 import (
 	"context"
 	"fmt"
-
-	"github.com/kimchhung/gva/backend/api/web/graph/generated"
 )
 
 // Now is the resolver for the now field.
 func (r *queryResolver) Now(ctx context.Context) (*string, error) {
 	panic(fmt.Errorf("not implemented: Now - now"))
 }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
-type queryResolver struct{ *Resolver }

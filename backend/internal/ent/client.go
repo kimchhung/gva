@@ -9,24 +9,24 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/kimchhung/gva/backend/internal/ent/migrate"
+	"github.com/gva/internal/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/route"
 
 	stdsql "database/sql"
 
-	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/gva/internal/ent/internal"
 )
 
 // Client is the client that holds all ent builders.

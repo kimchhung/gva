@@ -1,14 +1,15 @@
 package module
 
 import (
-	"github.com/kimchhung/gva/backend/api/web/docs"
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/utils/swagger"
+	"github.com/gva/api/web/docs"
+	"github.com/gva/env"
+	"github.com/gva/utils/swagger"
+
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
-	"github.com/kimchhung/gva/backend/internal/echoc"
-	"github.com/kimchhung/gva/backend/utils"
+	"github.com/gva/internal/echoc"
+	"github.com/gva/utils"
 )
 
 var _ interface{ echoc.ModuleRouter } = (*Router)(nil)

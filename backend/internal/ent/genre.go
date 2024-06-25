@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
+	"github.com/gva/internal/ent/genre"
 )
 
 // Genre is the model entity for the Genre schema.

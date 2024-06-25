@@ -5,7 +5,7 @@ package privacy
 import (
 	"context"
 
-	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/gva/internal/ent"
 
 	"entgo.io/ent/entql"
 	"entgo.io/ent/privacy"

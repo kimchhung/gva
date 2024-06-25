@@ -8,10 +8,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/predicate"
+	"github.com/gva/internal/ent/predicate"
 
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/internal"
 )
 
 // ComicImgDelete is the builder for deleting a ComicImg entity.

@@ -7,15 +7,16 @@ import (
 	"strings"
 	"time"
 
+	appctx "github.com/gva/app/common/context"
+	apperror "github.com/gva/app/common/error"
+	"github.com/gva/env"
+
 	"github.com/golang-jwt/jwt/v5"
-	appctx "github.com/kimchhung/gva/backend/app/common/context"
-	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	"github.com/kimchhung/gva/backend/env"
 	"github.com/labstack/echo/v4"
 
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/ent/admin"
 )
 
 type JwtService struct {

@@ -7,11 +7,11 @@ var Module = fmt.Sprintf(
 	`package {{.EntitySnake}}
 
 import (
-	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/controller"
-	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/repository"
-	"github.com/kimchhung/gva/backend/api/admin/module/{{.EntitySnake}}/service"
-	"github.com/kimchhung/gva/backend/internal/rctrl"
-	"github.com/kimchhung/gva/backend/app/constant"
+	"github.com/gva/api/admin/module/{{.EntitySnake}}/controller"
+	"github.com/gva/api/admin/module/{{.EntitySnake}}/repository"
+	"github.com/gva/api/admin/module/{{.EntitySnake}}/service"
+	"github.com/gva/internal/rctrl"
+	"github.com/gva/app/constant"
 
 	"go.uber.org/fx"
 )

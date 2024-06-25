@@ -5,15 +5,16 @@ package ent
 import (
 	"context"
 
+	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/route"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -119,6 +120,31 @@ func newAdminPaginateArgs(rv map[string]any) *adminPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &AdminOrder{Field: &AdminOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAdminOrder(order))
+			}
+		case *AdminOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAdminOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*AdminWhereInput); ok {
+		args.opts = append(args.opts, WithAdminFilter(v.Filter))
 	}
 	return args
 }
@@ -277,6 +303,31 @@ func newComicPaginateArgs(rv map[string]any) *comicPaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &ComicOrder{Field: &ComicOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithComicOrder(order))
+			}
+		case *ComicOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithComicOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*ComicWhereInput); ok {
+		args.opts = append(args.opts, WithComicFilter(v.Filter))
+	}
 	return args
 }
 
@@ -405,6 +456,31 @@ func newComicChapterPaginateArgs(rv map[string]any) *comicchapterPaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &ComicChapterOrder{Field: &ComicChapterOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithComicChapterOrder(order))
+			}
+		case *ComicChapterOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithComicChapterOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*ComicChapterWhereInput); ok {
+		args.opts = append(args.opts, WithComicChapterFilter(v.Filter))
+	}
 	return args
 }
 
@@ -515,6 +591,31 @@ func newComicImgPaginateArgs(rv map[string]any) *comicimgPaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &ComicImgOrder{Field: &ComicImgOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithComicImgOrder(order))
+			}
+		case *ComicImgOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithComicImgOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*ComicImgWhereInput); ok {
+		args.opts = append(args.opts, WithComicImgFilter(v.Filter))
+	}
 	return args
 }
 
@@ -593,6 +694,31 @@ func newGenrePaginateArgs(rv map[string]any) *genrePaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &GenreOrder{Field: &GenreOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithGenreOrder(order))
+			}
+		case *GenreOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithGenreOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*GenreWhereInput); ok {
+		args.opts = append(args.opts, WithGenreFilter(v.Filter))
 	}
 	return args
 }
@@ -695,6 +821,31 @@ func newPermissionPaginateArgs(rv map[string]any) *permissionPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &PermissionOrder{Field: &PermissionOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithPermissionOrder(order))
+			}
+		case *PermissionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithPermissionOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*PermissionWhereInput); ok {
+		args.opts = append(args.opts, WithPermissionFilter(v.Filter))
 	}
 	return args
 }
@@ -833,6 +984,31 @@ func newRolePaginateArgs(rv map[string]any) *rolePaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &RoleOrder{Field: &RoleOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithRoleOrder(order))
+			}
+		case *RoleOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithRoleOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*RoleWhereInput); ok {
+		args.opts = append(args.opts, WithRoleFilter(v.Filter))
 	}
 	return args
 }
@@ -993,6 +1169,31 @@ func newRoutePaginateArgs(rv map[string]any) *routePaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &RouteOrder{Field: &RouteOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithRouteOrder(order))
+			}
+		case *RouteOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithRouteOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*RouteWhereInput); ok {
+		args.opts = append(args.opts, WithRouteFilter(v.Filter))
 	}
 	return args
 }

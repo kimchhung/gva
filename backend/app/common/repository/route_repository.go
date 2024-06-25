@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/utils/pagi"
+	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/internal/ent"
+	"github.com/gva/utils/pagi"
 )
 
 type RouteRepository struct {

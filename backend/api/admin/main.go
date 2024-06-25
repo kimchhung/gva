@@ -1,16 +1,17 @@
 package main
 
 import (
-	"github.com/kimchhung/gva/backend/api/admin/docs"
-	admin "github.com/kimchhung/gva/backend/api/admin/module"
-	"github.com/kimchhung/gva/backend/env"
+	"github.com/gva/api/admin/docs"
+	admin "github.com/gva/api/admin/module"
+	"github.com/gva/env"
 
-	"github.com/kimchhung/gva/backend/app"
-	"github.com/kimchhung/gva/backend/app/router"
+	"github.com/gva/app"
+	"github.com/gva/app/router"
 
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 
-	_ "github.com/kimchhung/gva/backend/internal/ent/runtime"
+	_ "github.com/gva/internal/ent/runtime"
+
 	_ "github.com/swaggo/swag"
 )
 

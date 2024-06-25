@@ -1,9 +1,9 @@
 package dto
 
 import (
-	"github.com/kimchhung/gva/backend/app/database/schema/types"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
-	"github.com/kimchhung/gva/backend/internal/rql"
+	"github.com/gva/app/database/schema/types"
+	"github.com/gva/internal/ent/route"
+	"github.com/gva/internal/rql"
 )
 
 // Requests & responses Data Transfer Object

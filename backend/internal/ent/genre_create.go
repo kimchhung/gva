@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
+	"github.com/gva/internal/ent/genre"
 )
 
 // GenreCreate is the builder for creating a Genre entity.

@@ -4,11 +4,12 @@ import (
 	"strings"
 	"time"
 
-	appctx "github.com/kimchhung/gva/backend/app/common/context"
-	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/internal/lang"
-	"github.com/kimchhung/gva/backend/utils"
+	appctx "github.com/gva/app/common/context"
+	apperror "github.com/gva/app/common/error"
+	"github.com/gva/env"
+	"github.com/gva/internal/lang"
+	"github.com/gva/utils"
+
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kimchhung/gva/backend/internal/ent/migrate"
+	"github.com/gva/internal/ent/migrate"
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"

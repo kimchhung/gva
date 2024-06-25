@@ -7,16 +7,16 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
-	"github.com/kimchhung/gva/backend/internal/ent/predicate"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/predicate"
+	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/route"
 )
 
 // The Query interface represents an operation that queries a graph.

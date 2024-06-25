@@ -3,9 +3,9 @@ package permission
 import (
 	"context"
 
-	"github.com/kimchhung/gva/backend/api/admin/module/permission/dto"
-	"github.com/kimchhung/gva/backend/app/common/repository"
-	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/gva/api/admin/module/permission/dto"
+	"github.com/gva/app/common/repository"
+	"github.com/gva/internal/ent"
 )
 
 type PermissionService struct {

@@ -3,6 +3,7 @@ package mixins
 import (
 	"time"
 
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -18,7 +19,10 @@ func (TimeMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("created_at").
 			StructTag(`json:"createdAt,omitempty" rql:"filter,sort"`).
-			Default(time.Now),
+			Default(time.Now).
+			Annotations(
+				entgql.OrderField("CREATED_AT"),
+			),
 
 		field.Time("updated_at").
 			StructTag(`json:"updatedAt,omitempty"`).

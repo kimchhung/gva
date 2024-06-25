@@ -5,20 +5,23 @@ package ent
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io"
+	"strconv"
 
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/ent/comic"
-	"github.com/kimchhung/gva/backend/internal/ent/comicchapter"
-	"github.com/kimchhung/gva/backend/internal/ent/comicimg"
-	"github.com/kimchhung/gva/backend/internal/ent/genre"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/comic"
+	"github.com/gva/internal/ent/comicchapter"
+	"github.com/gva/internal/ent/comicimg"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/route"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -310,6 +313,53 @@ func (a *AdminQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// AdminOrderFieldCreatedAt orders Admin by created_at.
+	AdminOrderFieldCreatedAt = &AdminOrderField{
+		Value: func(a *Admin) (ent.Value, error) {
+			return a.CreatedAt, nil
+		},
+		column: admin.FieldCreatedAt,
+		toTerm: admin.ByCreatedAt,
+		toCursor: func(a *Admin) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f AdminOrderField) String() string {
+	var str string
+	switch f.column {
+	case AdminOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f AdminOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *AdminOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("AdminOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *AdminOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid AdminOrderField", str)
+	}
+	return nil
+}
+
 // AdminOrderField defines the ordering field of Admin.
 type AdminOrderField struct {
 	// Value extracts the ordering value from the given Admin.
@@ -557,6 +607,53 @@ func (c *ComicQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// ComicOrderFieldCreatedAt orders Comic by created_at.
+	ComicOrderFieldCreatedAt = &ComicOrderField{
+		Value: func(c *Comic) (ent.Value, error) {
+			return c.CreatedAt, nil
+		},
+		column: comic.FieldCreatedAt,
+		toTerm: comic.ByCreatedAt,
+		toCursor: func(c *Comic) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ComicOrderField) String() string {
+	var str string
+	switch f.column {
+	case ComicOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ComicOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ComicOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ComicOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *ComicOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid ComicOrderField", str)
+	}
+	return nil
 }
 
 // ComicOrderField defines the ordering field of Comic.
@@ -808,6 +905,53 @@ func (cc *ComicChapterQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// ComicChapterOrderFieldCreatedAt orders ComicChapter by created_at.
+	ComicChapterOrderFieldCreatedAt = &ComicChapterOrderField{
+		Value: func(cc *ComicChapter) (ent.Value, error) {
+			return cc.CreatedAt, nil
+		},
+		column: comicchapter.FieldCreatedAt,
+		toTerm: comicchapter.ByCreatedAt,
+		toCursor: func(cc *ComicChapter) Cursor {
+			return Cursor{
+				ID:    cc.ID,
+				Value: cc.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ComicChapterOrderField) String() string {
+	var str string
+	switch f.column {
+	case ComicChapterOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ComicChapterOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ComicChapterOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ComicChapterOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *ComicChapterOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid ComicChapterOrderField", str)
+	}
+	return nil
+}
+
 // ComicChapterOrderField defines the ordering field of ComicChapter.
 type ComicChapterOrderField struct {
 	// Value extracts the ordering value from the given ComicChapter.
@@ -1055,6 +1199,53 @@ func (ci *ComicImgQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// ComicImgOrderFieldCreatedAt orders ComicImg by created_at.
+	ComicImgOrderFieldCreatedAt = &ComicImgOrderField{
+		Value: func(ci *ComicImg) (ent.Value, error) {
+			return ci.CreatedAt, nil
+		},
+		column: comicimg.FieldCreatedAt,
+		toTerm: comicimg.ByCreatedAt,
+		toCursor: func(ci *ComicImg) Cursor {
+			return Cursor{
+				ID:    ci.ID,
+				Value: ci.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ComicImgOrderField) String() string {
+	var str string
+	switch f.column {
+	case ComicImgOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ComicImgOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ComicImgOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ComicImgOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *ComicImgOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid ComicImgOrderField", str)
+	}
+	return nil
 }
 
 // ComicImgOrderField defines the ordering field of ComicImg.
@@ -1306,6 +1497,53 @@ func (ge *GenreQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// GenreOrderFieldCreatedAt orders Genre by created_at.
+	GenreOrderFieldCreatedAt = &GenreOrderField{
+		Value: func(ge *Genre) (ent.Value, error) {
+			return ge.CreatedAt, nil
+		},
+		column: genre.FieldCreatedAt,
+		toTerm: genre.ByCreatedAt,
+		toCursor: func(ge *Genre) Cursor {
+			return Cursor{
+				ID:    ge.ID,
+				Value: ge.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f GenreOrderField) String() string {
+	var str string
+	switch f.column {
+	case GenreOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f GenreOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *GenreOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("GenreOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *GenreOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid GenreOrderField", str)
+	}
+	return nil
+}
+
 // GenreOrderField defines the ordering field of Genre.
 type GenreOrderField struct {
 	// Value extracts the ordering value from the given Genre.
@@ -1553,6 +1791,53 @@ func (pe *PermissionQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// PermissionOrderFieldCreatedAt orders Permission by created_at.
+	PermissionOrderFieldCreatedAt = &PermissionOrderField{
+		Value: func(pe *Permission) (ent.Value, error) {
+			return pe.CreatedAt, nil
+		},
+		column: permission.FieldCreatedAt,
+		toTerm: permission.ByCreatedAt,
+		toCursor: func(pe *Permission) Cursor {
+			return Cursor{
+				ID:    pe.ID,
+				Value: pe.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f PermissionOrderField) String() string {
+	var str string
+	switch f.column {
+	case PermissionOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f PermissionOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *PermissionOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("PermissionOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *PermissionOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid PermissionOrderField", str)
+	}
+	return nil
 }
 
 // PermissionOrderField defines the ordering field of Permission.
@@ -1804,6 +2089,53 @@ func (r *RoleQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// RoleOrderFieldCreatedAt orders Role by created_at.
+	RoleOrderFieldCreatedAt = &RoleOrderField{
+		Value: func(r *Role) (ent.Value, error) {
+			return r.CreatedAt, nil
+		},
+		column: role.FieldCreatedAt,
+		toTerm: role.ByCreatedAt,
+		toCursor: func(r *Role) Cursor {
+			return Cursor{
+				ID:    r.ID,
+				Value: r.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f RoleOrderField) String() string {
+	var str string
+	switch f.column {
+	case RoleOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f RoleOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *RoleOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("RoleOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *RoleOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid RoleOrderField", str)
+	}
+	return nil
+}
+
 // RoleOrderField defines the ordering field of Role.
 type RoleOrderField struct {
 	// Value extracts the ordering value from the given Role.
@@ -2051,6 +2383,53 @@ func (r *RouteQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// RouteOrderFieldCreatedAt orders Route by created_at.
+	RouteOrderFieldCreatedAt = &RouteOrderField{
+		Value: func(r *Route) (ent.Value, error) {
+			return r.CreatedAt, nil
+		},
+		column: route.FieldCreatedAt,
+		toTerm: route.ByCreatedAt,
+		toCursor: func(r *Route) Cursor {
+			return Cursor{
+				ID:    r.ID,
+				Value: r.CreatedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f RouteOrderField) String() string {
+	var str string
+	switch f.column {
+	case RouteOrderFieldCreatedAt.column:
+		str = "CREATED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f RouteOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *RouteOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("RouteOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *RouteOrderFieldCreatedAt
+	default:
+		return fmt.Errorf("%s is not a valid RouteOrderField", str)
+	}
+	return nil
 }
 
 // RouteOrderField defines the ordering field of Route.

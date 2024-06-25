@@ -5,10 +5,11 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/gva/app/common"
+	"github.com/gva/env"
+	"github.com/gva/internal/bootstrap"
+
 	fxzerolog "github.com/efectn/fx-zerolog"
-	"github.com/kimchhung/gva/backend/app/common"
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/internal/bootstrap"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
 )

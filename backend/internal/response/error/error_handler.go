@@ -4,11 +4,11 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 
-	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	in_validator "github.com/kimchhung/gva/backend/utils/validator"
+	apperror "github.com/gva/app/common/error"
+	in_validator "github.com/gva/utils/validator"
 
-	"github.com/kimchhung/gva/backend/internal/lang"
-	"github.com/kimchhung/gva/backend/internal/response"
+	"github.com/gva/internal/lang"
+	"github.com/gva/internal/response"
 )
 
 // Default error handler

@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/app/database/schema/types"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
-	"github.com/kimchhung/gva/backend/internal/ent/route"
+	"github.com/gva/app/database/schema/types"
+	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/route"
 )
 
 // RouteCreate is the builder for creating a Route entity.

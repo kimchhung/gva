@@ -1,13 +1,16 @@
 package module
 
 import (
-	index "github.com/kimchhung/gva/backend/api/web/module/index"
-	"github.com/kimchhung/gva/backend/app/constant"
-	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/gva/api/web/graph"
+	index "github.com/gva/api/web/module/index"
+	"github.com/gva/app/constant"
+	"github.com/gva/internal/echoc"
+
 	"go.uber.org/fx"
 )
 
 var NewWebModules = fx.Module("web-module",
+	graph.Module,
 	index.IndexModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router

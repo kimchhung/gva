@@ -7,8 +7,9 @@ import (
 	"runtime/debug"
 	"time"
 
-	apperror "github.com/kimchhung/gva/backend/app/common/error"
-	rerror "github.com/kimchhung/gva/backend/internal/response/error"
+	apperror "github.com/gva/app/common/error"
+	rerror "github.com/gva/internal/response/error"
+
 	"github.com/labstack/echo/v4"
 
 	"github.com/google/uuid"

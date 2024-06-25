@@ -1,9 +1,10 @@
 package schema
 
 import (
+	"github.com/gva/app/database/schema/mixins"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/app/database/schema/mixins"
 )
 
 type Genre struct {
@@ -14,6 +15,7 @@ func (Genre) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.NanoID{},
 		mixins.TimeMixin{},
+		mixins.GQLMixin{},
 	}
 }
 

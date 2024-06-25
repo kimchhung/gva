@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kimchhung/gva/backend/app/common/service"
-	"github.com/kimchhung/gva/backend/env"
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
+	"github.com/gva/app/common/service"
+	"github.com/gva/env"
+	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/ent/admin"
 )
 
 var _ interface {

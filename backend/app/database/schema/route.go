@@ -1,12 +1,13 @@
 package schema
 
 import (
+	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/softdelete"
+	"github.com/gva/app/database/schema/types"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/app/database/schema/mixins"
-	"github.com/kimchhung/gva/backend/app/database/schema/softdelete"
-	"github.com/kimchhung/gva/backend/app/database/schema/types"
 )
 
 type Route struct {

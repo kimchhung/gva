@@ -3,8 +3,8 @@ package module_template
 var Repository = `package repository
 
 import (
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
-	"github.com/kimchhung/gva/backend/internal/ent"
+	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/internal/ent"
 )
 
 type {{.EntityPascal}}Repository struct {

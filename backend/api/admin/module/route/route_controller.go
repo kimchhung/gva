@@ -4,15 +4,15 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 
-	"github.com/kimchhung/gva/backend/api/admin/module/route/dto"
+	"github.com/gva/api/admin/module/route/dto"
 
-	permissions "github.com/kimchhung/gva/backend/app/common/permission"
-	"github.com/kimchhung/gva/backend/app/common/service"
-	"github.com/kimchhung/gva/backend/internal/echoc"
-	"github.com/kimchhung/gva/backend/internal/ent"
-	"github.com/kimchhung/gva/backend/internal/request"
-	"github.com/kimchhung/gva/backend/internal/response"
-	"github.com/kimchhung/gva/backend/internal/rql"
+	permissions "github.com/gva/app/common/permission"
+	"github.com/gva/app/common/service"
+	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/request"
+	"github.com/gva/internal/response"
+	"github.com/gva/internal/rql"
 )
 
 // don't remove for runtime type checking

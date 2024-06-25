@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/admin"
-	"github.com/kimchhung/gva/backend/internal/ent/predicate"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
+	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/predicate"
+	"github.com/gva/internal/ent/role"
 
-	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/gva/internal/ent/internal"
 )
 
 // AdminUpdate is the builder for updating Admin entities.

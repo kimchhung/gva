@@ -1,11 +1,12 @@
 package common
 
 import (
-	"github.com/kimchhung/gva/backend/app/common/repository"
-	"github.com/kimchhung/gva/backend/app/common/service"
-	"github.com/kimchhung/gva/backend/app/middleware"
-	"github.com/kimchhung/gva/backend/internal/bootstrap"
-	"github.com/kimchhung/gva/backend/internal/bootstrap/database"
+	"github.com/gva/app/common/repository"
+	"github.com/gva/app/common/service"
+	"github.com/gva/app/middleware"
+	"github.com/gva/internal/bootstrap"
+	"github.com/gva/internal/bootstrap/database"
+
 	"go.uber.org/fx"
 )
 

@@ -3,11 +3,11 @@ package permission
 import (
 	"github.com/labstack/echo/v4"
 
-	permissions "github.com/kimchhung/gva/backend/app/common/permission"
-	"github.com/kimchhung/gva/backend/app/common/service"
-	"github.com/kimchhung/gva/backend/internal/echoc"
-	"github.com/kimchhung/gva/backend/internal/request"
-	"github.com/kimchhung/gva/backend/internal/response"
+	permissions "github.com/gva/app/common/permission"
+	"github.com/gva/app/common/service"
+	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/request"
+	"github.com/gva/internal/response"
 )
 
 // don't remove for runtime type checking

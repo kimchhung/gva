@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gva/internal/ent/intercept"
+
 	"entgo.io/ent/dialect/sql"
-	"github.com/kimchhung/gva/backend/internal/ent/intercept"
 )
 
 type InterceptorOption func(*sql.Selector)

@@ -1,11 +1,12 @@
 package schema
 
 import (
+	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/softdelete"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/app/database/schema/mixins"
-	"github.com/kimchhung/gva/backend/app/database/schema/softdelete"
 )
 
 type Role struct {

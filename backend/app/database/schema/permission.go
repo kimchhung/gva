@@ -1,10 +1,11 @@
 package schema
 
 import (
+	"github.com/gva/app/database/schema/mixins"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/app/database/schema/mixins"
 )
 
 type Permission struct {

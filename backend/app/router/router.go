@@ -1,8 +1,9 @@
 package router
 
 import (
-	"github.com/kimchhung/gva/backend/app/constant"
-	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/gva/app/constant"
+	"github.com/gva/internal/echoc"
+
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )

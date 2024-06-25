@@ -1,7 +1,8 @@
 package constant
 
 import (
-	"github.com/kimchhung/gva/backend/internal/echoc"
+	"github.com/gva/internal/echoc"
+
 	"go.uber.org/fx"
 )
 

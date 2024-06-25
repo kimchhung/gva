@@ -1,7 +1,8 @@
 package request
 
 import (
-	"github.com/kimchhung/gva/backend/internal/response"
+	"github.com/gva/internal/response"
+
 	"github.com/labstack/echo/v4"
 
 	"github.com/rs/zerolog"

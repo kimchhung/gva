@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kimchhung/gva/backend/internal/ent/permission"
-	"github.com/kimchhung/gva/backend/internal/ent/predicate"
-	"github.com/kimchhung/gva/backend/internal/ent/role"
+	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/predicate"
+	"github.com/gva/internal/ent/role"
 
-	"github.com/kimchhung/gva/backend/internal/ent/internal"
+	"github.com/gva/internal/ent/internal"
 )
 
 // PermissionUpdate is the builder for updating Permission entities.
