@@ -6,6 +6,7 @@ import (
 	"github.com/gva/app/database/schema/types"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -23,11 +24,19 @@ func (Route) Mixin() []ent.Mixin {
 	}
 }
 
+func (Route) Indexes() []ent.Index {
+	return []ent.Index{
+		softdelete.Index("path", "parent_id", "type").
+			Unique().
+			Annotations(
+				entsql.IndexWhere("parent_id is null"),
+			),
+	}
+}
+
 func (Route) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("parent_id").
-			SchemaType(mixins.NanoSchemaType).
-			DefaultFunc(mixins.NewNanoId).
 			Optional().
 			Nillable().
 			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),
@@ -47,6 +56,8 @@ func (Route) Fields() []ent.Field {
 			StructTag(`rql:"filter,sort"`),
 
 		field.Int("order").
+			Optional().
+			Default(0).
 			StructTag(`rql:"filter,sort"`),
 
 		field.Enum("type").

@@ -1385,7 +1385,7 @@ type Route implements Node {
   component: String!
   redirect: String
   name: String!
-  order: Int!
+  order: Int
   type: RouteType!
   meta: RouteMeta!
   parent: Route
@@ -1574,6 +1574,8 @@ input RouteWhereInput {
   orderGTE: Int
   orderLT: Int
   orderLTE: Int
+  orderIsNil: Boolean
+  orderNotNil: Boolean
   """
   type field predicates
   """

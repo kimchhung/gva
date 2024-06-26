@@ -14,7 +14,7 @@ type NanoID struct {
 
 func (NanoID) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").SchemaType(NanoSchemaType).DefaultFunc(NewNanoId),
+		field.String("id").SchemaType(NanoSchemaType).DefaultFunc(NewNanoId).Immutable(),
 	}
 }
 

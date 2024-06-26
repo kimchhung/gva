@@ -632,6 +632,16 @@ func OrderLTE(v int) predicate.Route {
 	return predicate.Route(sql.FieldLTE(FieldOrder, v))
 }
 
+// OrderIsNil applies the IsNil predicate on the "order" field.
+func OrderIsNil() predicate.Route {
+	return predicate.Route(sql.FieldIsNull(FieldOrder))
+}
+
+// OrderNotNil applies the NotNil predicate on the "order" field.
+func OrderNotNil() predicate.Route {
+	return predicate.Route(sql.FieldNotNull(FieldOrder))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldType, v))

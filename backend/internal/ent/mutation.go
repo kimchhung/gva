@@ -6893,10 +6893,24 @@ func (m *RouteMutation) AddedOrder() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearOrder clears the value of the "order" field.
+func (m *RouteMutation) ClearOrder() {
+	m._order = nil
+	m.add_order = nil
+	m.clearedFields[route.FieldOrder] = struct{}{}
+}
+
+// OrderCleared returns if the "order" field was cleared in this mutation.
+func (m *RouteMutation) OrderCleared() bool {
+	_, ok := m.clearedFields[route.FieldOrder]
+	return ok
+}
+
 // ResetOrder resets all changes to the "order" field.
 func (m *RouteMutation) ResetOrder() {
 	m._order = nil
 	m.add_order = nil
+	delete(m.clearedFields, route.FieldOrder)
 }
 
 // SetType sets the "type" field.
@@ -7398,6 +7412,9 @@ func (m *RouteMutation) ClearedFields() []string {
 	if m.FieldCleared(route.FieldRedirect) {
 		fields = append(fields, route.FieldRedirect)
 	}
+	if m.FieldCleared(route.FieldOrder) {
+		fields = append(fields, route.FieldOrder)
+	}
 	return fields
 }
 
@@ -7417,6 +7434,9 @@ func (m *RouteMutation) ClearField(name string) error {
 		return nil
 	case route.FieldRedirect:
 		m.ClearRedirect()
+		return nil
+	case route.FieldOrder:
+		m.ClearOrder()
 		return nil
 	}
 	return fmt.Errorf("unknown Route nullable field %s", name)

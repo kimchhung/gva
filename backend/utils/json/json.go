@@ -139,3 +139,12 @@ func IsDeepEqual[Old comparable, New comparable](old Old, new New, omitJsonKeys 
 
 	return true
 }
+
+func Log(v ...any) {
+	prettyJSON, err := json.MarshalIndent(v, "", "    ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println(string(prettyJSON))
+}

@@ -133,6 +133,14 @@ func (rc *RouteCreate) SetOrder(i int) *RouteCreate {
 	return rc
 }
 
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (rc *RouteCreate) SetNillableOrder(i *int) *RouteCreate {
+	if i != nil {
+		rc.SetOrder(*i)
+	}
+	return rc
+}
+
 // SetType sets the "type" field.
 func (rc *RouteCreate) SetType(r route.Type) *RouteCreate {
 	rc.mutation.SetType(r)
@@ -261,12 +269,9 @@ func (rc *RouteCreate) defaults() error {
 		v := route.DefaultDeletedAt
 		rc.mutation.SetDeletedAt(v)
 	}
-	if _, ok := rc.mutation.ParentID(); !ok {
-		if route.DefaultParentID == nil {
-			return fmt.Errorf("ent: uninitialized route.DefaultParentID (forgotten import ent/runtime?)")
-		}
-		v := route.DefaultParentID()
-		rc.mutation.SetParentID(v)
+	if _, ok := rc.mutation.Order(); !ok {
+		v := route.DefaultOrder
+		rc.mutation.SetOrder(v)
 	}
 	if _, ok := rc.mutation.GetType(); !ok {
 		v := route.DefaultType
@@ -304,9 +309,6 @@ func (rc *RouteCreate) check() error {
 	}
 	if _, ok := rc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Route.name"`)}
-	}
-	if _, ok := rc.mutation.Order(); !ok {
-		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "Route.order"`)}
 	}
 	if _, ok := rc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Route.type"`)}
@@ -648,6 +650,12 @@ func (u *RouteUpsert) AddOrder(v int) *RouteUpsert {
 	return u
 }
 
+// ClearOrder clears the value of the "order" field.
+func (u *RouteUpsert) ClearOrder() *RouteUpsert {
+	u.SetNull(route.FieldOrder)
+	return u
+}
+
 // SetType sets the "type" field.
 func (u *RouteUpsert) SetType(v route.Type) *RouteUpsert {
 	u.Set(route.FieldType, v)
@@ -885,6 +893,13 @@ func (u *RouteUpsertOne) AddOrder(v int) *RouteUpsertOne {
 func (u *RouteUpsertOne) UpdateOrder() *RouteUpsertOne {
 	return u.Update(func(s *RouteUpsert) {
 		s.UpdateOrder()
+	})
+}
+
+// ClearOrder clears the value of the "order" field.
+func (u *RouteUpsertOne) ClearOrder() *RouteUpsertOne {
+	return u.Update(func(s *RouteUpsert) {
+		s.ClearOrder()
 	})
 }
 
@@ -1296,6 +1311,13 @@ func (u *RouteUpsertBulk) AddOrder(v int) *RouteUpsertBulk {
 func (u *RouteUpsertBulk) UpdateOrder() *RouteUpsertBulk {
 	return u.Update(func(s *RouteUpsert) {
 		s.UpdateOrder()
+	})
+}
+
+// ClearOrder clears the value of the "order" field.
+func (u *RouteUpsertBulk) ClearOrder() *RouteUpsertBulk {
+	return u.Update(func(s *RouteUpsert) {
+		s.ClearOrder()
 	})
 }
 

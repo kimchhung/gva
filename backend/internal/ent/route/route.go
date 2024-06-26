@@ -116,8 +116,8 @@ var (
 	DefaultIsEnable bool
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt int
-	// DefaultParentID holds the default value on creation for the "parent_id" field.
-	DefaultParentID func() string
+	// DefaultOrder holds the default value on creation for the "order" field.
+	DefaultOrder int
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() string
 )

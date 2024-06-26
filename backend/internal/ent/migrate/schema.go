@@ -194,7 +194,7 @@ var (
 		{Name: "component", Type: field.TypeString},
 		{Name: "redirect", Type: field.TypeString, Nullable: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "order", Type: field.TypeInt},
+		{Name: "order", Type: field.TypeInt, Nullable: true, Default: 0},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
 		{Name: "meta", Type: field.TypeJSON},
 		{Name: "parent_id", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
@@ -217,6 +217,11 @@ var (
 				Name:    "route_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{RoutesColumns[4]},
+			},
+			{
+				Name:    "idx_uniq_route",
+				Unique:  true,
+				Columns: []*schema.Column{RoutesColumns[12], RoutesColumns[5], RoutesColumns[10], RoutesColumns[4]},
 			},
 		},
 	}

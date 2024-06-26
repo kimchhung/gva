@@ -191,6 +191,12 @@ func (ru *RouteUpdate) AddOrder(i int) *RouteUpdate {
 	return ru
 }
 
+// ClearOrder clears the value of the "order" field.
+func (ru *RouteUpdate) ClearOrder() *RouteUpdate {
+	ru.mutation.ClearOrder()
+	return ru
+}
+
 // SetType sets the "type" field.
 func (ru *RouteUpdate) SetType(r route.Type) *RouteUpdate {
 	ru.mutation.SetType(r)
@@ -412,6 +418,9 @@ func (ru *RouteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.AddedOrder(); ok {
 		_spec.AddField(route.FieldOrder, field.TypeInt, value)
+	}
+	if ru.mutation.OrderCleared() {
+		_spec.ClearField(route.FieldOrder, field.TypeInt)
 	}
 	if value, ok := ru.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)
@@ -728,6 +737,12 @@ func (ruo *RouteUpdateOne) AddOrder(i int) *RouteUpdateOne {
 	return ruo
 }
 
+// ClearOrder clears the value of the "order" field.
+func (ruo *RouteUpdateOne) ClearOrder() *RouteUpdateOne {
+	ruo.mutation.ClearOrder()
+	return ruo
+}
+
 // SetType sets the "type" field.
 func (ruo *RouteUpdateOne) SetType(r route.Type) *RouteUpdateOne {
 	ruo.mutation.SetType(r)
@@ -979,6 +994,9 @@ func (ruo *RouteUpdateOne) sqlSave(ctx context.Context) (_node *Route, err error
 	}
 	if value, ok := ruo.mutation.AddedOrder(); ok {
 		_spec.AddField(route.FieldOrder, field.TypeInt, value)
+	}
+	if ruo.mutation.OrderCleared() {
+		_spec.ClearField(route.FieldOrder, field.TypeInt)
 	}
 	if value, ok := ruo.mutation.GetType(); ok {
 		_spec.SetField(route.FieldType, field.TypeEnum, value)

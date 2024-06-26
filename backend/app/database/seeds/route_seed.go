@@ -4,13 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
-	"github.com/gva/internal/ent/route"
 	"github.com/gva/utils/json"
-	"github.com/gva/utils/routeutil"
 )
 
 var _ interface {
@@ -39,50 +36,45 @@ func getRouteData() (routes []*ent.Route) {
 
 func (RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 	routers := getRouteData()
-	flats := routeutil.FlattenNestedRoutes(routers)
 
-	childToParent := map[string]string{}
+	return database.WithTx(ctx, conn, func(tx *ent.Tx) error {
+		creatRoutes := make([]*ent.RouteCreate, len(routers))
+		for i, r := range routers {
 
-	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
-
-		for _, r := range flats {
-			if r.ParentID != nil {
-				childToParent[r.ID] = *r.ParentID
+			createChildren := make([]*ent.RouteCreate, len(r.Edges.Children))
+			for _i, c := range r.Edges.Children {
+				createChildren[_i] = tx.Route.Create().
+					SetIsEnable(true).
+					SetPath(c.Path).
+					SetComponent(c.Component).
+					SetNillableRedirect(c.Redirect).
+					SetName(c.Name).
+					SetType(c.Type).
+					SetMeta(c.Meta).
+					SetOrder(_i)
 			}
 
-			if strings.Contains(r.Component, "#") {
-				r.Type = route.TypeCataLog
-			} else {
-				r.Type = route.TypeMenu
+			createdChildren, err := tx.Route.CreateBulk(createChildren...).Save(ctx)
+			if err != nil {
+				return fmt.Errorf("createdChildren: %v", err)
 			}
 
-			_, err := tx.Route.Create().SetID(r.ID).
+			creatRoutes[i] = tx.Route.Create().
 				SetComponent(r.Component).
 				SetPath(r.Path).
 				SetIsEnable(true).
 				SetMeta(r.Meta).
 				SetName(r.Name).
 				SetNillableRedirect(r.Redirect).
-				SetType(r.Type).Save(context.Background())
-
-			if err != nil {
-				return fmt.Errorf("create  routers: %w", err)
-			}
-
+				SetType(r.Type).
+				SetOrder(i).
+				AddChildren(createdChildren...)
 		}
 
-		for cid, pid := range childToParent {
-			_, err := tx.Route.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
-			if err != nil {
-				return fmt.Errorf("save routers: %w", err)
-			}
-		}
-
-		return nil
-
+		_, err := tx.Route.CreateBulk(creatRoutes...).Save(ctx)
+		return err
 	})
 
-	return nil
 }
 
 // rollback calls to tx.Rollback and wraps the given error

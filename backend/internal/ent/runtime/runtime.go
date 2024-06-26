@@ -252,10 +252,10 @@ func init() {
 	routeDescDeletedAt := routeMixinFields3[0].Descriptor()
 	// route.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	route.DefaultDeletedAt = routeDescDeletedAt.Default.(int)
-	// routeDescParentID is the schema descriptor for parent_id field.
-	routeDescParentID := routeFields[0].Descriptor()
-	// route.DefaultParentID holds the default value on creation for the parent_id field.
-	route.DefaultParentID = routeDescParentID.Default.(func() string)
+	// routeDescOrder is the schema descriptor for order field.
+	routeDescOrder := routeFields[5].Descriptor()
+	// route.DefaultOrder holds the default value on creation for the order field.
+	route.DefaultOrder = routeDescOrder.Default.(int)
 	// routeDescID is the schema descriptor for id field.
 	routeDescID := routeMixinFields0[0].Descriptor()
 	// route.DefaultID holds the default value on creation for the id field.

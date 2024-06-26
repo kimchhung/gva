@@ -3369,14 +3369,16 @@ type RouteWhereInput struct {
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
 	// "order" field predicates.
-	Order      *int  `json:"order,omitempty"`
-	OrderNEQ   *int  `json:"orderNEQ,omitempty"`
-	OrderIn    []int `json:"orderIn,omitempty"`
-	OrderNotIn []int `json:"orderNotIn,omitempty"`
-	OrderGT    *int  `json:"orderGT,omitempty"`
-	OrderGTE   *int  `json:"orderGTE,omitempty"`
-	OrderLT    *int  `json:"orderLT,omitempty"`
-	OrderLTE   *int  `json:"orderLTE,omitempty"`
+	Order       *int  `json:"order,omitempty"`
+	OrderNEQ    *int  `json:"orderNEQ,omitempty"`
+	OrderIn     []int `json:"orderIn,omitempty"`
+	OrderNotIn  []int `json:"orderNotIn,omitempty"`
+	OrderGT     *int  `json:"orderGT,omitempty"`
+	OrderGTE    *int  `json:"orderGTE,omitempty"`
+	OrderLT     *int  `json:"orderLT,omitempty"`
+	OrderLTE    *int  `json:"orderLTE,omitempty"`
+	OrderIsNil  bool  `json:"orderIsNil,omitempty"`
+	OrderNotNil bool  `json:"orderNotNil,omitempty"`
 
 	// "type" field predicates.
 	Type      *route.Type  `json:"type,omitempty"`
@@ -3806,6 +3808,12 @@ func (i *RouteWhereInput) P() (predicate.Route, error) {
 	}
 	if i.OrderLTE != nil {
 		predicates = append(predicates, route.OrderLTE(*i.OrderLTE))
+	}
+	if i.OrderIsNil {
+		predicates = append(predicates, route.OrderIsNil())
+	}
+	if i.OrderNotNil {
+		predicates = append(predicates, route.OrderNotNil())
 	}
 	if i.Type != nil {
 		predicates = append(predicates, route.TypeEQ(*i.Type))

@@ -1,6 +1,5 @@
 [
   {
-    "id": 1,
     "createdAt": "2024-06-16T06:06:04Z",
     "updatedAt": "2024-06-16T06:06:04Z",
     "isEnable": true,
@@ -17,11 +16,9 @@
     "edges": {
       "children": [
         {
-          "id": 2,
           "createdAt": "2024-06-16T06:06:04Z",
           "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
-          "parentId": 1,
           "path": "welcome",
           "component": "views/Dashboard/Welcome",
           "name": "Welcome",
@@ -30,8 +27,6 @@
           "edges": {}
         },
         {
-          "id": 7,
-          "parentId": 1,
           "createdAt": "2024-06-16T06:10:24Z",
           "updatedAt": "2024-06-16T06:10:24Z",
           "isEnable": true,
@@ -51,7 +46,6 @@
     }
   },
   {
-    "id": 3,
     "createdAt": "2024-06-16T06:06:04Z",
     "updatedAt": "2024-06-16T06:06:04Z",
     "isEnable": true,
@@ -68,11 +62,9 @@
     "edges": {
       "children": [
         {
-          "id": 4,
           "createdAt": "2024-06-16T06:06:04Z",
           "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
-          "parentId": 3,
           "path": "admin",
           "component": "views/Authorization/Admin/Admin",
           "name": "User",
@@ -81,11 +73,10 @@
           "edges": {}
         },
         {
-          "id": 5,
           "createdAt": "2024-06-16T06:06:04Z",
           "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
-          "parentId": 3,
+
           "path": "menu",
           "component": "views/Authorization/Menu/Menu",
           "name": "Menu",
@@ -94,11 +85,9 @@
           "edges": {}
         },
         {
-          "id": 6,
           "createdAt": "2024-06-16T06:06:04Z",
           "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
-          "parentId": 3,
           "path": "role",
           "component": "views/Authorization/Role/Role",
           "name": "Role",
