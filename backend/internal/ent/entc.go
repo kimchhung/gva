@@ -24,8 +24,8 @@ func main() {
 	if err := entc.Generate(
 		"../../app/database/schema",
 		&gen.Config{
-			Target:   "../../internal/ent",
-			Schema:   "../../app/database/schema",
+			Target:   "internal/ent",
+			Schema:   "app/database/schema",
 			Features: gen.AllFeatures,
 			Package:  "github.com/gva/internal/ent",
 		},

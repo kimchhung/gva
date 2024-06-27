@@ -31,7 +31,7 @@ func InitializeValidator() error {
 		return err
 	}
 
-	log.Info().Msg("Validator is initialized")
+	log.Info().Msg("validator is initialized")
 	return nil
 }
 

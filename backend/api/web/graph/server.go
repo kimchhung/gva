@@ -4,7 +4,10 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/gva/api/web/graph/generated"
 	"github.com/gva/api/web/graph/resolver"
+	"github.com/gva/env"
+	"github.com/gva/internal/bootstrap"
 	"github.com/gva/internal/bootstrap/database"
+	"github.com/rs/zerolog"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/debug"
@@ -17,13 +20,19 @@ type Server struct {
 	echo     *echo.Echo
 	db       *database.Database
 	resolver *resolver.Resolver
+
+	queryPath      string
+	playgroundPath string
 }
 
-func NewServer(echo *echo.Echo, db *database.Database, resolver *resolver.Resolver) *Server {
+func NewServer(echo *echo.Echo, cfg *env.Config, db *database.Database, resolver *resolver.Resolver) *Server {
 	return &Server{
 		echo:     echo,
 		db:       db,
 		resolver: resolver,
+
+		queryPath:      cfg.API.Web.BasePath + "/query",
+		playgroundPath: cfg.API.Web.BasePath + "/playground",
 	}
 }
 
@@ -56,4 +65,22 @@ func (s *Server) Register(prefix string) {
 var Module = fx.Module("graph-module",
 	fx.Provide(resolver.NewResolver),
 	fx.Provide(NewServer),
+	fx.Invoke(
+		func(gqlserver *Server, cfg *env.Config, b *bootstrap.Bootstrap, log *zerolog.Logger) {
+			go func() {
+				// wait for bootstrap started
+				<-b.Done()
+				gqlserver.Register(cfg.API.Web.BasePath)
+
+				host, port := env.ParseAddr(cfg.App.Port)
+				if host == "" {
+					host = "http://localhost"
+				}
+
+				log.Info().
+					Str("playground", host+":"+port+gqlserver.playgroundPath).
+					Msg("graphql is registered")
+			}()
+		},
+	),
 )

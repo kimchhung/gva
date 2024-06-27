@@ -32,10 +32,10 @@ func InitializeTranslator() error {
 	}
 
 	if err := uTranslator.VerifyTranslations(); err != nil {
-		log.Panic().Err(err).Msg("Failed to initialize translator")
+		log.Panic().Err(err).Msg("failed to initialize translator")
 	}
 
-	log.Info().Msg("Translator is initialized")
+	log.Info().Msg("translator is initialized")
 	return nil
 }
 

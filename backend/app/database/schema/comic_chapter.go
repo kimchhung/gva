@@ -16,7 +16,6 @@ func (ComicChapter) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.NanoID{},
 		mixins.TimeMixin{},
-		mixins.GQLMixin{},
 	}
 }
 

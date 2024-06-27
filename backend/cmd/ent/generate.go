@@ -1,6 +1,6 @@
 package main
 
-// _ "github.com/gva/internal/ent/runtime"
+import _ "github.com/gva/internal/ent/runtime"
 
-//go:generate go run -mod=mod ./entc.go
-//go:generate go run -mod=mod  github.com/99designs/gqlgen
+//go:generate go run -mod=mod ../../internal/ent/entc.go
+//go:generate go run -mod=mod github.com/99designs/gqlgen

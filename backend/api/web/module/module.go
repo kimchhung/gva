@@ -10,7 +10,6 @@ import (
 )
 
 var NewWebModules = fx.Module("web-module",
-	graph.Module,
 	index.IndexModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
@@ -26,4 +25,7 @@ var NewWebModules = fx.Module("web-module",
 			fx.ResultTags(constant.TagModule),
 		),
 	),
+
+	// lifecycle on start hook depend on order
+	graph.Module,
 )

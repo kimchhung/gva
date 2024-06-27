@@ -16,6 +16,8 @@ import (
 
 func New(cfg *env.Config, opts ...fx.Option) *fx.App {
 	return fx.New(
+		// boostrap
+
 		// Provide config
 		fx.Supply(cfg),
 
@@ -29,7 +31,7 @@ func New(cfg *env.Config, opts ...fx.Option) *fx.App {
 		fx.Module("api", opts...),
 
 		// Start Application, execute on run
-		fx.Invoke(bootstrap.Start),
+		bootstrap.Module,
 	)
 }
 

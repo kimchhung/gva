@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/contrib/entgql"
 	"github.com/gva/api/web/graph/generated"
 	"github.com/gva/internal/ent"
 )
@@ -45,44 +44,12 @@ func (r *comicChapterResolver) DownCount(ctx context.Context, obj *ent.ComicChap
 
 // Node is the resolver for the node field.
 func (r *queryResolver) Node(ctx context.Context, id string) (ent.Noder, error) {
-	return r.db.Noder(ctx, id)
+	panic(fmt.Errorf("not implemented: Node - node"))
 }
 
 // Nodes is the resolver for the nodes field.
 func (r *queryResolver) Nodes(ctx context.Context, ids []string) ([]ent.Noder, error) {
-	return r.db.Noders(ctx, ids)
-}
-
-// Comics is the resolver for the comics field.
-func (r *queryResolver) Comics(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicOrder, where *ent.ComicWhereInput) (*ent.ComicConnection, error) {
-	return r.db.Comic.Query().Paginate(ctx, after, first, before, last,
-		ent.WithComicFilter(where.Filter),
-		ent.WithComicOrder(orderBy),
-	)
-}
-
-// ComicChapters is the resolver for the comicChapters field.
-func (r *queryResolver) ComicChapters(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicChapterOrder, where *ent.ComicChapterWhereInput) (*ent.ComicChapterConnection, error) {
-	return r.db.ComicChapter.Query().Paginate(ctx, after, first, before, last,
-		ent.WithComicChapterFilter(where.Filter),
-		ent.WithComicChapterOrder(orderBy),
-	)
-}
-
-// ComicImgs is the resolver for the comicImgs field.
-func (r *queryResolver) ComicImgs(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicImgOrder, where *ent.ComicImgWhereInput) (*ent.ComicImgConnection, error) {
-	return r.db.ComicImg.Query().Paginate(ctx, after, first, before, last,
-		ent.WithComicImgFilter(where.Filter),
-		ent.WithComicImgOrder(orderBy),
-	)
-}
-
-// Genres is the resolver for the genres field.
-func (r *queryResolver) Genres(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.GenreOrder, where *ent.GenreWhereInput) (*ent.GenreConnection, error) {
-	return r.db.Genre.Query().Paginate(ctx, after, first, before, last,
-		ent.WithGenreFilter(where.Filter),
-		ent.WithGenreOrder(orderBy),
-	)
+	panic(fmt.Errorf("not implemented: Nodes - nodes"))
 }
 
 // Meta is the resolver for the meta field.

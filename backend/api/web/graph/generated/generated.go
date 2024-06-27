@@ -99,28 +99,6 @@ type ComplexityRoot struct {
 		Volumn        func(childComplexity int) int
 	}
 
-	ComicChapterConnection struct {
-		Edges      func(childComplexity int) int
-		PageInfo   func(childComplexity int) int
-		TotalCount func(childComplexity int) int
-	}
-
-	ComicChapterEdge struct {
-		Cursor func(childComplexity int) int
-		Node   func(childComplexity int) int
-	}
-
-	ComicConnection struct {
-		Edges      func(childComplexity int) int
-		PageInfo   func(childComplexity int) int
-		TotalCount func(childComplexity int) int
-	}
-
-	ComicEdge struct {
-		Cursor func(childComplexity int) int
-		Node   func(childComplexity int) int
-	}
-
 	ComicImg struct {
 		B2key         func(childComplexity int) int
 		Chapter       func(childComplexity int) int
@@ -134,34 +112,12 @@ type ComplexityRoot struct {
 		Width         func(childComplexity int) int
 	}
 
-	ComicImgConnection struct {
-		Edges      func(childComplexity int) int
-		PageInfo   func(childComplexity int) int
-		TotalCount func(childComplexity int) int
-	}
-
-	ComicImgEdge struct {
-		Cursor func(childComplexity int) int
-		Node   func(childComplexity int) int
-	}
-
 	Genre struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
 		Type      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
-	}
-
-	GenreConnection struct {
-		Edges      func(childComplexity int) int
-		PageInfo   func(childComplexity int) int
-		TotalCount func(childComplexity int) int
-	}
-
-	GenreEdge struct {
-		Cursor func(childComplexity int) int
-		Node   func(childComplexity int) int
 	}
 
 	PageInfo struct {
@@ -183,13 +139,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		ComicChapters func(childComplexity int, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicChapterOrder, where *ent.ComicChapterWhereInput) int
-		ComicImgs     func(childComplexity int, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicImgOrder, where *ent.ComicImgWhereInput) int
-		Comics        func(childComplexity int, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicOrder, where *ent.ComicWhereInput) int
-		Genres        func(childComplexity int, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.GenreOrder, where *ent.GenreWhereInput) int
-		Node          func(childComplexity int, id string) int
-		Nodes         func(childComplexity int, ids []string) int
-		Now           func(childComplexity int) int
+		Node  func(childComplexity int, id string) int
+		Nodes func(childComplexity int, ids []string) int
+		Now   func(childComplexity int) int
 	}
 
 	Role struct {
@@ -243,11 +195,7 @@ type ComicChapterResolver interface {
 type QueryResolver interface {
 	Node(ctx context.Context, id string) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []string) ([]ent.Noder, error)
-	Comics(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicOrder, where *ent.ComicWhereInput) (*ent.ComicConnection, error)
-	ComicChapters(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicChapterOrder, where *ent.ComicChapterWhereInput) (*ent.ComicChapterConnection, error)
-	ComicImgs(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.ComicImgOrder, where *ent.ComicImgWhereInput) (*ent.ComicImgConnection, error)
-	Genres(ctx context.Context, after *entgql.Cursor[string], first *int, before *entgql.Cursor[string], last *int, orderBy *ent.GenreOrder, where *ent.GenreWhereInput) (*ent.GenreConnection, error)
-	Now(ctx context.Context) (*string, error)
+	Now(ctx context.Context) (*time.Time, error)
 }
 type RouteResolver interface {
 	Meta(ctx context.Context, obj *ent.Route) (string, error)
@@ -571,76 +519,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ComicChapter.Volumn(childComplexity), true
 
-	case "ComicChapterConnection.edges":
-		if e.complexity.ComicChapterConnection.Edges == nil {
-			break
-		}
-
-		return e.complexity.ComicChapterConnection.Edges(childComplexity), true
-
-	case "ComicChapterConnection.pageInfo":
-		if e.complexity.ComicChapterConnection.PageInfo == nil {
-			break
-		}
-
-		return e.complexity.ComicChapterConnection.PageInfo(childComplexity), true
-
-	case "ComicChapterConnection.totalCount":
-		if e.complexity.ComicChapterConnection.TotalCount == nil {
-			break
-		}
-
-		return e.complexity.ComicChapterConnection.TotalCount(childComplexity), true
-
-	case "ComicChapterEdge.cursor":
-		if e.complexity.ComicChapterEdge.Cursor == nil {
-			break
-		}
-
-		return e.complexity.ComicChapterEdge.Cursor(childComplexity), true
-
-	case "ComicChapterEdge.node":
-		if e.complexity.ComicChapterEdge.Node == nil {
-			break
-		}
-
-		return e.complexity.ComicChapterEdge.Node(childComplexity), true
-
-	case "ComicConnection.edges":
-		if e.complexity.ComicConnection.Edges == nil {
-			break
-		}
-
-		return e.complexity.ComicConnection.Edges(childComplexity), true
-
-	case "ComicConnection.pageInfo":
-		if e.complexity.ComicConnection.PageInfo == nil {
-			break
-		}
-
-		return e.complexity.ComicConnection.PageInfo(childComplexity), true
-
-	case "ComicConnection.totalCount":
-		if e.complexity.ComicConnection.TotalCount == nil {
-			break
-		}
-
-		return e.complexity.ComicConnection.TotalCount(childComplexity), true
-
-	case "ComicEdge.cursor":
-		if e.complexity.ComicEdge.Cursor == nil {
-			break
-		}
-
-		return e.complexity.ComicEdge.Cursor(childComplexity), true
-
-	case "ComicEdge.node":
-		if e.complexity.ComicEdge.Node == nil {
-			break
-		}
-
-		return e.complexity.ComicEdge.Node(childComplexity), true
-
 	case "ComicImg.b2key":
 		if e.complexity.ComicImg.B2key == nil {
 			break
@@ -711,41 +589,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ComicImg.Width(childComplexity), true
 
-	case "ComicImgConnection.edges":
-		if e.complexity.ComicImgConnection.Edges == nil {
-			break
-		}
-
-		return e.complexity.ComicImgConnection.Edges(childComplexity), true
-
-	case "ComicImgConnection.pageInfo":
-		if e.complexity.ComicImgConnection.PageInfo == nil {
-			break
-		}
-
-		return e.complexity.ComicImgConnection.PageInfo(childComplexity), true
-
-	case "ComicImgConnection.totalCount":
-		if e.complexity.ComicImgConnection.TotalCount == nil {
-			break
-		}
-
-		return e.complexity.ComicImgConnection.TotalCount(childComplexity), true
-
-	case "ComicImgEdge.cursor":
-		if e.complexity.ComicImgEdge.Cursor == nil {
-			break
-		}
-
-		return e.complexity.ComicImgEdge.Cursor(childComplexity), true
-
-	case "ComicImgEdge.node":
-		if e.complexity.ComicImgEdge.Node == nil {
-			break
-		}
-
-		return e.complexity.ComicImgEdge.Node(childComplexity), true
-
 	case "Genre.createdAt":
 		if e.complexity.Genre.CreatedAt == nil {
 			break
@@ -780,41 +623,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Genre.UpdatedAt(childComplexity), true
-
-	case "GenreConnection.edges":
-		if e.complexity.GenreConnection.Edges == nil {
-			break
-		}
-
-		return e.complexity.GenreConnection.Edges(childComplexity), true
-
-	case "GenreConnection.pageInfo":
-		if e.complexity.GenreConnection.PageInfo == nil {
-			break
-		}
-
-		return e.complexity.GenreConnection.PageInfo(childComplexity), true
-
-	case "GenreConnection.totalCount":
-		if e.complexity.GenreConnection.TotalCount == nil {
-			break
-		}
-
-		return e.complexity.GenreConnection.TotalCount(childComplexity), true
-
-	case "GenreEdge.cursor":
-		if e.complexity.GenreEdge.Cursor == nil {
-			break
-		}
-
-		return e.complexity.GenreEdge.Cursor(childComplexity), true
-
-	case "GenreEdge.node":
-		if e.complexity.GenreEdge.Node == nil {
-			break
-		}
-
-		return e.complexity.GenreEdge.Node(childComplexity), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -899,54 +707,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Permission.UpdatedAt(childComplexity), true
-
-	case "Query.comicChapters":
-		if e.complexity.Query.ComicChapters == nil {
-			break
-		}
-
-		args, err := ec.field_Query_comicChapters_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.ComicChapters(childComplexity, args["after"].(*entgql.Cursor[string]), args["first"].(*int), args["before"].(*entgql.Cursor[string]), args["last"].(*int), args["orderBy"].(*ent.ComicChapterOrder), args["where"].(*ent.ComicChapterWhereInput)), true
-
-	case "Query.comicImgs":
-		if e.complexity.Query.ComicImgs == nil {
-			break
-		}
-
-		args, err := ec.field_Query_comicImgs_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.ComicImgs(childComplexity, args["after"].(*entgql.Cursor[string]), args["first"].(*int), args["before"].(*entgql.Cursor[string]), args["last"].(*int), args["orderBy"].(*ent.ComicImgOrder), args["where"].(*ent.ComicImgWhereInput)), true
-
-	case "Query.comics":
-		if e.complexity.Query.Comics == nil {
-			break
-		}
-
-		args, err := ec.field_Query_comics_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Comics(childComplexity, args["after"].(*entgql.Cursor[string]), args["first"].(*int), args["before"].(*entgql.Cursor[string]), args["last"].(*int), args["orderBy"].(*ent.ComicOrder), args["where"].(*ent.ComicWhereInput)), true
-
-	case "Query.genres":
-		if e.complexity.Query.Genres == nil {
-			break
-		}
-
-		args, err := ec.field_Query_genres_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Genres(childComplexity, args["after"].(*entgql.Cursor[string]), args["first"].(*int), args["before"].(*entgql.Cursor[string]), args["last"].(*int), args["orderBy"].(*ent.GenreOrder), args["where"].(*ent.GenreWhereInput)), true
 
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
@@ -1444,36 +1204,6 @@ type ComicChapter implements Node {
   comic: Comic
 }
 """
-A connection to a list of items.
-"""
-type ComicChapterConnection {
-  """
-  A list of edges.
-  """
-  edges: [ComicChapterEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type ComicChapterEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: ComicChapter
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
-}
-"""
 Ordering options for ComicChapter connections
 """
 input ComicChapterOrder {
@@ -1636,36 +1366,6 @@ input ComicChapterWhereInput {
   hasComic: Boolean
   hasComicWith: [ComicWhereInput!]
 }
-"""
-A connection to a list of items.
-"""
-type ComicConnection {
-  """
-  A list of edges.
-  """
-  edges: [ComicEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type ComicEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: Comic
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
-}
 type ComicImg implements Node {
   id: ID!
   createdAt: Time!
@@ -1677,36 +1377,6 @@ type ComicImg implements Node {
   size: Int!
   width: Int!
   chapter: ComicChapter
-}
-"""
-A connection to a list of items.
-"""
-type ComicImgConnection {
-  """
-  A list of edges.
-  """
-  edges: [ComicImgEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type ComicImgEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: ComicImg
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
 }
 """
 Ordering options for ComicImg connections
@@ -2054,36 +1724,6 @@ type Genre implements Node {
   type: GenreType!
 }
 """
-A connection to a list of items.
-"""
-type GenreConnection {
-  """
-  A list of edges.
-  """
-  edges: [GenreEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type GenreEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: Genre
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
-}
-"""
 Ordering options for Genre connections
 """
 input GenreOrder {
@@ -2376,130 +2016,6 @@ type Query {
     """
     ids: [ID!]!
   ): [Node]!
-  comics(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for Comics returned from the connection.
-    """
-    orderBy: ComicOrder
-
-    """
-    Filtering options for Comics returned from the connection.
-    """
-    where: ComicWhereInput
-  ): ComicConnection!
-  comicChapters(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for ComicChapters returned from the connection.
-    """
-    orderBy: ComicChapterOrder
-
-    """
-    Filtering options for ComicChapters returned from the connection.
-    """
-    where: ComicChapterWhereInput
-  ): ComicChapterConnection!
-  comicImgs(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for ComicImgs returned from the connection.
-    """
-    orderBy: ComicImgOrder
-
-    """
-    Filtering options for ComicImgs returned from the connection.
-    """
-    where: ComicImgWhereInput
-  ): ComicImgConnection!
-  genres(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for Genres returned from the connection.
-    """
-    orderBy: GenreOrder
-
-    """
-    Filtering options for Genres returned from the connection.
-    """
-    where: GenreWhereInput
-  ): GenreConnection!
 }
 type Role implements Node {
   id: ID!
@@ -2884,7 +2400,7 @@ input RouteWhereInput {
 }
 `, BuiltIn: false},
 	{Name: "../schema/index.gql", Input: `extend type Query {
-  now: String
+  now: Time!
 }
 `, BuiltIn: false},
 	{Name: "../schema/scalar.gql", Input: `scalar CoverImg
@@ -2910,246 +2426,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_comicChapters_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.ComicChapterOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOComicChapterOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.ComicChapterWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOComicChapterWhereInput2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_comicImgs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.ComicImgOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOComicImgOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.ComicImgWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOComicImgWhereInput2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_comics_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.ComicOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOComicOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.ComicWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOComicWhereInput2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_genres_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *entgql.Cursor[string]
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.GenreOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOGenreOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.GenreWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOGenreWhereInput2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -4930,524 +4206,6 @@ func (ec *executionContext) fieldContext_ComicChapter_comic(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _ComicChapterConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ComicChapterConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicChapterConnection_edges(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*ent.ComicChapterEdge)
-	fc.Result = res
-	return ec.marshalOComicChapterEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterEdge(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicChapterConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicChapterConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "node":
-				return ec.fieldContext_ComicChapterEdge_node(ctx, field)
-			case "cursor":
-				return ec.fieldContext_ComicChapterEdge_cursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicChapterEdge", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicChapterConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ComicChapterConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicChapterConnection_pageInfo(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PageInfo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.PageInfo[string])
-	fc.Result = res
-	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicChapterConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicChapterConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "hasNextPage":
-				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
-			case "hasPreviousPage":
-				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
-			case "startCursor":
-				return ec.fieldContext_PageInfo_startCursor(ctx, field)
-			case "endCursor":
-				return ec.fieldContext_PageInfo_endCursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicChapterConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ComicChapterConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicChapterConnection_totalCount(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalCount, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicChapterConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicChapterConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicChapterEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ComicChapterEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicChapterEdge_node(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Node, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*ent.ComicChapter)
-	fc.Result = res
-	return ec.marshalOComicChapter2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapter(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicChapterEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicChapterEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_ComicChapter_id(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_ComicChapter_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_ComicChapter_updatedAt(ctx, field)
-			case "chapter":
-				return ec.fieldContext_ComicChapter_chapter(ctx, field)
-			case "title":
-				return ec.fieldContext_ComicChapter_title(ctx, field)
-			case "volumn":
-				return ec.fieldContext_ComicChapter_volumn(ctx, field)
-			case "lang":
-				return ec.fieldContext_ComicChapter_lang(ctx, field)
-			case "upCount":
-				return ec.fieldContext_ComicChapter_upCount(ctx, field)
-			case "downCount":
-				return ec.fieldContext_ComicChapter_downCount(ctx, field)
-			case "isLastChapter":
-				return ec.fieldContext_ComicChapter_isLastChapter(ctx, field)
-			case "imgs":
-				return ec.fieldContext_ComicChapter_imgs(ctx, field)
-			case "comic":
-				return ec.fieldContext_ComicChapter_comic(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicChapter", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicChapterEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ComicChapterEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicChapterEdge_cursor(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Cursor, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.Cursor[string])
-	fc.Result = res
-	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicChapterEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicChapterEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Cursor does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ComicConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicConnection_edges(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*ent.ComicEdge)
-	fc.Result = res
-	return ec.marshalOComicEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicEdge(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "node":
-				return ec.fieldContext_ComicEdge_node(ctx, field)
-			case "cursor":
-				return ec.fieldContext_ComicEdge_cursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicEdge", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ComicConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicConnection_pageInfo(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PageInfo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.PageInfo[string])
-	fc.Result = res
-	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "hasNextPage":
-				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
-			case "hasPreviousPage":
-				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
-			case "startCursor":
-				return ec.fieldContext_PageInfo_startCursor(ctx, field)
-			case "endCursor":
-				return ec.fieldContext_PageInfo_endCursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ComicConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicConnection_totalCount(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalCount, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ComicEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicEdge_node(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Node, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*ent.Comic)
-	fc.Result = res
-	return ec.marshalOComic2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComic(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Comic_id(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Comic_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Comic_updatedAt(ctx, field)
-			case "chapter":
-				return ec.fieldContext_Comic_chapter(ctx, field)
-			case "title":
-				return ec.fieldContext_Comic_title(ctx, field)
-			case "slug":
-				return ec.fieldContext_Comic_slug(ctx, field)
-			case "covers":
-				return ec.fieldContext_Comic_covers(ctx, field)
-			case "status":
-				return ec.fieldContext_Comic_status(ctx, field)
-			case "istranslatecompleted":
-				return ec.fieldContext_Comic_istranslatecompleted(ctx, field)
-			case "upCount":
-				return ec.fieldContext_Comic_upCount(ctx, field)
-			case "finalChapterID":
-				return ec.fieldContext_Comic_finalChapterID(ctx, field)
-			case "lastChapterID":
-				return ec.fieldContext_Comic_lastChapterID(ctx, field)
-			case "chapters":
-				return ec.fieldContext_Comic_chapters(ctx, field)
-			case "lastChapter":
-				return ec.fieldContext_Comic_lastChapter(ctx, field)
-			case "finalChapter":
-				return ec.fieldContext_Comic_finalChapter(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Comic", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ComicEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicEdge_cursor(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Cursor, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.Cursor[string])
-	fc.Result = res
-	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Cursor does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _ComicImg_id(ctx context.Context, field graphql.CollectedField, obj *ent.ComicImg) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ComicImg_id(ctx, field)
 	if err != nil {
@@ -5911,258 +4669,6 @@ func (ec *executionContext) fieldContext_ComicImg_chapter(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _ComicImgConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ComicImgConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicImgConnection_edges(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*ent.ComicImgEdge)
-	fc.Result = res
-	return ec.marshalOComicImgEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgEdge(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicImgConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicImgConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "node":
-				return ec.fieldContext_ComicImgEdge_node(ctx, field)
-			case "cursor":
-				return ec.fieldContext_ComicImgEdge_cursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicImgEdge", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicImgConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ComicImgConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicImgConnection_pageInfo(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PageInfo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.PageInfo[string])
-	fc.Result = res
-	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicImgConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicImgConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "hasNextPage":
-				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
-			case "hasPreviousPage":
-				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
-			case "startCursor":
-				return ec.fieldContext_PageInfo_startCursor(ctx, field)
-			case "endCursor":
-				return ec.fieldContext_PageInfo_endCursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicImgConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ComicImgConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicImgConnection_totalCount(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalCount, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicImgConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicImgConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicImgEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ComicImgEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicImgEdge_node(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Node, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*ent.ComicImg)
-	fc.Result = res
-	return ec.marshalOComicImg2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImg(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicImgEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicImgEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_ComicImg_id(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_ComicImg_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_ComicImg_updatedAt(ctx, field)
-			case "b2key":
-				return ec.fieldContext_ComicImg_b2key(ctx, field)
-			case "height":
-				return ec.fieldContext_ComicImg_height(ctx, field)
-			case "name":
-				return ec.fieldContext_ComicImg_name(ctx, field)
-			case "optimizedSize":
-				return ec.fieldContext_ComicImg_optimizedSize(ctx, field)
-			case "size":
-				return ec.fieldContext_ComicImg_size(ctx, field)
-			case "width":
-				return ec.fieldContext_ComicImg_width(ctx, field)
-			case "chapter":
-				return ec.fieldContext_ComicImg_chapter(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicImg", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ComicImgEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ComicImgEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ComicImgEdge_cursor(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Cursor, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.Cursor[string])
-	fc.Result = res
-	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_ComicImgEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ComicImgEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Cursor does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Genre_id(ctx context.Context, field graphql.CollectedField, obj *ent.Genre) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Genre_id(ctx, field)
 	if err != nil {
@@ -6378,248 +4884,6 @@ func (ec *executionContext) fieldContext_Genre_type(_ context.Context, field gra
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type GenreType does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _GenreConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.GenreConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GenreConnection_edges(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*ent.GenreEdge)
-	fc.Result = res
-	return ec.marshalOGenreEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreEdge(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GenreConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GenreConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "node":
-				return ec.fieldContext_GenreEdge_node(ctx, field)
-			case "cursor":
-				return ec.fieldContext_GenreEdge_cursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type GenreEdge", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _GenreConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.GenreConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GenreConnection_pageInfo(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PageInfo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.PageInfo[string])
-	fc.Result = res
-	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GenreConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GenreConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "hasNextPage":
-				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
-			case "hasPreviousPage":
-				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
-			case "startCursor":
-				return ec.fieldContext_PageInfo_startCursor(ctx, field)
-			case "endCursor":
-				return ec.fieldContext_PageInfo_endCursor(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _GenreConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.GenreConnection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GenreConnection_totalCount(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalCount, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GenreConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GenreConnection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _GenreEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.GenreEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GenreEdge_node(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Node, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*ent.Genre)
-	fc.Result = res
-	return ec.marshalOGenre2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenre(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GenreEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GenreEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Genre_id(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Genre_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Genre_updatedAt(ctx, field)
-			case "name":
-				return ec.fieldContext_Genre_name(ctx, field)
-			case "type":
-				return ec.fieldContext_Genre_type(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Genre", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _GenreEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.GenreEdge) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_GenreEdge_cursor(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Cursor, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(entgql.Cursor[string])
-	fc.Result = res
-	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_GenreEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "GenreEdge",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Cursor does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7277,258 +5541,6 @@ func (ec *executionContext) fieldContext_Query_nodes(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_comics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_comics(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Comics(rctx, fc.Args["after"].(*entgql.Cursor[string]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[string]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.ComicOrder), fc.Args["where"].(*ent.ComicWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.ComicConnection)
-	fc.Result = res
-	return ec.marshalNComicConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_comics(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_ComicConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_ComicConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_ComicConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_comics_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_comicChapters(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_comicChapters(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ComicChapters(rctx, fc.Args["after"].(*entgql.Cursor[string]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[string]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.ComicChapterOrder), fc.Args["where"].(*ent.ComicChapterWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.ComicChapterConnection)
-	fc.Result = res
-	return ec.marshalNComicChapterConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_comicChapters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_ComicChapterConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_ComicChapterConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_ComicChapterConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicChapterConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_comicChapters_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_comicImgs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_comicImgs(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ComicImgs(rctx, fc.Args["after"].(*entgql.Cursor[string]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[string]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.ComicImgOrder), fc.Args["where"].(*ent.ComicImgWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.ComicImgConnection)
-	fc.Result = res
-	return ec.marshalNComicImgConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_comicImgs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_ComicImgConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_ComicImgConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_ComicImgConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ComicImgConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_comicImgs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_genres(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_genres(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Genres(rctx, fc.Args["after"].(*entgql.Cursor[string]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[string]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.GenreOrder), fc.Args["where"].(*ent.GenreWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.GenreConnection)
-	fc.Result = res
-	return ec.marshalNGenreConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_genres(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_GenreConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_GenreConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_GenreConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type GenreConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_genres_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Query_now(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_now(ctx, field)
 	if err != nil {
@@ -7550,11 +5562,14 @@ func (ec *executionContext) _Query_now(ctx context.Context, field graphql.Collec
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_now(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7564,7 +5579,7 @@ func (ec *executionContext) fieldContext_Query_now(_ context.Context, field grap
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -17070,180 +15085,6 @@ func (ec *executionContext) _ComicChapter(ctx context.Context, sel ast.Selection
 	return out
 }
 
-var comicChapterConnectionImplementors = []string{"ComicChapterConnection"}
-
-func (ec *executionContext) _ComicChapterConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicChapterConnection) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, comicChapterConnectionImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ComicChapterConnection")
-		case "edges":
-			out.Values[i] = ec._ComicChapterConnection_edges(ctx, field, obj)
-		case "pageInfo":
-			out.Values[i] = ec._ComicChapterConnection_pageInfo(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "totalCount":
-			out.Values[i] = ec._ComicChapterConnection_totalCount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var comicChapterEdgeImplementors = []string{"ComicChapterEdge"}
-
-func (ec *executionContext) _ComicChapterEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicChapterEdge) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, comicChapterEdgeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ComicChapterEdge")
-		case "node":
-			out.Values[i] = ec._ComicChapterEdge_node(ctx, field, obj)
-		case "cursor":
-			out.Values[i] = ec._ComicChapterEdge_cursor(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var comicConnectionImplementors = []string{"ComicConnection"}
-
-func (ec *executionContext) _ComicConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicConnection) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, comicConnectionImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ComicConnection")
-		case "edges":
-			out.Values[i] = ec._ComicConnection_edges(ctx, field, obj)
-		case "pageInfo":
-			out.Values[i] = ec._ComicConnection_pageInfo(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "totalCount":
-			out.Values[i] = ec._ComicConnection_totalCount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var comicEdgeImplementors = []string{"ComicEdge"}
-
-func (ec *executionContext) _ComicEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicEdge) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, comicEdgeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ComicEdge")
-		case "node":
-			out.Values[i] = ec._ComicEdge_node(ctx, field, obj)
-		case "cursor":
-			out.Values[i] = ec._ComicEdge_cursor(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var comicImgImplementors = []string{"ComicImg", "Node"}
 
 func (ec *executionContext) _ComicImg(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicImg) graphql.Marshaler {
@@ -17356,93 +15197,6 @@ func (ec *executionContext) _ComicImg(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
-var comicImgConnectionImplementors = []string{"ComicImgConnection"}
-
-func (ec *executionContext) _ComicImgConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicImgConnection) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, comicImgConnectionImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ComicImgConnection")
-		case "edges":
-			out.Values[i] = ec._ComicImgConnection_edges(ctx, field, obj)
-		case "pageInfo":
-			out.Values[i] = ec._ComicImgConnection_pageInfo(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "totalCount":
-			out.Values[i] = ec._ComicImgConnection_totalCount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var comicImgEdgeImplementors = []string{"ComicImgEdge"}
-
-func (ec *executionContext) _ComicImgEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ComicImgEdge) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, comicImgEdgeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ComicImgEdge")
-		case "node":
-			out.Values[i] = ec._ComicImgEdge_node(ctx, field, obj)
-		case "cursor":
-			out.Values[i] = ec._ComicImgEdge_cursor(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var genreImplementors = []string{"Genre", "Node"}
 
 func (ec *executionContext) _Genre(ctx context.Context, sel ast.SelectionSet, obj *ent.Genre) graphql.Marshaler {
@@ -17476,93 +15230,6 @@ func (ec *executionContext) _Genre(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "type":
 			out.Values[i] = ec._Genre_type(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var genreConnectionImplementors = []string{"GenreConnection"}
-
-func (ec *executionContext) _GenreConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.GenreConnection) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, genreConnectionImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("GenreConnection")
-		case "edges":
-			out.Values[i] = ec._GenreConnection_edges(ctx, field, obj)
-		case "pageInfo":
-			out.Values[i] = ec._GenreConnection_pageInfo(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "totalCount":
-			out.Values[i] = ec._GenreConnection_totalCount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var genreEdgeImplementors = []string{"GenreEdge"}
-
-func (ec *executionContext) _GenreEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.GenreEdge) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, genreEdgeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("GenreEdge")
-		case "node":
-			out.Values[i] = ec._GenreEdge_node(ctx, field, obj)
-		case "cursor":
-			out.Values[i] = ec._GenreEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -17799,104 +15466,19 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "comics":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_comics(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "comicChapters":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_comicChapters(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "comicImgs":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_comicImgs(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "genres":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_genres(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "now":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_now(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -18717,20 +16299,6 @@ func (ec *executionContext) marshalNComicChapter2ᚖgithubᚗcomᚋgvaᚋinterna
 	return ec._ComicChapter(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNComicChapterConnection2githubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterConnection(ctx context.Context, sel ast.SelectionSet, v ent.ComicChapterConnection) graphql.Marshaler {
-	return ec._ComicChapterConnection(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNComicChapterConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ComicChapterConnection) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._ComicChapterConnection(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNComicChapterOrderField2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterOrderField(ctx context.Context, v interface{}) (*ent.ComicChapterOrderField, error) {
 	var res = new(ent.ComicChapterOrderField)
 	err := res.UnmarshalGQL(v)
@@ -18752,20 +16320,6 @@ func (ec *executionContext) unmarshalNComicChapterWhereInput2ᚖgithubᚗcomᚋg
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNComicConnection2githubᚗcomᚋgvaᚋinternalᚋentᚐComicConnection(ctx context.Context, sel ast.SelectionSet, v ent.ComicConnection) graphql.Marshaler {
-	return ec._ComicConnection(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNComicConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ComicConnection) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._ComicConnection(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNComicImg2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImg(ctx context.Context, sel ast.SelectionSet, v *ent.ComicImg) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -18774,20 +16328,6 @@ func (ec *executionContext) marshalNComicImg2ᚖgithubᚗcomᚋgvaᚋinternalᚋ
 		return graphql.Null
 	}
 	return ec._ComicImg(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNComicImgConnection2githubᚗcomᚋgvaᚋinternalᚋentᚐComicImgConnection(ctx context.Context, sel ast.SelectionSet, v ent.ComicImgConnection) graphql.Marshaler {
-	return ec._ComicImgConnection(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNComicImgConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ComicImgConnection) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._ComicImgConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNComicImgOrderField2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgOrderField(ctx context.Context, v interface{}) (*ent.ComicImgOrderField, error) {
@@ -18877,30 +16417,6 @@ func (ec *executionContext) marshalNCoverImg2ᚕstringᚄ(ctx context.Context, s
 	}
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (entgql.Cursor[string], error) {
-	var res entgql.Cursor[string]
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v entgql.Cursor[string]) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) marshalNGenreConnection2githubᚗcomᚋgvaᚋinternalᚋentᚐGenreConnection(ctx context.Context, sel ast.SelectionSet, v ent.GenreConnection) graphql.Marshaler {
-	return ec._GenreConnection(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNGenreConnection2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreConnection(ctx context.Context, sel ast.SelectionSet, v *ent.GenreConnection) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._GenreConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNGenreOrderField2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreOrderField(ctx context.Context, v interface{}) (*ent.GenreOrderField, error) {
@@ -19057,10 +16573,6 @@ func (ec *executionContext) unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentg
 
 func (ec *executionContext) marshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx context.Context, sel ast.SelectionSet, v entgql.OrderDirection) graphql.Marshaler {
 	return v
-}
-
-func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v entgql.PageInfo[string]) graphql.Marshaler {
-	return ec._PageInfo(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNPermission2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐPermission(ctx context.Context, sel ast.SelectionSet, v *ent.Permission) graphql.Marshaler {
@@ -19235,6 +16747,27 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v in
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -19658,62 +17191,6 @@ func (ec *executionContext) marshalOComicChapter2ᚖgithubᚗcomᚋgvaᚋinterna
 	return ec._ComicChapter(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOComicChapterEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ComicChapterEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOComicChapterEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterEdge(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOComicChapterEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ComicChapterEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ComicChapterEdge(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOComicChapterOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterOrder(ctx context.Context, v interface{}) (*ent.ComicChapterOrder, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputComicChapterOrder(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalOComicChapterWhereInput2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicChapterWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ComicChapterWhereInput, error) {
 	if v == nil {
 		return nil, nil
@@ -19740,54 +17217,6 @@ func (ec *executionContext) unmarshalOComicChapterWhereInput2ᚖgithubᚗcomᚋg
 	}
 	res, err := ec.unmarshalInputComicChapterWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOComicEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ComicEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOComicEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicEdge(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOComicEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ComicEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ComicEdge(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOComicImg2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ComicImg) graphql.Marshaler {
@@ -19837,69 +17266,6 @@ func (ec *executionContext) marshalOComicImg2ᚕᚖgithubᚗcomᚋgvaᚋinternal
 	return ret
 }
 
-func (ec *executionContext) marshalOComicImg2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImg(ctx context.Context, sel ast.SelectionSet, v *ent.ComicImg) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ComicImg(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOComicImgEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ComicImgEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOComicImgEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgEdge(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOComicImgEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ComicImgEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ComicImgEdge(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOComicImgOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgOrder(ctx context.Context, v interface{}) (*ent.ComicImgOrder, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputComicImgOrder(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalOComicImgWhereInput2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicImgWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ComicImgWhereInput, error) {
 	if v == nil {
 		return nil, nil
@@ -19925,14 +17291,6 @@ func (ec *executionContext) unmarshalOComicImgWhereInput2ᚖgithubᚗcomᚋgva�
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputComicImgWhereInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalOComicOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐComicOrder(ctx context.Context, v interface{}) (*ent.ComicOrder, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputComicOrder(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -19978,69 +17336,6 @@ func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCu
 		return graphql.Null
 	}
 	return v
-}
-
-func (ec *executionContext) marshalOGenre2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenre(ctx context.Context, sel ast.SelectionSet, v *ent.Genre) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Genre(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOGenreEdge2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.GenreEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOGenreEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreEdge(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOGenreEdge2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreEdge(ctx context.Context, sel ast.SelectionSet, v *ent.GenreEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._GenreEdge(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOGenreOrder2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐGenreOrder(ctx context.Context, v interface{}) (*ent.GenreOrder, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputGenreOrder(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOGenreType2ᚕgithubᚗcomᚋgvaᚋinternalᚋentᚋgenreᚐTypeᚄ(ctx context.Context, v interface{}) ([]genre.Type, error) {

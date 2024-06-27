@@ -67,8 +67,9 @@ skip_mod_tidy: true
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - github.com/gva/internal/ent
-  - github.com/99designs/gqlgen/graphql/introspection
+  - "github.com/99designs/gqlgen/graphql/introspection"
+  - "github.com/gva/internal/ent"
+  - "github.com/gva/internal/ent/comic"
 
 
 # This section declares type mapping between the GraphQL and go type systems
@@ -80,11 +81,6 @@ models:
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID
-  Int:
+  Node:
     model:
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
-  # Node:
-  #   model:
-  #     - github.com/gva/internal/ent/ent.Noder
+      - github.com/gva/internal/ent.Noder

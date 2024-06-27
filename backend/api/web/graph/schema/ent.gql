@@ -161,36 +161,6 @@ type ComicChapter implements Node {
   comic: Comic
 }
 """
-A connection to a list of items.
-"""
-type ComicChapterConnection {
-  """
-  A list of edges.
-  """
-  edges: [ComicChapterEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type ComicChapterEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: ComicChapter
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
-}
-"""
 Ordering options for ComicChapter connections
 """
 input ComicChapterOrder {
@@ -353,36 +323,6 @@ input ComicChapterWhereInput {
   hasComic: Boolean
   hasComicWith: [ComicWhereInput!]
 }
-"""
-A connection to a list of items.
-"""
-type ComicConnection {
-  """
-  A list of edges.
-  """
-  edges: [ComicEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type ComicEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: Comic
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
-}
 type ComicImg implements Node {
   id: ID!
   createdAt: Time!
@@ -394,36 +334,6 @@ type ComicImg implements Node {
   size: Int!
   width: Int!
   chapter: ComicChapter
-}
-"""
-A connection to a list of items.
-"""
-type ComicImgConnection {
-  """
-  A list of edges.
-  """
-  edges: [ComicImgEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type ComicImgEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: ComicImg
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
 }
 """
 Ordering options for ComicImg connections
@@ -771,36 +681,6 @@ type Genre implements Node {
   type: GenreType!
 }
 """
-A connection to a list of items.
-"""
-type GenreConnection {
-  """
-  A list of edges.
-  """
-  edges: [GenreEdge]
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  Identifies the total count of items in the connection.
-  """
-  totalCount: Int!
-}
-"""
-An edge in a connection.
-"""
-type GenreEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: Genre
-  """
-  A cursor for use in pagination.
-  """
-  cursor: Cursor!
-}
-"""
 Ordering options for Genre connections
 """
 input GenreOrder {
@@ -1093,130 +973,6 @@ type Query {
     """
     ids: [ID!]!
   ): [Node]!
-  comics(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for Comics returned from the connection.
-    """
-    orderBy: ComicOrder
-
-    """
-    Filtering options for Comics returned from the connection.
-    """
-    where: ComicWhereInput
-  ): ComicConnection!
-  comicChapters(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for ComicChapters returned from the connection.
-    """
-    orderBy: ComicChapterOrder
-
-    """
-    Filtering options for ComicChapters returned from the connection.
-    """
-    where: ComicChapterWhereInput
-  ): ComicChapterConnection!
-  comicImgs(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for ComicImgs returned from the connection.
-    """
-    orderBy: ComicImgOrder
-
-    """
-    Filtering options for ComicImgs returned from the connection.
-    """
-    where: ComicImgWhereInput
-  ): ComicImgConnection!
-  genres(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    Ordering options for Genres returned from the connection.
-    """
-    orderBy: GenreOrder
-
-    """
-    Filtering options for Genres returned from the connection.
-    """
-    where: GenreWhereInput
-  ): GenreConnection!
 }
 type Role implements Node {
   id: ID!

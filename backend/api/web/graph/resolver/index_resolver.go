@@ -6,10 +6,11 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"time"
 )
 
 // Now is the resolver for the now field.
-func (r *queryResolver) Now(ctx context.Context) (*string, error) {
-	panic(fmt.Errorf("not implemented: Now - now"))
+func (r *queryResolver) Now(ctx context.Context) (*time.Time, error) {
+	t, e := r.index_s.Now(ctx)
+	return &t, e
 }
