@@ -29,7 +29,7 @@ type Bootstrap struct {
 	isShuttingdown bool
 }
 
-func New(
+func NewBootstrap(
 	lc fx.Lifecycle,
 	cfg *env.Config,
 	routers *router.Router,
