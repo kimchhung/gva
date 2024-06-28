@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/comicimg"
@@ -143,8 +144,8 @@ func (ccq *ComicChapterQuery) FirstX(ctx context.Context) *ComicChapter {
 
 // FirstID returns the first ComicChapter ID from the query.
 // Returns a *NotFoundError when no ComicChapter ID was found.
-func (ccq *ComicChapterQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (ccq *ComicChapterQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = ccq.Limit(1).IDs(setContextOp(ctx, ccq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -156,7 +157,7 @@ func (ccq *ComicChapterQuery) FirstID(ctx context.Context) (id string, err error
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ccq *ComicChapterQuery) FirstIDX(ctx context.Context) string {
+func (ccq *ComicChapterQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := ccq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -194,8 +195,8 @@ func (ccq *ComicChapterQuery) OnlyX(ctx context.Context) *ComicChapter {
 // OnlyID is like Only, but returns the only ComicChapter ID in the query.
 // Returns a *NotSingularError when more than one ComicChapter ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ccq *ComicChapterQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (ccq *ComicChapterQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = ccq.Limit(2).IDs(setContextOp(ctx, ccq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -211,7 +212,7 @@ func (ccq *ComicChapterQuery) OnlyID(ctx context.Context) (id string, err error)
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ccq *ComicChapterQuery) OnlyIDX(ctx context.Context) string {
+func (ccq *ComicChapterQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := ccq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -239,7 +240,7 @@ func (ccq *ComicChapterQuery) AllX(ctx context.Context) []*ComicChapter {
 }
 
 // IDs executes the query and returns a list of ComicChapter IDs.
-func (ccq *ComicChapterQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (ccq *ComicChapterQuery) IDs(ctx context.Context) (ids []pulid.ID, err error) {
 	if ccq.ctx.Unique == nil && ccq.path != nil {
 		ccq.Unique(true)
 	}
@@ -251,7 +252,7 @@ func (ccq *ComicChapterQuery) IDs(ctx context.Context) (ids []string, err error)
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ccq *ComicChapterQuery) IDsX(ctx context.Context) []string {
+func (ccq *ComicChapterQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := ccq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -494,7 +495,7 @@ func (ccq *ComicChapterQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 
 func (ccq *ComicChapterQuery) loadImgs(ctx context.Context, query *ComicImgQuery, nodes []*ComicChapter, init func(*ComicChapter), assign func(*ComicChapter, *ComicImg)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*ComicChapter)
+	nodeids := make(map[pulid.ID]*ComicChapter)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -524,8 +525,8 @@ func (ccq *ComicChapterQuery) loadImgs(ctx context.Context, query *ComicImgQuery
 	return nil
 }
 func (ccq *ComicChapterQuery) loadComic(ctx context.Context, query *ComicQuery, nodes []*ComicChapter, init func(*ComicChapter), assign func(*ComicChapter, *Comic)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*ComicChapter)
+	ids := make([]pulid.ID, 0, len(nodes))
+	nodeids := make(map[pulid.ID][]*ComicChapter)
 	for i := range nodes {
 		if nodes[i].comic_chapters == nil {
 			continue

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/comicimg"
@@ -185,14 +186,14 @@ func (ccu *ComicChapterUpdate) SetNillableIsLastChapter(b *bool) *ComicChapterUp
 }
 
 // AddImgIDs adds the "imgs" edge to the ComicImg entity by IDs.
-func (ccu *ComicChapterUpdate) AddImgIDs(ids ...string) *ComicChapterUpdate {
+func (ccu *ComicChapterUpdate) AddImgIDs(ids ...pulid.ID) *ComicChapterUpdate {
 	ccu.mutation.AddImgIDs(ids...)
 	return ccu
 }
 
 // AddImgs adds the "imgs" edges to the ComicImg entity.
 func (ccu *ComicChapterUpdate) AddImgs(c ...*ComicImg) *ComicChapterUpdate {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -200,13 +201,13 @@ func (ccu *ComicChapterUpdate) AddImgs(c ...*ComicImg) *ComicChapterUpdate {
 }
 
 // SetComicID sets the "comic" edge to the Comic entity by ID.
-func (ccu *ComicChapterUpdate) SetComicID(id string) *ComicChapterUpdate {
+func (ccu *ComicChapterUpdate) SetComicID(id pulid.ID) *ComicChapterUpdate {
 	ccu.mutation.SetComicID(id)
 	return ccu
 }
 
 // SetNillableComicID sets the "comic" edge to the Comic entity by ID if the given value is not nil.
-func (ccu *ComicChapterUpdate) SetNillableComicID(id *string) *ComicChapterUpdate {
+func (ccu *ComicChapterUpdate) SetNillableComicID(id *pulid.ID) *ComicChapterUpdate {
 	if id != nil {
 		ccu = ccu.SetComicID(*id)
 	}
@@ -230,14 +231,14 @@ func (ccu *ComicChapterUpdate) ClearImgs() *ComicChapterUpdate {
 }
 
 // RemoveImgIDs removes the "imgs" edge to ComicImg entities by IDs.
-func (ccu *ComicChapterUpdate) RemoveImgIDs(ids ...string) *ComicChapterUpdate {
+func (ccu *ComicChapterUpdate) RemoveImgIDs(ids ...pulid.ID) *ComicChapterUpdate {
 	ccu.mutation.RemoveImgIDs(ids...)
 	return ccu
 }
 
 // RemoveImgs removes "imgs" edges to ComicImg entities.
 func (ccu *ComicChapterUpdate) RemoveImgs(c ...*ComicImg) *ComicChapterUpdate {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -598,14 +599,14 @@ func (ccuo *ComicChapterUpdateOne) SetNillableIsLastChapter(b *bool) *ComicChapt
 }
 
 // AddImgIDs adds the "imgs" edge to the ComicImg entity by IDs.
-func (ccuo *ComicChapterUpdateOne) AddImgIDs(ids ...string) *ComicChapterUpdateOne {
+func (ccuo *ComicChapterUpdateOne) AddImgIDs(ids ...pulid.ID) *ComicChapterUpdateOne {
 	ccuo.mutation.AddImgIDs(ids...)
 	return ccuo
 }
 
 // AddImgs adds the "imgs" edges to the ComicImg entity.
 func (ccuo *ComicChapterUpdateOne) AddImgs(c ...*ComicImg) *ComicChapterUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -613,13 +614,13 @@ func (ccuo *ComicChapterUpdateOne) AddImgs(c ...*ComicImg) *ComicChapterUpdateOn
 }
 
 // SetComicID sets the "comic" edge to the Comic entity by ID.
-func (ccuo *ComicChapterUpdateOne) SetComicID(id string) *ComicChapterUpdateOne {
+func (ccuo *ComicChapterUpdateOne) SetComicID(id pulid.ID) *ComicChapterUpdateOne {
 	ccuo.mutation.SetComicID(id)
 	return ccuo
 }
 
 // SetNillableComicID sets the "comic" edge to the Comic entity by ID if the given value is not nil.
-func (ccuo *ComicChapterUpdateOne) SetNillableComicID(id *string) *ComicChapterUpdateOne {
+func (ccuo *ComicChapterUpdateOne) SetNillableComicID(id *pulid.ID) *ComicChapterUpdateOne {
 	if id != nil {
 		ccuo = ccuo.SetComicID(*id)
 	}
@@ -643,14 +644,14 @@ func (ccuo *ComicChapterUpdateOne) ClearImgs() *ComicChapterUpdateOne {
 }
 
 // RemoveImgIDs removes the "imgs" edge to ComicImg entities by IDs.
-func (ccuo *ComicChapterUpdateOne) RemoveImgIDs(ids ...string) *ComicChapterUpdateOne {
+func (ccuo *ComicChapterUpdateOne) RemoveImgIDs(ids ...pulid.ID) *ComicChapterUpdateOne {
 	ccuo.mutation.RemoveImgIDs(ids...)
 	return ccuo
 }
 
 // RemoveImgs removes "imgs" edges to ComicImg entities.
 func (ccuo *ComicChapterUpdateOne) RemoveImgs(c ...*ComicImg) *ComicChapterUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}

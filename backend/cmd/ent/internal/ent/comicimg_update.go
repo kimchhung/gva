@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/comicimg"
 	"github.com/gva/internal/ent/predicate"
@@ -165,13 +166,13 @@ func (ciu *ComicImgUpdate) AddWidth(i int) *ComicImgUpdate {
 }
 
 // SetChapterID sets the "chapter" edge to the ComicChapter entity by ID.
-func (ciu *ComicImgUpdate) SetChapterID(id string) *ComicImgUpdate {
+func (ciu *ComicImgUpdate) SetChapterID(id pulid.ID) *ComicImgUpdate {
 	ciu.mutation.SetChapterID(id)
 	return ciu
 }
 
 // SetNillableChapterID sets the "chapter" edge to the ComicChapter entity by ID if the given value is not nil.
-func (ciu *ComicImgUpdate) SetNillableChapterID(id *string) *ComicImgUpdate {
+func (ciu *ComicImgUpdate) SetNillableChapterID(id *pulid.ID) *ComicImgUpdate {
 	if id != nil {
 		ciu = ciu.SetChapterID(*id)
 	}
@@ -469,13 +470,13 @@ func (ciuo *ComicImgUpdateOne) AddWidth(i int) *ComicImgUpdateOne {
 }
 
 // SetChapterID sets the "chapter" edge to the ComicChapter entity by ID.
-func (ciuo *ComicImgUpdateOne) SetChapterID(id string) *ComicImgUpdateOne {
+func (ciuo *ComicImgUpdateOne) SetChapterID(id pulid.ID) *ComicImgUpdateOne {
 	ciuo.mutation.SetChapterID(id)
 	return ciuo
 }
 
 // SetNillableChapterID sets the "chapter" edge to the ComicChapter entity by ID if the given value is not nil.
-func (ciuo *ComicImgUpdateOne) SetNillableChapterID(id *string) *ComicImgUpdateOne {
+func (ciuo *ComicImgUpdateOne) SetNillableChapterID(id *pulid.ID) *ComicImgUpdateOne {
 	if id != nil {
 		ciuo = ciuo.SetChapterID(*id)
 	}

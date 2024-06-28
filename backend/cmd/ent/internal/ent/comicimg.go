@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/comicimg"
 )
@@ -17,7 +18,7 @@ import (
 type ComicImg struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID string `json:"id" rql:"filter,sort"`
+	ID pulid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -37,7 +38,7 @@ type ComicImg struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ComicImgQuery when eager-loading is set.
 	Edges              ComicImgEdges `json:"edges" rql:"-"`
-	comic_chapter_imgs *string
+	comic_chapter_imgs *pulid.ID
 	selectValues       sql.SelectValues
 }
 
@@ -68,14 +69,16 @@ func (*ComicImg) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case comicimg.FieldID:
+			values[i] = new(pulid.ID)
 		case comicimg.FieldHeight, comicimg.FieldOptimizedSize, comicimg.FieldSize, comicimg.FieldWidth:
 			values[i] = new(sql.NullInt64)
-		case comicimg.FieldID, comicimg.FieldB2key, comicimg.FieldName:
+		case comicimg.FieldB2key, comicimg.FieldName:
 			values[i] = new(sql.NullString)
 		case comicimg.FieldCreatedAt, comicimg.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case comicimg.ForeignKeys[0]: // comic_chapter_imgs
-			values[i] = new(sql.NullString)
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -92,10 +95,10 @@ func (ci *ComicImg) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case comicimg.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*pulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				ci.ID = value.String
+			} else if value != nil {
+				ci.ID = *value
 			}
 		case comicimg.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -146,11 +149,11 @@ func (ci *ComicImg) assignValues(columns []string, values []any) error {
 				ci.Width = int(value.Int64)
 			}
 		case comicimg.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field comic_chapter_imgs", values[i])
 			} else if value.Valid {
-				ci.comic_chapter_imgs = new(string)
-				*ci.comic_chapter_imgs = value.String
+				ci.comic_chapter_imgs = new(pulid.ID)
+				*ci.comic_chapter_imgs = *value.S.(*pulid.ID)
 			}
 		default:
 			ci.selectValues.Set(columns[i], values[i])

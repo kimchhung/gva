@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/genre"
 )
 
@@ -64,15 +65,15 @@ func (gc *GenreCreate) SetType(ge genre.Type) *GenreCreate {
 }
 
 // SetID sets the "id" field.
-func (gc *GenreCreate) SetID(s string) *GenreCreate {
-	gc.mutation.SetID(s)
+func (gc *GenreCreate) SetID(pu pulid.ID) *GenreCreate {
+	gc.mutation.SetID(pu)
 	return gc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (gc *GenreCreate) SetNillableID(s *string) *GenreCreate {
-	if s != nil {
-		gc.SetID(*s)
+func (gc *GenreCreate) SetNillableID(pu *pulid.ID) *GenreCreate {
+	if pu != nil {
+		gc.SetID(*pu)
 	}
 	return gc
 }
@@ -160,10 +161,10 @@ func (gc *GenreCreate) sqlSave(ctx context.Context) (*Genre, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Genre.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*pulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	gc.mutation.id = &_node.ID
@@ -180,7 +181,7 @@ func (gc *GenreCreate) createSpec() (*Genre, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = gc.conflict
 	if id, ok := gc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := gc.mutation.CreatedAt(); ok {
 		_spec.SetField(genre.FieldCreatedAt, field.TypeTime, value)
@@ -418,7 +419,7 @@ func (u *GenreUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *GenreUpsertOne) ID(ctx context.Context) (id string, err error) {
+func (u *GenreUpsertOne) ID(ctx context.Context) (id pulid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -432,7 +433,7 @@ func (u *GenreUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *GenreUpsertOne) IDX(ctx context.Context) string {
+func (u *GenreUpsertOne) IDX(ctx context.Context) pulid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

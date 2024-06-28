@@ -7,64 +7,55 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.Comic {
+func ID(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.Comic {
+func IDEQ(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.Comic {
+func IDNEQ(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.Comic {
+func IDIn(ids ...pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.Comic {
+func IDNotIn(ids ...pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.Comic {
+func IDGT(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.Comic {
+func IDGTE(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.Comic {
+func IDLT(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.Comic {
+func IDLTE(id pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.Comic {
-	return predicate.Comic(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.Comic {
-	return predicate.Comic(sql.FieldContainsFold(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -108,12 +99,12 @@ func UpCount(v uint) predicate.Comic {
 }
 
 // FinalChapterID applies equality check predicate on the "final_chapter_id" field. It's identical to FinalChapterIDEQ.
-func FinalChapterID(v string) predicate.Comic {
+func FinalChapterID(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldEQ(FieldFinalChapterID, v))
 }
 
 // LastChapterID applies equality check predicate on the "last_chapter_id" field. It's identical to LastChapterIDEQ.
-func LastChapterID(v string) predicate.Comic {
+func LastChapterID(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldEQ(FieldLastChapterID, v))
 }
 
@@ -483,58 +474,61 @@ func UpCountLTE(v uint) predicate.Comic {
 }
 
 // FinalChapterIDEQ applies the EQ predicate on the "final_chapter_id" field.
-func FinalChapterIDEQ(v string) predicate.Comic {
+func FinalChapterIDEQ(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldEQ(FieldFinalChapterID, v))
 }
 
 // FinalChapterIDNEQ applies the NEQ predicate on the "final_chapter_id" field.
-func FinalChapterIDNEQ(v string) predicate.Comic {
+func FinalChapterIDNEQ(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldNEQ(FieldFinalChapterID, v))
 }
 
 // FinalChapterIDIn applies the In predicate on the "final_chapter_id" field.
-func FinalChapterIDIn(vs ...string) predicate.Comic {
+func FinalChapterIDIn(vs ...pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldIn(FieldFinalChapterID, vs...))
 }
 
 // FinalChapterIDNotIn applies the NotIn predicate on the "final_chapter_id" field.
-func FinalChapterIDNotIn(vs ...string) predicate.Comic {
+func FinalChapterIDNotIn(vs ...pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldNotIn(FieldFinalChapterID, vs...))
 }
 
 // FinalChapterIDGT applies the GT predicate on the "final_chapter_id" field.
-func FinalChapterIDGT(v string) predicate.Comic {
+func FinalChapterIDGT(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldGT(FieldFinalChapterID, v))
 }
 
 // FinalChapterIDGTE applies the GTE predicate on the "final_chapter_id" field.
-func FinalChapterIDGTE(v string) predicate.Comic {
+func FinalChapterIDGTE(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldGTE(FieldFinalChapterID, v))
 }
 
 // FinalChapterIDLT applies the LT predicate on the "final_chapter_id" field.
-func FinalChapterIDLT(v string) predicate.Comic {
+func FinalChapterIDLT(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldLT(FieldFinalChapterID, v))
 }
 
 // FinalChapterIDLTE applies the LTE predicate on the "final_chapter_id" field.
-func FinalChapterIDLTE(v string) predicate.Comic {
+func FinalChapterIDLTE(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldLTE(FieldFinalChapterID, v))
 }
 
 // FinalChapterIDContains applies the Contains predicate on the "final_chapter_id" field.
-func FinalChapterIDContains(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldContains(FieldFinalChapterID, v))
+func FinalChapterIDContains(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldContains(FieldFinalChapterID, vc))
 }
 
 // FinalChapterIDHasPrefix applies the HasPrefix predicate on the "final_chapter_id" field.
-func FinalChapterIDHasPrefix(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldHasPrefix(FieldFinalChapterID, v))
+func FinalChapterIDHasPrefix(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldHasPrefix(FieldFinalChapterID, vc))
 }
 
 // FinalChapterIDHasSuffix applies the HasSuffix predicate on the "final_chapter_id" field.
-func FinalChapterIDHasSuffix(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldHasSuffix(FieldFinalChapterID, v))
+func FinalChapterIDHasSuffix(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldHasSuffix(FieldFinalChapterID, vc))
 }
 
 // FinalChapterIDIsNil applies the IsNil predicate on the "final_chapter_id" field.
@@ -548,68 +542,73 @@ func FinalChapterIDNotNil() predicate.Comic {
 }
 
 // FinalChapterIDEqualFold applies the EqualFold predicate on the "final_chapter_id" field.
-func FinalChapterIDEqualFold(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldEqualFold(FieldFinalChapterID, v))
+func FinalChapterIDEqualFold(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldEqualFold(FieldFinalChapterID, vc))
 }
 
 // FinalChapterIDContainsFold applies the ContainsFold predicate on the "final_chapter_id" field.
-func FinalChapterIDContainsFold(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldContainsFold(FieldFinalChapterID, v))
+func FinalChapterIDContainsFold(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldContainsFold(FieldFinalChapterID, vc))
 }
 
 // LastChapterIDEQ applies the EQ predicate on the "last_chapter_id" field.
-func LastChapterIDEQ(v string) predicate.Comic {
+func LastChapterIDEQ(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldEQ(FieldLastChapterID, v))
 }
 
 // LastChapterIDNEQ applies the NEQ predicate on the "last_chapter_id" field.
-func LastChapterIDNEQ(v string) predicate.Comic {
+func LastChapterIDNEQ(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldNEQ(FieldLastChapterID, v))
 }
 
 // LastChapterIDIn applies the In predicate on the "last_chapter_id" field.
-func LastChapterIDIn(vs ...string) predicate.Comic {
+func LastChapterIDIn(vs ...pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldIn(FieldLastChapterID, vs...))
 }
 
 // LastChapterIDNotIn applies the NotIn predicate on the "last_chapter_id" field.
-func LastChapterIDNotIn(vs ...string) predicate.Comic {
+func LastChapterIDNotIn(vs ...pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldNotIn(FieldLastChapterID, vs...))
 }
 
 // LastChapterIDGT applies the GT predicate on the "last_chapter_id" field.
-func LastChapterIDGT(v string) predicate.Comic {
+func LastChapterIDGT(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldGT(FieldLastChapterID, v))
 }
 
 // LastChapterIDGTE applies the GTE predicate on the "last_chapter_id" field.
-func LastChapterIDGTE(v string) predicate.Comic {
+func LastChapterIDGTE(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldGTE(FieldLastChapterID, v))
 }
 
 // LastChapterIDLT applies the LT predicate on the "last_chapter_id" field.
-func LastChapterIDLT(v string) predicate.Comic {
+func LastChapterIDLT(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldLT(FieldLastChapterID, v))
 }
 
 // LastChapterIDLTE applies the LTE predicate on the "last_chapter_id" field.
-func LastChapterIDLTE(v string) predicate.Comic {
+func LastChapterIDLTE(v pulid.ID) predicate.Comic {
 	return predicate.Comic(sql.FieldLTE(FieldLastChapterID, v))
 }
 
 // LastChapterIDContains applies the Contains predicate on the "last_chapter_id" field.
-func LastChapterIDContains(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldContains(FieldLastChapterID, v))
+func LastChapterIDContains(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldContains(FieldLastChapterID, vc))
 }
 
 // LastChapterIDHasPrefix applies the HasPrefix predicate on the "last_chapter_id" field.
-func LastChapterIDHasPrefix(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldHasPrefix(FieldLastChapterID, v))
+func LastChapterIDHasPrefix(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldHasPrefix(FieldLastChapterID, vc))
 }
 
 // LastChapterIDHasSuffix applies the HasSuffix predicate on the "last_chapter_id" field.
-func LastChapterIDHasSuffix(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldHasSuffix(FieldLastChapterID, v))
+func LastChapterIDHasSuffix(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldHasSuffix(FieldLastChapterID, vc))
 }
 
 // LastChapterIDIsNil applies the IsNil predicate on the "last_chapter_id" field.
@@ -623,13 +622,15 @@ func LastChapterIDNotNil() predicate.Comic {
 }
 
 // LastChapterIDEqualFold applies the EqualFold predicate on the "last_chapter_id" field.
-func LastChapterIDEqualFold(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldEqualFold(FieldLastChapterID, v))
+func LastChapterIDEqualFold(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldEqualFold(FieldLastChapterID, vc))
 }
 
 // LastChapterIDContainsFold applies the ContainsFold predicate on the "last_chapter_id" field.
-func LastChapterIDContainsFold(v string) predicate.Comic {
-	return predicate.Comic(sql.FieldContainsFold(FieldLastChapterID, v))
+func LastChapterIDContainsFold(v pulid.ID) predicate.Comic {
+	vc := string(v)
+	return predicate.Comic(sql.FieldContainsFold(FieldLastChapterID, vc))
 }
 
 // HasChapters applies the HasEdge predicate on the "chapters" edge.

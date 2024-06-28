@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/predicate"
@@ -167,8 +168,8 @@ func (cq *ComicQuery) FirstX(ctx context.Context) *Comic {
 
 // FirstID returns the first Comic ID from the query.
 // Returns a *NotFoundError when no Comic ID was found.
-func (cq *ComicQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (cq *ComicQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -180,7 +181,7 @@ func (cq *ComicQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ComicQuery) FirstIDX(ctx context.Context) string {
+func (cq *ComicQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -218,8 +219,8 @@ func (cq *ComicQuery) OnlyX(ctx context.Context) *Comic {
 // OnlyID is like Only, but returns the only Comic ID in the query.
 // Returns a *NotSingularError when more than one Comic ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ComicQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (cq *ComicQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -235,7 +236,7 @@ func (cq *ComicQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ComicQuery) OnlyIDX(ctx context.Context) string {
+func (cq *ComicQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -263,7 +264,7 @@ func (cq *ComicQuery) AllX(ctx context.Context) []*Comic {
 }
 
 // IDs executes the query and returns a list of Comic IDs.
-func (cq *ComicQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (cq *ComicQuery) IDs(ctx context.Context) (ids []pulid.ID, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -275,7 +276,7 @@ func (cq *ComicQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ComicQuery) IDsX(ctx context.Context) []string {
+func (cq *ComicQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -530,7 +531,7 @@ func (cq *ComicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Comic,
 
 func (cq *ComicQuery) loadChapters(ctx context.Context, query *ComicChapterQuery, nodes []*Comic, init func(*Comic), assign func(*Comic, *ComicChapter)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Comic)
+	nodeids := make(map[pulid.ID]*Comic)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -560,8 +561,8 @@ func (cq *ComicQuery) loadChapters(ctx context.Context, query *ComicChapterQuery
 	return nil
 }
 func (cq *ComicQuery) loadLastChapter(ctx context.Context, query *ComicChapterQuery, nodes []*Comic, init func(*Comic), assign func(*Comic, *ComicChapter)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Comic)
+	ids := make([]pulid.ID, 0, len(nodes))
+	nodeids := make(map[pulid.ID][]*Comic)
 	for i := range nodes {
 		if nodes[i].LastChapterID == nil {
 			continue
@@ -592,8 +593,8 @@ func (cq *ComicQuery) loadLastChapter(ctx context.Context, query *ComicChapterQu
 	return nil
 }
 func (cq *ComicQuery) loadFinalChapter(ctx context.Context, query *ComicChapterQuery, nodes []*Comic, init func(*Comic), assign func(*Comic, *ComicChapter)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Comic)
+	ids := make([]pulid.ID, 0, len(nodes))
+	nodeids := make(map[pulid.ID][]*Comic)
 	for i := range nodes {
 		if nodes[i].FinalChapterID == nil {
 			continue

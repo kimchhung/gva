@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/pulid"
 )
 
 const (
@@ -103,7 +104,7 @@ var (
 	// DefaultIsLastChapter holds the default value on creation for the "is_last_chapter" field.
 	DefaultIsLastChapter bool
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() string
+	DefaultID func() pulid.ID
 )
 
 // OrderOption defines the ordering options for the ComicChapter queries.

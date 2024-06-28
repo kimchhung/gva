@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/types"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -165,15 +166,15 @@ func (cu *ComicUpdate) AddUpCount(u int) *ComicUpdate {
 }
 
 // SetFinalChapterID sets the "final_chapter_id" field.
-func (cu *ComicUpdate) SetFinalChapterID(s string) *ComicUpdate {
-	cu.mutation.SetFinalChapterID(s)
+func (cu *ComicUpdate) SetFinalChapterID(pu pulid.ID) *ComicUpdate {
+	cu.mutation.SetFinalChapterID(pu)
 	return cu
 }
 
 // SetNillableFinalChapterID sets the "final_chapter_id" field if the given value is not nil.
-func (cu *ComicUpdate) SetNillableFinalChapterID(s *string) *ComicUpdate {
-	if s != nil {
-		cu.SetFinalChapterID(*s)
+func (cu *ComicUpdate) SetNillableFinalChapterID(pu *pulid.ID) *ComicUpdate {
+	if pu != nil {
+		cu.SetFinalChapterID(*pu)
 	}
 	return cu
 }
@@ -185,15 +186,15 @@ func (cu *ComicUpdate) ClearFinalChapterID() *ComicUpdate {
 }
 
 // SetLastChapterID sets the "last_chapter_id" field.
-func (cu *ComicUpdate) SetLastChapterID(s string) *ComicUpdate {
-	cu.mutation.SetLastChapterID(s)
+func (cu *ComicUpdate) SetLastChapterID(pu pulid.ID) *ComicUpdate {
+	cu.mutation.SetLastChapterID(pu)
 	return cu
 }
 
 // SetNillableLastChapterID sets the "last_chapter_id" field if the given value is not nil.
-func (cu *ComicUpdate) SetNillableLastChapterID(s *string) *ComicUpdate {
-	if s != nil {
-		cu.SetLastChapterID(*s)
+func (cu *ComicUpdate) SetNillableLastChapterID(pu *pulid.ID) *ComicUpdate {
+	if pu != nil {
+		cu.SetLastChapterID(*pu)
 	}
 	return cu
 }
@@ -205,14 +206,14 @@ func (cu *ComicUpdate) ClearLastChapterID() *ComicUpdate {
 }
 
 // AddChapterIDs adds the "chapters" edge to the ComicChapter entity by IDs.
-func (cu *ComicUpdate) AddChapterIDs(ids ...string) *ComicUpdate {
+func (cu *ComicUpdate) AddChapterIDs(ids ...pulid.ID) *ComicUpdate {
 	cu.mutation.AddChapterIDs(ids...)
 	return cu
 }
 
 // AddChapters adds the "chapters" edges to the ComicChapter entity.
 func (cu *ComicUpdate) AddChapters(c ...*ComicChapter) *ComicUpdate {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -241,14 +242,14 @@ func (cu *ComicUpdate) ClearChapters() *ComicUpdate {
 }
 
 // RemoveChapterIDs removes the "chapters" edge to ComicChapter entities by IDs.
-func (cu *ComicUpdate) RemoveChapterIDs(ids ...string) *ComicUpdate {
+func (cu *ComicUpdate) RemoveChapterIDs(ids ...pulid.ID) *ComicUpdate {
 	cu.mutation.RemoveChapterIDs(ids...)
 	return cu
 }
 
 // RemoveChapters removes "chapters" edges to ComicChapter entities.
 func (cu *ComicUpdate) RemoveChapters(c ...*ComicChapter) *ComicUpdate {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -621,15 +622,15 @@ func (cuo *ComicUpdateOne) AddUpCount(u int) *ComicUpdateOne {
 }
 
 // SetFinalChapterID sets the "final_chapter_id" field.
-func (cuo *ComicUpdateOne) SetFinalChapterID(s string) *ComicUpdateOne {
-	cuo.mutation.SetFinalChapterID(s)
+func (cuo *ComicUpdateOne) SetFinalChapterID(pu pulid.ID) *ComicUpdateOne {
+	cuo.mutation.SetFinalChapterID(pu)
 	return cuo
 }
 
 // SetNillableFinalChapterID sets the "final_chapter_id" field if the given value is not nil.
-func (cuo *ComicUpdateOne) SetNillableFinalChapterID(s *string) *ComicUpdateOne {
-	if s != nil {
-		cuo.SetFinalChapterID(*s)
+func (cuo *ComicUpdateOne) SetNillableFinalChapterID(pu *pulid.ID) *ComicUpdateOne {
+	if pu != nil {
+		cuo.SetFinalChapterID(*pu)
 	}
 	return cuo
 }
@@ -641,15 +642,15 @@ func (cuo *ComicUpdateOne) ClearFinalChapterID() *ComicUpdateOne {
 }
 
 // SetLastChapterID sets the "last_chapter_id" field.
-func (cuo *ComicUpdateOne) SetLastChapterID(s string) *ComicUpdateOne {
-	cuo.mutation.SetLastChapterID(s)
+func (cuo *ComicUpdateOne) SetLastChapterID(pu pulid.ID) *ComicUpdateOne {
+	cuo.mutation.SetLastChapterID(pu)
 	return cuo
 }
 
 // SetNillableLastChapterID sets the "last_chapter_id" field if the given value is not nil.
-func (cuo *ComicUpdateOne) SetNillableLastChapterID(s *string) *ComicUpdateOne {
-	if s != nil {
-		cuo.SetLastChapterID(*s)
+func (cuo *ComicUpdateOne) SetNillableLastChapterID(pu *pulid.ID) *ComicUpdateOne {
+	if pu != nil {
+		cuo.SetLastChapterID(*pu)
 	}
 	return cuo
 }
@@ -661,14 +662,14 @@ func (cuo *ComicUpdateOne) ClearLastChapterID() *ComicUpdateOne {
 }
 
 // AddChapterIDs adds the "chapters" edge to the ComicChapter entity by IDs.
-func (cuo *ComicUpdateOne) AddChapterIDs(ids ...string) *ComicUpdateOne {
+func (cuo *ComicUpdateOne) AddChapterIDs(ids ...pulid.ID) *ComicUpdateOne {
 	cuo.mutation.AddChapterIDs(ids...)
 	return cuo
 }
 
 // AddChapters adds the "chapters" edges to the ComicChapter entity.
 func (cuo *ComicUpdateOne) AddChapters(c ...*ComicChapter) *ComicUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -697,14 +698,14 @@ func (cuo *ComicUpdateOne) ClearChapters() *ComicUpdateOne {
 }
 
 // RemoveChapterIDs removes the "chapters" edge to ComicChapter entities by IDs.
-func (cuo *ComicUpdateOne) RemoveChapterIDs(ids ...string) *ComicUpdateOne {
+func (cuo *ComicUpdateOne) RemoveChapterIDs(ids ...pulid.ID) *ComicUpdateOne {
 	cuo.mutation.RemoveChapterIDs(ids...)
 	return cuo
 }
 
 // RemoveChapters removes "chapters" edges to ComicChapter entities.
 func (cuo *ComicUpdateOne) RemoveChapters(c ...*ComicChapter) *ComicUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}

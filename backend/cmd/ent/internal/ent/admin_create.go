@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/role"
 )
@@ -113,28 +114,28 @@ func (ac *AdminCreate) SetNillableDisplayName(s *string) *AdminCreate {
 }
 
 // SetID sets the "id" field.
-func (ac *AdminCreate) SetID(s string) *AdminCreate {
-	ac.mutation.SetID(s)
+func (ac *AdminCreate) SetID(pu pulid.ID) *AdminCreate {
+	ac.mutation.SetID(pu)
 	return ac
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ac *AdminCreate) SetNillableID(s *string) *AdminCreate {
-	if s != nil {
-		ac.SetID(*s)
+func (ac *AdminCreate) SetNillableID(pu *pulid.ID) *AdminCreate {
+	if pu != nil {
+		ac.SetID(*pu)
 	}
 	return ac
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ac *AdminCreate) AddRoleIDs(ids ...string) *AdminCreate {
+func (ac *AdminCreate) AddRoleIDs(ids ...pulid.ID) *AdminCreate {
 	ac.mutation.AddRoleIDs(ids...)
 	return ac
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ac *AdminCreate) AddRoles(r ...*Role) *AdminCreate {
-	ids := make([]string, len(r))
+	ids := make([]pulid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -248,10 +249,10 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Admin.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*pulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	ac.mutation.id = &_node.ID
@@ -268,7 +269,7 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = ac.conflict
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(admin.FieldCreatedAt, field.TypeTime, value)
@@ -669,7 +670,7 @@ func (u *AdminUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AdminUpsertOne) ID(ctx context.Context) (id string, err error) {
+func (u *AdminUpsertOne) ID(ctx context.Context) (id pulid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -683,7 +684,7 @@ func (u *AdminUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AdminUpsertOne) IDX(ctx context.Context) string {
+func (u *AdminUpsertOne) IDX(ctx context.Context) pulid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

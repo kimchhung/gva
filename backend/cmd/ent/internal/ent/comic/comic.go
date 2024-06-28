@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/pulid"
 )
 
 const (
@@ -105,7 +106,7 @@ var (
 	// DefaultUpCount holds the default value on creation for the "up_count" field.
 	DefaultUpCount uint
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() string
+	DefaultID func() pulid.ID
 )
 
 // OrderOption defines the ordering options for the Comic queries.

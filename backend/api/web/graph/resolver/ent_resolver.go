@@ -9,8 +9,19 @@ import (
 	"fmt"
 
 	"github.com/gva/api/web/graph/generated"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent"
 )
+
+// ID is the resolver for the id field.
+func (r *adminResolver) ID(ctx context.Context, obj *ent.Admin) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// ID is the resolver for the id field.
+func (r *comicResolver) ID(ctx context.Context, obj *ent.Comic) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
 
 // Chapter is the resolver for the chapter field.
 func (r *comicResolver) Chapter(ctx context.Context, obj *ent.Comic) (int, error) {
@@ -25,6 +36,21 @@ func (r *comicResolver) Covers(ctx context.Context, obj *ent.Comic) ([]string, e
 // UpCount is the resolver for the upCount field.
 func (r *comicResolver) UpCount(ctx context.Context, obj *ent.Comic) (int, error) {
 	panic(fmt.Errorf("not implemented: UpCount - upCount"))
+}
+
+// FinalChapterID is the resolver for the finalChapterID field.
+func (r *comicResolver) FinalChapterID(ctx context.Context, obj *ent.Comic) (*pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: FinalChapterID - finalChapterID"))
+}
+
+// LastChapterID is the resolver for the lastChapterID field.
+func (r *comicResolver) LastChapterID(ctx context.Context, obj *ent.Comic) (*pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: LastChapterID - lastChapterID"))
+}
+
+// ID is the resolver for the id field.
+func (r *comicChapterResolver) ID(ctx context.Context, obj *ent.ComicChapter) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
 }
 
 // Chapter is the resolver for the chapter field.
@@ -42,19 +68,129 @@ func (r *comicChapterResolver) DownCount(ctx context.Context, obj *ent.ComicChap
 	panic(fmt.Errorf("not implemented: DownCount - downCount"))
 }
 
+// ID is the resolver for the id field.
+func (r *comicImgResolver) ID(ctx context.Context, obj *ent.ComicImg) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// ID is the resolver for the id field.
+func (r *genreResolver) ID(ctx context.Context, obj *ent.Genre) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// ID is the resolver for the id field.
+func (r *permissionResolver) ID(ctx context.Context, obj *ent.Permission) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
 // Node is the resolver for the node field.
-func (r *queryResolver) Node(ctx context.Context, id string) (ent.Noder, error) {
-	panic(fmt.Errorf("not implemented: Node - node"))
+func (r *queryResolver) Node(ctx context.Context, id pulid.ID) (ent.Noder, error) {
+	return r.db.Noder(ctx, string(id))
 }
 
 // Nodes is the resolver for the nodes field.
-func (r *queryResolver) Nodes(ctx context.Context, ids []string) ([]ent.Noder, error) {
+func (r *queryResolver) Nodes(ctx context.Context, ids []pulid.ID) ([]ent.Noder, error) {
 	panic(fmt.Errorf("not implemented: Nodes - nodes"))
+}
+
+// ID is the resolver for the id field.
+func (r *roleResolver) ID(ctx context.Context, obj *ent.Role) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// ID is the resolver for the id field.
+func (r *routeResolver) ID(ctx context.Context, obj *ent.Route) (pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// ParentID is the resolver for the parentID field.
+func (r *routeResolver) ParentID(ctx context.Context, obj *ent.Route) (*pulid.ID, error) {
+	panic(fmt.Errorf("not implemented: ParentID - parentID"))
 }
 
 // Meta is the resolver for the meta field.
 func (r *routeResolver) Meta(ctx context.Context, obj *ent.Route) (string, error) {
 	panic(fmt.Errorf("not implemented: Meta - meta"))
+}
+
+// ID is the resolver for the id field.
+func (r *adminWhereInputResolver) ID(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *adminWhereInputResolver) IDNeq(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *adminWhereInputResolver) IDIn(ctx context.Context, obj *ent.AdminWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *adminWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.AdminWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *adminWhereInputResolver) IDGt(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *adminWhereInputResolver) IDGte(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *adminWhereInputResolver) IDLt(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *adminWhereInputResolver) IDLte(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
+// ID is the resolver for the id field.
+func (r *comicChapterWhereInputResolver) ID(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *comicChapterWhereInputResolver) IDNeq(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *comicChapterWhereInputResolver) IDIn(ctx context.Context, obj *ent.ComicChapterWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *comicChapterWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.ComicChapterWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *comicChapterWhereInputResolver) IDGt(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *comicChapterWhereInputResolver) IDGte(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *comicChapterWhereInputResolver) IDLt(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *comicChapterWhereInputResolver) IDLte(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
 }
 
 // Chapter is the resolver for the chapter field.
@@ -177,6 +313,86 @@ func (r *comicChapterWhereInputResolver) DownCountLte(ctx context.Context, obj *
 	panic(fmt.Errorf("not implemented: DownCountLte - downCountLTE"))
 }
 
+// ID is the resolver for the id field.
+func (r *comicImgWhereInputResolver) ID(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *comicImgWhereInputResolver) IDNeq(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *comicImgWhereInputResolver) IDIn(ctx context.Context, obj *ent.ComicImgWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *comicImgWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.ComicImgWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *comicImgWhereInputResolver) IDGt(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *comicImgWhereInputResolver) IDGte(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *comicImgWhereInputResolver) IDLt(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *comicImgWhereInputResolver) IDLte(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
+// ID is the resolver for the id field.
+func (r *comicWhereInputResolver) ID(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *comicWhereInputResolver) IDNeq(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *comicWhereInputResolver) IDIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *comicWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *comicWhereInputResolver) IDGt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *comicWhereInputResolver) IDGte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *comicWhereInputResolver) IDLt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *comicWhereInputResolver) IDLte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
 // Chapter is the resolver for the chapter field.
 func (r *comicWhereInputResolver) Chapter(ctx context.Context, obj *ent.ComicWhereInput, data *int) error {
 	panic(fmt.Errorf("not implemented: Chapter - chapter"))
@@ -257,21 +473,401 @@ func (r *comicWhereInputResolver) UpCountLte(ctx context.Context, obj *ent.Comic
 	panic(fmt.Errorf("not implemented: UpCountLte - upCountLTE"))
 }
 
+// FinalChapterID is the resolver for the finalChapterID field.
+func (r *comicWhereInputResolver) FinalChapterID(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterID - finalChapterID"))
+}
+
+// FinalChapterIDNeq is the resolver for the finalChapterIDNEQ field.
+func (r *comicWhereInputResolver) FinalChapterIDNeq(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDNeq - finalChapterIDNEQ"))
+}
+
+// FinalChapterIDIn is the resolver for the finalChapterIDIn field.
+func (r *comicWhereInputResolver) FinalChapterIDIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDIn - finalChapterIDIn"))
+}
+
+// FinalChapterIDNotIn is the resolver for the finalChapterIDNotIn field.
+func (r *comicWhereInputResolver) FinalChapterIDNotIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDNotIn - finalChapterIDNotIn"))
+}
+
+// FinalChapterIDGt is the resolver for the finalChapterIDGT field.
+func (r *comicWhereInputResolver) FinalChapterIDGt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDGt - finalChapterIDGT"))
+}
+
+// FinalChapterIDGte is the resolver for the finalChapterIDGTE field.
+func (r *comicWhereInputResolver) FinalChapterIDGte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDGte - finalChapterIDGTE"))
+}
+
+// FinalChapterIDLt is the resolver for the finalChapterIDLT field.
+func (r *comicWhereInputResolver) FinalChapterIDLt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDLt - finalChapterIDLT"))
+}
+
+// FinalChapterIDLte is the resolver for the finalChapterIDLTE field.
+func (r *comicWhereInputResolver) FinalChapterIDLte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDLte - finalChapterIDLTE"))
+}
+
+// FinalChapterIDContains is the resolver for the finalChapterIDContains field.
+func (r *comicWhereInputResolver) FinalChapterIDContains(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDContains - finalChapterIDContains"))
+}
+
+// FinalChapterIDHasPrefix is the resolver for the finalChapterIDHasPrefix field.
+func (r *comicWhereInputResolver) FinalChapterIDHasPrefix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDHasPrefix - finalChapterIDHasPrefix"))
+}
+
+// FinalChapterIDHasSuffix is the resolver for the finalChapterIDHasSuffix field.
+func (r *comicWhereInputResolver) FinalChapterIDHasSuffix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDHasSuffix - finalChapterIDHasSuffix"))
+}
+
+// FinalChapterIDEqualFold is the resolver for the finalChapterIDEqualFold field.
+func (r *comicWhereInputResolver) FinalChapterIDEqualFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDEqualFold - finalChapterIDEqualFold"))
+}
+
+// FinalChapterIDContainsFold is the resolver for the finalChapterIDContainsFold field.
+func (r *comicWhereInputResolver) FinalChapterIDContainsFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: FinalChapterIDContainsFold - finalChapterIDContainsFold"))
+}
+
+// LastChapterID is the resolver for the lastChapterID field.
+func (r *comicWhereInputResolver) LastChapterID(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterID - lastChapterID"))
+}
+
+// LastChapterIDNeq is the resolver for the lastChapterIDNEQ field.
+func (r *comicWhereInputResolver) LastChapterIDNeq(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDNeq - lastChapterIDNEQ"))
+}
+
+// LastChapterIDIn is the resolver for the lastChapterIDIn field.
+func (r *comicWhereInputResolver) LastChapterIDIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDIn - lastChapterIDIn"))
+}
+
+// LastChapterIDNotIn is the resolver for the lastChapterIDNotIn field.
+func (r *comicWhereInputResolver) LastChapterIDNotIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDNotIn - lastChapterIDNotIn"))
+}
+
+// LastChapterIDGt is the resolver for the lastChapterIDGT field.
+func (r *comicWhereInputResolver) LastChapterIDGt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDGt - lastChapterIDGT"))
+}
+
+// LastChapterIDGte is the resolver for the lastChapterIDGTE field.
+func (r *comicWhereInputResolver) LastChapterIDGte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDGte - lastChapterIDGTE"))
+}
+
+// LastChapterIDLt is the resolver for the lastChapterIDLT field.
+func (r *comicWhereInputResolver) LastChapterIDLt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDLt - lastChapterIDLT"))
+}
+
+// LastChapterIDLte is the resolver for the lastChapterIDLTE field.
+func (r *comicWhereInputResolver) LastChapterIDLte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDLte - lastChapterIDLTE"))
+}
+
+// LastChapterIDContains is the resolver for the lastChapterIDContains field.
+func (r *comicWhereInputResolver) LastChapterIDContains(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDContains - lastChapterIDContains"))
+}
+
+// LastChapterIDHasPrefix is the resolver for the lastChapterIDHasPrefix field.
+func (r *comicWhereInputResolver) LastChapterIDHasPrefix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDHasPrefix - lastChapterIDHasPrefix"))
+}
+
+// LastChapterIDHasSuffix is the resolver for the lastChapterIDHasSuffix field.
+func (r *comicWhereInputResolver) LastChapterIDHasSuffix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDHasSuffix - lastChapterIDHasSuffix"))
+}
+
+// LastChapterIDEqualFold is the resolver for the lastChapterIDEqualFold field.
+func (r *comicWhereInputResolver) LastChapterIDEqualFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDEqualFold - lastChapterIDEqualFold"))
+}
+
+// LastChapterIDContainsFold is the resolver for the lastChapterIDContainsFold field.
+func (r *comicWhereInputResolver) LastChapterIDContainsFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: LastChapterIDContainsFold - lastChapterIDContainsFold"))
+}
+
+// ID is the resolver for the id field.
+func (r *genreWhereInputResolver) ID(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *genreWhereInputResolver) IDNeq(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *genreWhereInputResolver) IDIn(ctx context.Context, obj *ent.GenreWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *genreWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.GenreWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *genreWhereInputResolver) IDGt(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *genreWhereInputResolver) IDGte(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *genreWhereInputResolver) IDLt(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *genreWhereInputResolver) IDLte(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
+// ID is the resolver for the id field.
+func (r *permissionWhereInputResolver) ID(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *permissionWhereInputResolver) IDNeq(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *permissionWhereInputResolver) IDIn(ctx context.Context, obj *ent.PermissionWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *permissionWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.PermissionWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *permissionWhereInputResolver) IDGt(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *permissionWhereInputResolver) IDGte(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *permissionWhereInputResolver) IDLt(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *permissionWhereInputResolver) IDLte(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
+// ID is the resolver for the id field.
+func (r *roleWhereInputResolver) ID(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *roleWhereInputResolver) IDNeq(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *roleWhereInputResolver) IDIn(ctx context.Context, obj *ent.RoleWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *roleWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.RoleWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *roleWhereInputResolver) IDGt(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *roleWhereInputResolver) IDGte(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *roleWhereInputResolver) IDLt(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *roleWhereInputResolver) IDLte(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
+// ID is the resolver for the id field.
+func (r *routeWhereInputResolver) ID(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// IDNeq is the resolver for the idNEQ field.
+func (r *routeWhereInputResolver) IDNeq(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNeq - idNEQ"))
+}
+
+// IDIn is the resolver for the idIn field.
+func (r *routeWhereInputResolver) IDIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDIn - idIn"))
+}
+
+// IDNotIn is the resolver for the idNotIn field.
+func (r *routeWhereInputResolver) IDNotIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDNotIn - idNotIn"))
+}
+
+// IDGt is the resolver for the idGT field.
+func (r *routeWhereInputResolver) IDGt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGt - idGT"))
+}
+
+// IDGte is the resolver for the idGTE field.
+func (r *routeWhereInputResolver) IDGte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDGte - idGTE"))
+}
+
+// IDLt is the resolver for the idLT field.
+func (r *routeWhereInputResolver) IDLt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLt - idLT"))
+}
+
+// IDLte is the resolver for the idLTE field.
+func (r *routeWhereInputResolver) IDLte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: IDLte - idLTE"))
+}
+
+// ParentID is the resolver for the parentID field.
+func (r *routeWhereInputResolver) ParentID(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentID - parentID"))
+}
+
+// ParentIDNeq is the resolver for the parentIDNEQ field.
+func (r *routeWhereInputResolver) ParentIDNeq(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDNeq - parentIDNEQ"))
+}
+
+// ParentIDIn is the resolver for the parentIDIn field.
+func (r *routeWhereInputResolver) ParentIDIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDIn - parentIDIn"))
+}
+
+// ParentIDNotIn is the resolver for the parentIDNotIn field.
+func (r *routeWhereInputResolver) ParentIDNotIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDNotIn - parentIDNotIn"))
+}
+
+// ParentIDGt is the resolver for the parentIDGT field.
+func (r *routeWhereInputResolver) ParentIDGt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDGt - parentIDGT"))
+}
+
+// ParentIDGte is the resolver for the parentIDGTE field.
+func (r *routeWhereInputResolver) ParentIDGte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDGte - parentIDGTE"))
+}
+
+// ParentIDLt is the resolver for the parentIDLT field.
+func (r *routeWhereInputResolver) ParentIDLt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDLt - parentIDLT"))
+}
+
+// ParentIDLte is the resolver for the parentIDLTE field.
+func (r *routeWhereInputResolver) ParentIDLte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDLte - parentIDLTE"))
+}
+
+// ParentIDContains is the resolver for the parentIDContains field.
+func (r *routeWhereInputResolver) ParentIDContains(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDContains - parentIDContains"))
+}
+
+// ParentIDHasPrefix is the resolver for the parentIDHasPrefix field.
+func (r *routeWhereInputResolver) ParentIDHasPrefix(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDHasPrefix - parentIDHasPrefix"))
+}
+
+// ParentIDHasSuffix is the resolver for the parentIDHasSuffix field.
+func (r *routeWhereInputResolver) ParentIDHasSuffix(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDHasSuffix - parentIDHasSuffix"))
+}
+
+// ParentIDEqualFold is the resolver for the parentIDEqualFold field.
+func (r *routeWhereInputResolver) ParentIDEqualFold(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDEqualFold - parentIDEqualFold"))
+}
+
+// ParentIDContainsFold is the resolver for the parentIDContainsFold field.
+func (r *routeWhereInputResolver) ParentIDContainsFold(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error {
+	panic(fmt.Errorf("not implemented: ParentIDContainsFold - parentIDContainsFold"))
+}
+
+// Admin returns generated.AdminResolver implementation.
+func (r *Resolver) Admin() generated.AdminResolver { return &adminResolver{r} }
+
 // Comic returns generated.ComicResolver implementation.
 func (r *Resolver) Comic() generated.ComicResolver { return &comicResolver{r} }
 
 // ComicChapter returns generated.ComicChapterResolver implementation.
 func (r *Resolver) ComicChapter() generated.ComicChapterResolver { return &comicChapterResolver{r} }
 
+// ComicImg returns generated.ComicImgResolver implementation.
+func (r *Resolver) ComicImg() generated.ComicImgResolver { return &comicImgResolver{r} }
+
+// Genre returns generated.GenreResolver implementation.
+func (r *Resolver) Genre() generated.GenreResolver { return &genreResolver{r} }
+
+// Permission returns generated.PermissionResolver implementation.
+func (r *Resolver) Permission() generated.PermissionResolver { return &permissionResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+
+// Role returns generated.RoleResolver implementation.
+func (r *Resolver) Role() generated.RoleResolver { return &roleResolver{r} }
 
 // Route returns generated.RouteResolver implementation.
 func (r *Resolver) Route() generated.RouteResolver { return &routeResolver{r} }
 
+// AdminWhereInput returns generated.AdminWhereInputResolver implementation.
+func (r *Resolver) AdminWhereInput() generated.AdminWhereInputResolver {
+	return &adminWhereInputResolver{r}
+}
+
 // ComicChapterWhereInput returns generated.ComicChapterWhereInputResolver implementation.
 func (r *Resolver) ComicChapterWhereInput() generated.ComicChapterWhereInputResolver {
 	return &comicChapterWhereInputResolver{r}
+}
+
+// ComicImgWhereInput returns generated.ComicImgWhereInputResolver implementation.
+func (r *Resolver) ComicImgWhereInput() generated.ComicImgWhereInputResolver {
+	return &comicImgWhereInputResolver{r}
 }
 
 // ComicWhereInput returns generated.ComicWhereInputResolver implementation.
@@ -279,9 +875,40 @@ func (r *Resolver) ComicWhereInput() generated.ComicWhereInputResolver {
 	return &comicWhereInputResolver{r}
 }
 
+// GenreWhereInput returns generated.GenreWhereInputResolver implementation.
+func (r *Resolver) GenreWhereInput() generated.GenreWhereInputResolver {
+	return &genreWhereInputResolver{r}
+}
+
+// PermissionWhereInput returns generated.PermissionWhereInputResolver implementation.
+func (r *Resolver) PermissionWhereInput() generated.PermissionWhereInputResolver {
+	return &permissionWhereInputResolver{r}
+}
+
+// RoleWhereInput returns generated.RoleWhereInputResolver implementation.
+func (r *Resolver) RoleWhereInput() generated.RoleWhereInputResolver {
+	return &roleWhereInputResolver{r}
+}
+
+// RouteWhereInput returns generated.RouteWhereInputResolver implementation.
+func (r *Resolver) RouteWhereInput() generated.RouteWhereInputResolver {
+	return &routeWhereInputResolver{r}
+}
+
+type adminResolver struct{ *Resolver }
 type comicResolver struct{ *Resolver }
 type comicChapterResolver struct{ *Resolver }
+type comicImgResolver struct{ *Resolver }
+type genreResolver struct{ *Resolver }
+type permissionResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type roleResolver struct{ *Resolver }
 type routeResolver struct{ *Resolver }
+type adminWhereInputResolver struct{ *Resolver }
 type comicChapterWhereInputResolver struct{ *Resolver }
+type comicImgWhereInputResolver struct{ *Resolver }
 type comicWhereInputResolver struct{ *Resolver }
+type genreWhereInputResolver struct{ *Resolver }
+type permissionWhereInputResolver struct{ *Resolver }
+type roleWhereInputResolver struct{ *Resolver }
+type routeWhereInputResolver struct{ *Resolver }

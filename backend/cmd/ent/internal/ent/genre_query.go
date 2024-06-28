@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/predicate"
 
@@ -86,8 +87,8 @@ func (gq *GenreQuery) FirstX(ctx context.Context) *Genre {
 
 // FirstID returns the first Genre ID from the query.
 // Returns a *NotFoundError when no Genre ID was found.
-func (gq *GenreQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (gq *GenreQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = gq.Limit(1).IDs(setContextOp(ctx, gq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -99,7 +100,7 @@ func (gq *GenreQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (gq *GenreQuery) FirstIDX(ctx context.Context) string {
+func (gq *GenreQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := gq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -137,8 +138,8 @@ func (gq *GenreQuery) OnlyX(ctx context.Context) *Genre {
 // OnlyID is like Only, but returns the only Genre ID in the query.
 // Returns a *NotSingularError when more than one Genre ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (gq *GenreQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (gq *GenreQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = gq.Limit(2).IDs(setContextOp(ctx, gq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -154,7 +155,7 @@ func (gq *GenreQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (gq *GenreQuery) OnlyIDX(ctx context.Context) string {
+func (gq *GenreQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := gq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -182,7 +183,7 @@ func (gq *GenreQuery) AllX(ctx context.Context) []*Genre {
 }
 
 // IDs executes the query and returns a list of Genre IDs.
-func (gq *GenreQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (gq *GenreQuery) IDs(ctx context.Context) (ids []pulid.ID, err error) {
 	if gq.ctx.Unique == nil && gq.path != nil {
 		gq.Unique(true)
 	}
@@ -194,7 +195,7 @@ func (gq *GenreQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (gq *GenreQuery) IDsX(ctx context.Context) []string {
+func (gq *GenreQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := gq.IDs(ctx)
 	if err != nil {
 		panic(err)

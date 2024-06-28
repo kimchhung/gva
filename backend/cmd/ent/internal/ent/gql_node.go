@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -21,6 +22,7 @@ import (
 
 // Noder wraps the basic Node method.
 type Noder interface {
+	Node(context.Context) (*Node, error)
 	IsNode()
 }
 
@@ -72,7 +74,7 @@ type NodeOption func(*nodeOptions)
 // WithNodeType sets the node Type resolver function (i.e. the table to query).
 // If was not provided, the table will be derived from the universal-id
 // configuration as described in: https://entgo.io/docs/migrate/#universal-ids.
-func WithNodeType(f func(context.Context, string) (string, error)) NodeOption {
+func WithNodeType(f func(context.Context, pulid.ID) (string, error)) NodeOption {
 	return func(o *nodeOptions) {
 		o.nodeType = f
 	}
@@ -80,13 +82,13 @@ func WithNodeType(f func(context.Context, string) (string, error)) NodeOption {
 
 // WithFixedNodeType sets the Type of the node to a fixed value.
 func WithFixedNodeType(t string) NodeOption {
-	return WithNodeType(func(context.Context, string) (string, error) {
+	return WithNodeType(func(context.Context, pulid.ID) (string, error) {
 		return t, nil
 	})
 }
 
 type nodeOptions struct {
-	nodeType func(context.Context, string) (string, error)
+	nodeType func(context.Context, pulid.ID) (string, error)
 }
 
 func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
@@ -95,7 +97,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 		opt(nopts)
 	}
 	if nopts.nodeType == nil {
-		nopts.nodeType = func(ctx context.Context, id string) (string, error) {
+		nopts.nodeType = func(ctx context.Context, id pulid.ID) (string, error) {
 			return "", fmt.Errorf("cannot resolve noder (%v) without its type", id)
 		}
 	}
@@ -107,7 +109,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 //
 //	c.Noder(ctx, id)
 //	c.Noder(ctx, id, ent.WithNodeType(typeResolver))
-func (c *Client) Noder(ctx context.Context, id string, opts ...NodeOption) (_ Noder, err error) {
+func (c *Client) Noder(ctx context.Context, id pulid.ID, opts ...NodeOption) (_ Noder, err error) {
 	defer func() {
 		if IsNotFound(err) {
 			err = multierror.Append(err, entgql.ErrNodeNotFound(id))
@@ -120,11 +122,15 @@ func (c *Client) Noder(ctx context.Context, id string, opts ...NodeOption) (_ No
 	return c.noder(ctx, table, id)
 }
 
-func (c *Client) noder(ctx context.Context, table string, id string) (Noder, error) {
+func (c *Client) noder(ctx context.Context, table string, id pulid.ID) (Noder, error) {
 	switch table {
 	case admin.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Admin.Query().
-			Where(admin.ID(id))
+			Where(admin.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, adminImplementors...); err != nil {
 				return nil, err
@@ -132,8 +138,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case comic.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Comic.Query().
-			Where(comic.ID(id))
+			Where(comic.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicImplementors...); err != nil {
 				return nil, err
@@ -141,8 +151,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case comicchapter.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.ComicChapter.Query().
-			Where(comicchapter.ID(id))
+			Where(comicchapter.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicchapterImplementors...); err != nil {
 				return nil, err
@@ -150,8 +164,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case comicimg.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.ComicImg.Query().
-			Where(comicimg.ID(id))
+			Where(comicimg.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicimgImplementors...); err != nil {
 				return nil, err
@@ -159,8 +177,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case genre.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Genre.Query().
-			Where(genre.ID(id))
+			Where(genre.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, genreImplementors...); err != nil {
 				return nil, err
@@ -168,8 +190,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case permission.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Permission.Query().
-			Where(permission.ID(id))
+			Where(permission.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, permissionImplementors...); err != nil {
 				return nil, err
@@ -177,8 +203,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case role.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Role.Query().
-			Where(role.ID(id))
+			Where(role.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, roleImplementors...); err != nil {
 				return nil, err
@@ -186,8 +216,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case route.Table:
+		var uid pulid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Route.Query().
-			Where(route.ID(id))
+			Where(route.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, routeImplementors...); err != nil {
 				return nil, err
@@ -199,7 +233,7 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 	}
 }
 
-func (c *Client) Noders(ctx context.Context, ids []string, opts ...NodeOption) ([]Noder, error) {
+func (c *Client) Noders(ctx context.Context, ids []pulid.ID, opts ...NodeOption) ([]Noder, error) {
 	switch len(ids) {
 	case 1:
 		noder, err := c.Noder(ctx, ids[0], opts...)
@@ -213,8 +247,8 @@ func (c *Client) Noders(ctx context.Context, ids []string, opts ...NodeOption) (
 
 	noders := make([]Noder, len(ids))
 	errors := make([]error, len(ids))
-	tables := make(map[string][]string)
-	id2idx := make(map[string][]int, len(ids))
+	tables := make(map[string][]pulid.ID)
+	id2idx := make(map[pulid.ID][]int, len(ids))
 	nopts := c.newNodeOpts(opts)
 	for i, id := range ids {
 		table, err := nopts.nodeType(ctx, id)
@@ -260,9 +294,9 @@ func (c *Client) Noders(ctx context.Context, ids []string, opts ...NodeOption) (
 	return noders, nil
 }
 
-func (c *Client) noders(ctx context.Context, table string, ids []string) ([]Noder, error) {
+func (c *Client) noders(ctx context.Context, table string, ids []pulid.ID) ([]Noder, error) {
 	noders := make([]Noder, len(ids))
-	idmap := make(map[string][]*Noder, len(ids))
+	idmap := make(map[pulid.ID][]*Noder, len(ids))
 	for i, id := range ids {
 		idmap[id] = append(idmap[id], &noders[i])
 	}

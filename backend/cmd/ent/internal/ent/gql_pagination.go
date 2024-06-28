@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -27,8 +28,8 @@ import (
 
 // Common entgql types.
 type (
-	Cursor         = entgql.Cursor[string]
-	PageInfo       = entgql.PageInfo[string]
+	Cursor         = entgql.Cursor[pulid.ID]
+	PageInfo       = entgql.PageInfo[pulid.ID]
 	OrderDirection = entgql.OrderDirection
 )
 

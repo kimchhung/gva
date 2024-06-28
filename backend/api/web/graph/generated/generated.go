@@ -15,6 +15,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/route"
@@ -42,12 +43,23 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Admin() AdminResolver
 	Comic() ComicResolver
 	ComicChapter() ComicChapterResolver
+	ComicImg() ComicImgResolver
+	Genre() GenreResolver
+	Permission() PermissionResolver
 	Query() QueryResolver
+	Role() RoleResolver
 	Route() RouteResolver
+	AdminWhereInput() AdminWhereInputResolver
 	ComicChapterWhereInput() ComicChapterWhereInputResolver
+	ComicImgWhereInput() ComicImgWhereInputResolver
 	ComicWhereInput() ComicWhereInputResolver
+	GenreWhereInput() GenreWhereInputResolver
+	PermissionWhereInput() PermissionWhereInputResolver
+	RoleWhereInput() RoleWhereInputResolver
+	RouteWhereInput() RouteWhereInputResolver
 }
 
 type DirectiveRoot struct {
@@ -139,8 +151,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Node  func(childComplexity int, id string) int
-		Nodes func(childComplexity int, ids []string) int
+		Node  func(childComplexity int, id pulid.ID) int
+		Nodes func(childComplexity int, ids []pulid.ID) int
 		Now   func(childComplexity int) int
 	}
 
@@ -179,29 +191,73 @@ type ComplexityRoot struct {
 	}
 }
 
+type AdminResolver interface {
+	ID(ctx context.Context, obj *ent.Admin) (pulid.ID, error)
+}
 type ComicResolver interface {
+	ID(ctx context.Context, obj *ent.Comic) (pulid.ID, error)
+
 	Chapter(ctx context.Context, obj *ent.Comic) (int, error)
 
 	Covers(ctx context.Context, obj *ent.Comic) ([]string, error)
 
 	UpCount(ctx context.Context, obj *ent.Comic) (int, error)
+	FinalChapterID(ctx context.Context, obj *ent.Comic) (*pulid.ID, error)
+	LastChapterID(ctx context.Context, obj *ent.Comic) (*pulid.ID, error)
 }
 type ComicChapterResolver interface {
+	ID(ctx context.Context, obj *ent.ComicChapter) (pulid.ID, error)
+
 	Chapter(ctx context.Context, obj *ent.ComicChapter) (int, error)
 
 	UpCount(ctx context.Context, obj *ent.ComicChapter) (int, error)
 	DownCount(ctx context.Context, obj *ent.ComicChapter) (int, error)
 }
+type ComicImgResolver interface {
+	ID(ctx context.Context, obj *ent.ComicImg) (pulid.ID, error)
+}
+type GenreResolver interface {
+	ID(ctx context.Context, obj *ent.Genre) (pulid.ID, error)
+}
+type PermissionResolver interface {
+	ID(ctx context.Context, obj *ent.Permission) (pulid.ID, error)
+}
 type QueryResolver interface {
-	Node(ctx context.Context, id string) (ent.Noder, error)
-	Nodes(ctx context.Context, ids []string) ([]ent.Noder, error)
+	Node(ctx context.Context, id pulid.ID) (ent.Noder, error)
+	Nodes(ctx context.Context, ids []pulid.ID) ([]ent.Noder, error)
 	Now(ctx context.Context) (*time.Time, error)
 }
+type RoleResolver interface {
+	ID(ctx context.Context, obj *ent.Role) (pulid.ID, error)
+}
 type RouteResolver interface {
+	ID(ctx context.Context, obj *ent.Route) (pulid.ID, error)
+
+	ParentID(ctx context.Context, obj *ent.Route) (*pulid.ID, error)
+
 	Meta(ctx context.Context, obj *ent.Route) (string, error)
 }
 
+type AdminWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.AdminWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.AdminWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.AdminWhereInput, data *pulid.ID) error
+}
 type ComicChapterWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.ComicChapterWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.ComicChapterWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.ComicChapterWhereInput, data *pulid.ID) error
+
 	Chapter(ctx context.Context, obj *ent.ComicChapterWhereInput, data *int) error
 	ChapterNeq(ctx context.Context, obj *ent.ComicChapterWhereInput, data *int) error
 	ChapterIn(ctx context.Context, obj *ent.ComicChapterWhereInput, data []int) error
@@ -228,7 +284,26 @@ type ComicChapterWhereInputResolver interface {
 	DownCountLt(ctx context.Context, obj *ent.ComicChapterWhereInput, data *int) error
 	DownCountLte(ctx context.Context, obj *ent.ComicChapterWhereInput, data *int) error
 }
+type ComicImgWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.ComicImgWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.ComicImgWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.ComicImgWhereInput, data *pulid.ID) error
+}
 type ComicWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+
 	Chapter(ctx context.Context, obj *ent.ComicWhereInput, data *int) error
 	ChapterNeq(ctx context.Context, obj *ent.ComicWhereInput, data *int) error
 	ChapterIn(ctx context.Context, obj *ent.ComicWhereInput, data []int) error
@@ -246,6 +321,89 @@ type ComicWhereInputResolver interface {
 	UpCountGte(ctx context.Context, obj *ent.ComicWhereInput, data *int) error
 	UpCountLt(ctx context.Context, obj *ent.ComicWhereInput, data *int) error
 	UpCountLte(ctx context.Context, obj *ent.ComicWhereInput, data *int) error
+	FinalChapterID(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDNeq(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error
+	FinalChapterIDNotIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error
+	FinalChapterIDGt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDGte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDLt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDLte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDContains(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDHasPrefix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDHasSuffix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+
+	FinalChapterIDEqualFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	FinalChapterIDContainsFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterID(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDNeq(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error
+	LastChapterIDNotIn(ctx context.Context, obj *ent.ComicWhereInput, data []pulid.ID) error
+	LastChapterIDGt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDGte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDLt(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDLte(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDContains(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDHasPrefix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDHasSuffix(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+
+	LastChapterIDEqualFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+	LastChapterIDContainsFold(ctx context.Context, obj *ent.ComicWhereInput, data *pulid.ID) error
+}
+type GenreWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.GenreWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.GenreWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.GenreWhereInput, data *pulid.ID) error
+}
+type PermissionWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.PermissionWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.PermissionWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.PermissionWhereInput, data *pulid.ID) error
+}
+type RoleWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.RoleWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.RoleWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.RoleWhereInput, data *pulid.ID) error
+}
+type RouteWhereInputResolver interface {
+	ID(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	IDNeq(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	IDIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error
+	IDNotIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error
+	IDGt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	IDGte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	IDLt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	IDLte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+
+	ParentID(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDNeq(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error
+	ParentIDNotIn(ctx context.Context, obj *ent.RouteWhereInput, data []pulid.ID) error
+	ParentIDGt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDGte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDLt(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDLte(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDContains(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDHasPrefix(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDHasSuffix(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+
+	ParentIDEqualFold(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
+	ParentIDContainsFold(ctx context.Context, obj *ent.RouteWhereInput, data *pulid.ID) error
 }
 
 type executableSchema struct {
@@ -718,7 +876,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Node(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Node(childComplexity, args["id"].(pulid.ID)), true
 
 	case "Query.nodes":
 		if e.complexity.Query.Nodes == nil {
@@ -730,7 +888,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Nodes(childComplexity, args["ids"].([]string)), true
+		return e.complexity.Query.Nodes(childComplexity, args["ids"].([]pulid.ID)), true
 
 	case "Query.now":
 		if e.complexity.Query.Now == nil {
@@ -1092,8 +1250,6 @@ input AdminWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -1241,8 +1397,6 @@ input ComicChapterWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -1416,8 +1570,6 @@ input ComicImgWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -1560,8 +1712,6 @@ input ComicWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -1767,8 +1917,6 @@ input GenreWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -1908,8 +2056,6 @@ input PermissionWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -2069,8 +2215,6 @@ input RoleWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -2238,8 +2382,6 @@ input RouteWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  idEqualFold: ID
-  idContainsFold: ID
   """
   created_at field predicates
   """
@@ -2432,10 +2574,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 pulid.ID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2447,10 +2589,10 @@ func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
+	var arg0 []pulid.ID
 	if tmp, ok := rawArgs["ids"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
-		arg0, err = ec.unmarshalNID2ᚕstringᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2511,7 +2653,7 @@ func (ec *executionContext) _Admin_id(ctx context.Context, field graphql.Collect
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Admin().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2523,17 +2665,17 @@ func (ec *executionContext) _Admin_id(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Admin_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Admin",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -2927,7 +3069,7 @@ func (ec *executionContext) _Comic_id(ctx context.Context, field graphql.Collect
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Comic().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2939,17 +3081,17 @@ func (ec *executionContext) _Comic_id(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Comic_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Comic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -3367,7 +3509,7 @@ func (ec *executionContext) _Comic_finalChapterID(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.FinalChapterID, nil
+		return ec.resolvers.Comic().FinalChapterID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3376,17 +3518,17 @@ func (ec *executionContext) _Comic_finalChapterID(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*pulid.ID)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Comic_finalChapterID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Comic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -3408,7 +3550,7 @@ func (ec *executionContext) _Comic_lastChapterID(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.LastChapterID, nil
+		return ec.resolvers.Comic().LastChapterID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3417,17 +3559,17 @@ func (ec *executionContext) _Comic_lastChapterID(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*pulid.ID)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Comic_lastChapterID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Comic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -3650,7 +3792,7 @@ func (ec *executionContext) _ComicChapter_id(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.ComicChapter().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3662,17 +3804,17 @@ func (ec *executionContext) _ComicChapter_id(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ComicChapter_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ComicChapter",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -4220,7 +4362,7 @@ func (ec *executionContext) _ComicImg_id(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.ComicImg().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4232,17 +4374,17 @@ func (ec *executionContext) _ComicImg_id(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ComicImg_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ComicImg",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -4683,7 +4825,7 @@ func (ec *executionContext) _Genre_id(ctx context.Context, field graphql.Collect
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Genre().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4695,17 +4837,17 @@ func (ec *executionContext) _Genre_id(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Genre_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Genre",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -5073,7 +5215,7 @@ func (ec *executionContext) _Permission_id(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Permission().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5085,17 +5227,17 @@ func (ec *executionContext) _Permission_id(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Permission_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Permission",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -5448,7 +5590,7 @@ func (ec *executionContext) _Query_node(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Node(rctx, fc.Args["id"].(string))
+		return ec.resolvers.Query().Node(rctx, fc.Args["id"].(pulid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5500,7 +5642,7 @@ func (ec *executionContext) _Query_nodes(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Nodes(rctx, fc.Args["ids"].([]string))
+		return ec.resolvers.Query().Nodes(rctx, fc.Args["ids"].([]pulid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5728,7 +5870,7 @@ func (ec *executionContext) _Role_id(ctx context.Context, field graphql.Collecte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Role().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5740,17 +5882,17 @@ func (ec *executionContext) _Role_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Role_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Role",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -6319,7 +6461,7 @@ func (ec *executionContext) _Route_id(ctx context.Context, field graphql.Collect
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Route().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6331,17 +6473,17 @@ func (ec *executionContext) _Route_id(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Route_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Route",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -6539,7 +6681,7 @@ func (ec *executionContext) _Route_parentID(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ParentID, nil
+		return ec.resolvers.Route().ParentID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6548,17 +6690,17 @@ func (ec *executionContext) _Route_parentID(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*pulid.ID)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Route_parentID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Route",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
 		},
@@ -8903,7 +9045,7 @@ func (ec *executionContext) unmarshalInputAdminWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "username", "usernameNEQ", "usernameIn", "usernameNotIn", "usernameGT", "usernameGTE", "usernameLT", "usernameLTE", "usernameContains", "usernameHasPrefix", "usernameHasSuffix", "usernameEqualFold", "usernameContainsFold", "displayName", "displayNameNEQ", "displayNameIn", "displayNameNotIn", "displayNameGT", "displayNameGTE", "displayNameLT", "displayNameLTE", "displayNameContains", "displayNameHasPrefix", "displayNameHasSuffix", "displayNameIsNil", "displayNameNotNil", "displayNameEqualFold", "displayNameContainsFold", "hasRoles", "hasRolesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "username", "usernameNEQ", "usernameIn", "usernameNotIn", "usernameGT", "usernameGTE", "usernameLT", "usernameLTE", "usernameContains", "usernameHasPrefix", "usernameHasSuffix", "usernameEqualFold", "usernameContainsFold", "displayName", "displayNameNEQ", "displayNameIn", "displayNameNotIn", "displayNameGT", "displayNameGTE", "displayNameLT", "displayNameLTE", "displayNameContains", "displayNameHasPrefix", "displayNameHasSuffix", "displayNameIsNil", "displayNameNotNil", "displayNameEqualFold", "displayNameContainsFold", "hasRoles", "hasRolesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8933,74 +9075,76 @@ func (ec *executionContext) unmarshalInputAdminWhereInput(ctx context.Context, o
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.AdminWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.AdminWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.AdminWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.AdminWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.AdminWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.AdminWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.AdminWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.AdminWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -9444,7 +9588,7 @@ func (ec *executionContext) unmarshalInputComicChapterWhereInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "chapter", "chapterNEQ", "chapterIn", "chapterNotIn", "chapterGT", "chapterGTE", "chapterLT", "chapterLTE", "title", "titleNEQ", "titleIn", "titleNotIn", "titleGT", "titleGTE", "titleLT", "titleLTE", "titleContains", "titleHasPrefix", "titleHasSuffix", "titleIsNil", "titleNotNil", "titleEqualFold", "titleContainsFold", "volumn", "volumnNEQ", "volumnIn", "volumnNotIn", "volumnGT", "volumnGTE", "volumnLT", "volumnLTE", "volumnContains", "volumnHasPrefix", "volumnHasSuffix", "volumnIsNil", "volumnNotNil", "volumnEqualFold", "volumnContainsFold", "lang", "langNEQ", "langIn", "langNotIn", "langGT", "langGTE", "langLT", "langLTE", "langContains", "langHasPrefix", "langHasSuffix", "langEqualFold", "langContainsFold", "upCount", "upCountNEQ", "upCountIn", "upCountNotIn", "upCountGT", "upCountGTE", "upCountLT", "upCountLTE", "downCount", "downCountNEQ", "downCountIn", "downCountNotIn", "downCountGT", "downCountGTE", "downCountLT", "downCountLTE", "isLastChapter", "isLastChapterNEQ", "hasImgs", "hasImgsWith", "hasComic", "hasComicWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "chapter", "chapterNEQ", "chapterIn", "chapterNotIn", "chapterGT", "chapterGTE", "chapterLT", "chapterLTE", "title", "titleNEQ", "titleIn", "titleNotIn", "titleGT", "titleGTE", "titleLT", "titleLTE", "titleContains", "titleHasPrefix", "titleHasSuffix", "titleIsNil", "titleNotNil", "titleEqualFold", "titleContainsFold", "volumn", "volumnNEQ", "volumnIn", "volumnNotIn", "volumnGT", "volumnGTE", "volumnLT", "volumnLTE", "volumnContains", "volumnHasPrefix", "volumnHasSuffix", "volumnIsNil", "volumnNotNil", "volumnEqualFold", "volumnContainsFold", "lang", "langNEQ", "langIn", "langNotIn", "langGT", "langGTE", "langLT", "langLTE", "langContains", "langHasPrefix", "langHasSuffix", "langEqualFold", "langContainsFold", "upCount", "upCountNEQ", "upCountIn", "upCountNotIn", "upCountGT", "upCountGTE", "upCountLT", "upCountLTE", "downCount", "downCountNEQ", "downCountIn", "downCountNotIn", "downCountGT", "downCountGTE", "downCountLT", "downCountLTE", "isLastChapter", "isLastChapterNEQ", "hasImgs", "hasImgsWith", "hasComic", "hasComicWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9474,74 +9618,76 @@ func (ec *executionContext) unmarshalInputComicChapterWhereInput(ctx context.Con
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.ComicChapterWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.ComicChapterWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.ComicChapterWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.ComicChapterWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.ComicChapterWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.ComicChapterWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.ComicChapterWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.ComicChapterWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -10264,7 +10410,7 @@ func (ec *executionContext) unmarshalInputComicImgWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "b2key", "b2keyNEQ", "b2keyIn", "b2keyNotIn", "b2keyGT", "b2keyGTE", "b2keyLT", "b2keyLTE", "b2keyContains", "b2keyHasPrefix", "b2keyHasSuffix", "b2keyEqualFold", "b2keyContainsFold", "height", "heightNEQ", "heightIn", "heightNotIn", "heightGT", "heightGTE", "heightLT", "heightLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "optimizedSize", "optimizedSizeNEQ", "optimizedSizeIn", "optimizedSizeNotIn", "optimizedSizeGT", "optimizedSizeGTE", "optimizedSizeLT", "optimizedSizeLTE", "size", "sizeNEQ", "sizeIn", "sizeNotIn", "sizeGT", "sizeGTE", "sizeLT", "sizeLTE", "width", "widthNEQ", "widthIn", "widthNotIn", "widthGT", "widthGTE", "widthLT", "widthLTE", "hasChapter", "hasChapterWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "b2key", "b2keyNEQ", "b2keyIn", "b2keyNotIn", "b2keyGT", "b2keyGTE", "b2keyLT", "b2keyLTE", "b2keyContains", "b2keyHasPrefix", "b2keyHasSuffix", "b2keyEqualFold", "b2keyContainsFold", "height", "heightNEQ", "heightIn", "heightNotIn", "heightGT", "heightGTE", "heightLT", "heightLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "optimizedSize", "optimizedSizeNEQ", "optimizedSizeIn", "optimizedSizeNotIn", "optimizedSizeGT", "optimizedSizeGTE", "optimizedSizeLT", "optimizedSizeLTE", "size", "sizeNEQ", "sizeIn", "sizeNotIn", "sizeGT", "sizeGTE", "sizeLT", "sizeLTE", "width", "widthNEQ", "widthIn", "widthNotIn", "widthGT", "widthGTE", "widthLT", "widthLTE", "hasChapter", "hasChapterWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10294,74 +10440,76 @@ func (ec *executionContext) unmarshalInputComicImgWhereInput(ctx context.Context
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.ComicImgWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.ComicImgWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.ComicImgWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.ComicImgWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.ComicImgWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.ComicImgWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.ComicImgWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.ComicImgWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -10945,7 +11093,7 @@ func (ec *executionContext) unmarshalInputComicWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "chapter", "chapterNEQ", "chapterIn", "chapterNotIn", "chapterGT", "chapterGTE", "chapterLT", "chapterLTE", "title", "titleNEQ", "titleIn", "titleNotIn", "titleGT", "titleGTE", "titleLT", "titleLTE", "titleContains", "titleHasPrefix", "titleHasSuffix", "titleEqualFold", "titleContainsFold", "slug", "slugNEQ", "slugIn", "slugNotIn", "slugGT", "slugGTE", "slugLT", "slugLTE", "slugContains", "slugHasPrefix", "slugHasSuffix", "slugEqualFold", "slugContainsFold", "status", "statusNEQ", "statusIn", "statusNotIn", "statusGT", "statusGTE", "statusLT", "statusLTE", "statusContains", "statusHasPrefix", "statusHasSuffix", "statusEqualFold", "statusContainsFold", "istranslatecompleted", "istranslatecompletedNEQ", "upCount", "upCountNEQ", "upCountIn", "upCountNotIn", "upCountGT", "upCountGTE", "upCountLT", "upCountLTE", "finalChapterID", "finalChapterIDNEQ", "finalChapterIDIn", "finalChapterIDNotIn", "finalChapterIDGT", "finalChapterIDGTE", "finalChapterIDLT", "finalChapterIDLTE", "finalChapterIDContains", "finalChapterIDHasPrefix", "finalChapterIDHasSuffix", "finalChapterIDIsNil", "finalChapterIDNotNil", "finalChapterIDEqualFold", "finalChapterIDContainsFold", "lastChapterID", "lastChapterIDNEQ", "lastChapterIDIn", "lastChapterIDNotIn", "lastChapterIDGT", "lastChapterIDGTE", "lastChapterIDLT", "lastChapterIDLTE", "lastChapterIDContains", "lastChapterIDHasPrefix", "lastChapterIDHasSuffix", "lastChapterIDIsNil", "lastChapterIDNotNil", "lastChapterIDEqualFold", "lastChapterIDContainsFold", "hasChapters", "hasChaptersWith", "hasLastChapter", "hasLastChapterWith", "hasFinalChapter", "hasFinalChapterWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "chapter", "chapterNEQ", "chapterIn", "chapterNotIn", "chapterGT", "chapterGTE", "chapterLT", "chapterLTE", "title", "titleNEQ", "titleIn", "titleNotIn", "titleGT", "titleGTE", "titleLT", "titleLTE", "titleContains", "titleHasPrefix", "titleHasSuffix", "titleEqualFold", "titleContainsFold", "slug", "slugNEQ", "slugIn", "slugNotIn", "slugGT", "slugGTE", "slugLT", "slugLTE", "slugContains", "slugHasPrefix", "slugHasSuffix", "slugEqualFold", "slugContainsFold", "status", "statusNEQ", "statusIn", "statusNotIn", "statusGT", "statusGTE", "statusLT", "statusLTE", "statusContains", "statusHasPrefix", "statusHasSuffix", "statusEqualFold", "statusContainsFold", "istranslatecompleted", "istranslatecompletedNEQ", "upCount", "upCountNEQ", "upCountIn", "upCountNotIn", "upCountGT", "upCountGTE", "upCountLT", "upCountLTE", "finalChapterID", "finalChapterIDNEQ", "finalChapterIDIn", "finalChapterIDNotIn", "finalChapterIDGT", "finalChapterIDGTE", "finalChapterIDLT", "finalChapterIDLTE", "finalChapterIDContains", "finalChapterIDHasPrefix", "finalChapterIDHasSuffix", "finalChapterIDIsNil", "finalChapterIDNotNil", "finalChapterIDEqualFold", "finalChapterIDContainsFold", "lastChapterID", "lastChapterIDNEQ", "lastChapterIDIn", "lastChapterIDNotIn", "lastChapterIDGT", "lastChapterIDGTE", "lastChapterIDLT", "lastChapterIDLTE", "lastChapterIDContains", "lastChapterIDHasPrefix", "lastChapterIDHasSuffix", "lastChapterIDIsNil", "lastChapterIDNotNil", "lastChapterIDEqualFold", "lastChapterIDContainsFold", "hasChapters", "hasChaptersWith", "hasLastChapter", "hasLastChapterWith", "hasFinalChapter", "hasFinalChapterWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10975,74 +11123,76 @@ func (ec *executionContext) unmarshalInputComicWhereInput(ctx context.Context, o
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.ComicWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.ComicWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.ComicWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.ComicWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.ComicWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.ComicWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.ComicWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.ComicWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -11588,81 +11738,103 @@ func (ec *executionContext) unmarshalInputComicWhereInput(ctx context.Context, o
 			}
 		case "finalChapterID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterID"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterID = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDNEQ = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDIn = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDNotIn = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDGT = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDGTE = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDLT = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDLTE = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDLte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDContains"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDContains = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDContains(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDHasPrefix":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDHasPrefix"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDHasPrefix = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDHasPrefix(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDHasSuffix":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDHasSuffix"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDHasSuffix = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDHasSuffix(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
@@ -11679,95 +11851,121 @@ func (ec *executionContext) unmarshalInputComicWhereInput(ctx context.Context, o
 			it.FinalChapterIDNotNil = data
 		case "finalChapterIDEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDEqualFold = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDEqualFold(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "finalChapterIDContainsFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finalChapterIDContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FinalChapterIDContainsFold = data
+			if err = ec.resolvers.ComicWhereInput().FinalChapterIDContainsFold(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterID"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterID = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDNEQ = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDIn = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDNotIn = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDGT = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDGTE = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDLT = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDLTE = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDLte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDContains"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDContains = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDContains(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDHasPrefix":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDHasPrefix"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDHasPrefix = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDHasPrefix(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDHasSuffix":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDHasSuffix"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDHasSuffix = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDHasSuffix(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
@@ -11784,18 +11982,22 @@ func (ec *executionContext) unmarshalInputComicWhereInput(ctx context.Context, o
 			it.LastChapterIDNotNil = data
 		case "lastChapterIDEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDEqualFold = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDEqualFold(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "lastChapterIDContainsFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastChapterIDContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastChapterIDContainsFold = data
+			if err = ec.resolvers.ComicWhereInput().LastChapterIDContainsFold(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "hasChapters":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasChapters"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -11889,7 +12091,7 @@ func (ec *executionContext) unmarshalInputGenreWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -11919,74 +12121,76 @@ func (ec *executionContext) unmarshalInputGenreWhereInput(ctx context.Context, o
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.GenreWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.GenreWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.GenreWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.GenreWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.GenreWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.GenreWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.GenreWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.GenreWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -12269,7 +12473,7 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "group", "groupNEQ", "groupIn", "groupNotIn", "groupGT", "groupGTE", "groupLT", "groupLTE", "groupContains", "groupHasPrefix", "groupHasSuffix", "groupEqualFold", "groupContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "key", "keyNEQ", "keyIn", "keyNotIn", "keyGT", "keyGTE", "keyLT", "keyLTE", "keyContains", "keyHasPrefix", "keyHasSuffix", "keyEqualFold", "keyContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "hasRoles", "hasRolesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "group", "groupNEQ", "groupIn", "groupNotIn", "groupGT", "groupGTE", "groupLT", "groupLTE", "groupContains", "groupHasPrefix", "groupHasSuffix", "groupEqualFold", "groupContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "key", "keyNEQ", "keyIn", "keyNotIn", "keyGT", "keyGTE", "keyLT", "keyLTE", "keyContains", "keyHasPrefix", "keyHasSuffix", "keyEqualFold", "keyContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "hasRoles", "hasRolesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -12299,74 +12503,76 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.PermissionWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.PermissionWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.PermissionWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.PermissionWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.PermissionWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.PermissionWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.PermissionWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.PermissionWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -12873,7 +13079,7 @@ func (ec *executionContext) unmarshalInputRoleWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionEqualFold", "descriptionContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "isChangeable", "isChangeableNEQ", "hasAdmins", "hasAdminsWith", "hasPermissions", "hasPermissionsWith", "hasRoutes", "hasRoutesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionEqualFold", "descriptionContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "isChangeable", "isChangeableNEQ", "hasAdmins", "hasAdminsWith", "hasPermissions", "hasPermissionsWith", "hasRoutes", "hasRoutesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -12903,74 +13109,76 @@ func (ec *executionContext) unmarshalInputRoleWhereInput(ctx context.Context, ob
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.RoleWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.RoleWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.RoleWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.RoleWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.RoleWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.RoleWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.RoleWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.RoleWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -13498,7 +13706,7 @@ func (ec *executionContext) unmarshalInputRouteWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "idEqualFold", "idContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "parentID", "parentIDNEQ", "parentIDIn", "parentIDNotIn", "parentIDGT", "parentIDGTE", "parentIDLT", "parentIDLTE", "parentIDContains", "parentIDHasPrefix", "parentIDHasSuffix", "parentIDIsNil", "parentIDNotNil", "parentIDEqualFold", "parentIDContainsFold", "path", "pathNEQ", "pathIn", "pathNotIn", "pathGT", "pathGTE", "pathLT", "pathLTE", "pathContains", "pathHasPrefix", "pathHasSuffix", "pathEqualFold", "pathContainsFold", "component", "componentNEQ", "componentIn", "componentNotIn", "componentGT", "componentGTE", "componentLT", "componentLTE", "componentContains", "componentHasPrefix", "componentHasSuffix", "componentEqualFold", "componentContainsFold", "redirect", "redirectNEQ", "redirectIn", "redirectNotIn", "redirectGT", "redirectGTE", "redirectLT", "redirectLTE", "redirectContains", "redirectHasPrefix", "redirectHasSuffix", "redirectIsNil", "redirectNotNil", "redirectEqualFold", "redirectContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "type", "typeNEQ", "typeIn", "typeNotIn", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith", "hasRoles", "hasRolesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "parentID", "parentIDNEQ", "parentIDIn", "parentIDNotIn", "parentIDGT", "parentIDGTE", "parentIDLT", "parentIDLTE", "parentIDContains", "parentIDHasPrefix", "parentIDHasSuffix", "parentIDIsNil", "parentIDNotNil", "parentIDEqualFold", "parentIDContainsFold", "path", "pathNEQ", "pathIn", "pathNotIn", "pathGT", "pathGTE", "pathLT", "pathLTE", "pathContains", "pathHasPrefix", "pathHasSuffix", "pathEqualFold", "pathContainsFold", "component", "componentNEQ", "componentIn", "componentNotIn", "componentGT", "componentGTE", "componentLT", "componentLTE", "componentContains", "componentHasPrefix", "componentHasSuffix", "componentEqualFold", "componentContainsFold", "redirect", "redirectNEQ", "redirectIn", "redirectNotIn", "redirectGT", "redirectGTE", "redirectLT", "redirectLTE", "redirectContains", "redirectHasPrefix", "redirectHasSuffix", "redirectIsNil", "redirectNotNil", "redirectEqualFold", "redirectContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "type", "typeNEQ", "typeIn", "typeNotIn", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith", "hasRoles", "hasRolesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -13528,74 +13736,76 @@ func (ec *executionContext) unmarshalInputRouteWhereInput(ctx context.Context, o
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			if err = ec.resolvers.RouteWhereInput().ID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNEQ = data
+			if err = ec.resolvers.RouteWhereInput().IDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDIn = data
+			if err = ec.resolvers.RouteWhereInput().IDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNotIn = data
+			if err = ec.resolvers.RouteWhereInput().IDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGT = data
+			if err = ec.resolvers.RouteWhereInput().IDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGTE = data
+			if err = ec.resolvers.RouteWhereInput().IDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLT = data
+			if err = ec.resolvers.RouteWhereInput().IDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLTE = data
-		case "idEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.RouteWhereInput().IDLte(ctx, &it, data); err != nil {
 				return it, err
 			}
-			it.IDEqualFold = data
-		case "idContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IDContainsFold = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -13780,81 +13990,103 @@ func (ec *executionContext) unmarshalInputRouteWhereInput(ctx context.Context, o
 			it.DeletedAtLTE = data
 		case "parentID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentID = data
+			if err = ec.resolvers.RouteWhereInput().ParentID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNEQ = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIn = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotIn = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGT = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDGt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGTE = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDGte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLT = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDLt(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLTE = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDLte(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContains"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContains = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDContains(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDHasPrefix":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasPrefix"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasPrefix = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDHasPrefix(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDHasSuffix":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasSuffix"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasSuffix = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDHasSuffix(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
@@ -13871,18 +14103,22 @@ func (ec *executionContext) unmarshalInputRouteWhereInput(ctx context.Context, o
 			it.ParentIDNotNil = data
 		case "parentIDEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDEqualFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDEqualFold = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDEqualFold(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "parentIDContainsFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContainsFold"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContainsFold = data
+			if err = ec.resolvers.RouteWhereInput().ParentIDContainsFold(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "path":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -14476,10 +14712,41 @@ func (ec *executionContext) _Admin(ctx context.Context, sel ast.SelectionSet, ob
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Admin")
 		case "id":
-			out.Values[i] = ec._Admin_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Admin_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Admin_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -14580,10 +14847,41 @@ func (ec *executionContext) _Comic(ctx context.Context, sel ast.SelectionSet, ob
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Comic")
 		case "id":
-			out.Values[i] = ec._Comic_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Comic_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Comic_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -14723,9 +15021,71 @@ func (ec *executionContext) _Comic(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "finalChapterID":
-			out.Values[i] = ec._Comic_finalChapterID(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Comic_finalChapterID(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "lastChapterID":
-			out.Values[i] = ec._Comic_lastChapterID(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Comic_lastChapterID(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "chapters":
 			field := field
 
@@ -14860,10 +15220,41 @@ func (ec *executionContext) _ComicChapter(ctx context.Context, sel ast.Selection
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("ComicChapter")
 		case "id":
-			out.Values[i] = ec._ComicChapter_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ComicChapter_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._ComicChapter_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -15097,10 +15488,41 @@ func (ec *executionContext) _ComicImg(ctx context.Context, sel ast.SelectionSet,
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("ComicImg")
 		case "id":
-			out.Values[i] = ec._ComicImg_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ComicImg_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._ComicImg_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -15209,29 +15631,60 @@ func (ec *executionContext) _Genre(ctx context.Context, sel ast.SelectionSet, ob
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Genre")
 		case "id":
-			out.Values[i] = ec._Genre_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Genre_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Genre_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Genre_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Genre_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "type":
 			out.Values[i] = ec._Genre_type(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -15316,10 +15769,41 @@ func (ec *executionContext) _Permission(ctx context.Context, sel ast.SelectionSe
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Permission")
 		case "id":
-			out.Values[i] = ec._Permission_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Permission_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Permission_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -15531,10 +16015,41 @@ func (ec *executionContext) _Role(ctx context.Context, sel ast.SelectionSet, obj
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Role")
 		case "id":
-			out.Values[i] = ec._Role_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Role_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Role_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -15709,10 +16224,41 @@ func (ec *executionContext) _Route(ctx context.Context, sel ast.SelectionSet, ob
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Route")
 		case "id":
-			out.Values[i] = ec._Route_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Route_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "createdAt":
 			out.Values[i] = ec._Route_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -15734,7 +16280,38 @@ func (ec *executionContext) _Route(ctx context.Context, sel ast.SelectionSet, ob
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "parentID":
-			out.Values[i] = ec._Route_parentID(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Route_parentID(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "path":
 			out.Values[i] = ec._Route_path(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -16450,31 +17027,26 @@ func (ec *executionContext) unmarshalNGenreWhereInput2ᚖgithubᚗcomᚋgvaᚋin
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (pulid.ID, error) {
+	var res pulid.ID
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
+func (ec *executionContext) marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v pulid.ID) graphql.Marshaler {
+	return v
 }
 
-func (ec *executionContext) unmarshalNID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+func (ec *executionContext) unmarshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx context.Context, v interface{}) ([]pulid.ID, error) {
 	var vSlice []interface{}
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]string, len(vSlice))
+	res := make([]pulid.ID, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -16482,10 +17054,10 @@ func (ec *executionContext) unmarshalNID2ᚕstringᚄ(ctx context.Context, v int
 	return res, nil
 }
 
-func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+func (ec *executionContext) marshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []pulid.ID) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+		ret[i] = ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, sel, v[i])
 	}
 
 	for _, e := range ret {
@@ -17449,7 +18021,7 @@ func (ec *executionContext) unmarshalOGenreWhereInput2ᚖgithubᚗcomᚋgvaᚋin
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx context.Context, v interface{}) ([]pulid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -17458,10 +18030,10 @@ func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v int
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]string, len(vSlice))
+	res := make([]pulid.ID, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -17469,13 +18041,13 @@ func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v int
 	return res, nil
 }
 
-func (ec *executionContext) marshalOID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []pulid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+		ret[i] = ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx, sel, v[i])
 	}
 
 	for _, e := range ret {
@@ -17487,20 +18059,20 @@ func (ec *executionContext) marshalOID2ᚕstringᚄ(ctx context.Context, sel ast
 	return ret
 }
 
-func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (*pulid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalID(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	var res = new(pulid.ID)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v *pulid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	res := graphql.MarshalID(*v)
-	return res
+	return v
 }
 
 func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {

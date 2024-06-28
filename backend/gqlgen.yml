@@ -77,10 +77,11 @@ autobind:
 # The first line in each type will be used as defaults for resolver arguments and
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
+omit_getters: true
 models:
   ID:
     model:
-      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/gva/app/database/schema/pulid.ID
   Node:
     model:
       - github.com/gva/internal/ent.Noder

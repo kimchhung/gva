@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/types"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -82,15 +83,15 @@ func (rc *RouteCreate) SetNillableDeletedAt(i *int) *RouteCreate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (rc *RouteCreate) SetParentID(s string) *RouteCreate {
-	rc.mutation.SetParentID(s)
+func (rc *RouteCreate) SetParentID(pu pulid.ID) *RouteCreate {
+	rc.mutation.SetParentID(pu)
 	return rc
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (rc *RouteCreate) SetNillableParentID(s *string) *RouteCreate {
-	if s != nil {
-		rc.SetParentID(*s)
+func (rc *RouteCreate) SetNillableParentID(pu *pulid.ID) *RouteCreate {
+	if pu != nil {
+		rc.SetParentID(*pu)
 	}
 	return rc
 }
@@ -162,15 +163,15 @@ func (rc *RouteCreate) SetMeta(tm types.RouteMeta) *RouteCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *RouteCreate) SetID(s string) *RouteCreate {
-	rc.mutation.SetID(s)
+func (rc *RouteCreate) SetID(pu pulid.ID) *RouteCreate {
+	rc.mutation.SetID(pu)
 	return rc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *RouteCreate) SetNillableID(s *string) *RouteCreate {
-	if s != nil {
-		rc.SetID(*s)
+func (rc *RouteCreate) SetNillableID(pu *pulid.ID) *RouteCreate {
+	if pu != nil {
+		rc.SetID(*pu)
 	}
 	return rc
 }
@@ -181,14 +182,14 @@ func (rc *RouteCreate) SetParent(r *Route) *RouteCreate {
 }
 
 // AddChildIDs adds the "children" edge to the Route entity by IDs.
-func (rc *RouteCreate) AddChildIDs(ids ...string) *RouteCreate {
+func (rc *RouteCreate) AddChildIDs(ids ...pulid.ID) *RouteCreate {
 	rc.mutation.AddChildIDs(ids...)
 	return rc
 }
 
 // AddChildren adds the "children" edges to the Route entity.
 func (rc *RouteCreate) AddChildren(r ...*Route) *RouteCreate {
-	ids := make([]string, len(r))
+	ids := make([]pulid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -196,14 +197,14 @@ func (rc *RouteCreate) AddChildren(r ...*Route) *RouteCreate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (rc *RouteCreate) AddRoleIDs(ids ...string) *RouteCreate {
+func (rc *RouteCreate) AddRoleIDs(ids ...pulid.ID) *RouteCreate {
 	rc.mutation.AddRoleIDs(ids...)
 	return rc
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (rc *RouteCreate) AddRoles(r ...*Role) *RouteCreate {
-	ids := make([]string, len(r))
+	ids := make([]pulid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -336,10 +337,10 @@ func (rc *RouteCreate) sqlSave(ctx context.Context) (*Route, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Route.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*pulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	rc.mutation.id = &_node.ID
@@ -356,7 +357,7 @@ func (rc *RouteCreate) createSpec() (*Route, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = rc.conflict
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.SetField(route.FieldCreatedAt, field.TypeTime, value)
@@ -561,7 +562,7 @@ func (u *RouteUpsert) AddDeletedAt(v int) *RouteUpsert {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *RouteUpsert) SetParentID(v string) *RouteUpsert {
+func (u *RouteUpsert) SetParentID(v pulid.ID) *RouteUpsert {
 	u.Set(route.FieldParentID, v)
 	return u
 }
@@ -792,7 +793,7 @@ func (u *RouteUpsertOne) UpdateDeletedAt() *RouteUpsertOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *RouteUpsertOne) SetParentID(v string) *RouteUpsertOne {
+func (u *RouteUpsertOne) SetParentID(v pulid.ID) *RouteUpsertOne {
 	return u.Update(func(s *RouteUpsert) {
 		s.SetParentID(v)
 	})
@@ -947,7 +948,7 @@ func (u *RouteUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RouteUpsertOne) ID(ctx context.Context) (id string, err error) {
+func (u *RouteUpsertOne) ID(ctx context.Context) (id pulid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -961,7 +962,7 @@ func (u *RouteUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RouteUpsertOne) IDX(ctx context.Context) string {
+func (u *RouteUpsertOne) IDX(ctx context.Context) pulid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1210,7 +1211,7 @@ func (u *RouteUpsertBulk) UpdateDeletedAt() *RouteUpsertBulk {
 }
 
 // SetParentID sets the "parent_id" field.
-func (u *RouteUpsertBulk) SetParentID(v string) *RouteUpsertBulk {
+func (u *RouteUpsertBulk) SetParentID(v pulid.ID) *RouteUpsertBulk {
 	return u.Update(func(s *RouteUpsert) {
 		s.SetParentID(v)
 	})

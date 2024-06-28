@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/types"
 
 	"entgo.io/ent"
@@ -15,7 +16,7 @@ type Comic struct {
 
 func (Comic) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixins.NanoID{},
+		pulid.MixinWithPrefix("CM"),
 		mixins.TimeMixin{},
 	}
 }
@@ -33,11 +34,11 @@ func (Comic) Fields() []ent.Field {
 		field.Uint("up_count").StructTag(`json:"upCount"`).Default(0),
 
 		field.String("final_chapter_id").
-			SchemaType(mixins.NanoSchemaType).
+			GoType(pulid.ID("")).
 			Optional().Nillable(),
 
 		field.String("last_chapter_id").
-			SchemaType(mixins.NanoSchemaType).
+			GoType(pulid.ID("")).
 			Optional().Nillable(),
 	}
 }

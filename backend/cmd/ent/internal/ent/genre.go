@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/genre"
 )
 
@@ -16,7 +17,7 @@ import (
 type Genre struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID string `json:"id" rql:"filter,sort"`
+	ID pulid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -33,7 +34,9 @@ func (*Genre) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case genre.FieldID, genre.FieldName, genre.FieldType:
+		case genre.FieldID:
+			values[i] = new(pulid.ID)
+		case genre.FieldName, genre.FieldType:
 			values[i] = new(sql.NullString)
 		case genre.FieldCreatedAt, genre.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -53,10 +56,10 @@ func (ge *Genre) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case genre.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*pulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				ge.ID = value.String
+			} else if value != nil {
+				ge.ID = *value
 			}
 		case genre.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

@@ -7,64 +7,55 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.Route {
+func ID(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.Route {
+func IDEQ(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.Route {
+func IDNEQ(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.Route {
+func IDIn(ids ...pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.Route {
+func IDNotIn(ids ...pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.Route {
+func IDGT(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.Route {
+func IDGTE(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.Route {
+func IDLT(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.Route {
+func IDLTE(id pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.Route {
-	return predicate.Route(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.Route {
-	return predicate.Route(sql.FieldContainsFold(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -88,7 +79,7 @@ func DeletedAt(v int) predicate.Route {
 }
 
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v string) predicate.Route {
+func ParentID(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldParentID, v))
 }
 
@@ -248,58 +239,61 @@ func DeletedAtLTE(v int) predicate.Route {
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v string) predicate.Route {
+func ParentIDEQ(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldEQ(FieldParentID, v))
 }
 
 // ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v string) predicate.Route {
+func ParentIDNEQ(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldNEQ(FieldParentID, v))
 }
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...string) predicate.Route {
+func ParentIDIn(vs ...pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldIn(FieldParentID, vs...))
 }
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...string) predicate.Route {
+func ParentIDNotIn(vs ...pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldNotIn(FieldParentID, vs...))
 }
 
 // ParentIDGT applies the GT predicate on the "parent_id" field.
-func ParentIDGT(v string) predicate.Route {
+func ParentIDGT(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldGT(FieldParentID, v))
 }
 
 // ParentIDGTE applies the GTE predicate on the "parent_id" field.
-func ParentIDGTE(v string) predicate.Route {
+func ParentIDGTE(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldGTE(FieldParentID, v))
 }
 
 // ParentIDLT applies the LT predicate on the "parent_id" field.
-func ParentIDLT(v string) predicate.Route {
+func ParentIDLT(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldLT(FieldParentID, v))
 }
 
 // ParentIDLTE applies the LTE predicate on the "parent_id" field.
-func ParentIDLTE(v string) predicate.Route {
+func ParentIDLTE(v pulid.ID) predicate.Route {
 	return predicate.Route(sql.FieldLTE(FieldParentID, v))
 }
 
 // ParentIDContains applies the Contains predicate on the "parent_id" field.
-func ParentIDContains(v string) predicate.Route {
-	return predicate.Route(sql.FieldContains(FieldParentID, v))
+func ParentIDContains(v pulid.ID) predicate.Route {
+	vc := string(v)
+	return predicate.Route(sql.FieldContains(FieldParentID, vc))
 }
 
 // ParentIDHasPrefix applies the HasPrefix predicate on the "parent_id" field.
-func ParentIDHasPrefix(v string) predicate.Route {
-	return predicate.Route(sql.FieldHasPrefix(FieldParentID, v))
+func ParentIDHasPrefix(v pulid.ID) predicate.Route {
+	vc := string(v)
+	return predicate.Route(sql.FieldHasPrefix(FieldParentID, vc))
 }
 
 // ParentIDHasSuffix applies the HasSuffix predicate on the "parent_id" field.
-func ParentIDHasSuffix(v string) predicate.Route {
-	return predicate.Route(sql.FieldHasSuffix(FieldParentID, v))
+func ParentIDHasSuffix(v pulid.ID) predicate.Route {
+	vc := string(v)
+	return predicate.Route(sql.FieldHasSuffix(FieldParentID, vc))
 }
 
 // ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
@@ -313,13 +307,15 @@ func ParentIDNotNil() predicate.Route {
 }
 
 // ParentIDEqualFold applies the EqualFold predicate on the "parent_id" field.
-func ParentIDEqualFold(v string) predicate.Route {
-	return predicate.Route(sql.FieldEqualFold(FieldParentID, v))
+func ParentIDEqualFold(v pulid.ID) predicate.Route {
+	vc := string(v)
+	return predicate.Route(sql.FieldEqualFold(FieldParentID, vc))
 }
 
 // ParentIDContainsFold applies the ContainsFold predicate on the "parent_id" field.
-func ParentIDContainsFold(v string) predicate.Route {
-	return predicate.Route(sql.FieldContainsFold(FieldParentID, v))
+func ParentIDContainsFold(v pulid.ID) predicate.Route {
+	vc := string(v)
+	return predicate.Route(sql.FieldContainsFold(FieldParentID, vc))
 }
 
 // PathEQ applies the EQ predicate on the "path" field.

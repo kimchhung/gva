@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -26,16 +27,14 @@ type AdminWhereInput struct {
 	And        []*AdminWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -217,12 +216,6 @@ func (i *AdminWhereInput) P() (predicate.Admin, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, admin.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, admin.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, admin.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, admin.CreatedAtEQ(*i.CreatedAt))
@@ -462,16 +455,14 @@ type ComicWhereInput struct {
 	And        []*ComicWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -563,38 +554,38 @@ type ComicWhereInput struct {
 	UpCountLTE   *uint  `json:"upCountLTE,omitempty"`
 
 	// "final_chapter_id" field predicates.
-	FinalChapterID             *string  `json:"finalChapterID,omitempty"`
-	FinalChapterIDNEQ          *string  `json:"finalChapterIDNEQ,omitempty"`
-	FinalChapterIDIn           []string `json:"finalChapterIDIn,omitempty"`
-	FinalChapterIDNotIn        []string `json:"finalChapterIDNotIn,omitempty"`
-	FinalChapterIDGT           *string  `json:"finalChapterIDGT,omitempty"`
-	FinalChapterIDGTE          *string  `json:"finalChapterIDGTE,omitempty"`
-	FinalChapterIDLT           *string  `json:"finalChapterIDLT,omitempty"`
-	FinalChapterIDLTE          *string  `json:"finalChapterIDLTE,omitempty"`
-	FinalChapterIDContains     *string  `json:"finalChapterIDContains,omitempty"`
-	FinalChapterIDHasPrefix    *string  `json:"finalChapterIDHasPrefix,omitempty"`
-	FinalChapterIDHasSuffix    *string  `json:"finalChapterIDHasSuffix,omitempty"`
-	FinalChapterIDIsNil        bool     `json:"finalChapterIDIsNil,omitempty"`
-	FinalChapterIDNotNil       bool     `json:"finalChapterIDNotNil,omitempty"`
-	FinalChapterIDEqualFold    *string  `json:"finalChapterIDEqualFold,omitempty"`
-	FinalChapterIDContainsFold *string  `json:"finalChapterIDContainsFold,omitempty"`
+	FinalChapterID             *pulid.ID  `json:"finalChapterID,omitempty"`
+	FinalChapterIDNEQ          *pulid.ID  `json:"finalChapterIDNEQ,omitempty"`
+	FinalChapterIDIn           []pulid.ID `json:"finalChapterIDIn,omitempty"`
+	FinalChapterIDNotIn        []pulid.ID `json:"finalChapterIDNotIn,omitempty"`
+	FinalChapterIDGT           *pulid.ID  `json:"finalChapterIDGT,omitempty"`
+	FinalChapterIDGTE          *pulid.ID  `json:"finalChapterIDGTE,omitempty"`
+	FinalChapterIDLT           *pulid.ID  `json:"finalChapterIDLT,omitempty"`
+	FinalChapterIDLTE          *pulid.ID  `json:"finalChapterIDLTE,omitempty"`
+	FinalChapterIDContains     *pulid.ID  `json:"finalChapterIDContains,omitempty"`
+	FinalChapterIDHasPrefix    *pulid.ID  `json:"finalChapterIDHasPrefix,omitempty"`
+	FinalChapterIDHasSuffix    *pulid.ID  `json:"finalChapterIDHasSuffix,omitempty"`
+	FinalChapterIDIsNil        bool       `json:"finalChapterIDIsNil,omitempty"`
+	FinalChapterIDNotNil       bool       `json:"finalChapterIDNotNil,omitempty"`
+	FinalChapterIDEqualFold    *pulid.ID  `json:"finalChapterIDEqualFold,omitempty"`
+	FinalChapterIDContainsFold *pulid.ID  `json:"finalChapterIDContainsFold,omitempty"`
 
 	// "last_chapter_id" field predicates.
-	LastChapterID             *string  `json:"lastChapterID,omitempty"`
-	LastChapterIDNEQ          *string  `json:"lastChapterIDNEQ,omitempty"`
-	LastChapterIDIn           []string `json:"lastChapterIDIn,omitempty"`
-	LastChapterIDNotIn        []string `json:"lastChapterIDNotIn,omitempty"`
-	LastChapterIDGT           *string  `json:"lastChapterIDGT,omitempty"`
-	LastChapterIDGTE          *string  `json:"lastChapterIDGTE,omitempty"`
-	LastChapterIDLT           *string  `json:"lastChapterIDLT,omitempty"`
-	LastChapterIDLTE          *string  `json:"lastChapterIDLTE,omitempty"`
-	LastChapterIDContains     *string  `json:"lastChapterIDContains,omitempty"`
-	LastChapterIDHasPrefix    *string  `json:"lastChapterIDHasPrefix,omitempty"`
-	LastChapterIDHasSuffix    *string  `json:"lastChapterIDHasSuffix,omitempty"`
-	LastChapterIDIsNil        bool     `json:"lastChapterIDIsNil,omitempty"`
-	LastChapterIDNotNil       bool     `json:"lastChapterIDNotNil,omitempty"`
-	LastChapterIDEqualFold    *string  `json:"lastChapterIDEqualFold,omitempty"`
-	LastChapterIDContainsFold *string  `json:"lastChapterIDContainsFold,omitempty"`
+	LastChapterID             *pulid.ID  `json:"lastChapterID,omitempty"`
+	LastChapterIDNEQ          *pulid.ID  `json:"lastChapterIDNEQ,omitempty"`
+	LastChapterIDIn           []pulid.ID `json:"lastChapterIDIn,omitempty"`
+	LastChapterIDNotIn        []pulid.ID `json:"lastChapterIDNotIn,omitempty"`
+	LastChapterIDGT           *pulid.ID  `json:"lastChapterIDGT,omitempty"`
+	LastChapterIDGTE          *pulid.ID  `json:"lastChapterIDGTE,omitempty"`
+	LastChapterIDLT           *pulid.ID  `json:"lastChapterIDLT,omitempty"`
+	LastChapterIDLTE          *pulid.ID  `json:"lastChapterIDLTE,omitempty"`
+	LastChapterIDContains     *pulid.ID  `json:"lastChapterIDContains,omitempty"`
+	LastChapterIDHasPrefix    *pulid.ID  `json:"lastChapterIDHasPrefix,omitempty"`
+	LastChapterIDHasSuffix    *pulid.ID  `json:"lastChapterIDHasSuffix,omitempty"`
+	LastChapterIDIsNil        bool       `json:"lastChapterIDIsNil,omitempty"`
+	LastChapterIDNotNil       bool       `json:"lastChapterIDNotNil,omitempty"`
+	LastChapterIDEqualFold    *pulid.ID  `json:"lastChapterIDEqualFold,omitempty"`
+	LastChapterIDContainsFold *pulid.ID  `json:"lastChapterIDContainsFold,omitempty"`
 
 	// "chapters" edge predicates.
 	HasChapters     *bool                     `json:"hasChapters,omitempty"`
@@ -703,12 +694,6 @@ func (i *ComicWhereInput) P() (predicate.Comic, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, comic.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, comic.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, comic.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, comic.CreatedAtEQ(*i.CreatedAt))
@@ -1092,16 +1077,14 @@ type ComicChapterWhereInput struct {
 	And        []*ComicChapterWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1309,12 +1292,6 @@ func (i *ComicChapterWhereInput) P() (predicate.ComicChapter, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, comicchapter.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, comicchapter.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, comicchapter.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, comicchapter.CreatedAtEQ(*i.CreatedAt))
@@ -1626,16 +1603,14 @@ type ComicImgWhereInput struct {
 	And        []*ComicImgWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1826,12 +1801,6 @@ func (i *ComicImgWhereInput) P() (predicate.ComicImg, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, comicimg.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, comicimg.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, comicimg.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, comicimg.CreatedAtEQ(*i.CreatedAt))
@@ -2092,16 +2061,14 @@ type GenreWhereInput struct {
 	And        []*GenreWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -2240,12 +2207,6 @@ func (i *GenreWhereInput) P() (predicate.Genre, error) {
 	if i.IDLTE != nil {
 		predicates = append(predicates, genre.IDLTE(*i.IDLTE))
 	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, genre.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, genre.IDContainsFold(*i.IDContainsFold))
-	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, genre.CreatedAtEQ(*i.CreatedAt))
 	}
@@ -2364,16 +2325,14 @@ type PermissionWhereInput struct {
 	And        []*PermissionWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -2549,12 +2508,6 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, permission.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, permission.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, permission.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, permission.CreatedAtEQ(*i.CreatedAt))
@@ -2782,16 +2735,14 @@ type RoleWhereInput struct {
 	And        []*RoleWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -2978,12 +2929,6 @@ func (i *RoleWhereInput) P() (predicate.Role, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, role.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, role.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, role.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, role.CreatedAtEQ(*i.CreatedAt))
@@ -3244,16 +3189,14 @@ type RouteWhereInput struct {
 	And        []*RouteWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID             *string  `json:"id,omitempty"`
-	IDNEQ          *string  `json:"idNEQ,omitempty"`
-	IDIn           []string `json:"idIn,omitempty"`
-	IDNotIn        []string `json:"idNotIn,omitempty"`
-	IDGT           *string  `json:"idGT,omitempty"`
-	IDGTE          *string  `json:"idGTE,omitempty"`
-	IDLT           *string  `json:"idLT,omitempty"`
-	IDLTE          *string  `json:"idLTE,omitempty"`
-	IDEqualFold    *string  `json:"idEqualFold,omitempty"`
-	IDContainsFold *string  `json:"idContainsFold,omitempty"`
+	ID      *pulid.ID  `json:"id,omitempty"`
+	IDNEQ   *pulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pulid.ID `json:"idIn,omitempty"`
+	IDNotIn []pulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pulid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -3290,21 +3233,21 @@ type RouteWhereInput struct {
 	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
 
 	// "parent_id" field predicates.
-	ParentID             *string  `json:"parentID,omitempty"`
-	ParentIDNEQ          *string  `json:"parentIDNEQ,omitempty"`
-	ParentIDIn           []string `json:"parentIDIn,omitempty"`
-	ParentIDNotIn        []string `json:"parentIDNotIn,omitempty"`
-	ParentIDGT           *string  `json:"parentIDGT,omitempty"`
-	ParentIDGTE          *string  `json:"parentIDGTE,omitempty"`
-	ParentIDLT           *string  `json:"parentIDLT,omitempty"`
-	ParentIDLTE          *string  `json:"parentIDLTE,omitempty"`
-	ParentIDContains     *string  `json:"parentIDContains,omitempty"`
-	ParentIDHasPrefix    *string  `json:"parentIDHasPrefix,omitempty"`
-	ParentIDHasSuffix    *string  `json:"parentIDHasSuffix,omitempty"`
-	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
-	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
-	ParentIDEqualFold    *string  `json:"parentIDEqualFold,omitempty"`
-	ParentIDContainsFold *string  `json:"parentIDContainsFold,omitempty"`
+	ParentID             *pulid.ID  `json:"parentID,omitempty"`
+	ParentIDNEQ          *pulid.ID  `json:"parentIDNEQ,omitempty"`
+	ParentIDIn           []pulid.ID `json:"parentIDIn,omitempty"`
+	ParentIDNotIn        []pulid.ID `json:"parentIDNotIn,omitempty"`
+	ParentIDGT           *pulid.ID  `json:"parentIDGT,omitempty"`
+	ParentIDGTE          *pulid.ID  `json:"parentIDGTE,omitempty"`
+	ParentIDLT           *pulid.ID  `json:"parentIDLT,omitempty"`
+	ParentIDLTE          *pulid.ID  `json:"parentIDLTE,omitempty"`
+	ParentIDContains     *pulid.ID  `json:"parentIDContains,omitempty"`
+	ParentIDHasPrefix    *pulid.ID  `json:"parentIDHasPrefix,omitempty"`
+	ParentIDHasSuffix    *pulid.ID  `json:"parentIDHasSuffix,omitempty"`
+	ParentIDIsNil        bool       `json:"parentIDIsNil,omitempty"`
+	ParentIDNotNil       bool       `json:"parentIDNotNil,omitempty"`
+	ParentIDEqualFold    *pulid.ID  `json:"parentIDEqualFold,omitempty"`
+	ParentIDContainsFold *pulid.ID  `json:"parentIDContainsFold,omitempty"`
 
 	// "path" field predicates.
 	Path             *string  `json:"path,omitempty"`
@@ -3493,12 +3436,6 @@ func (i *RouteWhereInput) P() (predicate.Route, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, route.IDLTE(*i.IDLTE))
-	}
-	if i.IDEqualFold != nil {
-		predicates = append(predicates, route.IDEqualFold(*i.IDEqualFold))
-	}
-	if i.IDContainsFold != nil {
-		predicates = append(predicates, route.IDContainsFold(*i.IDContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, route.CreatedAtEQ(*i.CreatedAt))

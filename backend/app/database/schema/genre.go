@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pulid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -13,7 +14,7 @@ type Genre struct {
 
 func (Genre) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixins.NanoID{},
+		pulid.MixinWithPrefix("GEN"),
 		mixins.TimeMixin{},
 	}
 }

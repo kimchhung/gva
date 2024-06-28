@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/softdelete"
 
 	"entgo.io/ent"
@@ -15,7 +16,7 @@ type Role struct {
 
 func (Role) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixins.NanoID{},
+		pulid.MixinWithPrefix("RL"),
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},

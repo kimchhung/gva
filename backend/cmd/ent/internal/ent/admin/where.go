@@ -7,64 +7,55 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.Admin {
+func ID(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.Admin {
+func IDEQ(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.Admin {
+func IDNEQ(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.Admin {
+func IDIn(ids ...pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.Admin {
+func IDNotIn(ids ...pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.Admin {
+func IDGT(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.Admin {
+func IDGTE(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.Admin {
+func IDLT(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.Admin {
+func IDLTE(id pulid.ID) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.Admin {
-	return predicate.Admin(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.Admin {
-	return predicate.Admin(sql.FieldContainsFold(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.

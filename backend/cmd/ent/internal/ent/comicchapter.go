@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
 )
@@ -17,7 +18,7 @@ import (
 type ComicChapter struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID string `json:"id" rql:"filter,sort"`
+	ID pulid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -39,7 +40,7 @@ type ComicChapter struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ComicChapterQuery when eager-loading is set.
 	Edges          ComicChapterEdges `json:"edges" rql:"-"`
-	comic_chapters *string
+	comic_chapters *pulid.ID
 	selectValues   sql.SelectValues
 }
 
@@ -83,16 +84,18 @@ func (*ComicChapter) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case comicchapter.FieldID:
+			values[i] = new(pulid.ID)
 		case comicchapter.FieldIsLastChapter:
 			values[i] = new(sql.NullBool)
 		case comicchapter.FieldChapter, comicchapter.FieldUpCount, comicchapter.FieldDownCount:
 			values[i] = new(sql.NullInt64)
-		case comicchapter.FieldID, comicchapter.FieldTitle, comicchapter.FieldVolumn, comicchapter.FieldLang:
+		case comicchapter.FieldTitle, comicchapter.FieldVolumn, comicchapter.FieldLang:
 			values[i] = new(sql.NullString)
 		case comicchapter.FieldCreatedAt, comicchapter.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case comicchapter.ForeignKeys[0]: // comic_chapters
-			values[i] = new(sql.NullString)
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -109,10 +112,10 @@ func (cc *ComicChapter) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case comicchapter.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*pulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				cc.ID = value.String
+			} else if value != nil {
+				cc.ID = *value
 			}
 		case comicchapter.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -171,11 +174,11 @@ func (cc *ComicChapter) assignValues(columns []string, values []any) error {
 				cc.IsLastChapter = value.Bool
 			}
 		case comicchapter.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field comic_chapters", values[i])
 			} else if value.Valid {
-				cc.comic_chapters = new(string)
-				*cc.comic_chapters = value.String
+				cc.comic_chapters = new(pulid.ID)
+				*cc.comic_chapters = *value.S.(*pulid.ID)
 			}
 		default:
 			cc.selectValues.Set(columns[i], values[i])

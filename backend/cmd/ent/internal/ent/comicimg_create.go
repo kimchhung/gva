@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/comicimg"
 )
@@ -89,27 +90,27 @@ func (cic *ComicImgCreate) SetWidth(i int) *ComicImgCreate {
 }
 
 // SetID sets the "id" field.
-func (cic *ComicImgCreate) SetID(s string) *ComicImgCreate {
-	cic.mutation.SetID(s)
+func (cic *ComicImgCreate) SetID(pu pulid.ID) *ComicImgCreate {
+	cic.mutation.SetID(pu)
 	return cic
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (cic *ComicImgCreate) SetNillableID(s *string) *ComicImgCreate {
-	if s != nil {
-		cic.SetID(*s)
+func (cic *ComicImgCreate) SetNillableID(pu *pulid.ID) *ComicImgCreate {
+	if pu != nil {
+		cic.SetID(*pu)
 	}
 	return cic
 }
 
 // SetChapterID sets the "chapter" edge to the ComicChapter entity by ID.
-func (cic *ComicImgCreate) SetChapterID(id string) *ComicImgCreate {
+func (cic *ComicImgCreate) SetChapterID(id pulid.ID) *ComicImgCreate {
 	cic.mutation.SetChapterID(id)
 	return cic
 }
 
 // SetNillableChapterID sets the "chapter" edge to the ComicChapter entity by ID if the given value is not nil.
-func (cic *ComicImgCreate) SetNillableChapterID(id *string) *ComicImgCreate {
+func (cic *ComicImgCreate) SetNillableChapterID(id *pulid.ID) *ComicImgCreate {
 	if id != nil {
 		cic = cic.SetChapterID(*id)
 	}
@@ -211,10 +212,10 @@ func (cic *ComicImgCreate) sqlSave(ctx context.Context) (*ComicImg, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected ComicImg.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*pulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	cic.mutation.id = &_node.ID
@@ -231,7 +232,7 @@ func (cic *ComicImgCreate) createSpec() (*ComicImg, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = cic.conflict
 	if id, ok := cic.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := cic.mutation.CreatedAt(); ok {
 		_spec.SetField(comicimg.FieldCreatedAt, field.TypeTime, value)
@@ -659,7 +660,7 @@ func (u *ComicImgUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ComicImgUpsertOne) ID(ctx context.Context) (id string, err error) {
+func (u *ComicImgUpsertOne) ID(ctx context.Context) (id pulid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -673,7 +674,7 @@ func (u *ComicImgUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ComicImgUpsertOne) IDX(ctx context.Context) string {
+func (u *ComicImgUpsertOne) IDX(ctx context.Context) pulid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

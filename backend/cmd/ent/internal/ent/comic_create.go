@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/types"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -112,56 +113,56 @@ func (cc *ComicCreate) SetNillableUpCount(u *uint) *ComicCreate {
 }
 
 // SetFinalChapterID sets the "final_chapter_id" field.
-func (cc *ComicCreate) SetFinalChapterID(s string) *ComicCreate {
-	cc.mutation.SetFinalChapterID(s)
+func (cc *ComicCreate) SetFinalChapterID(pu pulid.ID) *ComicCreate {
+	cc.mutation.SetFinalChapterID(pu)
 	return cc
 }
 
 // SetNillableFinalChapterID sets the "final_chapter_id" field if the given value is not nil.
-func (cc *ComicCreate) SetNillableFinalChapterID(s *string) *ComicCreate {
-	if s != nil {
-		cc.SetFinalChapterID(*s)
+func (cc *ComicCreate) SetNillableFinalChapterID(pu *pulid.ID) *ComicCreate {
+	if pu != nil {
+		cc.SetFinalChapterID(*pu)
 	}
 	return cc
 }
 
 // SetLastChapterID sets the "last_chapter_id" field.
-func (cc *ComicCreate) SetLastChapterID(s string) *ComicCreate {
-	cc.mutation.SetLastChapterID(s)
+func (cc *ComicCreate) SetLastChapterID(pu pulid.ID) *ComicCreate {
+	cc.mutation.SetLastChapterID(pu)
 	return cc
 }
 
 // SetNillableLastChapterID sets the "last_chapter_id" field if the given value is not nil.
-func (cc *ComicCreate) SetNillableLastChapterID(s *string) *ComicCreate {
-	if s != nil {
-		cc.SetLastChapterID(*s)
+func (cc *ComicCreate) SetNillableLastChapterID(pu *pulid.ID) *ComicCreate {
+	if pu != nil {
+		cc.SetLastChapterID(*pu)
 	}
 	return cc
 }
 
 // SetID sets the "id" field.
-func (cc *ComicCreate) SetID(s string) *ComicCreate {
-	cc.mutation.SetID(s)
+func (cc *ComicCreate) SetID(pu pulid.ID) *ComicCreate {
+	cc.mutation.SetID(pu)
 	return cc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (cc *ComicCreate) SetNillableID(s *string) *ComicCreate {
-	if s != nil {
-		cc.SetID(*s)
+func (cc *ComicCreate) SetNillableID(pu *pulid.ID) *ComicCreate {
+	if pu != nil {
+		cc.SetID(*pu)
 	}
 	return cc
 }
 
 // AddChapterIDs adds the "chapters" edge to the ComicChapter entity by IDs.
-func (cc *ComicCreate) AddChapterIDs(ids ...string) *ComicCreate {
+func (cc *ComicCreate) AddChapterIDs(ids ...pulid.ID) *ComicCreate {
 	cc.mutation.AddChapterIDs(ids...)
 	return cc
 }
 
 // AddChapters adds the "chapters" edges to the ComicChapter entity.
 func (cc *ComicCreate) AddChapters(c ...*ComicChapter) *ComicCreate {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -279,10 +280,10 @@ func (cc *ComicCreate) sqlSave(ctx context.Context) (*Comic, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Comic.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*pulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	cc.mutation.id = &_node.ID
@@ -299,7 +300,7 @@ func (cc *ComicCreate) createSpec() (*Comic, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = cc.conflict
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.SetField(comic.FieldCreatedAt, field.TypeTime, value)
@@ -563,7 +564,7 @@ func (u *ComicUpsert) AddUpCount(v uint) *ComicUpsert {
 }
 
 // SetFinalChapterID sets the "final_chapter_id" field.
-func (u *ComicUpsert) SetFinalChapterID(v string) *ComicUpsert {
+func (u *ComicUpsert) SetFinalChapterID(v pulid.ID) *ComicUpsert {
 	u.Set(comic.FieldFinalChapterID, v)
 	return u
 }
@@ -581,7 +582,7 @@ func (u *ComicUpsert) ClearFinalChapterID() *ComicUpsert {
 }
 
 // SetLastChapterID sets the "last_chapter_id" field.
-func (u *ComicUpsert) SetLastChapterID(v string) *ComicUpsert {
+func (u *ComicUpsert) SetLastChapterID(v pulid.ID) *ComicUpsert {
 	u.Set(comic.FieldLastChapterID, v)
 	return u
 }
@@ -787,7 +788,7 @@ func (u *ComicUpsertOne) UpdateUpCount() *ComicUpsertOne {
 }
 
 // SetFinalChapterID sets the "final_chapter_id" field.
-func (u *ComicUpsertOne) SetFinalChapterID(v string) *ComicUpsertOne {
+func (u *ComicUpsertOne) SetFinalChapterID(v pulid.ID) *ComicUpsertOne {
 	return u.Update(func(s *ComicUpsert) {
 		s.SetFinalChapterID(v)
 	})
@@ -808,7 +809,7 @@ func (u *ComicUpsertOne) ClearFinalChapterID() *ComicUpsertOne {
 }
 
 // SetLastChapterID sets the "last_chapter_id" field.
-func (u *ComicUpsertOne) SetLastChapterID(v string) *ComicUpsertOne {
+func (u *ComicUpsertOne) SetLastChapterID(v pulid.ID) *ComicUpsertOne {
 	return u.Update(func(s *ComicUpsert) {
 		s.SetLastChapterID(v)
 	})
@@ -844,7 +845,7 @@ func (u *ComicUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ComicUpsertOne) ID(ctx context.Context) (id string, err error) {
+func (u *ComicUpsertOne) ID(ctx context.Context) (id pulid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -858,7 +859,7 @@ func (u *ComicUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ComicUpsertOne) IDX(ctx context.Context) string {
+func (u *ComicUpsertOne) IDX(ctx context.Context) pulid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1184,7 +1185,7 @@ func (u *ComicUpsertBulk) UpdateUpCount() *ComicUpsertBulk {
 }
 
 // SetFinalChapterID sets the "final_chapter_id" field.
-func (u *ComicUpsertBulk) SetFinalChapterID(v string) *ComicUpsertBulk {
+func (u *ComicUpsertBulk) SetFinalChapterID(v pulid.ID) *ComicUpsertBulk {
 	return u.Update(func(s *ComicUpsert) {
 		s.SetFinalChapterID(v)
 	})
@@ -1205,7 +1206,7 @@ func (u *ComicUpsertBulk) ClearFinalChapterID() *ComicUpsertBulk {
 }
 
 // SetLastChapterID sets the "last_chapter_id" field.
-func (u *ComicUpsertBulk) SetLastChapterID(v string) *ComicUpsertBulk {
+func (u *ComicUpsertBulk) SetLastChapterID(v pulid.ID) *ComicUpsertBulk {
 	return u.Update(func(s *ComicUpsert) {
 		s.SetLastChapterID(v)
 	})

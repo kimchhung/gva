@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/types"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -19,7 +20,7 @@ import (
 type Comic struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID string `json:"id" rql:"filter,sort"`
+	ID pulid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -39,9 +40,9 @@ type Comic struct {
 	// UpCount holds the value of the "up_count" field.
 	UpCount uint `json:"upCount"`
 	// FinalChapterID holds the value of the "final_chapter_id" field.
-	FinalChapterID *string `json:"final_chapter_id,omitempty"`
+	FinalChapterID *pulid.ID `json:"final_chapter_id,omitempty"`
 	// LastChapterID holds the value of the "last_chapter_id" field.
-	LastChapterID *string `json:"last_chapter_id,omitempty"`
+	LastChapterID *pulid.ID `json:"last_chapter_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ComicQuery when eager-loading is set.
 	Edges        ComicEdges `json:"edges" rql:"-"`
@@ -101,13 +102,17 @@ func (*Comic) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case comic.FieldFinalChapterID, comic.FieldLastChapterID:
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		case comic.FieldCovers:
 			values[i] = new([]byte)
+		case comic.FieldID:
+			values[i] = new(pulid.ID)
 		case comic.FieldIsTranslateCompleted:
 			values[i] = new(sql.NullBool)
 		case comic.FieldChapter, comic.FieldUpCount:
 			values[i] = new(sql.NullInt64)
-		case comic.FieldID, comic.FieldTitle, comic.FieldSlug, comic.FieldStatus, comic.FieldFinalChapterID, comic.FieldLastChapterID:
+		case comic.FieldTitle, comic.FieldSlug, comic.FieldStatus:
 			values[i] = new(sql.NullString)
 		case comic.FieldCreatedAt, comic.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -127,10 +132,10 @@ func (c *Comic) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case comic.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*pulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				c.ID = value.String
+			} else if value != nil {
+				c.ID = *value
 			}
 		case comic.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -189,18 +194,18 @@ func (c *Comic) assignValues(columns []string, values []any) error {
 				c.UpCount = uint(value.Int64)
 			}
 		case comic.FieldFinalChapterID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field final_chapter_id", values[i])
 			} else if value.Valid {
-				c.FinalChapterID = new(string)
-				*c.FinalChapterID = value.String
+				c.FinalChapterID = new(pulid.ID)
+				*c.FinalChapterID = *value.S.(*pulid.ID)
 			}
 		case comic.FieldLastChapterID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field last_chapter_id", values[i])
 			} else if value.Valid {
-				c.LastChapterID = new(string)
-				*c.LastChapterID = value.String
+				c.LastChapterID = new(pulid.ID)
+				*c.LastChapterID = *value.S.(*pulid.ID)
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -282,12 +287,12 @@ func (c *Comic) String() string {
 	builder.WriteString(", ")
 	if v := c.FinalChapterID; v != nil {
 		builder.WriteString("final_chapter_id=")
-		builder.WriteString(*v)
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := c.LastChapterID; v != nil {
 		builder.WriteString("last_chapter_id=")
-		builder.WriteString(*v)
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

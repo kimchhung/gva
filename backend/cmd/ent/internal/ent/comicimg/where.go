@@ -7,64 +7,55 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.ComicImg {
+func ID(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.ComicImg {
+func IDEQ(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.ComicImg {
+func IDNEQ(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.ComicImg {
+func IDIn(ids ...pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.ComicImg {
+func IDNotIn(ids ...pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.ComicImg {
+func IDGT(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.ComicImg {
+func IDGTE(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.ComicImg {
+func IDLT(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.ComicImg {
+func IDLTE(id pulid.ID) predicate.ComicImg {
 	return predicate.ComicImg(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.ComicImg {
-	return predicate.ComicImg(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.ComicImg {
-	return predicate.ComicImg(sql.FieldContainsFold(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.

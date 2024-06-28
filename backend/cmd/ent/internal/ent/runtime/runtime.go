@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gva/app/database/schema"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
@@ -56,7 +57,7 @@ func init() {
 	// adminDescID is the schema descriptor for id field.
 	adminDescID := adminMixinFields0[0].Descriptor()
 	// admin.DefaultID holds the default value on creation for the id field.
-	admin.DefaultID = adminDescID.Default.(func() string)
+	admin.DefaultID = adminDescID.Default.(func() pulid.ID)
 	comicMixin := schema.Comic{}.Mixin()
 	comicMixinFields0 := comicMixin[0].Fields()
 	_ = comicMixinFields0
@@ -85,7 +86,7 @@ func init() {
 	// comicDescID is the schema descriptor for id field.
 	comicDescID := comicMixinFields0[0].Descriptor()
 	// comic.DefaultID holds the default value on creation for the id field.
-	comic.DefaultID = comicDescID.Default.(func() string)
+	comic.DefaultID = comicDescID.Default.(func() pulid.ID)
 	comicchapterMixin := schema.ComicChapter{}.Mixin()
 	comicchapterMixinFields0 := comicchapterMixin[0].Fields()
 	_ = comicchapterMixinFields0
@@ -118,7 +119,7 @@ func init() {
 	// comicchapterDescID is the schema descriptor for id field.
 	comicchapterDescID := comicchapterMixinFields0[0].Descriptor()
 	// comicchapter.DefaultID holds the default value on creation for the id field.
-	comicchapter.DefaultID = comicchapterDescID.Default.(func() string)
+	comicchapter.DefaultID = comicchapterDescID.Default.(func() pulid.ID)
 	comicimgMixin := schema.ComicImg{}.Mixin()
 	comicimgMixinFields0 := comicimgMixin[0].Fields()
 	_ = comicimgMixinFields0
@@ -139,7 +140,7 @@ func init() {
 	// comicimgDescID is the schema descriptor for id field.
 	comicimgDescID := comicimgMixinFields0[0].Descriptor()
 	// comicimg.DefaultID holds the default value on creation for the id field.
-	comicimg.DefaultID = comicimgDescID.Default.(func() string)
+	comicimg.DefaultID = comicimgDescID.Default.(func() pulid.ID)
 	genreMixin := schema.Genre{}.Mixin()
 	genreMixinFields0 := genreMixin[0].Fields()
 	_ = genreMixinFields0
@@ -160,7 +161,7 @@ func init() {
 	// genreDescID is the schema descriptor for id field.
 	genreDescID := genreMixinFields0[0].Descriptor()
 	// genre.DefaultID holds the default value on creation for the id field.
-	genre.DefaultID = genreDescID.Default.(func() string)
+	genre.DefaultID = genreDescID.Default.(func() pulid.ID)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
@@ -181,7 +182,7 @@ func init() {
 	// permissionDescID is the schema descriptor for id field.
 	permissionDescID := permissionMixinFields0[0].Descriptor()
 	// permission.DefaultID holds the default value on creation for the id field.
-	permission.DefaultID = permissionDescID.Default.(func() string)
+	permission.DefaultID = permissionDescID.Default.(func() pulid.ID)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinHooks3 := roleMixin[3].Hooks()
 	role.Hooks[0] = roleMixinHooks3[0]
@@ -218,7 +219,7 @@ func init() {
 	// roleDescID is the schema descriptor for id field.
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
-	role.DefaultID = roleDescID.Default.(func() string)
+	role.DefaultID = roleDescID.Default.(func() pulid.ID)
 	routeMixin := schema.Route{}.Mixin()
 	routeMixinHooks3 := routeMixin[3].Hooks()
 	route.Hooks[0] = routeMixinHooks3[0]
@@ -259,7 +260,7 @@ func init() {
 	// routeDescID is the schema descriptor for id field.
 	routeDescID := routeMixinFields0[0].Descriptor()
 	// route.DefaultID holds the default value on creation for the id field.
-	route.DefaultID = routeDescID.Default.(func() string)
+	route.DefaultID = routeDescID.Default.(func() pulid.ID)
 }
 
 const (

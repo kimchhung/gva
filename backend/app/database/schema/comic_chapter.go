@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pulid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -14,7 +15,7 @@ type ComicChapter struct {
 
 func (ComicChapter) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixins.NanoID{},
+		pulid.MixinWithPrefix("CMCT"),
 		mixins.TimeMixin{},
 	}
 }

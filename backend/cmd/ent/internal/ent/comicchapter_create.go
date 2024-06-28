@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/comic"
 	"github.com/gva/internal/ent/comicchapter"
 	"github.com/gva/internal/ent/comicimg"
@@ -136,28 +137,28 @@ func (ccc *ComicChapterCreate) SetNillableIsLastChapter(b *bool) *ComicChapterCr
 }
 
 // SetID sets the "id" field.
-func (ccc *ComicChapterCreate) SetID(s string) *ComicChapterCreate {
-	ccc.mutation.SetID(s)
+func (ccc *ComicChapterCreate) SetID(pu pulid.ID) *ComicChapterCreate {
+	ccc.mutation.SetID(pu)
 	return ccc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ccc *ComicChapterCreate) SetNillableID(s *string) *ComicChapterCreate {
-	if s != nil {
-		ccc.SetID(*s)
+func (ccc *ComicChapterCreate) SetNillableID(pu *pulid.ID) *ComicChapterCreate {
+	if pu != nil {
+		ccc.SetID(*pu)
 	}
 	return ccc
 }
 
 // AddImgIDs adds the "imgs" edge to the ComicImg entity by IDs.
-func (ccc *ComicChapterCreate) AddImgIDs(ids ...string) *ComicChapterCreate {
+func (ccc *ComicChapterCreate) AddImgIDs(ids ...pulid.ID) *ComicChapterCreate {
 	ccc.mutation.AddImgIDs(ids...)
 	return ccc
 }
 
 // AddImgs adds the "imgs" edges to the ComicImg entity.
 func (ccc *ComicChapterCreate) AddImgs(c ...*ComicImg) *ComicChapterCreate {
-	ids := make([]string, len(c))
+	ids := make([]pulid.ID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -165,13 +166,13 @@ func (ccc *ComicChapterCreate) AddImgs(c ...*ComicImg) *ComicChapterCreate {
 }
 
 // SetComicID sets the "comic" edge to the Comic entity by ID.
-func (ccc *ComicChapterCreate) SetComicID(id string) *ComicChapterCreate {
+func (ccc *ComicChapterCreate) SetComicID(id pulid.ID) *ComicChapterCreate {
 	ccc.mutation.SetComicID(id)
 	return ccc
 }
 
 // SetNillableComicID sets the "comic" edge to the Comic entity by ID if the given value is not nil.
-func (ccc *ComicChapterCreate) SetNillableComicID(id *string) *ComicChapterCreate {
+func (ccc *ComicChapterCreate) SetNillableComicID(id *pulid.ID) *ComicChapterCreate {
 	if id != nil {
 		ccc = ccc.SetComicID(*id)
 	}
@@ -282,10 +283,10 @@ func (ccc *ComicChapterCreate) sqlSave(ctx context.Context) (*ComicChapter, erro
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected ComicChapter.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*pulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	ccc.mutation.id = &_node.ID
@@ -302,7 +303,7 @@ func (ccc *ComicChapterCreate) createSpec() (*ComicChapter, *sqlgraph.CreateSpec
 	_spec.OnConflict = ccc.conflict
 	if id, ok := ccc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ccc.mutation.CreatedAt(); ok {
 		_spec.SetField(comicchapter.FieldCreatedAt, field.TypeTime, value)
@@ -790,7 +791,7 @@ func (u *ComicChapterUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ComicChapterUpsertOne) ID(ctx context.Context) (id string, err error) {
+func (u *ComicChapterUpsertOne) ID(ctx context.Context) (id pulid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -804,7 +805,7 @@ func (u *ComicChapterUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ComicChapterUpsertOne) IDX(ctx context.Context) string {
+func (u *ComicChapterUpsertOne) IDX(ctx context.Context) pulid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
