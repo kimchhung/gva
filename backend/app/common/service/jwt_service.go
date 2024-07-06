@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -47,8 +46,6 @@ func (s *JwtService) RequiredAdmin() echo.MiddlewareFunc {
 
 			ctx := c.Request().Context()
 			ctx = appctx.NewAdminContext(ctx, appctx.WithAdmin(admin))
-
-			log.Println("RequiredAdmin")
 
 			c.SetRequest(c.Request().WithContext(ctx))
 			return next(c)
@@ -134,7 +131,7 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 	return nil, fmt.Errorf("invalid token")
 }
 
-func (s *JwtService) AddClaimPayload(key string, value string) ClaimOption {
+func (s *JwtService) AddClaimPayload(key string, value any) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims[key] = value
 	}
