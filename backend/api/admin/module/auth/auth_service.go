@@ -28,16 +28,16 @@ func NewAuthService(jwtService *service.JwtService, admin_r *repository.AdminRep
 	}
 }
 
-func (s *AuthService) RegisterAdmin(ctx context.Context, dto *dto.RegisterRequest) (string, *ent.Admin, error) {
-	hashedPassword, err := s.password_s.HashPassword(dto.Password)
+func (s *AuthService) RegisterAdmin(ctx context.Context, p *dto.RegisterRequest) (*dto.RegisterResponse, error) {
+	hashedPassword, err := s.password_s.HashPassword(p.Password)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	admin, err := s.admin_r.C().Create().
-		SetUsername(dto.Username).
+		SetUsername(p.Username).
 		SetPassword(hashedPassword).
-		SetDisplayName(dto.DisplayName).
+		SetDisplayName(p.DisplayName).
 		Save(ctx)
 
 	if err != nil {
@@ -45,7 +45,7 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, dto *dto.RegisterReques
 			panic(apperror.ErrUsernameExists)
 		}
 
-		panic(err)
+		return nil, err
 	}
 
 	// Generate a JWT token for the authenticated user
@@ -55,30 +55,33 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, dto *dto.RegisterReques
 	)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return token, admin, nil
+	resp := &dto.RegisterResponse{
+		Token: token,
+		Admin: admin,
+	}
+
+	return resp, nil
 }
 
 // LoginUser authenticates a user and returns a JWT token if successful.
-func (s *AuthService) LoginAdmin(ctx context.Context, dto *dto.LoginRequest) (string, *ent.Admin, error) {
-	admin, err := s.admin_r.C().Query().Where(admin.Username(dto.Username)).WithRoles().First(ctx)
+func (s *AuthService) LoginAdmin(ctx context.Context, p *dto.LoginRequest) (*dto.LoginResponse, error) {
+	admin, err := s.admin_r.C().Query().Where(admin.Username(p.Username)).WithRoles().First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			panic(
-				apperror.NewError(
-					apperror.ErrNotFound,
-					apperror.Prefix(lang.ForContext(ctx), "Admin"),
-				),
+			return nil, apperror.NewError(
+				apperror.ErrNotFound,
+				apperror.Prefix(lang.ForContext(ctx), "Admin"),
 			)
 		}
 
-		panic(err)
+		return nil, err
 	}
 
 	// Verify the password (assuming you have a method to do this)
-	if err := s.password_s.VerifyPassword(admin.Password, dto.Password); err != nil {
+	if err := s.password_s.VerifyPassword(admin.Password, p.Password); err != nil {
 		panic(apperror.ErrPasswordValidationError)
 	}
 
@@ -92,5 +95,10 @@ func (s *AuthService) LoginAdmin(ctx context.Context, dto *dto.LoginRequest) (st
 		panic(apperror.ErrPasswordValidationError)
 	}
 
-	return token, admin, nil
+	resp := &dto.LoginResponse{
+		Token: token,
+		Admin: admin,
+	}
+
+	return resp, nil
 }

@@ -46,20 +46,14 @@ func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 			request.Validate(
 				request.BodyParser(body),
 			),
-
 			func(c echo.Context) error {
-				token, admin, err := con.service.LoginAdmin(c.Request().Context(), body)
+				data, err := con.service.LoginAdmin(c.Request().Context(), body)
 				if err != nil {
 					return err
 				}
 
-				res := &dto.LoginResponse{
-					Token: token,
-					Admin: admin,
-				}
-
 				return request.Response(c,
-					response.Data(res),
+					response.Data(data),
 					response.Message("The admin was logined successfully!"),
 				)
 			},
@@ -85,18 +79,11 @@ func (con *AuthController) Register(meta *echoc.RouteMeta) echoc.MetaHandler {
 				request.BodyParser(body),
 			),
 			func(c echo.Context) error {
-				// Assuming RegisterAdmin returns a user object and an error
-				token, admin, err := con.service.RegisterAdmin(c.Request().Context(), body)
+				data, err := con.service.RegisterAdmin(c.Request().Context(), body)
 				if err != nil {
 					return err
 				}
 
-				data := dto.RegisterResponse{
-					Token: token,
-					Admin: admin,
-				}
-
-				// Assuming you want to return some user data in the response
 				return request.Response(c,
 					response.Data(data),
 					response.Message("The admin was registered successfully!"),
@@ -119,7 +106,7 @@ func (con *AuthController) Me(meta *echoc.RouteMeta) echoc.MetaHandler {
 	meta.Use(
 		con.jwt_s.RequiredAdmin(),
 	)
-	return meta.Get("/me").Use(con.jwt_s.RequiredAdmin()).DoWithScope(func() []echo.HandlerFunc {
+	return meta.Get("/me").DoWithScope(func() []echo.HandlerFunc {
 		admin := new(ent.Admin)
 
 		return []echo.HandlerFunc{
