@@ -9,8 +9,10 @@ import (
 
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 )
@@ -113,9 +115,30 @@ type AdminWhereInput struct {
 	DisplayNameEqualFold    *string  `json:"displayNameEqualFold,omitempty"`
 	DisplayNameContainsFold *string  `json:"displayNameContainsFold,omitempty"`
 
+	// "department_id" field predicates.
+	DepartmentID             *xid.ID  `json:"departmentID,omitempty"`
+	DepartmentIDNEQ          *xid.ID  `json:"departmentIDNEQ,omitempty"`
+	DepartmentIDIn           []xid.ID `json:"departmentIDIn,omitempty"`
+	DepartmentIDNotIn        []xid.ID `json:"departmentIDNotIn,omitempty"`
+	DepartmentIDGT           *xid.ID  `json:"departmentIDGT,omitempty"`
+	DepartmentIDGTE          *xid.ID  `json:"departmentIDGTE,omitempty"`
+	DepartmentIDLT           *xid.ID  `json:"departmentIDLT,omitempty"`
+	DepartmentIDLTE          *xid.ID  `json:"departmentIDLTE,omitempty"`
+	DepartmentIDContains     *xid.ID  `json:"departmentIDContains,omitempty"`
+	DepartmentIDHasPrefix    *xid.ID  `json:"departmentIDHasPrefix,omitempty"`
+	DepartmentIDHasSuffix    *xid.ID  `json:"departmentIDHasSuffix,omitempty"`
+	DepartmentIDIsNil        bool     `json:"departmentIDIsNil,omitempty"`
+	DepartmentIDNotNil       bool     `json:"departmentIDNotNil,omitempty"`
+	DepartmentIDEqualFold    *xid.ID  `json:"departmentIDEqualFold,omitempty"`
+	DepartmentIDContainsFold *xid.ID  `json:"departmentIDContainsFold,omitempty"`
+
 	// "roles" edge predicates.
 	HasRoles     *bool             `json:"hasRoles,omitempty"`
 	HasRolesWith []*RoleWhereInput `json:"hasRolesWith,omitempty"`
+
+	// "department" edge predicates.
+	HasDepartment     *bool                   `json:"hasDepartment,omitempty"`
+	HasDepartmentWith []*DepartmentWhereInput `json:"hasDepartmentWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -414,6 +437,51 @@ func (i *AdminWhereInput) P() (predicate.Admin, error) {
 	if i.DisplayNameContainsFold != nil {
 		predicates = append(predicates, admin.DisplayNameContainsFold(*i.DisplayNameContainsFold))
 	}
+	if i.DepartmentID != nil {
+		predicates = append(predicates, admin.DepartmentIDEQ(*i.DepartmentID))
+	}
+	if i.DepartmentIDNEQ != nil {
+		predicates = append(predicates, admin.DepartmentIDNEQ(*i.DepartmentIDNEQ))
+	}
+	if len(i.DepartmentIDIn) > 0 {
+		predicates = append(predicates, admin.DepartmentIDIn(i.DepartmentIDIn...))
+	}
+	if len(i.DepartmentIDNotIn) > 0 {
+		predicates = append(predicates, admin.DepartmentIDNotIn(i.DepartmentIDNotIn...))
+	}
+	if i.DepartmentIDGT != nil {
+		predicates = append(predicates, admin.DepartmentIDGT(*i.DepartmentIDGT))
+	}
+	if i.DepartmentIDGTE != nil {
+		predicates = append(predicates, admin.DepartmentIDGTE(*i.DepartmentIDGTE))
+	}
+	if i.DepartmentIDLT != nil {
+		predicates = append(predicates, admin.DepartmentIDLT(*i.DepartmentIDLT))
+	}
+	if i.DepartmentIDLTE != nil {
+		predicates = append(predicates, admin.DepartmentIDLTE(*i.DepartmentIDLTE))
+	}
+	if i.DepartmentIDContains != nil {
+		predicates = append(predicates, admin.DepartmentIDContains(*i.DepartmentIDContains))
+	}
+	if i.DepartmentIDHasPrefix != nil {
+		predicates = append(predicates, admin.DepartmentIDHasPrefix(*i.DepartmentIDHasPrefix))
+	}
+	if i.DepartmentIDHasSuffix != nil {
+		predicates = append(predicates, admin.DepartmentIDHasSuffix(*i.DepartmentIDHasSuffix))
+	}
+	if i.DepartmentIDIsNil {
+		predicates = append(predicates, admin.DepartmentIDIsNil())
+	}
+	if i.DepartmentIDNotNil {
+		predicates = append(predicates, admin.DepartmentIDNotNil())
+	}
+	if i.DepartmentIDEqualFold != nil {
+		predicates = append(predicates, admin.DepartmentIDEqualFold(*i.DepartmentIDEqualFold))
+	}
+	if i.DepartmentIDContainsFold != nil {
+		predicates = append(predicates, admin.DepartmentIDContainsFold(*i.DepartmentIDContainsFold))
+	}
 
 	if i.HasRoles != nil {
 		p := admin.HasRoles()
@@ -433,6 +501,24 @@ func (i *AdminWhereInput) P() (predicate.Admin, error) {
 		}
 		predicates = append(predicates, admin.HasRolesWith(with...))
 	}
+	if i.HasDepartment != nil {
+		p := admin.HasDepartment()
+		if !*i.HasDepartment {
+			p = admin.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasDepartmentWith) > 0 {
+		with := make([]predicate.Department, 0, len(i.HasDepartmentWith))
+		for _, w := range i.HasDepartmentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasDepartmentWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, admin.HasDepartmentWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyAdminWhereInput
@@ -440,6 +526,478 @@ func (i *AdminWhereInput) P() (predicate.Admin, error) {
 		return predicates[0], nil
 	default:
 		return admin.And(predicates...), nil
+	}
+}
+
+// DepartmentWhereInput represents a where input for filtering Department queries.
+type DepartmentWhereInput struct {
+	Predicates []predicate.Department  `json:"-"`
+	Not        *DepartmentWhereInput   `json:"not,omitempty"`
+	Or         []*DepartmentWhereInput `json:"or,omitempty"`
+	And        []*DepartmentWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *xid.ID  `json:"id,omitempty"`
+	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []xid.ID `json:"idIn,omitempty"`
+	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
+	IDGT    *xid.ID  `json:"idGT,omitempty"`
+	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
+	IDLT    *xid.ID  `json:"idLT,omitempty"`
+	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "deleted_at" field predicates.
+	DeletedAt      *int  `json:"deletedAt,omitempty"`
+	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
+	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
+	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
+	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
+	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
+	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
+	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
+
+	// "is_enable" field predicates.
+	IsEnable    *bool `json:"isEnable,omitempty"`
+	IsEnableNEQ *bool `json:"isEnableNEQ,omitempty"`
+
+	// "name_id" field predicates.
+	NameID             *string  `json:"nameID,omitempty"`
+	NameIDNEQ          *string  `json:"nameIDNEQ,omitempty"`
+	NameIDIn           []string `json:"nameIDIn,omitempty"`
+	NameIDNotIn        []string `json:"nameIDNotIn,omitempty"`
+	NameIDGT           *string  `json:"nameIDGT,omitempty"`
+	NameIDGTE          *string  `json:"nameIDGTE,omitempty"`
+	NameIDLT           *string  `json:"nameIDLT,omitempty"`
+	NameIDLTE          *string  `json:"nameIDLTE,omitempty"`
+	NameIDContains     *string  `json:"nameIDContains,omitempty"`
+	NameIDHasPrefix    *string  `json:"nameIDHasPrefix,omitempty"`
+	NameIDHasSuffix    *string  `json:"nameIDHasSuffix,omitempty"`
+	NameIDEqualFold    *string  `json:"nameIDEqualFold,omitempty"`
+	NameIDContainsFold *string  `json:"nameIDContainsFold,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "parent_id" field predicates.
+	ParentID             *xid.ID  `json:"parentID,omitempty"`
+	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
+	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
+	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
+	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
+	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
+	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
+	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
+	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
+	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
+	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
+	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
+	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
+	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
+	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool                   `json:"hasParent,omitempty"`
+	HasParentWith []*DepartmentWhereInput `json:"hasParentWith,omitempty"`
+
+	// "children" edge predicates.
+	HasChildren     *bool                   `json:"hasChildren,omitempty"`
+	HasChildrenWith []*DepartmentWhereInput `json:"hasChildrenWith,omitempty"`
+
+	// "members" edge predicates.
+	HasMembers     *bool              `json:"hasMembers,omitempty"`
+	HasMembersWith []*AdminWhereInput `json:"hasMembersWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *DepartmentWhereInput) AddPredicates(predicates ...predicate.Department) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the DepartmentWhereInput filter on the DepartmentQuery builder.
+func (i *DepartmentWhereInput) Filter(q *DepartmentQuery) (*DepartmentQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyDepartmentWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyDepartmentWhereInput is returned in case the DepartmentWhereInput is empty.
+var ErrEmptyDepartmentWhereInput = errors.New("ent: empty predicate DepartmentWhereInput")
+
+// P returns a predicate for filtering departments.
+// An error is returned if the input is empty or invalid.
+func (i *DepartmentWhereInput) P() (predicate.Department, error) {
+	var predicates []predicate.Department
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, department.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Department, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, department.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Department, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, department.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, department.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, department.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, department.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, department.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, department.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, department.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, department.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, department.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, department.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, department.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, department.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, department.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, department.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, department.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, department.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, department.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, department.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, department.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, department.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, department.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, department.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, department.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, department.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, department.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.DeletedAt != nil {
+		predicates = append(predicates, department.DeletedAtEQ(*i.DeletedAt))
+	}
+	if i.DeletedAtNEQ != nil {
+		predicates = append(predicates, department.DeletedAtNEQ(*i.DeletedAtNEQ))
+	}
+	if len(i.DeletedAtIn) > 0 {
+		predicates = append(predicates, department.DeletedAtIn(i.DeletedAtIn...))
+	}
+	if len(i.DeletedAtNotIn) > 0 {
+		predicates = append(predicates, department.DeletedAtNotIn(i.DeletedAtNotIn...))
+	}
+	if i.DeletedAtGT != nil {
+		predicates = append(predicates, department.DeletedAtGT(*i.DeletedAtGT))
+	}
+	if i.DeletedAtGTE != nil {
+		predicates = append(predicates, department.DeletedAtGTE(*i.DeletedAtGTE))
+	}
+	if i.DeletedAtLT != nil {
+		predicates = append(predicates, department.DeletedAtLT(*i.DeletedAtLT))
+	}
+	if i.DeletedAtLTE != nil {
+		predicates = append(predicates, department.DeletedAtLTE(*i.DeletedAtLTE))
+	}
+	if i.IsEnable != nil {
+		predicates = append(predicates, department.IsEnableEQ(*i.IsEnable))
+	}
+	if i.IsEnableNEQ != nil {
+		predicates = append(predicates, department.IsEnableNEQ(*i.IsEnableNEQ))
+	}
+	if i.NameID != nil {
+		predicates = append(predicates, department.NameIDEQ(*i.NameID))
+	}
+	if i.NameIDNEQ != nil {
+		predicates = append(predicates, department.NameIDNEQ(*i.NameIDNEQ))
+	}
+	if len(i.NameIDIn) > 0 {
+		predicates = append(predicates, department.NameIDIn(i.NameIDIn...))
+	}
+	if len(i.NameIDNotIn) > 0 {
+		predicates = append(predicates, department.NameIDNotIn(i.NameIDNotIn...))
+	}
+	if i.NameIDGT != nil {
+		predicates = append(predicates, department.NameIDGT(*i.NameIDGT))
+	}
+	if i.NameIDGTE != nil {
+		predicates = append(predicates, department.NameIDGTE(*i.NameIDGTE))
+	}
+	if i.NameIDLT != nil {
+		predicates = append(predicates, department.NameIDLT(*i.NameIDLT))
+	}
+	if i.NameIDLTE != nil {
+		predicates = append(predicates, department.NameIDLTE(*i.NameIDLTE))
+	}
+	if i.NameIDContains != nil {
+		predicates = append(predicates, department.NameIDContains(*i.NameIDContains))
+	}
+	if i.NameIDHasPrefix != nil {
+		predicates = append(predicates, department.NameIDHasPrefix(*i.NameIDHasPrefix))
+	}
+	if i.NameIDHasSuffix != nil {
+		predicates = append(predicates, department.NameIDHasSuffix(*i.NameIDHasSuffix))
+	}
+	if i.NameIDEqualFold != nil {
+		predicates = append(predicates, department.NameIDEqualFold(*i.NameIDEqualFold))
+	}
+	if i.NameIDContainsFold != nil {
+		predicates = append(predicates, department.NameIDContainsFold(*i.NameIDContainsFold))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, department.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, department.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, department.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, department.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, department.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, department.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, department.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, department.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, department.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, department.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, department.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, department.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, department.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.ParentID != nil {
+		predicates = append(predicates, department.ParentIDEQ(*i.ParentID))
+	}
+	if i.ParentIDNEQ != nil {
+		predicates = append(predicates, department.ParentIDNEQ(*i.ParentIDNEQ))
+	}
+	if len(i.ParentIDIn) > 0 {
+		predicates = append(predicates, department.ParentIDIn(i.ParentIDIn...))
+	}
+	if len(i.ParentIDNotIn) > 0 {
+		predicates = append(predicates, department.ParentIDNotIn(i.ParentIDNotIn...))
+	}
+	if i.ParentIDGT != nil {
+		predicates = append(predicates, department.ParentIDGT(*i.ParentIDGT))
+	}
+	if i.ParentIDGTE != nil {
+		predicates = append(predicates, department.ParentIDGTE(*i.ParentIDGTE))
+	}
+	if i.ParentIDLT != nil {
+		predicates = append(predicates, department.ParentIDLT(*i.ParentIDLT))
+	}
+	if i.ParentIDLTE != nil {
+		predicates = append(predicates, department.ParentIDLTE(*i.ParentIDLTE))
+	}
+	if i.ParentIDContains != nil {
+		predicates = append(predicates, department.ParentIDContains(*i.ParentIDContains))
+	}
+	if i.ParentIDHasPrefix != nil {
+		predicates = append(predicates, department.ParentIDHasPrefix(*i.ParentIDHasPrefix))
+	}
+	if i.ParentIDHasSuffix != nil {
+		predicates = append(predicates, department.ParentIDHasSuffix(*i.ParentIDHasSuffix))
+	}
+	if i.ParentIDIsNil {
+		predicates = append(predicates, department.ParentIDIsNil())
+	}
+	if i.ParentIDNotNil {
+		predicates = append(predicates, department.ParentIDNotNil())
+	}
+	if i.ParentIDEqualFold != nil {
+		predicates = append(predicates, department.ParentIDEqualFold(*i.ParentIDEqualFold))
+	}
+	if i.ParentIDContainsFold != nil {
+		predicates = append(predicates, department.ParentIDContainsFold(*i.ParentIDContainsFold))
+	}
+
+	if i.HasParent != nil {
+		p := department.HasParent()
+		if !*i.HasParent {
+			p = department.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.Department, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, department.HasParentWith(with...))
+	}
+	if i.HasChildren != nil {
+		p := department.HasChildren()
+		if !*i.HasChildren {
+			p = department.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasChildrenWith) > 0 {
+		with := make([]predicate.Department, 0, len(i.HasChildrenWith))
+		for _, w := range i.HasChildrenWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasChildrenWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, department.HasChildrenWith(with...))
+	}
+	if i.HasMembers != nil {
+		p := department.HasMembers()
+		if !*i.HasMembers {
+			p = department.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasMembersWith) > 0 {
+		with := make([]predicate.Admin, 0, len(i.HasMembersWith))
+		for _, w := range i.HasMembersWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasMembersWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, department.HasMembersWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyDepartmentWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return department.And(predicates...), nil
 	}
 }
 
@@ -850,6 +1408,474 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 		return predicates[0], nil
 	default:
 		return permission.And(predicates...), nil
+	}
+}
+
+// RegionWhereInput represents a where input for filtering Region queries.
+type RegionWhereInput struct {
+	Predicates []predicate.Region  `json:"-"`
+	Not        *RegionWhereInput   `json:"not,omitempty"`
+	Or         []*RegionWhereInput `json:"or,omitempty"`
+	And        []*RegionWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *xid.ID  `json:"id,omitempty"`
+	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []xid.ID `json:"idIn,omitempty"`
+	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
+	IDGT    *xid.ID  `json:"idGT,omitempty"`
+	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
+	IDLT    *xid.ID  `json:"idLT,omitempty"`
+	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "deleted_at" field predicates.
+	DeletedAt      *int  `json:"deletedAt,omitempty"`
+	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
+	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
+	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
+	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
+	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
+	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
+	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
+
+	// "is_enable" field predicates.
+	IsEnable    *bool `json:"isEnable,omitempty"`
+	IsEnableNEQ *bool `json:"isEnableNEQ,omitempty"`
+
+	// "name_id" field predicates.
+	NameID             *string  `json:"nameID,omitempty"`
+	NameIDNEQ          *string  `json:"nameIDNEQ,omitempty"`
+	NameIDIn           []string `json:"nameIDIn,omitempty"`
+	NameIDNotIn        []string `json:"nameIDNotIn,omitempty"`
+	NameIDGT           *string  `json:"nameIDGT,omitempty"`
+	NameIDGTE          *string  `json:"nameIDGTE,omitempty"`
+	NameIDLT           *string  `json:"nameIDLT,omitempty"`
+	NameIDLTE          *string  `json:"nameIDLTE,omitempty"`
+	NameIDContains     *string  `json:"nameIDContains,omitempty"`
+	NameIDHasPrefix    *string  `json:"nameIDHasPrefix,omitempty"`
+	NameIDHasSuffix    *string  `json:"nameIDHasSuffix,omitempty"`
+	NameIDEqualFold    *string  `json:"nameIDEqualFold,omitempty"`
+	NameIDContainsFold *string  `json:"nameIDContainsFold,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "type" field predicates.
+	Type      *region.Type  `json:"type,omitempty"`
+	TypeNEQ   *region.Type  `json:"typeNEQ,omitempty"`
+	TypeIn    []region.Type `json:"typeIn,omitempty"`
+	TypeNotIn []region.Type `json:"typeNotIn,omitempty"`
+
+	// "parent_id" field predicates.
+	ParentID             *xid.ID  `json:"parentID,omitempty"`
+	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
+	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
+	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
+	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
+	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
+	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
+	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
+	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
+	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
+	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
+	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
+	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
+	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
+	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool               `json:"hasParent,omitempty"`
+	HasParentWith []*RegionWhereInput `json:"hasParentWith,omitempty"`
+
+	// "children" edge predicates.
+	HasChildren     *bool               `json:"hasChildren,omitempty"`
+	HasChildrenWith []*RegionWhereInput `json:"hasChildrenWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *RegionWhereInput) AddPredicates(predicates ...predicate.Region) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the RegionWhereInput filter on the RegionQuery builder.
+func (i *RegionWhereInput) Filter(q *RegionQuery) (*RegionQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyRegionWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyRegionWhereInput is returned in case the RegionWhereInput is empty.
+var ErrEmptyRegionWhereInput = errors.New("ent: empty predicate RegionWhereInput")
+
+// P returns a predicate for filtering regions.
+// An error is returned if the input is empty or invalid.
+func (i *RegionWhereInput) P() (predicate.Region, error) {
+	var predicates []predicate.Region
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, region.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Region, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, region.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Region, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, region.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, region.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, region.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, region.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, region.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, region.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, region.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, region.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, region.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, region.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, region.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, region.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, region.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, region.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, region.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, region.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, region.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, region.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, region.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, region.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, region.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, region.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, region.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, region.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, region.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.DeletedAt != nil {
+		predicates = append(predicates, region.DeletedAtEQ(*i.DeletedAt))
+	}
+	if i.DeletedAtNEQ != nil {
+		predicates = append(predicates, region.DeletedAtNEQ(*i.DeletedAtNEQ))
+	}
+	if len(i.DeletedAtIn) > 0 {
+		predicates = append(predicates, region.DeletedAtIn(i.DeletedAtIn...))
+	}
+	if len(i.DeletedAtNotIn) > 0 {
+		predicates = append(predicates, region.DeletedAtNotIn(i.DeletedAtNotIn...))
+	}
+	if i.DeletedAtGT != nil {
+		predicates = append(predicates, region.DeletedAtGT(*i.DeletedAtGT))
+	}
+	if i.DeletedAtGTE != nil {
+		predicates = append(predicates, region.DeletedAtGTE(*i.DeletedAtGTE))
+	}
+	if i.DeletedAtLT != nil {
+		predicates = append(predicates, region.DeletedAtLT(*i.DeletedAtLT))
+	}
+	if i.DeletedAtLTE != nil {
+		predicates = append(predicates, region.DeletedAtLTE(*i.DeletedAtLTE))
+	}
+	if i.IsEnable != nil {
+		predicates = append(predicates, region.IsEnableEQ(*i.IsEnable))
+	}
+	if i.IsEnableNEQ != nil {
+		predicates = append(predicates, region.IsEnableNEQ(*i.IsEnableNEQ))
+	}
+	if i.NameID != nil {
+		predicates = append(predicates, region.NameIDEQ(*i.NameID))
+	}
+	if i.NameIDNEQ != nil {
+		predicates = append(predicates, region.NameIDNEQ(*i.NameIDNEQ))
+	}
+	if len(i.NameIDIn) > 0 {
+		predicates = append(predicates, region.NameIDIn(i.NameIDIn...))
+	}
+	if len(i.NameIDNotIn) > 0 {
+		predicates = append(predicates, region.NameIDNotIn(i.NameIDNotIn...))
+	}
+	if i.NameIDGT != nil {
+		predicates = append(predicates, region.NameIDGT(*i.NameIDGT))
+	}
+	if i.NameIDGTE != nil {
+		predicates = append(predicates, region.NameIDGTE(*i.NameIDGTE))
+	}
+	if i.NameIDLT != nil {
+		predicates = append(predicates, region.NameIDLT(*i.NameIDLT))
+	}
+	if i.NameIDLTE != nil {
+		predicates = append(predicates, region.NameIDLTE(*i.NameIDLTE))
+	}
+	if i.NameIDContains != nil {
+		predicates = append(predicates, region.NameIDContains(*i.NameIDContains))
+	}
+	if i.NameIDHasPrefix != nil {
+		predicates = append(predicates, region.NameIDHasPrefix(*i.NameIDHasPrefix))
+	}
+	if i.NameIDHasSuffix != nil {
+		predicates = append(predicates, region.NameIDHasSuffix(*i.NameIDHasSuffix))
+	}
+	if i.NameIDEqualFold != nil {
+		predicates = append(predicates, region.NameIDEqualFold(*i.NameIDEqualFold))
+	}
+	if i.NameIDContainsFold != nil {
+		predicates = append(predicates, region.NameIDContainsFold(*i.NameIDContainsFold))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, region.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, region.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, region.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, region.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, region.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, region.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, region.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, region.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, region.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, region.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, region.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, region.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, region.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Type != nil {
+		predicates = append(predicates, region.TypeEQ(*i.Type))
+	}
+	if i.TypeNEQ != nil {
+		predicates = append(predicates, region.TypeNEQ(*i.TypeNEQ))
+	}
+	if len(i.TypeIn) > 0 {
+		predicates = append(predicates, region.TypeIn(i.TypeIn...))
+	}
+	if len(i.TypeNotIn) > 0 {
+		predicates = append(predicates, region.TypeNotIn(i.TypeNotIn...))
+	}
+	if i.ParentID != nil {
+		predicates = append(predicates, region.ParentIDEQ(*i.ParentID))
+	}
+	if i.ParentIDNEQ != nil {
+		predicates = append(predicates, region.ParentIDNEQ(*i.ParentIDNEQ))
+	}
+	if len(i.ParentIDIn) > 0 {
+		predicates = append(predicates, region.ParentIDIn(i.ParentIDIn...))
+	}
+	if len(i.ParentIDNotIn) > 0 {
+		predicates = append(predicates, region.ParentIDNotIn(i.ParentIDNotIn...))
+	}
+	if i.ParentIDGT != nil {
+		predicates = append(predicates, region.ParentIDGT(*i.ParentIDGT))
+	}
+	if i.ParentIDGTE != nil {
+		predicates = append(predicates, region.ParentIDGTE(*i.ParentIDGTE))
+	}
+	if i.ParentIDLT != nil {
+		predicates = append(predicates, region.ParentIDLT(*i.ParentIDLT))
+	}
+	if i.ParentIDLTE != nil {
+		predicates = append(predicates, region.ParentIDLTE(*i.ParentIDLTE))
+	}
+	if i.ParentIDContains != nil {
+		predicates = append(predicates, region.ParentIDContains(*i.ParentIDContains))
+	}
+	if i.ParentIDHasPrefix != nil {
+		predicates = append(predicates, region.ParentIDHasPrefix(*i.ParentIDHasPrefix))
+	}
+	if i.ParentIDHasSuffix != nil {
+		predicates = append(predicates, region.ParentIDHasSuffix(*i.ParentIDHasSuffix))
+	}
+	if i.ParentIDIsNil {
+		predicates = append(predicates, region.ParentIDIsNil())
+	}
+	if i.ParentIDNotNil {
+		predicates = append(predicates, region.ParentIDNotNil())
+	}
+	if i.ParentIDEqualFold != nil {
+		predicates = append(predicates, region.ParentIDEqualFold(*i.ParentIDEqualFold))
+	}
+	if i.ParentIDContainsFold != nil {
+		predicates = append(predicates, region.ParentIDContainsFold(*i.ParentIDContainsFold))
+	}
+
+	if i.HasParent != nil {
+		p := region.HasParent()
+		if !*i.HasParent {
+			p = region.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.Region, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, region.HasParentWith(with...))
+	}
+	if i.HasChildren != nil {
+		p := region.HasChildren()
+		if !*i.HasChildren {
+			p = region.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasChildrenWith) > 0 {
+		with := make([]predicate.Region, 0, len(i.HasChildrenWith))
+		for _, w := range i.HasChildrenWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasChildrenWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, region.HasChildrenWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyRegionWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return region.And(predicates...), nil
 	}
 }
 

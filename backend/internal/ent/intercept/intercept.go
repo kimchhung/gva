@@ -9,8 +9,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 )
@@ -98,6 +100,33 @@ func (f TraverseAdmin) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.AdminQuery", q)
 }
 
+// The DepartmentFunc type is an adapter to allow the use of ordinary function as a Querier.
+type DepartmentFunc func(context.Context, *ent.DepartmentQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f DepartmentFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.DepartmentQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.DepartmentQuery", q)
+}
+
+// The TraverseDepartment type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseDepartment func(context.Context, *ent.DepartmentQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseDepartment) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseDepartment) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.DepartmentQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.DepartmentQuery", q)
+}
+
 // The PermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
 type PermissionFunc func(context.Context, *ent.PermissionQuery) (ent.Value, error)
 
@@ -123,6 +152,33 @@ func (f TraversePermission) Traverse(ctx context.Context, q ent.Query) error {
 		return f(ctx, q)
 	}
 	return fmt.Errorf("unexpected query type %T. expect *ent.PermissionQuery", q)
+}
+
+// The RegionFunc type is an adapter to allow the use of ordinary function as a Querier.
+type RegionFunc func(context.Context, *ent.RegionQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f RegionFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.RegionQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.RegionQuery", q)
+}
+
+// The TraverseRegion type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseRegion func(context.Context, *ent.RegionQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseRegion) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseRegion) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.RegionQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.RegionQuery", q)
 }
 
 // The RoleFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -184,8 +240,12 @@ func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
 	case *ent.AdminQuery:
 		return &query[*ent.AdminQuery, predicate.Admin, admin.OrderOption]{typ: ent.TypeAdmin, tq: q}, nil
+	case *ent.DepartmentQuery:
+		return &query[*ent.DepartmentQuery, predicate.Department, department.OrderOption]{typ: ent.TypeDepartment, tq: q}, nil
 	case *ent.PermissionQuery:
 		return &query[*ent.PermissionQuery, predicate.Permission, permission.OrderOption]{typ: ent.TypePermission, tq: q}, nil
+	case *ent.RegionQuery:
+		return &query[*ent.RegionQuery, predicate.Region, region.OrderOption]{typ: ent.TypeRegion, tq: q}, nil
 	case *ent.RoleQuery:
 		return &query[*ent.RoleQuery, predicate.Role, role.OrderOption]{typ: ent.TypeRole, tq: q}, nil
 	case *ent.RouteQuery:

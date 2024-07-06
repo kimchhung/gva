@@ -8,7 +8,9 @@ import (
 
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 )
@@ -40,8 +42,8 @@ func (a *Admin) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     a.ID,
 		Type:   "Admin",
-		Fields: make([]*Field, 8),
-		Edges:  make([]*Edge, 1),
+		Fields: make([]*Field, 9),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(a.CreatedAt); err != nil {
@@ -108,6 +110,14 @@ func (a *Admin) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "display_name",
 		Value: string(buf),
 	}
+	if buf, err = json.Marshal(a.DepartmentID); err != nil {
+		return nil, err
+	}
+	node.Fields[8] = &Field{
+		Type:  "xid.ID",
+		Name:  "department_id",
+		Value: string(buf),
+	}
 	node.Edges[0] = &Edge{
 		Type: "Role",
 		Name: "roles",
@@ -115,6 +125,114 @@ func (a *Admin) Node(ctx context.Context) (node *Node, err error) {
 	err = a.QueryRoles().
 		Select(role.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Department",
+		Name: "department",
+	}
+	err = a.QueryDepartment().
+		Select(department.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+// Node implements Noder interface
+func (d *Department) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     d.ID,
+		Type:   "Department",
+		Fields: make([]*Field, 7),
+		Edges:  make([]*Edge, 3),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(d.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(d.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(d.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "int",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(d.IsEnable); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "bool",
+		Name:  "is_enable",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(d.NameID); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "name_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(d.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(d.ParentID); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "xid.ID",
+		Name:  "parent_id",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Department",
+		Name: "parent",
+	}
+	err = d.QueryParent().
+		Select(department.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Department",
+		Name: "children",
+	}
+	err = d.QueryChildren().
+		Select(department.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Admin",
+		Name: "members",
+	}
+	err = d.QueryMembers().
+		Select(admin.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -185,6 +303,102 @@ func (pe *Permission) Node(ctx context.Context) (node *Node, err error) {
 	err = pe.QueryRoles().
 		Select(role.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+// Node implements Noder interface
+func (r *Region) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     r.ID,
+		Type:   "Region",
+		Fields: make([]*Field, 8),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(r.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "int",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.IsEnable); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "bool",
+		Name:  "is_enable",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.NameID); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "name_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.Type); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "region.Type",
+		Name:  "type",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(r.ParentID); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "xid.ID",
+		Name:  "parent_id",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Region",
+		Name: "parent",
+	}
+	err = r.QueryParent().
+		Select(region.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Region",
+		Name: "children",
+	}
+	err = r.QueryChildren().
+		Select(region.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}

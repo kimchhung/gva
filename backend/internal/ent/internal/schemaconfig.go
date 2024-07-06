@@ -9,7 +9,9 @@ import "context"
 type SchemaConfig struct {
 	Admin           string // Admin table.
 	AdminRoles      string // Admin-roles->Role table.
+	Department      string // Department table.
 	Permission      string // Permission table.
+	Region          string // Region table.
 	Role            string // Role table.
 	RolePermissions string // Role-permissions->Permission table.
 	RoleRoutes      string // Role-routes->Route table.

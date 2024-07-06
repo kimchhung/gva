@@ -1,0 +1,4 @@
+-- Create "regions" table
+CREATE TABLE `regions` (`id` varchar(255) NOT NULL, `created_at` timestamp NOT NULL, `updated_at` timestamp NOT NULL, `is_enable` bool NOT NULL DEFAULT 1, `deleted_at` bigint NOT NULL DEFAULT 0, `name_id` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `parent_id` varchar(255) NULL, PRIMARY KEY (`id`), INDEX `region_deleted_at` (`deleted_at`), UNIQUE INDEX `region_name_id_deleted_at` (`name_id`, `deleted_at`), INDEX `regions_regions_children` (`parent_id`), CONSTRAINT `regions_regions_children` FOREIGN KEY (`parent_id`) REFERENCES `regions` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- Modify "admins" table
+ALTER TABLE `admins` ADD COLUMN `department_id` varchar(255) NULL, ADD INDEX `admins_departments_members` (`department_id`), ADD CONSTRAINT `admins_departments_members` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL;

@@ -135,6 +135,30 @@ func (f AdminMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AdminMutation", m)
 }
 
+// The DepartmentQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type DepartmentQueryRuleFunc func(context.Context, *ent.DepartmentQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f DepartmentQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.DepartmentQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.DepartmentQuery", q)
+}
+
+// The DepartmentMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type DepartmentMutationRuleFunc func(context.Context, *ent.DepartmentMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f DepartmentMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.DepartmentMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.DepartmentMutation", m)
+}
+
 // The PermissionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PermissionQueryRuleFunc func(context.Context, *ent.PermissionQuery) error
@@ -157,6 +181,30 @@ func (f PermissionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Muta
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PermissionMutation", m)
+}
+
+// The RegionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type RegionQueryRuleFunc func(context.Context, *ent.RegionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f RegionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.RegionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.RegionQuery", q)
+}
+
+// The RegionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type RegionMutationRuleFunc func(context.Context, *ent.RegionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f RegionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.RegionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RegionMutation", m)
 }
 
 // The RoleQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -244,7 +292,11 @@ func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
 	case *ent.AdminQuery:
 		return q.Filter(), nil
+	case *ent.DepartmentQuery:
+		return q.Filter(), nil
 	case *ent.PermissionQuery:
+		return q.Filter(), nil
+	case *ent.RegionQuery:
 		return q.Filter(), nil
 	case *ent.RoleQuery:
 		return q.Filter(), nil
@@ -259,7 +311,11 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
 	case *ent.AdminMutation:
 		return m.Filter(), nil
+	case *ent.DepartmentMutation:
+		return m.Filter(), nil
 	case *ent.PermissionMutation:
+		return m.Filter(), nil
+	case *ent.RegionMutation:
 		return m.Filter(), nil
 	case *ent.RoleMutation:
 		return m.Filter(), nil

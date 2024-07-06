@@ -6,8 +6,8 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
+	"entgo.io/contrib/entgql"
 	"github.com/gva/api/web/graph/generated"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent"
@@ -23,16 +23,17 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []xid.ID) ([]ent.Noder, e
 	return r.db.Noders(ctx, ids, ent.WithNodeType(ent.IDToType))
 }
 
-// Meta is the resolver for the meta field.
-func (r *routeResolver) Meta(ctx context.Context, obj *ent.Route) (string, error) {
-	panic(fmt.Errorf("not implemented: Meta - meta"))
+// Departments is the resolver for the departments field.
+func (r *queryResolver) Departments(ctx context.Context, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) (*ent.DepartmentConnection, error) {
+	return r.db.Department.Query().Paginate(ctx, after, first, before, last, ent.WithDepartmentOrder(orderBy), ent.WithDepartmentFilter(where.Filter))
+}
+
+// Regions is the resolver for the regions field.
+func (r *queryResolver) Regions(ctx context.Context, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) (*ent.RegionConnection, error) {
+	return r.db.Region.Query().Paginate(ctx, after, first, before, last, ent.WithRegionOrder(orderBy), ent.WithRegionFilter(where.Filter))
 }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-// Route returns generated.RouteResolver implementation.
-func (r *Resolver) Route() generated.RouteResolver { return &routeResolver{r} }
-
 type queryResolver struct{ *Resolver }
-type routeResolver struct{ *Resolver }

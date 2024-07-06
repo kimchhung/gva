@@ -8,7 +8,9 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 )
@@ -47,6 +49,21 @@ func (a *AdminQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 			a.WithNamedRoles(alias, func(wq *RoleQuery) {
 				*wq = *query
 			})
+
+		case "department":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&DepartmentClient{config: a.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, departmentImplementors)...); err != nil {
+				return err
+			}
+			a.withDepartment = query
+			if _, ok := fieldSeen[admin.FieldDepartmentID]; !ok {
+				selectedFields = append(selectedFields, admin.FieldDepartmentID)
+				fieldSeen[admin.FieldDepartmentID] = struct{}{}
+			}
 		case "createdAt":
 			if _, ok := fieldSeen[admin.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, admin.FieldCreatedAt)
@@ -81,6 +98,11 @@ func (a *AdminQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 			if _, ok := fieldSeen[admin.FieldDisplayName]; !ok {
 				selectedFields = append(selectedFields, admin.FieldDisplayName)
 				fieldSeen[admin.FieldDisplayName] = struct{}{}
+			}
+		case "departmentID":
+			if _, ok := fieldSeen[admin.FieldDepartmentID]; !ok {
+				selectedFields = append(selectedFields, admin.FieldDepartmentID)
+				fieldSeen[admin.FieldDepartmentID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -141,6 +163,166 @@ func newAdminPaginateArgs(rv map[string]any) *adminPaginateArgs {
 	}
 	if v, ok := rv[whereField].(*AdminWhereInput); ok {
 		args.opts = append(args.opts, WithAdminFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (d *DepartmentQuery) CollectFields(ctx context.Context, satisfies ...string) (*DepartmentQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return d, nil
+	}
+	if err := d.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+func (d *DepartmentQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(department.Columns))
+		selectedFields = []string{department.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "parent":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&DepartmentClient{config: d.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, departmentImplementors)...); err != nil {
+				return err
+			}
+			d.withParent = query
+			if _, ok := fieldSeen[department.FieldParentID]; !ok {
+				selectedFields = append(selectedFields, department.FieldParentID)
+				fieldSeen[department.FieldParentID] = struct{}{}
+			}
+
+		case "children":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&DepartmentClient{config: d.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, departmentImplementors)...); err != nil {
+				return err
+			}
+			d.WithNamedChildren(alias, func(wq *DepartmentQuery) {
+				*wq = *query
+			})
+
+		case "members":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&AdminClient{config: d.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, adminImplementors)...); err != nil {
+				return err
+			}
+			d.WithNamedMembers(alias, func(wq *AdminQuery) {
+				*wq = *query
+			})
+		case "createdAt":
+			if _, ok := fieldSeen[department.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, department.FieldCreatedAt)
+				fieldSeen[department.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[department.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, department.FieldUpdatedAt)
+				fieldSeen[department.FieldUpdatedAt] = struct{}{}
+			}
+		case "deletedAt":
+			if _, ok := fieldSeen[department.FieldDeletedAt]; !ok {
+				selectedFields = append(selectedFields, department.FieldDeletedAt)
+				fieldSeen[department.FieldDeletedAt] = struct{}{}
+			}
+		case "isEnable":
+			if _, ok := fieldSeen[department.FieldIsEnable]; !ok {
+				selectedFields = append(selectedFields, department.FieldIsEnable)
+				fieldSeen[department.FieldIsEnable] = struct{}{}
+			}
+		case "nameID":
+			if _, ok := fieldSeen[department.FieldNameID]; !ok {
+				selectedFields = append(selectedFields, department.FieldNameID)
+				fieldSeen[department.FieldNameID] = struct{}{}
+			}
+		case "name":
+			if _, ok := fieldSeen[department.FieldName]; !ok {
+				selectedFields = append(selectedFields, department.FieldName)
+				fieldSeen[department.FieldName] = struct{}{}
+			}
+		case "parentID":
+			if _, ok := fieldSeen[department.FieldParentID]; !ok {
+				selectedFields = append(selectedFields, department.FieldParentID)
+				fieldSeen[department.FieldParentID] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		d.Select(selectedFields...)
+	}
+	return nil
+}
+
+type departmentPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []DepartmentPaginateOption
+}
+
+func newDepartmentPaginateArgs(rv map[string]any) *departmentPaginateArgs {
+	args := &departmentPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &DepartmentOrder{Field: &DepartmentOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithDepartmentOrder(order))
+			}
+		case *DepartmentOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithDepartmentOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*DepartmentWhereInput); ok {
+		args.opts = append(args.opts, WithDepartmentFilter(v.Filter))
 	}
 	return args
 }
@@ -268,6 +450,158 @@ func newPermissionPaginateArgs(rv map[string]any) *permissionPaginateArgs {
 	}
 	if v, ok := rv[whereField].(*PermissionWhereInput); ok {
 		args.opts = append(args.opts, WithPermissionFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (r *RegionQuery) CollectFields(ctx context.Context, satisfies ...string) (*RegionQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return r, nil
+	}
+	if err := r.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func (r *RegionQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(region.Columns))
+		selectedFields = []string{region.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "parent":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&RegionClient{config: r.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, regionImplementors)...); err != nil {
+				return err
+			}
+			r.withParent = query
+			if _, ok := fieldSeen[region.FieldParentID]; !ok {
+				selectedFields = append(selectedFields, region.FieldParentID)
+				fieldSeen[region.FieldParentID] = struct{}{}
+			}
+
+		case "children":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&RegionClient{config: r.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, regionImplementors)...); err != nil {
+				return err
+			}
+			r.WithNamedChildren(alias, func(wq *RegionQuery) {
+				*wq = *query
+			})
+		case "createdAt":
+			if _, ok := fieldSeen[region.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, region.FieldCreatedAt)
+				fieldSeen[region.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[region.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, region.FieldUpdatedAt)
+				fieldSeen[region.FieldUpdatedAt] = struct{}{}
+			}
+		case "deletedAt":
+			if _, ok := fieldSeen[region.FieldDeletedAt]; !ok {
+				selectedFields = append(selectedFields, region.FieldDeletedAt)
+				fieldSeen[region.FieldDeletedAt] = struct{}{}
+			}
+		case "isEnable":
+			if _, ok := fieldSeen[region.FieldIsEnable]; !ok {
+				selectedFields = append(selectedFields, region.FieldIsEnable)
+				fieldSeen[region.FieldIsEnable] = struct{}{}
+			}
+		case "nameID":
+			if _, ok := fieldSeen[region.FieldNameID]; !ok {
+				selectedFields = append(selectedFields, region.FieldNameID)
+				fieldSeen[region.FieldNameID] = struct{}{}
+			}
+		case "name":
+			if _, ok := fieldSeen[region.FieldName]; !ok {
+				selectedFields = append(selectedFields, region.FieldName)
+				fieldSeen[region.FieldName] = struct{}{}
+			}
+		case "type":
+			if _, ok := fieldSeen[region.FieldType]; !ok {
+				selectedFields = append(selectedFields, region.FieldType)
+				fieldSeen[region.FieldType] = struct{}{}
+			}
+		case "parentID":
+			if _, ok := fieldSeen[region.FieldParentID]; !ok {
+				selectedFields = append(selectedFields, region.FieldParentID)
+				fieldSeen[region.FieldParentID] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		r.Select(selectedFields...)
+	}
+	return nil
+}
+
+type regionPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []RegionPaginateOption
+}
+
+func newRegionPaginateArgs(rv map[string]any) *regionPaginateArgs {
+	args := &regionPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &RegionOrder{Field: &RegionOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithRegionOrder(order))
+			}
+		case *RegionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithRegionOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*RegionWhereInput); ok {
+		args.opts = append(args.opts, WithRegionFilter(v.Filter))
 	}
 	return args
 }

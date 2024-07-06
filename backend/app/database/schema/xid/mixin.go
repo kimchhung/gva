@@ -15,6 +15,7 @@
 package xid
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
@@ -39,7 +40,10 @@ func (m Mixin) Fields() []ent.Field {
 			GoType(ID("")).
 			DefaultFunc(func() ID {
 				return MustNew(m.prefix)
-			}),
+			}).
+			Annotations(
+				entgql.OrderField("id"),
+			),
 	}
 }
 

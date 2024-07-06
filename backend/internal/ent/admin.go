@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 )
 
 // Admin is the model entity for the Admin schema.
@@ -35,6 +36,8 @@ type Admin struct {
 	WhitelistIps []string `json:"whitelistIps"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"displayName,omitempty" rql:"filter,sort"`
+	// DepartmentID holds the value of the "department_id" field.
+	DepartmentID *xid.ID `json:"departmentId,omitempty" rql:"filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AdminQuery when eager-loading is set.
 	Edges        AdminEdges `json:"edges" rql:"-"`
@@ -45,11 +48,13 @@ type Admin struct {
 type AdminEdges struct {
 	// Roles holds the value of the roles edge.
 	Roles []*Role `json:"roles,omitempty"`
+	// Department holds the value of the department edge.
+	Department *Department `json:"department,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [1]map[string]int
+	totalCount [2]map[string]int
 
 	namedRoles map[string][]*Role
 }
@@ -63,11 +68,24 @@ func (e AdminEdges) RolesOrErr() ([]*Role, error) {
 	return nil, &NotLoadedError{edge: "roles"}
 }
 
+// DepartmentOrErr returns the Department value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AdminEdges) DepartmentOrErr() (*Department, error) {
+	if e.Department != nil {
+		return e.Department, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: department.Label}
+	}
+	return nil, &NotLoadedError{edge: "department"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Admin) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case admin.FieldDepartmentID:
+			values[i] = &sql.NullScanner{S: new(xid.ID)}
 		case admin.FieldWhitelistIps:
 			values[i] = new([]byte)
 		case admin.FieldIsEnable:
@@ -151,6 +169,13 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.DisplayName = value.String
 			}
+		case admin.FieldDepartmentID:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field department_id", values[i])
+			} else if value.Valid {
+				a.DepartmentID = new(xid.ID)
+				*a.DepartmentID = *value.S.(*xid.ID)
+			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}
@@ -167,6 +192,11 @@ func (a *Admin) Value(name string) (ent.Value, error) {
 // QueryRoles queries the "roles" edge of the Admin entity.
 func (a *Admin) QueryRoles() *RoleQuery {
 	return NewAdminClient(a.config).QueryRoles(a)
+}
+
+// QueryDepartment queries the "department" edge of the Admin entity.
+func (a *Admin) QueryDepartment() *DepartmentQuery {
+	return NewAdminClient(a.config).QueryDepartment(a)
 }
 
 // Update returns a builder for updating this Admin.
@@ -214,6 +244,11 @@ func (a *Admin) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(a.DisplayName)
+	builder.WriteString(", ")
+	if v := a.DepartmentID; v != nil {
+		builder.WriteString("department_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -9,8 +9,14 @@ import (
 // Admin is the predicate function for admin builders.
 type Admin func(*sql.Selector)
 
+// Department is the predicate function for department builders.
+type Department func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
+
+// Region is the predicate function for region builders.
+type Region func(*sql.Selector)
 
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)

@@ -10,7 +10,9 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 	"github.com/hashicorp/go-multierror"
@@ -27,10 +29,20 @@ var adminImplementors = []string{"Admin", "Node"}
 // IsNode implements the Node interface check for GQLGen.
 func (*Admin) IsNode() {}
 
+var departmentImplementors = []string{"Department", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Department) IsNode() {}
+
 var permissionImplementors = []string{"Permission", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Permission) IsNode() {}
+
+var regionImplementors = []string{"Region", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Region) IsNode() {}
 
 var roleImplementors = []string{"Role", "Node"}
 
@@ -113,6 +125,19 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 			}
 		}
 		return query.Only(ctx)
+	case department.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.Department.Query().
+			Where(department.ID(uid))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, departmentImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
 	case permission.Table:
 		var uid xid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
@@ -122,6 +147,19 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 			Where(permission.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, permissionImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case region.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.Region.Query().
+			Where(region.ID(uid))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, regionImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -241,10 +279,42 @@ func (c *Client) noders(ctx context.Context, table string, ids []xid.ID) ([]Node
 				*noder = node
 			}
 		}
+	case department.Table:
+		query := c.Department.Query().
+			Where(department.IDIn(ids...))
+		query, err := query.CollectFields(ctx, departmentImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case permission.Table:
 		query := c.Permission.Query().
 			Where(permission.IDIn(ids...))
 		query, err := query.CollectFields(ctx, permissionImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case region.Table:
+		query := c.Region.Query().
+			Where(region.IDIn(ids...))
+		query, err := query.CollectFields(ctx, regionImplementors...)
 		if err != nil {
 			return nil, err
 		}

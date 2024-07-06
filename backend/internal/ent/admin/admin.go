@@ -32,8 +32,12 @@ const (
 	FieldWhitelistIps = "whitelist_ips"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
 	FieldDisplayName = "display_name"
+	// FieldDepartmentID holds the string denoting the department_id field in the database.
+	FieldDepartmentID = "department_id"
 	// EdgeRoles holds the string denoting the roles edge name in mutations.
 	EdgeRoles = "roles"
+	// EdgeDepartment holds the string denoting the department edge name in mutations.
+	EdgeDepartment = "department"
 	// Table holds the table name of the admin in the database.
 	Table = "admins"
 	// RolesTable is the table that holds the roles relation/edge. The primary key declared below.
@@ -41,6 +45,13 @@ const (
 	// RolesInverseTable is the table name for the Role entity.
 	// It exists in this package in order to avoid circular dependency with the "role" package.
 	RolesInverseTable = "roles"
+	// DepartmentTable is the table that holds the department relation/edge.
+	DepartmentTable = "admins"
+	// DepartmentInverseTable is the table name for the Department entity.
+	// It exists in this package in order to avoid circular dependency with the "department" package.
+	DepartmentInverseTable = "departments"
+	// DepartmentColumn is the table column denoting the department relation/edge.
+	DepartmentColumn = "department_id"
 )
 
 // Columns holds all SQL columns for admin fields.
@@ -54,6 +65,7 @@ var Columns = []string{
 	FieldPassword,
 	FieldWhitelistIps,
 	FieldDisplayName,
+	FieldDepartmentID,
 }
 
 var (
@@ -137,6 +149,11 @@ func ByDisplayName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDisplayName, opts...).ToFunc()
 }
 
+// ByDepartmentID orders the results by the department_id field.
+func ByDepartmentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepartmentID, opts...).ToFunc()
+}
+
 // ByRolesCount orders the results by roles count.
 func ByRolesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -150,10 +167,24 @@ func ByRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRolesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByDepartmentField orders the results by department field.
+func ByDepartmentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDepartmentStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newRolesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RolesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, RolesTable, RolesPrimaryKey...),
+	)
+}
+func newDepartmentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DepartmentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DepartmentTable, DepartmentColumn),
 	)
 }

@@ -69,6 +69,8 @@ skip_mod_tidy: true
 autobind:
   - "github.com/99designs/gqlgen/graphql/introspection"
   - "github.com/gva/internal/ent"
+  - "github.com/gva/app/database/schema/types"
+
 
 
 # This section declares type mapping between the GraphQL and go type systems
@@ -84,5 +86,8 @@ models:
   Node:
     model:
       - github.com/gva/internal/ent.Noder
+  RouteMeta:
+    model:
+      - github.com/gva/app/database/schema/types.RouteMeta   
 
 

@@ -17,7 +17,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 
@@ -33,8 +35,12 @@ type Client struct {
 	Schema *migrate.Schema
 	// Admin is the client for interacting with the Admin builders.
 	Admin *AdminClient
+	// Department is the client for interacting with the Department builders.
+	Department *DepartmentClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
+	// Region is the client for interacting with the Region builders.
+	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Route is the client for interacting with the Route builders.
@@ -51,7 +57,9 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Admin = NewAdminClient(c.config)
+	c.Department = NewDepartmentClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
+	c.Region = NewRegionClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Route = NewRouteClient(c.config)
 }
@@ -149,7 +157,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:        ctx,
 		config:     cfg,
 		Admin:      NewAdminClient(cfg),
+		Department: NewDepartmentClient(cfg),
 		Permission: NewPermissionClient(cfg),
+		Region:     NewRegionClient(cfg),
 		Role:       NewRoleClient(cfg),
 		Route:      NewRouteClient(cfg),
 	}, nil
@@ -172,7 +182,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:        ctx,
 		config:     cfg,
 		Admin:      NewAdminClient(cfg),
+		Department: NewDepartmentClient(cfg),
 		Permission: NewPermissionClient(cfg),
+		Region:     NewRegionClient(cfg),
 		Role:       NewRoleClient(cfg),
 		Route:      NewRouteClient(cfg),
 	}, nil
@@ -203,19 +215,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Admin.Use(hooks...)
-	c.Permission.Use(hooks...)
-	c.Role.Use(hooks...)
-	c.Route.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Admin, c.Department, c.Permission, c.Region, c.Role, c.Route,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Admin.Intercept(interceptors...)
-	c.Permission.Intercept(interceptors...)
-	c.Role.Intercept(interceptors...)
-	c.Route.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Admin, c.Department, c.Permission, c.Region, c.Role, c.Route,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -223,8 +237,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdminMutation:
 		return c.Admin.mutate(ctx, m)
+	case *DepartmentMutation:
+		return c.Department.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
+	case *RegionMutation:
+		return c.Region.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
 	case *RouteMutation:
@@ -361,6 +379,25 @@ func (c *AdminClient) QueryRoles(a *Admin) *RoleQuery {
 	return query
 }
 
+// QueryDepartment queries the department edge of a Admin.
+func (c *AdminClient) QueryDepartment(a *Admin) *DepartmentQuery {
+	query := (&DepartmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(admin.Table, admin.FieldID, id),
+			sqlgraph.To(department.Table, department.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, admin.DepartmentTable, admin.DepartmentColumn),
+		)
+		schemaConfig := a.schemaConfig
+		step.To.Schema = schemaConfig.Department
+		step.Edge.Schema = schemaConfig.Admin
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AdminClient) Hooks() []Hook {
 	hooks := c.hooks.Admin
@@ -385,6 +422,198 @@ func (c *AdminClient) mutate(ctx context.Context, m *AdminMutation) (Value, erro
 		return (&AdminDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Admin mutation op: %q", m.Op())
+	}
+}
+
+// DepartmentClient is a client for the Department schema.
+type DepartmentClient struct {
+	config
+}
+
+// NewDepartmentClient returns a client for the Department from the given config.
+func NewDepartmentClient(c config) *DepartmentClient {
+	return &DepartmentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `department.Hooks(f(g(h())))`.
+func (c *DepartmentClient) Use(hooks ...Hook) {
+	c.hooks.Department = append(c.hooks.Department, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `department.Intercept(f(g(h())))`.
+func (c *DepartmentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Department = append(c.inters.Department, interceptors...)
+}
+
+// Create returns a builder for creating a Department entity.
+func (c *DepartmentClient) Create() *DepartmentCreate {
+	mutation := newDepartmentMutation(c.config, OpCreate)
+	return &DepartmentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Department entities.
+func (c *DepartmentClient) CreateBulk(builders ...*DepartmentCreate) *DepartmentCreateBulk {
+	return &DepartmentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DepartmentClient) MapCreateBulk(slice any, setFunc func(*DepartmentCreate, int)) *DepartmentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DepartmentCreateBulk{err: fmt.Errorf("calling to DepartmentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DepartmentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DepartmentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Department.
+func (c *DepartmentClient) Update() *DepartmentUpdate {
+	mutation := newDepartmentMutation(c.config, OpUpdate)
+	return &DepartmentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DepartmentClient) UpdateOne(d *Department) *DepartmentUpdateOne {
+	mutation := newDepartmentMutation(c.config, OpUpdateOne, withDepartment(d))
+	return &DepartmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DepartmentClient) UpdateOneID(id xid.ID) *DepartmentUpdateOne {
+	mutation := newDepartmentMutation(c.config, OpUpdateOne, withDepartmentID(id))
+	return &DepartmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Department.
+func (c *DepartmentClient) Delete() *DepartmentDelete {
+	mutation := newDepartmentMutation(c.config, OpDelete)
+	return &DepartmentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DepartmentClient) DeleteOne(d *Department) *DepartmentDeleteOne {
+	return c.DeleteOneID(d.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DepartmentClient) DeleteOneID(id xid.ID) *DepartmentDeleteOne {
+	builder := c.Delete().Where(department.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DepartmentDeleteOne{builder}
+}
+
+// Query returns a query builder for Department.
+func (c *DepartmentClient) Query() *DepartmentQuery {
+	return &DepartmentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDepartment},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Department entity by its id.
+func (c *DepartmentClient) Get(ctx context.Context, id xid.ID) (*Department, error) {
+	return c.Query().Where(department.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DepartmentClient) GetX(ctx context.Context, id xid.ID) *Department {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParent queries the parent edge of a Department.
+func (c *DepartmentClient) QueryParent(d *Department) *DepartmentQuery {
+	query := (&DepartmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(department.Table, department.FieldID, id),
+			sqlgraph.To(department.Table, department.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, department.ParentTable, department.ParentColumn),
+		)
+		schemaConfig := d.schemaConfig
+		step.To.Schema = schemaConfig.Department
+		step.Edge.Schema = schemaConfig.Department
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a Department.
+func (c *DepartmentClient) QueryChildren(d *Department) *DepartmentQuery {
+	query := (&DepartmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(department.Table, department.FieldID, id),
+			sqlgraph.To(department.Table, department.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, department.ChildrenTable, department.ChildrenColumn),
+		)
+		schemaConfig := d.schemaConfig
+		step.To.Schema = schemaConfig.Department
+		step.Edge.Schema = schemaConfig.Department
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMembers queries the members edge of a Department.
+func (c *DepartmentClient) QueryMembers(d *Department) *AdminQuery {
+	query := (&AdminClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(department.Table, department.FieldID, id),
+			sqlgraph.To(admin.Table, admin.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, department.MembersTable, department.MembersColumn),
+		)
+		schemaConfig := d.schemaConfig
+		step.To.Schema = schemaConfig.Admin
+		step.Edge.Schema = schemaConfig.Admin
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DepartmentClient) Hooks() []Hook {
+	hooks := c.hooks.Department
+	return append(hooks[:len(hooks):len(hooks)], department.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *DepartmentClient) Interceptors() []Interceptor {
+	inters := c.inters.Department
+	return append(inters[:len(inters):len(inters)], department.Interceptors[:]...)
+}
+
+func (c *DepartmentClient) mutate(ctx context.Context, m *DepartmentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DepartmentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DepartmentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DepartmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DepartmentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Department mutation op: %q", m.Op())
 	}
 }
 
@@ -537,6 +766,179 @@ func (c *PermissionClient) mutate(ctx context.Context, m *PermissionMutation) (V
 		return (&PermissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Permission mutation op: %q", m.Op())
+	}
+}
+
+// RegionClient is a client for the Region schema.
+type RegionClient struct {
+	config
+}
+
+// NewRegionClient returns a client for the Region from the given config.
+func NewRegionClient(c config) *RegionClient {
+	return &RegionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `region.Hooks(f(g(h())))`.
+func (c *RegionClient) Use(hooks ...Hook) {
+	c.hooks.Region = append(c.hooks.Region, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `region.Intercept(f(g(h())))`.
+func (c *RegionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Region = append(c.inters.Region, interceptors...)
+}
+
+// Create returns a builder for creating a Region entity.
+func (c *RegionClient) Create() *RegionCreate {
+	mutation := newRegionMutation(c.config, OpCreate)
+	return &RegionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Region entities.
+func (c *RegionClient) CreateBulk(builders ...*RegionCreate) *RegionCreateBulk {
+	return &RegionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RegionClient) MapCreateBulk(slice any, setFunc func(*RegionCreate, int)) *RegionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RegionCreateBulk{err: fmt.Errorf("calling to RegionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RegionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RegionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Region.
+func (c *RegionClient) Update() *RegionUpdate {
+	mutation := newRegionMutation(c.config, OpUpdate)
+	return &RegionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RegionClient) UpdateOne(r *Region) *RegionUpdateOne {
+	mutation := newRegionMutation(c.config, OpUpdateOne, withRegion(r))
+	return &RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RegionClient) UpdateOneID(id xid.ID) *RegionUpdateOne {
+	mutation := newRegionMutation(c.config, OpUpdateOne, withRegionID(id))
+	return &RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Region.
+func (c *RegionClient) Delete() *RegionDelete {
+	mutation := newRegionMutation(c.config, OpDelete)
+	return &RegionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RegionClient) DeleteOne(r *Region) *RegionDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RegionClient) DeleteOneID(id xid.ID) *RegionDeleteOne {
+	builder := c.Delete().Where(region.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RegionDeleteOne{builder}
+}
+
+// Query returns a query builder for Region.
+func (c *RegionClient) Query() *RegionQuery {
+	return &RegionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRegion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Region entity by its id.
+func (c *RegionClient) Get(ctx context.Context, id xid.ID) (*Region, error) {
+	return c.Query().Where(region.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RegionClient) GetX(ctx context.Context, id xid.ID) *Region {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParent queries the parent edge of a Region.
+func (c *RegionClient) QueryParent(r *Region) *RegionQuery {
+	query := (&RegionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(region.Table, region.FieldID, id),
+			sqlgraph.To(region.Table, region.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, region.ParentTable, region.ParentColumn),
+		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Region
+		step.Edge.Schema = schemaConfig.Region
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a Region.
+func (c *RegionClient) QueryChildren(r *Region) *RegionQuery {
+	query := (&RegionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(region.Table, region.FieldID, id),
+			sqlgraph.To(region.Table, region.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, region.ChildrenTable, region.ChildrenColumn),
+		)
+		schemaConfig := r.schemaConfig
+		step.To.Schema = schemaConfig.Region
+		step.Edge.Schema = schemaConfig.Region
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *RegionClient) Hooks() []Hook {
+	hooks := c.hooks.Region
+	return append(hooks[:len(hooks):len(hooks)], region.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *RegionClient) Interceptors() []Interceptor {
+	inters := c.inters.Region
+	return append(inters[:len(inters):len(inters)], region.Interceptors[:]...)
+}
+
+func (c *RegionClient) mutate(ctx context.Context, m *RegionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RegionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RegionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RegionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Region mutation op: %q", m.Op())
 	}
 }
 
@@ -927,10 +1329,10 @@ func (c *RouteClient) mutate(ctx context.Context, m *RouteMutation) (Value, erro
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Permission, Role, Route []ent.Hook
+		Admin, Department, Permission, Region, Role, Route []ent.Hook
 	}
 	inters struct {
-		Admin, Permission, Role, Route []ent.Interceptor
+		Admin, Department, Permission, Region, Role, Route []ent.Interceptor
 	}
 )
 

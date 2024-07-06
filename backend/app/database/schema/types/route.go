@@ -34,5 +34,4 @@ func (u *RouteMeta) UnmarshalGQL(v interface{}) error {
 func (u RouteMeta) MarshalGQL(w io.Writer) {
 	jsonData, _ := json.Marshal(u)
 	w.Write(jsonData)
-
 }

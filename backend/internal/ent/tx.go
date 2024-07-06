@@ -16,8 +16,12 @@ type Tx struct {
 	config
 	// Admin is the client for interacting with the Admin builders.
 	Admin *AdminClient
+	// Department is the client for interacting with the Department builders.
+	Department *DepartmentClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
+	// Region is the client for interacting with the Region builders.
+	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Route is the client for interacting with the Route builders.
@@ -154,7 +158,9 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
+	tx.Department = NewDepartmentClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
+	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Route = NewRouteClient(tx.config)
 }

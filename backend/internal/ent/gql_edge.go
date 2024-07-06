@@ -20,6 +20,46 @@ func (a *Admin) Roles(ctx context.Context) (result []*Role, err error) {
 	return result, err
 }
 
+func (a *Admin) Department(ctx context.Context) (*Department, error) {
+	result, err := a.Edges.DepartmentOrErr()
+	if IsNotLoaded(err) {
+		result, err = a.QueryDepartment().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (d *Department) Parent(ctx context.Context) (*Department, error) {
+	result, err := d.Edges.ParentOrErr()
+	if IsNotLoaded(err) {
+		result, err = d.QueryParent().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (d *Department) Children(ctx context.Context) (result []*Department, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = d.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = d.Edges.ChildrenOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = d.QueryChildren().All(ctx)
+	}
+	return result, err
+}
+
+func (d *Department) Members(ctx context.Context) (result []*Admin, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = d.NamedMembers(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = d.Edges.MembersOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = d.QueryMembers().All(ctx)
+	}
+	return result, err
+}
+
 func (pe *Permission) Roles(ctx context.Context) (result []*Role, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = pe.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)
@@ -28,6 +68,26 @@ func (pe *Permission) Roles(ctx context.Context) (result []*Role, err error) {
 	}
 	if IsNotLoaded(err) {
 		result, err = pe.QueryRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (r *Region) Parent(ctx context.Context) (*Region, error) {
+	result, err := r.Edges.ParentOrErr()
+	if IsNotLoaded(err) {
+		result, err = r.QueryParent().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (r *Region) Children(ctx context.Context) (result []*Region, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = r.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = r.Edges.ChildrenOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = r.QueryChildren().All(ctx)
 	}
 	return result, err
 }

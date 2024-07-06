@@ -70,7 +70,7 @@ func (u ID) Prefix() string {
 		return ""
 	}
 
-	return string(u)[:prefixIndex+1]
+	return string(u)[:prefixIndex]
 }
 
 // UnmarshalGQL implements the graphql.Unmarshaler interface
@@ -93,6 +93,8 @@ func (u *ID) Scan(src interface{}) error {
 		*u = ID(src)
 	case ID:
 		*u = src
+	case []uint8:
+		*u = ID(src)
 	default:
 		return fmt.Errorf("xid: unexpected type, %T", src)
 	}

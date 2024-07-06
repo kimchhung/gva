@@ -38,6 +38,12 @@ func (Admin) Fields() []ent.Field {
 		field.String("display_name").
 			StructTag(`json:"displayName,omitempty" rql:"filter,sort"`).
 			Optional(),
+
+		field.String("department_id").
+			GoType(xid.ID("")).
+			Optional().
+			Nillable().
+			StructTag(`json:"departmentId,omitempty" rql:"filter,sort"`),
 	}
 }
 
@@ -49,6 +55,13 @@ func (Admin) Indexes() []ent.Index {
 
 func (Admin) Edges() []ent.Edge {
 	return []ent.Edge{
+		// has many roles
 		edge.To("roles", Role.Type),
+
+		// belong to a department
+		edge.From("department", Department.Type).
+			Ref("members").
+			Unique().
+			Field("department_id"),
 	}
 }

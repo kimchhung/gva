@@ -8,7 +8,9 @@ import (
 
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 )
@@ -16,7 +18,9 @@ import (
 // prefixMap maps XID prefixes to table names.
 var prefixMap = map[string]string{
 	"admin": admin.Table,
+	"dpm":   department.Table,
 	"perm":  permission.Table,
+	"regi":  region.Table,
 	"role":  role.Table,
 	"route": route.Table,
 }

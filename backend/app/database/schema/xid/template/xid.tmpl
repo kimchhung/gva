@@ -5,10 +5,11 @@
 
 // prefixMap maps XID prefixes to table names.
 var prefixMap = map[string]string{
-	"admin": admin.Table,
-	"perm":  permission.Table,
-	"role":  role.Table,
-	"route": route.Table,
+	{{- range $node := $.Nodes }}
+		{{- if $annotation := $node.Annotations.XID }}
+			"{{ $annotation.Prefix }}": {{ $node.Package }}.Table,
+		{{- end }}
+	{{- end }}
 }
 
 // IDToType maps a xid.ID to the underlying table.

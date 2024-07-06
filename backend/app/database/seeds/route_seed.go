@@ -10,15 +10,13 @@ import (
 	"github.com/gva/utils/json"
 )
 
-var _ interface {
-	database.Seeder
-} = (*RouterSeeder)(nil)
+var _ interface{ database.Seeder } = (*RouterSeeder)(nil)
 
 type RouterSeeder struct {
 }
 
-func (RouterSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
-	return conn.Route.Query().Count(context.TODO())
+func (RouterSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {
+	return db.Route.Query().Count(ctx)
 }
 
 func getRouteData() (routes []*ent.Route) {

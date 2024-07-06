@@ -16,7 +16,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/errcode"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/permission"
+	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -311,17 +313,17 @@ func (a *AdminQuery) Paginate(
 }
 
 var (
-	// AdminOrderFieldCreatedAt orders Admin by created_at.
-	AdminOrderFieldCreatedAt = &AdminOrderField{
+	// AdminOrderFieldID orders Admin by id.
+	AdminOrderFieldID = &AdminOrderField{
 		Value: func(a *Admin) (ent.Value, error) {
-			return a.CreatedAt, nil
+			return a.ID, nil
 		},
-		column: admin.FieldCreatedAt,
-		toTerm: admin.ByCreatedAt,
+		column: admin.FieldID,
+		toTerm: admin.ByID,
 		toCursor: func(a *Admin) Cursor {
 			return Cursor{
 				ID:    a.ID,
-				Value: a.CreatedAt,
+				Value: a.ID,
 			}
 		},
 	}
@@ -331,8 +333,8 @@ var (
 func (f AdminOrderField) String() string {
 	var str string
 	switch f.column {
-	case AdminOrderFieldCreatedAt.column:
-		str = "CREATED_AT"
+	case AdminOrderFieldID.column:
+		str = "id"
 	}
 	return str
 }
@@ -349,8 +351,8 @@ func (f *AdminOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("AdminOrderField %T must be a string", v)
 	}
 	switch str {
-	case "CREATED_AT":
-		*f = *AdminOrderFieldCreatedAt
+	case "id":
+		*f = *AdminOrderFieldID
 	default:
 		return fmt.Errorf("%s is not a valid AdminOrderField", str)
 	}
@@ -395,6 +397,302 @@ func (a *Admin) ToEdge(order *AdminOrder) *AdminEdge {
 	return &AdminEdge{
 		Node:   a,
 		Cursor: order.Field.toCursor(a),
+	}
+}
+
+// DepartmentEdge is the edge representation of Department.
+type DepartmentEdge struct {
+	Node   *Department `json:"node"`
+	Cursor Cursor      `json:"cursor"`
+}
+
+// DepartmentConnection is the connection containing edges to Department.
+type DepartmentConnection struct {
+	Edges      []*DepartmentEdge `json:"edges"`
+	PageInfo   PageInfo          `json:"pageInfo"`
+	TotalCount int               `json:"totalCount"`
+}
+
+func (c *DepartmentConnection) build(nodes []*Department, pager *departmentPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Department
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Department {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Department {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*DepartmentEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &DepartmentEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// DepartmentPaginateOption enables pagination customization.
+type DepartmentPaginateOption func(*departmentPager) error
+
+// WithDepartmentOrder configures pagination ordering.
+func WithDepartmentOrder(order *DepartmentOrder) DepartmentPaginateOption {
+	if order == nil {
+		order = DefaultDepartmentOrder
+	}
+	o := *order
+	return func(pager *departmentPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultDepartmentOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithDepartmentFilter configures pagination filter.
+func WithDepartmentFilter(filter func(*DepartmentQuery) (*DepartmentQuery, error)) DepartmentPaginateOption {
+	return func(pager *departmentPager) error {
+		if filter == nil {
+			return errors.New("DepartmentQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type departmentPager struct {
+	reverse bool
+	order   *DepartmentOrder
+	filter  func(*DepartmentQuery) (*DepartmentQuery, error)
+}
+
+func newDepartmentPager(opts []DepartmentPaginateOption, reverse bool) (*departmentPager, error) {
+	pager := &departmentPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultDepartmentOrder
+	}
+	return pager, nil
+}
+
+func (p *departmentPager) applyFilter(query *DepartmentQuery) (*DepartmentQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *departmentPager) toCursor(d *Department) Cursor {
+	return p.order.Field.toCursor(d)
+}
+
+func (p *departmentPager) applyCursors(query *DepartmentQuery, after, before *Cursor) (*DepartmentQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultDepartmentOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *departmentPager) applyOrder(query *DepartmentQuery) *DepartmentQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultDepartmentOrder.Field {
+		query = query.Order(DefaultDepartmentOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *departmentPager) orderExpr(query *DepartmentQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultDepartmentOrder.Field {
+			b.Comma().Ident(DefaultDepartmentOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Department.
+func (d *DepartmentQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...DepartmentPaginateOption,
+) (*DepartmentConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newDepartmentPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if d, err = pager.applyFilter(d); err != nil {
+		return nil, err
+	}
+	conn := &DepartmentConnection{Edges: []*DepartmentEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := d.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if d, err = pager.applyCursors(d, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		d.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := d.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	d = pager.applyOrder(d)
+	nodes, err := d.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// DepartmentOrderFieldID orders Department by id.
+	DepartmentOrderFieldID = &DepartmentOrderField{
+		Value: func(d *Department) (ent.Value, error) {
+			return d.ID, nil
+		},
+		column: department.FieldID,
+		toTerm: department.ByID,
+		toCursor: func(d *Department) Cursor {
+			return Cursor{
+				ID:    d.ID,
+				Value: d.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f DepartmentOrderField) String() string {
+	var str string
+	switch f.column {
+	case DepartmentOrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f DepartmentOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *DepartmentOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("DepartmentOrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *DepartmentOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid DepartmentOrderField", str)
+	}
+	return nil
+}
+
+// DepartmentOrderField defines the ordering field of Department.
+type DepartmentOrderField struct {
+	// Value extracts the ordering value from the given Department.
+	Value    func(*Department) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) department.OrderOption
+	toCursor func(*Department) Cursor
+}
+
+// DepartmentOrder defines the ordering of Department.
+type DepartmentOrder struct {
+	Direction OrderDirection        `json:"direction"`
+	Field     *DepartmentOrderField `json:"field"`
+}
+
+// DefaultDepartmentOrder is the default ordering of Department.
+var DefaultDepartmentOrder = &DepartmentOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &DepartmentOrderField{
+		Value: func(d *Department) (ent.Value, error) {
+			return d.ID, nil
+		},
+		column: department.FieldID,
+		toTerm: department.ByID,
+		toCursor: func(d *Department) Cursor {
+			return Cursor{ID: d.ID}
+		},
+	},
+}
+
+// ToEdge converts Department into DepartmentEdge.
+func (d *Department) ToEdge(order *DepartmentOrder) *DepartmentEdge {
+	if order == nil {
+		order = DefaultDepartmentOrder
+	}
+	return &DepartmentEdge{
+		Node:   d,
+		Cursor: order.Field.toCursor(d),
 	}
 }
 
@@ -607,17 +905,17 @@ func (pe *PermissionQuery) Paginate(
 }
 
 var (
-	// PermissionOrderFieldCreatedAt orders Permission by created_at.
-	PermissionOrderFieldCreatedAt = &PermissionOrderField{
+	// PermissionOrderFieldID orders Permission by id.
+	PermissionOrderFieldID = &PermissionOrderField{
 		Value: func(pe *Permission) (ent.Value, error) {
-			return pe.CreatedAt, nil
+			return pe.ID, nil
 		},
-		column: permission.FieldCreatedAt,
-		toTerm: permission.ByCreatedAt,
+		column: permission.FieldID,
+		toTerm: permission.ByID,
 		toCursor: func(pe *Permission) Cursor {
 			return Cursor{
 				ID:    pe.ID,
-				Value: pe.CreatedAt,
+				Value: pe.ID,
 			}
 		},
 	}
@@ -627,8 +925,8 @@ var (
 func (f PermissionOrderField) String() string {
 	var str string
 	switch f.column {
-	case PermissionOrderFieldCreatedAt.column:
-		str = "CREATED_AT"
+	case PermissionOrderFieldID.column:
+		str = "id"
 	}
 	return str
 }
@@ -645,8 +943,8 @@ func (f *PermissionOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("PermissionOrderField %T must be a string", v)
 	}
 	switch str {
-	case "CREATED_AT":
-		*f = *PermissionOrderFieldCreatedAt
+	case "id":
+		*f = *PermissionOrderFieldID
 	default:
 		return fmt.Errorf("%s is not a valid PermissionOrderField", str)
 	}
@@ -691,6 +989,302 @@ func (pe *Permission) ToEdge(order *PermissionOrder) *PermissionEdge {
 	return &PermissionEdge{
 		Node:   pe,
 		Cursor: order.Field.toCursor(pe),
+	}
+}
+
+// RegionEdge is the edge representation of Region.
+type RegionEdge struct {
+	Node   *Region `json:"node"`
+	Cursor Cursor  `json:"cursor"`
+}
+
+// RegionConnection is the connection containing edges to Region.
+type RegionConnection struct {
+	Edges      []*RegionEdge `json:"edges"`
+	PageInfo   PageInfo      `json:"pageInfo"`
+	TotalCount int           `json:"totalCount"`
+}
+
+func (c *RegionConnection) build(nodes []*Region, pager *regionPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Region
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Region {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Region {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*RegionEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &RegionEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// RegionPaginateOption enables pagination customization.
+type RegionPaginateOption func(*regionPager) error
+
+// WithRegionOrder configures pagination ordering.
+func WithRegionOrder(order *RegionOrder) RegionPaginateOption {
+	if order == nil {
+		order = DefaultRegionOrder
+	}
+	o := *order
+	return func(pager *regionPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultRegionOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithRegionFilter configures pagination filter.
+func WithRegionFilter(filter func(*RegionQuery) (*RegionQuery, error)) RegionPaginateOption {
+	return func(pager *regionPager) error {
+		if filter == nil {
+			return errors.New("RegionQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type regionPager struct {
+	reverse bool
+	order   *RegionOrder
+	filter  func(*RegionQuery) (*RegionQuery, error)
+}
+
+func newRegionPager(opts []RegionPaginateOption, reverse bool) (*regionPager, error) {
+	pager := &regionPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultRegionOrder
+	}
+	return pager, nil
+}
+
+func (p *regionPager) applyFilter(query *RegionQuery) (*RegionQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *regionPager) toCursor(r *Region) Cursor {
+	return p.order.Field.toCursor(r)
+}
+
+func (p *regionPager) applyCursors(query *RegionQuery, after, before *Cursor) (*RegionQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultRegionOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *regionPager) applyOrder(query *RegionQuery) *RegionQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultRegionOrder.Field {
+		query = query.Order(DefaultRegionOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *regionPager) orderExpr(query *RegionQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultRegionOrder.Field {
+			b.Comma().Ident(DefaultRegionOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Region.
+func (r *RegionQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...RegionPaginateOption,
+) (*RegionConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newRegionPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if r, err = pager.applyFilter(r); err != nil {
+		return nil, err
+	}
+	conn := &RegionConnection{Edges: []*RegionEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := r.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if r, err = pager.applyCursors(r, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		r.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := r.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	r = pager.applyOrder(r)
+	nodes, err := r.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// RegionOrderFieldID orders Region by id.
+	RegionOrderFieldID = &RegionOrderField{
+		Value: func(r *Region) (ent.Value, error) {
+			return r.ID, nil
+		},
+		column: region.FieldID,
+		toTerm: region.ByID,
+		toCursor: func(r *Region) Cursor {
+			return Cursor{
+				ID:    r.ID,
+				Value: r.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f RegionOrderField) String() string {
+	var str string
+	switch f.column {
+	case RegionOrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f RegionOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *RegionOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("RegionOrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *RegionOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid RegionOrderField", str)
+	}
+	return nil
+}
+
+// RegionOrderField defines the ordering field of Region.
+type RegionOrderField struct {
+	// Value extracts the ordering value from the given Region.
+	Value    func(*Region) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) region.OrderOption
+	toCursor func(*Region) Cursor
+}
+
+// RegionOrder defines the ordering of Region.
+type RegionOrder struct {
+	Direction OrderDirection    `json:"direction"`
+	Field     *RegionOrderField `json:"field"`
+}
+
+// DefaultRegionOrder is the default ordering of Region.
+var DefaultRegionOrder = &RegionOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &RegionOrderField{
+		Value: func(r *Region) (ent.Value, error) {
+			return r.ID, nil
+		},
+		column: region.FieldID,
+		toTerm: region.ByID,
+		toCursor: func(r *Region) Cursor {
+			return Cursor{ID: r.ID}
+		},
+	},
+}
+
+// ToEdge converts Region into RegionEdge.
+func (r *Region) ToEdge(order *RegionOrder) *RegionEdge {
+	if order == nil {
+		order = DefaultRegionOrder
+	}
+	return &RegionEdge{
+		Node:   r,
+		Cursor: order.Field.toCursor(r),
 	}
 }
 
@@ -903,17 +1497,17 @@ func (r *RoleQuery) Paginate(
 }
 
 var (
-	// RoleOrderFieldCreatedAt orders Role by created_at.
-	RoleOrderFieldCreatedAt = &RoleOrderField{
+	// RoleOrderFieldID orders Role by id.
+	RoleOrderFieldID = &RoleOrderField{
 		Value: func(r *Role) (ent.Value, error) {
-			return r.CreatedAt, nil
+			return r.ID, nil
 		},
-		column: role.FieldCreatedAt,
-		toTerm: role.ByCreatedAt,
+		column: role.FieldID,
+		toTerm: role.ByID,
 		toCursor: func(r *Role) Cursor {
 			return Cursor{
 				ID:    r.ID,
-				Value: r.CreatedAt,
+				Value: r.ID,
 			}
 		},
 	}
@@ -923,8 +1517,8 @@ var (
 func (f RoleOrderField) String() string {
 	var str string
 	switch f.column {
-	case RoleOrderFieldCreatedAt.column:
-		str = "CREATED_AT"
+	case RoleOrderFieldID.column:
+		str = "id"
 	}
 	return str
 }
@@ -941,8 +1535,8 @@ func (f *RoleOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("RoleOrderField %T must be a string", v)
 	}
 	switch str {
-	case "CREATED_AT":
-		*f = *RoleOrderFieldCreatedAt
+	case "id":
+		*f = *RoleOrderFieldID
 	default:
 		return fmt.Errorf("%s is not a valid RoleOrderField", str)
 	}
@@ -1199,17 +1793,17 @@ func (r *RouteQuery) Paginate(
 }
 
 var (
-	// RouteOrderFieldCreatedAt orders Route by created_at.
-	RouteOrderFieldCreatedAt = &RouteOrderField{
+	// RouteOrderFieldID orders Route by id.
+	RouteOrderFieldID = &RouteOrderField{
 		Value: func(r *Route) (ent.Value, error) {
-			return r.CreatedAt, nil
+			return r.ID, nil
 		},
-		column: route.FieldCreatedAt,
-		toTerm: route.ByCreatedAt,
+		column: route.FieldID,
+		toTerm: route.ByID,
 		toCursor: func(r *Route) Cursor {
 			return Cursor{
 				ID:    r.ID,
-				Value: r.CreatedAt,
+				Value: r.ID,
 			}
 		},
 	}
@@ -1219,8 +1813,8 @@ var (
 func (f RouteOrderField) String() string {
 	var str string
 	switch f.column {
-	case RouteOrderFieldCreatedAt.column:
-		str = "CREATED_AT"
+	case RouteOrderFieldID.column:
+		str = "id"
 	}
 	return str
 }
@@ -1237,8 +1831,8 @@ func (f *RouteOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("RouteOrderField %T must be a string", v)
 	}
 	switch str {
-	case "CREATED_AT":
-		*f = *RouteOrderFieldCreatedAt
+	case "id":
+		*f = *RouteOrderFieldID
 	default:
 		return fmt.Errorf("%s is not a valid RouteOrderField", str)
 	}

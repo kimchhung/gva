@@ -93,6 +93,11 @@ func DisplayName(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldDisplayName, v))
 }
 
+// DepartmentID applies equality check predicate on the "department_id" field. It's identical to DepartmentIDEQ.
+func DepartmentID(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldDepartmentID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldCreatedAt, v))
@@ -428,6 +433,86 @@ func DisplayNameContainsFold(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldContainsFold(FieldDisplayName, v))
 }
 
+// DepartmentIDEQ applies the EQ predicate on the "department_id" field.
+func DepartmentIDEQ(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldDepartmentID, v))
+}
+
+// DepartmentIDNEQ applies the NEQ predicate on the "department_id" field.
+func DepartmentIDNEQ(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldDepartmentID, v))
+}
+
+// DepartmentIDIn applies the In predicate on the "department_id" field.
+func DepartmentIDIn(vs ...xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldDepartmentID, vs...))
+}
+
+// DepartmentIDNotIn applies the NotIn predicate on the "department_id" field.
+func DepartmentIDNotIn(vs ...xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldDepartmentID, vs...))
+}
+
+// DepartmentIDGT applies the GT predicate on the "department_id" field.
+func DepartmentIDGT(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldDepartmentID, v))
+}
+
+// DepartmentIDGTE applies the GTE predicate on the "department_id" field.
+func DepartmentIDGTE(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldDepartmentID, v))
+}
+
+// DepartmentIDLT applies the LT predicate on the "department_id" field.
+func DepartmentIDLT(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldDepartmentID, v))
+}
+
+// DepartmentIDLTE applies the LTE predicate on the "department_id" field.
+func DepartmentIDLTE(v xid.ID) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldDepartmentID, v))
+}
+
+// DepartmentIDContains applies the Contains predicate on the "department_id" field.
+func DepartmentIDContains(v xid.ID) predicate.Admin {
+	vc := string(v)
+	return predicate.Admin(sql.FieldContains(FieldDepartmentID, vc))
+}
+
+// DepartmentIDHasPrefix applies the HasPrefix predicate on the "department_id" field.
+func DepartmentIDHasPrefix(v xid.ID) predicate.Admin {
+	vc := string(v)
+	return predicate.Admin(sql.FieldHasPrefix(FieldDepartmentID, vc))
+}
+
+// DepartmentIDHasSuffix applies the HasSuffix predicate on the "department_id" field.
+func DepartmentIDHasSuffix(v xid.ID) predicate.Admin {
+	vc := string(v)
+	return predicate.Admin(sql.FieldHasSuffix(FieldDepartmentID, vc))
+}
+
+// DepartmentIDIsNil applies the IsNil predicate on the "department_id" field.
+func DepartmentIDIsNil() predicate.Admin {
+	return predicate.Admin(sql.FieldIsNull(FieldDepartmentID))
+}
+
+// DepartmentIDNotNil applies the NotNil predicate on the "department_id" field.
+func DepartmentIDNotNil() predicate.Admin {
+	return predicate.Admin(sql.FieldNotNull(FieldDepartmentID))
+}
+
+// DepartmentIDEqualFold applies the EqualFold predicate on the "department_id" field.
+func DepartmentIDEqualFold(v xid.ID) predicate.Admin {
+	vc := string(v)
+	return predicate.Admin(sql.FieldEqualFold(FieldDepartmentID, vc))
+}
+
+// DepartmentIDContainsFold applies the ContainsFold predicate on the "department_id" field.
+func DepartmentIDContainsFold(v xid.ID) predicate.Admin {
+	vc := string(v)
+	return predicate.Admin(sql.FieldContainsFold(FieldDepartmentID, vc))
+}
+
 // HasRoles applies the HasEdge predicate on the "roles" edge.
 func HasRoles() predicate.Admin {
 	return predicate.Admin(func(s *sql.Selector) {
@@ -449,6 +534,35 @@ func HasRolesWith(preds ...predicate.Role) predicate.Admin {
 		schemaConfig := internal.SchemaConfigFromContext(s.Context())
 		step.To.Schema = schemaConfig.Role
 		step.Edge.Schema = schemaConfig.AdminRoles
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDepartment applies the HasEdge predicate on the "department" edge.
+func HasDepartment() predicate.Admin {
+	return predicate.Admin(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DepartmentTable, DepartmentColumn),
+		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Department
+		step.Edge.Schema = schemaConfig.Admin
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDepartmentWith applies the HasEdge predicate on the "department" edge with a given conditions (other predicates).
+func HasDepartmentWith(preds ...predicate.Department) predicate.Admin {
+	return predicate.Admin(func(s *sql.Selector) {
+		step := newDepartmentStep()
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.Department
+		step.Edge.Schema = schemaConfig.Admin
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

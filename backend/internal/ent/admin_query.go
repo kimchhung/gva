@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
 
@@ -28,6 +29,7 @@ type AdminQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.Admin
 	withRoles      *RoleQuery
+	withDepartment *DepartmentQuery
 	loadTotal      []func(context.Context, []*Admin) error
 	modifiers      []func(*sql.Selector)
 	withNamedRoles map[string]*RoleQuery
@@ -86,6 +88,31 @@ func (aq *AdminQuery) QueryRoles() *RoleQuery {
 		schemaConfig := aq.schemaConfig
 		step.To.Schema = schemaConfig.Role
 		step.Edge.Schema = schemaConfig.AdminRoles
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDepartment chains the current query on the "department" edge.
+func (aq *AdminQuery) QueryDepartment() *DepartmentQuery {
+	query := (&DepartmentClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(admin.Table, admin.FieldID, selector),
+			sqlgraph.To(department.Table, department.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, admin.DepartmentTable, admin.DepartmentColumn),
+		)
+		schemaConfig := aq.schemaConfig
+		step.To.Schema = schemaConfig.Department
+		step.Edge.Schema = schemaConfig.Admin
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -279,12 +306,13 @@ func (aq *AdminQuery) Clone() *AdminQuery {
 		return nil
 	}
 	return &AdminQuery{
-		config:     aq.config,
-		ctx:        aq.ctx.Clone(),
-		order:      append([]admin.OrderOption{}, aq.order...),
-		inters:     append([]Interceptor{}, aq.inters...),
-		predicates: append([]predicate.Admin{}, aq.predicates...),
-		withRoles:  aq.withRoles.Clone(),
+		config:         aq.config,
+		ctx:            aq.ctx.Clone(),
+		order:          append([]admin.OrderOption{}, aq.order...),
+		inters:         append([]Interceptor{}, aq.inters...),
+		predicates:     append([]predicate.Admin{}, aq.predicates...),
+		withRoles:      aq.withRoles.Clone(),
+		withDepartment: aq.withDepartment.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -299,6 +327,17 @@ func (aq *AdminQuery) WithRoles(opts ...func(*RoleQuery)) *AdminQuery {
 		opt(query)
 	}
 	aq.withRoles = query
+	return aq
+}
+
+// WithDepartment tells the query-builder to eager-load the nodes that are connected to
+// the "department" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AdminQuery) WithDepartment(opts ...func(*DepartmentQuery)) *AdminQuery {
+	query := (&DepartmentClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withDepartment = query
 	return aq
 }
 
@@ -380,8 +419,9 @@ func (aq *AdminQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Admin,
 	var (
 		nodes       = []*Admin{}
 		_spec       = aq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			aq.withRoles != nil,
+			aq.withDepartment != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -411,6 +451,12 @@ func (aq *AdminQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Admin,
 		if err := aq.loadRoles(ctx, query, nodes,
 			func(n *Admin) { n.Edges.Roles = []*Role{} },
 			func(n *Admin, e *Role) { n.Edges.Roles = append(n.Edges.Roles, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withDepartment; query != nil {
+		if err := aq.loadDepartment(ctx, query, nodes, nil,
+			func(n *Admin, e *Department) { n.Edges.Department = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -491,6 +537,38 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 	}
 	return nil
 }
+func (aq *AdminQuery) loadDepartment(ctx context.Context, query *DepartmentQuery, nodes []*Admin, init func(*Admin), assign func(*Admin, *Department)) error {
+	ids := make([]xid.ID, 0, len(nodes))
+	nodeids := make(map[xid.ID][]*Admin)
+	for i := range nodes {
+		if nodes[i].DepartmentID == nil {
+			continue
+		}
+		fk := *nodes[i].DepartmentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(department.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "department_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (aq *AdminQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -521,6 +599,9 @@ func (aq *AdminQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != admin.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if aq.withDepartment != nil {
+			_spec.Node.AddColumnOnce(admin.FieldDepartmentID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {

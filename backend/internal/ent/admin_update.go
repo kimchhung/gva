@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
 
@@ -149,6 +150,26 @@ func (au *AdminUpdate) ClearDisplayName() *AdminUpdate {
 	return au
 }
 
+// SetDepartmentID sets the "department_id" field.
+func (au *AdminUpdate) SetDepartmentID(x xid.ID) *AdminUpdate {
+	au.mutation.SetDepartmentID(x)
+	return au
+}
+
+// SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
+func (au *AdminUpdate) SetNillableDepartmentID(x *xid.ID) *AdminUpdate {
+	if x != nil {
+		au.SetDepartmentID(*x)
+	}
+	return au
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (au *AdminUpdate) ClearDepartmentID() *AdminUpdate {
+	au.mutation.ClearDepartmentID()
+	return au
+}
+
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
 func (au *AdminUpdate) AddRoleIDs(ids ...xid.ID) *AdminUpdate {
 	au.mutation.AddRoleIDs(ids...)
@@ -162,6 +183,11 @@ func (au *AdminUpdate) AddRoles(r ...*Role) *AdminUpdate {
 		ids[i] = r[i].ID
 	}
 	return au.AddRoleIDs(ids...)
+}
+
+// SetDepartment sets the "department" edge to the Department entity.
+func (au *AdminUpdate) SetDepartment(d *Department) *AdminUpdate {
+	return au.SetDepartmentID(d.ID)
 }
 
 // Mutation returns the AdminMutation object of the builder.
@@ -188,6 +214,12 @@ func (au *AdminUpdate) RemoveRoles(r ...*Role) *AdminUpdate {
 		ids[i] = r[i].ID
 	}
 	return au.RemoveRoleIDs(ids...)
+}
+
+// ClearDepartment clears the "department" edge to the Department entity.
+func (au *AdminUpdate) ClearDepartment() *AdminUpdate {
+	au.mutation.ClearDepartment()
+	return au
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -325,6 +357,37 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			},
 		}
 		edge.Schema = au.schemaConfig.AdminRoles
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.DepartmentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   admin.DepartmentTable,
+			Columns: []string{admin.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeString),
+			},
+		}
+		edge.Schema = au.schemaConfig.Admin
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.DepartmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   admin.DepartmentTable,
+			Columns: []string{admin.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeString),
+			},
+		}
+		edge.Schema = au.schemaConfig.Admin
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -469,6 +532,26 @@ func (auo *AdminUpdateOne) ClearDisplayName() *AdminUpdateOne {
 	return auo
 }
 
+// SetDepartmentID sets the "department_id" field.
+func (auo *AdminUpdateOne) SetDepartmentID(x xid.ID) *AdminUpdateOne {
+	auo.mutation.SetDepartmentID(x)
+	return auo
+}
+
+// SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillableDepartmentID(x *xid.ID) *AdminUpdateOne {
+	if x != nil {
+		auo.SetDepartmentID(*x)
+	}
+	return auo
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (auo *AdminUpdateOne) ClearDepartmentID() *AdminUpdateOne {
+	auo.mutation.ClearDepartmentID()
+	return auo
+}
+
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
 func (auo *AdminUpdateOne) AddRoleIDs(ids ...xid.ID) *AdminUpdateOne {
 	auo.mutation.AddRoleIDs(ids...)
@@ -482,6 +565,11 @@ func (auo *AdminUpdateOne) AddRoles(r ...*Role) *AdminUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return auo.AddRoleIDs(ids...)
+}
+
+// SetDepartment sets the "department" edge to the Department entity.
+func (auo *AdminUpdateOne) SetDepartment(d *Department) *AdminUpdateOne {
+	return auo.SetDepartmentID(d.ID)
 }
 
 // Mutation returns the AdminMutation object of the builder.
@@ -508,6 +596,12 @@ func (auo *AdminUpdateOne) RemoveRoles(r ...*Role) *AdminUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return auo.RemoveRoleIDs(ids...)
+}
+
+// ClearDepartment clears the "department" edge to the Department entity.
+func (auo *AdminUpdateOne) ClearDepartment() *AdminUpdateOne {
+	auo.mutation.ClearDepartment()
+	return auo
 }
 
 // Where appends a list predicates to the AdminUpdate builder.
@@ -675,6 +769,37 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 			},
 		}
 		edge.Schema = auo.schemaConfig.AdminRoles
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.DepartmentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   admin.DepartmentTable,
+			Columns: []string{admin.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeString),
+			},
+		}
+		edge.Schema = auo.schemaConfig.Admin
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.DepartmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   admin.DepartmentTable,
+			Columns: []string{admin.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeString),
+			},
+		}
+		edge.Schema = auo.schemaConfig.Admin
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}

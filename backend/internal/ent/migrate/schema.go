@@ -20,12 +20,21 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "whitelist_ips", Type: field.TypeJSON},
 		{Name: "display_name", Type: field.TypeString, Nullable: true},
+		{Name: "department_id", Type: field.TypeString, Nullable: true},
 	}
 	// AdminsTable holds the schema information for the "admins" table.
 	AdminsTable = &schema.Table{
 		Name:       "admins",
 		Columns:    AdminsColumns,
 		PrimaryKey: []*schema.Column{AdminsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "admins_departments_members",
+				Columns:    []*schema.Column{AdminsColumns[9]},
+				RefColumns: []*schema.Column{DepartmentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "admin_deleted_at",
@@ -36,6 +45,43 @@ var (
 				Name:    "admin_username_deleted_at",
 				Unique:  true,
 				Columns: []*schema.Column{AdminsColumns[5], AdminsColumns[4]},
+			},
+		},
+	}
+	// DepartmentsColumns holds the columns for the "departments" table.
+	DepartmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
+		{Name: "is_enable", Type: field.TypeBool, Default: true},
+		{Name: "name_id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "parent_id", Type: field.TypeString, Nullable: true},
+	}
+	// DepartmentsTable holds the schema information for the "departments" table.
+	DepartmentsTable = &schema.Table{
+		Name:       "departments",
+		Columns:    DepartmentsColumns,
+		PrimaryKey: []*schema.Column{DepartmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "departments_departments_children",
+				Columns:    []*schema.Column{DepartmentsColumns[7]},
+				RefColumns: []*schema.Column{DepartmentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "department_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{DepartmentsColumns[3]},
+			},
+			{
+				Name:    "department_name_id_deleted_at",
+				Unique:  true,
+				Columns: []*schema.Column{DepartmentsColumns[5], DepartmentsColumns[3]},
 			},
 		},
 	}
@@ -54,6 +100,44 @@ var (
 		Name:       "permissions",
 		Columns:    PermissionsColumns,
 		PrimaryKey: []*schema.Column{PermissionsColumns[0]},
+	}
+	// RegionsColumns holds the columns for the "regions" table.
+	RegionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
+		{Name: "is_enable", Type: field.TypeBool, Default: true},
+		{Name: "name_id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"continent", "country", "city", "street", "any"}},
+		{Name: "parent_id", Type: field.TypeString, Nullable: true},
+	}
+	// RegionsTable holds the schema information for the "regions" table.
+	RegionsTable = &schema.Table{
+		Name:       "regions",
+		Columns:    RegionsColumns,
+		PrimaryKey: []*schema.Column{RegionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "regions_regions_children",
+				Columns:    []*schema.Column{RegionsColumns[8]},
+				RefColumns: []*schema.Column{RegionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "region_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{RegionsColumns[3]},
+			},
+			{
+				Name:    "region_name_id_deleted_at",
+				Unique:  true,
+				Columns: []*schema.Column{RegionsColumns[5], RegionsColumns[3]},
+			},
+		},
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
@@ -203,7 +287,9 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminsTable,
+		DepartmentsTable,
 		PermissionsTable,
+		RegionsTable,
 		RolesTable,
 		RoutesTable,
 		AdminRolesTable,
@@ -213,6 +299,9 @@ var (
 )
 
 func init() {
+	AdminsTable.ForeignKeys[0].RefTable = DepartmentsTable
+	DepartmentsTable.ForeignKeys[0].RefTable = DepartmentsTable
+	RegionsTable.ForeignKeys[0].RefTable = RegionsTable
 	RoutesTable.ForeignKeys[0].RefTable = RoutesTable
 	AdminRolesTable.ForeignKeys[0].RefTable = AdminsTable
 	AdminRolesTable.ForeignKeys[1].RefTable = RolesTable

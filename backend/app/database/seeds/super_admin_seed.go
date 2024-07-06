@@ -11,17 +11,15 @@ import (
 	"github.com/gva/internal/ent/admin"
 )
 
-var _ interface {
-	database.Seeder
-} = (*RouterSeeder)(nil)
+var _ interface{ database.Seeder } = (*RouterSeeder)(nil)
 
 type SuperAdminSeeder struct {
 }
 
-func (s SuperAdminSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
+func (s SuperAdminSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {
 	cfg := ctx.Value(env.Config{}).(*env.Config)
 
-	return conn.Admin.Query().
+	return db.Admin.Query().
 		Where(admin.Username(cfg.Seed.SuperAdmin.Username)).
 		Count(ctx)
 }
@@ -41,7 +39,7 @@ func (s SuperAdminSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 
 		pw, err := password_.HashPassword(cfg.Seed.SuperAdmin.Password)
 		if err != nil {
-			return rollback(tx, fmt.Errorf("hash password: %w", err))
+			return fmt.Errorf("hash password: %w", err)
 		}
 
 		tx.Admin.Create().

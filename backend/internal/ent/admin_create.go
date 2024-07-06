@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/role"
 )
 
@@ -113,6 +114,20 @@ func (ac *AdminCreate) SetNillableDisplayName(s *string) *AdminCreate {
 	return ac
 }
 
+// SetDepartmentID sets the "department_id" field.
+func (ac *AdminCreate) SetDepartmentID(x xid.ID) *AdminCreate {
+	ac.mutation.SetDepartmentID(x)
+	return ac
+}
+
+// SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
+func (ac *AdminCreate) SetNillableDepartmentID(x *xid.ID) *AdminCreate {
+	if x != nil {
+		ac.SetDepartmentID(*x)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *AdminCreate) SetID(x xid.ID) *AdminCreate {
 	ac.mutation.SetID(x)
@@ -140,6 +155,11 @@ func (ac *AdminCreate) AddRoles(r ...*Role) *AdminCreate {
 		ids[i] = r[i].ID
 	}
 	return ac.AddRoleIDs(ids...)
+}
+
+// SetDepartment sets the "department" edge to the Department entity.
+func (ac *AdminCreate) SetDepartment(d *Department) *AdminCreate {
+	return ac.SetDepartmentID(d.ID)
 }
 
 // Mutation returns the AdminMutation object of the builder.
@@ -320,6 +340,24 @@ func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ac.mutation.DepartmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   admin.DepartmentTable,
+			Columns: []string{admin.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeString),
+			},
+		}
+		edge.Schema = ac.schemaConfig.Admin
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.DepartmentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -477,6 +515,24 @@ func (u *AdminUpsert) UpdateDisplayName() *AdminUpsert {
 // ClearDisplayName clears the value of the "display_name" field.
 func (u *AdminUpsert) ClearDisplayName() *AdminUpsert {
 	u.SetNull(admin.FieldDisplayName)
+	return u
+}
+
+// SetDepartmentID sets the "department_id" field.
+func (u *AdminUpsert) SetDepartmentID(v xid.ID) *AdminUpsert {
+	u.Set(admin.FieldDepartmentID, v)
+	return u
+}
+
+// UpdateDepartmentID sets the "department_id" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateDepartmentID() *AdminUpsert {
+	u.SetExcluded(admin.FieldDepartmentID)
+	return u
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (u *AdminUpsert) ClearDepartmentID() *AdminUpsert {
+	u.SetNull(admin.FieldDepartmentID)
 	return u
 }
 
@@ -651,6 +707,27 @@ func (u *AdminUpsertOne) UpdateDisplayName() *AdminUpsertOne {
 func (u *AdminUpsertOne) ClearDisplayName() *AdminUpsertOne {
 	return u.Update(func(s *AdminUpsert) {
 		s.ClearDisplayName()
+	})
+}
+
+// SetDepartmentID sets the "department_id" field.
+func (u *AdminUpsertOne) SetDepartmentID(v xid.ID) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetDepartmentID(v)
+	})
+}
+
+// UpdateDepartmentID sets the "department_id" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateDepartmentID() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateDepartmentID()
+	})
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (u *AdminUpsertOne) ClearDepartmentID() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.ClearDepartmentID()
 	})
 }
 
@@ -992,6 +1069,27 @@ func (u *AdminUpsertBulk) UpdateDisplayName() *AdminUpsertBulk {
 func (u *AdminUpsertBulk) ClearDisplayName() *AdminUpsertBulk {
 	return u.Update(func(s *AdminUpsert) {
 		s.ClearDisplayName()
+	})
+}
+
+// SetDepartmentID sets the "department_id" field.
+func (u *AdminUpsertBulk) SetDepartmentID(v xid.ID) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetDepartmentID(v)
+	})
+}
+
+// UpdateDepartmentID sets the "department_id" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateDepartmentID() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateDepartmentID()
+	})
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (u *AdminUpsertBulk) ClearDepartmentID() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.ClearDepartmentID()
 	})
 }
 

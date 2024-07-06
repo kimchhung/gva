@@ -35,6 +35,8 @@ var seedCmd = &cobra.Command{
 		db.SeedModels(ctx,
 			seeds.RouterSeeder{},
 			seeds.SuperAdminSeeder{},
+			seeds.DepartmentSeeder{},
+			seeds.RegionSeeder{},
 		)
 	},
 }
