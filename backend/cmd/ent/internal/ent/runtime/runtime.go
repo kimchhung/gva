@@ -8,10 +8,6 @@ import (
 	"github.com/gva/app/database/schema"
 	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/comic"
-	"github.com/gva/internal/ent/comicchapter"
-	"github.com/gva/internal/ent/comicimg"
-	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -58,110 +54,6 @@ func init() {
 	adminDescID := adminMixinFields0[0].Descriptor()
 	// admin.DefaultID holds the default value on creation for the id field.
 	admin.DefaultID = adminDescID.Default.(func() pulid.ID)
-	comicMixin := schema.Comic{}.Mixin()
-	comicMixinFields0 := comicMixin[0].Fields()
-	_ = comicMixinFields0
-	comicMixinFields1 := comicMixin[1].Fields()
-	_ = comicMixinFields1
-	comicFields := schema.Comic{}.Fields()
-	_ = comicFields
-	// comicDescCreatedAt is the schema descriptor for created_at field.
-	comicDescCreatedAt := comicMixinFields1[0].Descriptor()
-	// comic.DefaultCreatedAt holds the default value on creation for the created_at field.
-	comic.DefaultCreatedAt = comicDescCreatedAt.Default.(func() time.Time)
-	// comicDescUpdatedAt is the schema descriptor for updated_at field.
-	comicDescUpdatedAt := comicMixinFields1[1].Descriptor()
-	// comic.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	comic.DefaultUpdatedAt = comicDescUpdatedAt.Default.(func() time.Time)
-	// comic.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	comic.UpdateDefaultUpdatedAt = comicDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// comicDescIsTranslateCompleted is the schema descriptor for isTranslateCompleted field.
-	comicDescIsTranslateCompleted := comicFields[5].Descriptor()
-	// comic.DefaultIsTranslateCompleted holds the default value on creation for the isTranslateCompleted field.
-	comic.DefaultIsTranslateCompleted = comicDescIsTranslateCompleted.Default.(bool)
-	// comicDescUpCount is the schema descriptor for up_count field.
-	comicDescUpCount := comicFields[6].Descriptor()
-	// comic.DefaultUpCount holds the default value on creation for the up_count field.
-	comic.DefaultUpCount = comicDescUpCount.Default.(uint)
-	// comicDescID is the schema descriptor for id field.
-	comicDescID := comicMixinFields0[0].Descriptor()
-	// comic.DefaultID holds the default value on creation for the id field.
-	comic.DefaultID = comicDescID.Default.(func() pulid.ID)
-	comicchapterMixin := schema.ComicChapter{}.Mixin()
-	comicchapterMixinFields0 := comicchapterMixin[0].Fields()
-	_ = comicchapterMixinFields0
-	comicchapterMixinFields1 := comicchapterMixin[1].Fields()
-	_ = comicchapterMixinFields1
-	comicchapterFields := schema.ComicChapter{}.Fields()
-	_ = comicchapterFields
-	// comicchapterDescCreatedAt is the schema descriptor for created_at field.
-	comicchapterDescCreatedAt := comicchapterMixinFields1[0].Descriptor()
-	// comicchapter.DefaultCreatedAt holds the default value on creation for the created_at field.
-	comicchapter.DefaultCreatedAt = comicchapterDescCreatedAt.Default.(func() time.Time)
-	// comicchapterDescUpdatedAt is the schema descriptor for updated_at field.
-	comicchapterDescUpdatedAt := comicchapterMixinFields1[1].Descriptor()
-	// comicchapter.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	comicchapter.DefaultUpdatedAt = comicchapterDescUpdatedAt.Default.(func() time.Time)
-	// comicchapter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	comicchapter.UpdateDefaultUpdatedAt = comicchapterDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// comicchapterDescUpCount is the schema descriptor for up_count field.
-	comicchapterDescUpCount := comicchapterFields[4].Descriptor()
-	// comicchapter.DefaultUpCount holds the default value on creation for the up_count field.
-	comicchapter.DefaultUpCount = comicchapterDescUpCount.Default.(uint)
-	// comicchapterDescDownCount is the schema descriptor for down_count field.
-	comicchapterDescDownCount := comicchapterFields[5].Descriptor()
-	// comicchapter.DefaultDownCount holds the default value on creation for the down_count field.
-	comicchapter.DefaultDownCount = comicchapterDescDownCount.Default.(uint)
-	// comicchapterDescIsLastChapter is the schema descriptor for is_last_chapter field.
-	comicchapterDescIsLastChapter := comicchapterFields[6].Descriptor()
-	// comicchapter.DefaultIsLastChapter holds the default value on creation for the is_last_chapter field.
-	comicchapter.DefaultIsLastChapter = comicchapterDescIsLastChapter.Default.(bool)
-	// comicchapterDescID is the schema descriptor for id field.
-	comicchapterDescID := comicchapterMixinFields0[0].Descriptor()
-	// comicchapter.DefaultID holds the default value on creation for the id field.
-	comicchapter.DefaultID = comicchapterDescID.Default.(func() pulid.ID)
-	comicimgMixin := schema.ComicImg{}.Mixin()
-	comicimgMixinFields0 := comicimgMixin[0].Fields()
-	_ = comicimgMixinFields0
-	comicimgMixinFields1 := comicimgMixin[1].Fields()
-	_ = comicimgMixinFields1
-	comicimgFields := schema.ComicImg{}.Fields()
-	_ = comicimgFields
-	// comicimgDescCreatedAt is the schema descriptor for created_at field.
-	comicimgDescCreatedAt := comicimgMixinFields1[0].Descriptor()
-	// comicimg.DefaultCreatedAt holds the default value on creation for the created_at field.
-	comicimg.DefaultCreatedAt = comicimgDescCreatedAt.Default.(func() time.Time)
-	// comicimgDescUpdatedAt is the schema descriptor for updated_at field.
-	comicimgDescUpdatedAt := comicimgMixinFields1[1].Descriptor()
-	// comicimg.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	comicimg.DefaultUpdatedAt = comicimgDescUpdatedAt.Default.(func() time.Time)
-	// comicimg.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	comicimg.UpdateDefaultUpdatedAt = comicimgDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// comicimgDescID is the schema descriptor for id field.
-	comicimgDescID := comicimgMixinFields0[0].Descriptor()
-	// comicimg.DefaultID holds the default value on creation for the id field.
-	comicimg.DefaultID = comicimgDescID.Default.(func() pulid.ID)
-	genreMixin := schema.Genre{}.Mixin()
-	genreMixinFields0 := genreMixin[0].Fields()
-	_ = genreMixinFields0
-	genreMixinFields1 := genreMixin[1].Fields()
-	_ = genreMixinFields1
-	genreFields := schema.Genre{}.Fields()
-	_ = genreFields
-	// genreDescCreatedAt is the schema descriptor for created_at field.
-	genreDescCreatedAt := genreMixinFields1[0].Descriptor()
-	// genre.DefaultCreatedAt holds the default value on creation for the created_at field.
-	genre.DefaultCreatedAt = genreDescCreatedAt.Default.(func() time.Time)
-	// genreDescUpdatedAt is the schema descriptor for updated_at field.
-	genreDescUpdatedAt := genreMixinFields1[1].Descriptor()
-	// genre.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	genre.DefaultUpdatedAt = genreDescUpdatedAt.Default.(func() time.Time)
-	// genre.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	genre.UpdateDefaultUpdatedAt = genreDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// genreDescID is the schema descriptor for id field.
-	genreDescID := genreMixinFields0[0].Descriptor()
-	// genre.DefaultID holds the default value on creation for the id field.
-	genre.DefaultID = genreDescID.Default.(func() pulid.ID)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0

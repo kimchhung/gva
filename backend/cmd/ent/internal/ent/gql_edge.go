@@ -20,62 +20,6 @@ func (a *Admin) Roles(ctx context.Context) (result []*Role, err error) {
 	return result, err
 }
 
-func (c *Comic) Chapters(ctx context.Context) (result []*ComicChapter, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = c.NamedChapters(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = c.Edges.ChaptersOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = c.QueryChapters().All(ctx)
-	}
-	return result, err
-}
-
-func (c *Comic) LastChapter(ctx context.Context) (*ComicChapter, error) {
-	result, err := c.Edges.LastChapterOrErr()
-	if IsNotLoaded(err) {
-		result, err = c.QueryLastChapter().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
-func (c *Comic) FinalChapter(ctx context.Context) (*ComicChapter, error) {
-	result, err := c.Edges.FinalChapterOrErr()
-	if IsNotLoaded(err) {
-		result, err = c.QueryFinalChapter().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
-func (cc *ComicChapter) Imgs(ctx context.Context) (result []*ComicImg, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = cc.NamedImgs(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = cc.Edges.ImgsOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = cc.QueryImgs().All(ctx)
-	}
-	return result, err
-}
-
-func (cc *ComicChapter) Comic(ctx context.Context) (*Comic, error) {
-	result, err := cc.Edges.ComicOrErr()
-	if IsNotLoaded(err) {
-		result, err = cc.QueryComic().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
-func (ci *ComicImg) Chapter(ctx context.Context) (*ComicChapter, error) {
-	result, err := ci.Edges.ChapterOrErr()
-	if IsNotLoaded(err) {
-		result, err = ci.QueryChapter().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
 func (pe *Permission) Roles(ctx context.Context) (result []*Role, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = pe.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)

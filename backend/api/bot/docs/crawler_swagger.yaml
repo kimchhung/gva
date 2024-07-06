@@ -1,4 +1,4 @@
-basePath: /crawler/v1
+basePath: /bot/v1
 definitions:
   response.Response:
     properties:
@@ -16,7 +16,7 @@ host: localhost:8080
 info:
   contact: {}
   description: GO VUE ADMIN Boilerplate
-  title: GVA Crawler API
+  title: GVA bot API
   version: "1.0"
 paths:
   /now:

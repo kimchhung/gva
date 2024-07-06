@@ -1,7 +1,7 @@
 swag:
 	make swag.web
 	make swag.admin
-	make swag.crawler
+	make swag.bot
 
 swag.format:
 	swag fmt
@@ -12,5 +12,5 @@ swag.web:
 swag.admin:
 	swag init -g main.go -d ./api/admin --parseDependency --output ./api/admin/docs --instanceName admin
 
-swag.crawler:
-	swag init -g main.go -d ./api/crawler --parseDependency --output ./api/crawler/docs --instanceName crawler
+swag.bot:
+	swag init -g main.go -d ./api/bot --parseDependency --output ./api/bot/docs --instanceName bot

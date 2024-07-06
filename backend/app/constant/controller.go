@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	CrawlerAdminController = `group:"crawler-controllers"`
-	TagAdminController     = `group:"admin-controllers"`
-	TagWebController       = `group:"web-controllers"`
+	BotAdminController = `group:"bot-controllers"`
+	TagAdminController = `group:"admin-controllers"`
+	TagWebController   = `group:"web-controllers"`
 
 	TagModule = `group:"modules"`
 )
@@ -36,12 +36,12 @@ func ProvideWebController(contructor any) fx.Option {
 	)
 }
 
-func ProvideCrawlerController(contructor any) fx.Option {
+func ProvideBotController(contructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			contructor,
 			fx.As(new(echoc.Controller)),
-			fx.ResultTags(CrawlerAdminController),
+			fx.ResultTags(BotAdminController),
 		),
 	)
 }

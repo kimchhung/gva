@@ -135,102 +135,6 @@ func (f AdminMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AdminMutation", m)
 }
 
-// The ComicQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type ComicQueryRuleFunc func(context.Context, *ent.ComicQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f ComicQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.ComicQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ComicQuery", q)
-}
-
-// The ComicMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type ComicMutationRuleFunc func(context.Context, *ent.ComicMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f ComicMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.ComicMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ComicMutation", m)
-}
-
-// The ComicChapterQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type ComicChapterQueryRuleFunc func(context.Context, *ent.ComicChapterQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f ComicChapterQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.ComicChapterQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ComicChapterQuery", q)
-}
-
-// The ComicChapterMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type ComicChapterMutationRuleFunc func(context.Context, *ent.ComicChapterMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f ComicChapterMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.ComicChapterMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ComicChapterMutation", m)
-}
-
-// The ComicImgQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type ComicImgQueryRuleFunc func(context.Context, *ent.ComicImgQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f ComicImgQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.ComicImgQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ComicImgQuery", q)
-}
-
-// The ComicImgMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type ComicImgMutationRuleFunc func(context.Context, *ent.ComicImgMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f ComicImgMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.ComicImgMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ComicImgMutation", m)
-}
-
-// The GenreQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type GenreQueryRuleFunc func(context.Context, *ent.GenreQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f GenreQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.GenreQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.GenreQuery", q)
-}
-
-// The GenreMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type GenreMutationRuleFunc func(context.Context, *ent.GenreMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f GenreMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.GenreMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.GenreMutation", m)
-}
-
 // The PermissionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PermissionQueryRuleFunc func(context.Context, *ent.PermissionQuery) error
@@ -340,14 +244,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
 	case *ent.AdminQuery:
 		return q.Filter(), nil
-	case *ent.ComicQuery:
-		return q.Filter(), nil
-	case *ent.ComicChapterQuery:
-		return q.Filter(), nil
-	case *ent.ComicImgQuery:
-		return q.Filter(), nil
-	case *ent.GenreQuery:
-		return q.Filter(), nil
 	case *ent.PermissionQuery:
 		return q.Filter(), nil
 	case *ent.RoleQuery:
@@ -362,14 +258,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
 	case *ent.AdminMutation:
-		return m.Filter(), nil
-	case *ent.ComicMutation:
-		return m.Filter(), nil
-	case *ent.ComicChapterMutation:
-		return m.Filter(), nil
-	case *ent.ComicImgMutation:
-		return m.Filter(), nil
-	case *ent.GenreMutation:
 		return m.Filter(), nil
 	case *ent.PermissionMutation:
 		return m.Filter(), nil

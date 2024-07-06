@@ -32,9 +32,9 @@ base_path = "/web/v1"
 enable = true
 base_path = "/admin/v1"
 
-[api.crawler]
+[api.bot]
 enable = true
-base_path = "/crawler/v1"
+base_path = "/bot/v1"
 
 [logger]
 time_format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10

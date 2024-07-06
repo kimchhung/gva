@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gva/api/admin/docs"
 	admin "github.com/gva/api/admin/module"
 	"github.com/gva/env"
 
@@ -30,14 +29,10 @@ var (
 // @description					Type "Bearer" followed by a space and JWT token.
 func Run() {
 	// * Run only web api
-	docs.SwaggerInfoadmin.BasePath = "admin"
-	if cfg.API.Admin.BasePath != "" {
-		docs.SwaggerInfoadmin.BasePath = cfg.API.Admin.BasePath
-	}
-
 	// force app to enable only admin module
-	cfg.API.Admin.Enable = true
 	cfg.API.Web.Enable = false
+	cfg.API.Admin.Enable = true
+	cfg.API.Bot.Enable = false
 
 	if cfg.API.Admin.Port != "" {
 		cfg.App.Port = cfg.API.Admin.Port

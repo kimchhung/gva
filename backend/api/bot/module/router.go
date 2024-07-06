@@ -3,7 +3,7 @@ package module
 import (
 	"github.com/labstack/echo/v4"
 
-	docs "github.com/gva/api/crawler/docs"
+	docs "github.com/gva/api/bot/docs"
 	"github.com/gva/env"
 	"github.com/gva/internal/echoc"
 	"github.com/gva/utils"
@@ -26,16 +26,16 @@ func (r *Router) Register(app *echo.Echo, args ...any) {
 	cfg := args[0].(*env.Config)
 
 	//default value if not exist in env config
-	utils.SetIfEmpty(&cfg.API.Crawler.BasePath, "/crawler/v1")
-	docs.SwaggerInfocrawler.BasePath = cfg.API.Crawler.BasePath
+	utils.SetIfEmpty(&cfg.API.Bot.BasePath, "/bot/v1")
+	docs.SwaggerInfobot.BasePath = cfg.API.Bot.BasePath
 
-	swagger.Register(app, cfg.API.Crawler.BasePath, cfg.Middleware.Swagger.Path,
-		echoSwagger.InstanceName(docs.SwaggerInfocrawler.InstanceName()),
+	swagger.Register(app, cfg.API.Bot.BasePath, cfg.Middleware.Swagger.Path,
+		echoSwagger.InstanceName(docs.SwaggerInfobot.InstanceName()),
 		echoSwagger.PersistAuthorization(true),
 		echoSwagger.SyntaxHighlight(true),
 	)
 
-	api := app.Group(cfg.API.Crawler.BasePath)
+	api := app.Group(cfg.API.Bot.BasePath)
 	for _, controller := range r.controllers {
 		echoc.Register(api, controller)
 	}

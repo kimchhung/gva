@@ -10,10 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/comic"
-	"github.com/gva/internal/ent/comicchapter"
-	"github.com/gva/internal/ent/comicimg"
-	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -30,26 +26,6 @@ var adminImplementors = []string{"Admin", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Admin) IsNode() {}
-
-var comicImplementors = []string{"Comic", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Comic) IsNode() {}
-
-var comicchapterImplementors = []string{"ComicChapter", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ComicChapter) IsNode() {}
-
-var comicimgImplementors = []string{"ComicImg", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ComicImg) IsNode() {}
-
-var genreImplementors = []string{"Genre", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Genre) IsNode() {}
 
 var permissionImplementors = []string{"Permission", "Node"}
 
@@ -133,58 +109,6 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.ID) (Noder, e
 			Where(admin.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, adminImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case comic.Table:
-		var uid pulid.ID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.Comic.Query().
-			Where(comic.ID(uid))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case comicchapter.Table:
-		var uid pulid.ID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.ComicChapter.Query().
-			Where(comicchapter.ID(uid))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicchapterImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case comicimg.Table:
-		var uid pulid.ID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.ComicImg.Query().
-			Where(comicimg.ID(uid))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicimgImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case genre.Table:
-		var uid pulid.ID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.Genre.Query().
-			Where(genre.ID(uid))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, genreImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -305,70 +229,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.ID) ([]No
 		query := c.Admin.Query().
 			Where(admin.IDIn(ids...))
 		query, err := query.CollectFields(ctx, adminImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case comic.Table:
-		query := c.Comic.Query().
-			Where(comic.IDIn(ids...))
-		query, err := query.CollectFields(ctx, comicImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case comicchapter.Table:
-		query := c.ComicChapter.Query().
-			Where(comicchapter.IDIn(ids...))
-		query, err := query.CollectFields(ctx, comicchapterImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case comicimg.Table:
-		query := c.ComicImg.Query().
-			Where(comicimg.IDIn(ids...))
-		query, err := query.CollectFields(ctx, comicimgImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case genre.Table:
-		query := c.Genre.Query().
-			Where(genre.IDIn(ids...))
-		query, err := query.CollectFields(ctx, genreImplementors...)
 		if err != nil {
 			return nil, err
 		}

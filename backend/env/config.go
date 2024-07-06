@@ -65,7 +65,7 @@ type (
 			Port     string
 			BasePath string `toml:"base_path"`
 		}
-		Crawler struct {
+		Bot struct {
 			Enable   bool
 			Port     string
 			BasePath string `toml:"base_path"`

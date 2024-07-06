@@ -1,8 +1,11 @@
-serve.admin:
+run.admin:
 	go run api/admin/main.go
 
-serve.web:
+run.web:
 	go run api/web/main.go web
 
-serve:
+run.bot:
+	go run api/bot/main.go
+
+run:
 	go run api/main.go all

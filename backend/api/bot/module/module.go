@@ -1,15 +1,15 @@
 package module
 
 import (
-	"github.com/gva/api/crawler/module/comic"
-	"github.com/gva/api/crawler/module/index"
+	"github.com/gva/api/bot/module/comic"
+	"github.com/gva/api/bot/module/index"
 	"github.com/gva/app/constant"
 	"github.com/gva/internal/echoc"
 
 	"go.uber.org/fx"
 )
 
-var NewCrawlerModules = fx.Module("crawler-module",
+var NewbotModules = fx.Module("bot-module",
 	index.IndexModule,
 	comic.ComicModuleModule,
 
@@ -19,7 +19,7 @@ var NewCrawlerModules = fx.Module("crawler-module",
 			fx.As(new(echoc.ModuleRouter)),
 
 			// take group params from container => []echoc.Controller -> NewRouter
-			fx.ParamTags(constant.CrawlerAdminController),
+			fx.ParamTags(constant.BotAdminController),
 
 			// register to container as member of module group
 			fx.ResultTags(constant.TagModule),

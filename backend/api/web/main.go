@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gva/api/web/docs"
 	web "github.com/gva/api/web/module"
 	"github.com/gva/app"
 	"github.com/gva/app/router"
@@ -28,14 +27,10 @@ var (
 func Run() {
 	// * Run only web api
 
-	docs.SwaggerInfoweb.BasePath = "web"
-	if cfg.API.Web.BasePath != "" {
-		docs.SwaggerInfoweb.BasePath = cfg.API.Web.BasePath
-	}
-
 	// force app to enable only web module
 	cfg.API.Web.Enable = true
 	cfg.API.Admin.Enable = false
+	cfg.API.Bot.Enable = false
 
 	// overwrite app port
 	if cfg.API.Web.Port != "" {

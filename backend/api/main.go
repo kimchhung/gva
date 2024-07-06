@@ -2,6 +2,7 @@ package main
 
 import (
 	admin "github.com/gva/api/admin/module"
+	bot "github.com/gva/api/bot/module"
 	web "github.com/gva/api/web/module"
 	"github.com/gva/app"
 	"github.com/gva/app/router"
@@ -27,6 +28,11 @@ func Run() {
 	/* Enable Web Module */
 	if cfg.API.Web.Enable {
 		modules = append(modules, web.NewWebModules)
+	}
+
+	/* Enable Bot Module */
+	if cfg.API.Bot.Enable {
+		modules = append(modules, bot.NewbotModules)
 	}
 
 	app.New(

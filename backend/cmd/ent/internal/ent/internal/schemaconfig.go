@@ -9,10 +9,6 @@ import "context"
 type SchemaConfig struct {
 	Admin           string // Admin table.
 	AdminRoles      string // Admin-roles->Role table.
-	Comic           string // Comic table.
-	ComicChapter    string // ComicChapter table.
-	ComicImg        string // ComicImg table.
-	Genre           string // Genre table.
 	Permission      string // Permission table.
 	Role            string // Role table.
 	RolePermissions string // Role-permissions->Permission table.
