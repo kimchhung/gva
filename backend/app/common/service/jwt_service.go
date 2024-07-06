@@ -131,13 +131,13 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 	return nil, fmt.Errorf("invalid token")
 }
 
-func (s *JwtService) AddClaimPayload(key string, value any) ClaimOption {
+func AddClaimPayload(key string, value any) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims[key] = value
 	}
 }
 
-func (s *JwtService) AddTokenExpiredAt(deadline time.Time) ClaimOption {
+func AddTokenExpiredAt(deadline time.Time) ClaimOption {
 	return func(claims jwt.MapClaims) {
 		claims["exp"] = deadline.Unix()
 	}
