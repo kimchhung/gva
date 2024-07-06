@@ -69,7 +69,6 @@ skip_mod_tidy: true
 autobind:
   - "github.com/99designs/gqlgen/graphql/introspection"
   - "github.com/gva/internal/ent"
-  - "github.com/gva/internal/ent/comic"
 
 
 # This section declares type mapping between the GraphQL and go type systems
@@ -81,7 +80,9 @@ omit_getters: true
 models:
   ID:
     model:
-      - github.com/gva/app/database/schema/pulid.ID
+      - github.com/gva/app/database/schema/xid.ID
   Node:
     model:
       - github.com/gva/internal/ent.Noder
+
+

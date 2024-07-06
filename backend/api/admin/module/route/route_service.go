@@ -3,6 +3,7 @@ package route
 import (
 	"github.com/gva/api/admin/module/route/dto"
 	"github.com/gva/app/common/repository"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/utils/pagi"
 	"github.com/gva/utils/routeutil"
 
@@ -58,7 +59,7 @@ func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest
 	return s.toDto(list...), meta, nil
 }
 
-func (s *RouteService) GetRouteByID(ctx context.Context, id string) (*dto.RouteResponse, error) {
+func (s *RouteService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.RouteResponse, error) {
 	data, err := s.repo.Q().Where(route.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -83,7 +84,7 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*d
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) UpdateRoute(ctx context.Context, id string, r *dto.RouteRequest) (*dto.RouteResponse, error) {
+func (s *RouteService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.RouteRequest) (*dto.RouteResponse, error) {
 	data, err := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -100,6 +101,6 @@ func (s *RouteService) UpdateRoute(ctx context.Context, id string, r *dto.RouteR
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) DeleteRoute(ctx context.Context, id string) error {
+func (s *RouteService) DeleteRoute(ctx context.Context, id xid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }

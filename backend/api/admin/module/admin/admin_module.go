@@ -1,8 +1,7 @@
 package admin
 
 import (
-	"github.com/gva/app/constant"
-
+	"github.com/gva/app/common/controller"
 	"go.uber.org/fx"
 )
 
@@ -12,5 +11,5 @@ var AdminModule = fx.Module("AdminModule",
 	fx.Provide(NewAdminService),
 
 	// Regiser Controller
-	constant.ProvideAdminController(NewAdminController),
+	controller.ProvideAdminController(NewAdminController),
 )

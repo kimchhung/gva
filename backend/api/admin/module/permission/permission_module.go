@@ -1,8 +1,7 @@
 package permission
 
 import (
-	"github.com/gva/app/constant"
-
+	"github.com/gva/app/common/controller"
 	"go.uber.org/fx"
 )
 
@@ -13,5 +12,5 @@ var PermissionModule = fx.Module("PermissionModule",
 	fx.Provide(NewPermissionService),
 
 	// Regiser Controller
-	constant.ProvideAdminController(NewPermissionController),
+	controller.ProvideAdminController(NewPermissionController),
 )

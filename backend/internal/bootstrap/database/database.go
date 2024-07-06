@@ -87,7 +87,7 @@ func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
 		name := reflect.TypeOf(v).Name()
 		count, err := v.Count(ctx, db.Client)
 		if err != nil {
-			db.Log.Panic().Err(err).Msg("")
+			db.Log.Panic().Err(err).Msg("v.Count(ctx, db.Client)")
 		}
 
 		if count > 0 {

@@ -9,6 +9,7 @@ import (
 
 	appctx "github.com/gva/app/common/context"
 	apperror "github.com/gva/app/common/error"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/env"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -63,7 +64,7 @@ func (s *JwtService) AdminValidator(out *ent.Admin) ClaimValidator {
 		}
 
 		admin, err := s.db.Admin.Query().
-			Where(admin.ID(idStr)).
+			Where(admin.ID(xid.ID(idStr))).
 			WithRoles(
 				func(rq *ent.RoleQuery) {
 					rq.WithPermissions()

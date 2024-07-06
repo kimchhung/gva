@@ -1,8 +1,7 @@
 package auth
 
 import (
-	"github.com/gva/app/constant"
-
+	"github.com/gva/app/common/controller"
 	"go.uber.org/fx"
 )
 
@@ -11,5 +10,5 @@ var AuthModule = fx.Module("AuthModule",
 	fx.Provide(NewAuthService),
 
 	// Regiser Controller
-	constant.ProvideAdminController(NewAuthController),
+	controller.ProvideAdminController(NewAuthController),
 )

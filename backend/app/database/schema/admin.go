@@ -2,8 +2,8 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
-	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/softdelete"
+	"github.com/gva/app/database/schema/xid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -16,7 +16,7 @@ type Admin struct {
 
 func (Admin) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		pulid.MixinWithPrefix("ADM"),
+		xid.MixinWithPrefix("admin"),
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},

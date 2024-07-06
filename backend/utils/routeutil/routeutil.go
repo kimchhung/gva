@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/utils/color"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
-	parentMapRoute := make(map[string][]*ent.Route)
+	parentMapRoute := make(map[xid.ID][]*ent.Route)
 
 	for _, route := range flatRoutes {
 		if route.ParentID != nil {
@@ -47,7 +48,7 @@ func FlattenNestedRoutes(parentRoutes []*ent.Route) (flatRoutes []*ent.Route) {
 	return flatRoutes
 }
 
-func AppendRouteChildrens(parentID string, parentMapRoute map[string][]*ent.Route) (children []*ent.Route) {
+func AppendRouteChildrens(parentID xid.ID, parentMapRoute map[xid.ID][]*ent.Route) (children []*ent.Route) {
 	children, ok := parentMapRoute[parentID]
 	if !ok {
 		return nil

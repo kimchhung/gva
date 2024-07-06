@@ -9,18 +9,6 @@ import (
 // Admin is the predicate function for admin builders.
 type Admin func(*sql.Selector)
 
-// Comic is the predicate function for comic builders.
-type Comic func(*sql.Selector)
-
-// ComicChapter is the predicate function for comicchapter builders.
-type ComicChapter func(*sql.Selector)
-
-// ComicImg is the predicate function for comicimg builders.
-type ComicImg func(*sql.Selector)
-
-// Genre is the predicate function for genre builders.
-type Genre func(*sql.Selector)
-
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 

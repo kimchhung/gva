@@ -8,6 +8,7 @@ import (
 
 	permissions "github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/echoc"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/request"
@@ -126,7 +127,7 @@ func (con *RouteController) CreateRoute(m *echoc.RouteMeta) echoc.MetaHandler {
 func (con *RouteController) GetRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
-			ID string `param:"id" validate:"required"`
+			ID xid.ID `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{
@@ -163,7 +164,7 @@ func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.RouteRequest)
 		params := new(struct {
-			ID string `param:"id" validate:"required"`
+			ID xid.ID `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{
@@ -199,7 +200,7 @@ func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 func (con *RouteController) DeleteRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
-			ID string `param:"id" validate:"required"`
+			ID xid.ID `param:"id" validate:"required"`
 		})
 
 		return []echo.HandlerFunc{

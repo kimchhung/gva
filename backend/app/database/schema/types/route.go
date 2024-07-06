@@ -1,5 +1,17 @@
 package types
 
+import (
+	"encoding/json"
+	"io"
+
+	"github.com/99designs/gqlgen/graphql"
+)
+
+var _ interface {
+	graphql.Marshaler
+	graphql.Unmarshaler
+} = (*RouteMeta)(nil)
+
 type RouteMeta struct {
 	Hidden     *bool    `json:"hidden,omitempty"`
 	AlwaysShow *bool    `json:"alwaysShow,omitempty"`
@@ -14,8 +26,13 @@ type RouteMeta struct {
 	Permission []string `json:"permission,omitempty"`
 }
 
-type CoverImg struct {
-	X     int    `json:"x"`
-	Y     int    `json:"y"`
-	B2key string `json:"b2key"`
+func (u *RouteMeta) UnmarshalGQL(v interface{}) error {
+	return json.Unmarshal(v.([]byte), u)
+}
+
+// MarshalGQL implements the graphql.Marshaler interface
+func (u RouteMeta) MarshalGQL(w io.Writer) {
+	jsonData, _ := json.Marshal(u)
+	w.Write(jsonData)
+
 }

@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/gva/app/constant"
+	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/echoc"
 
 	"github.com/labstack/echo/v4"
@@ -33,7 +33,7 @@ func WithRouter(modules ...fx.Option) []fx.Option {
 		// register as *Router
 		fx.Annotate(NewRouter,
 			// take group params from container => []echoc.ModuleRouter -> NewRouter
-			fx.ParamTags(constant.TagModule),
+			fx.ParamTags(controller.TagModule),
 		),
 	))
 

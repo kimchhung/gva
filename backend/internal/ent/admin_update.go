@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
@@ -149,14 +150,14 @@ func (au *AdminUpdate) ClearDisplayName() *AdminUpdate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (au *AdminUpdate) AddRoleIDs(ids ...string) *AdminUpdate {
+func (au *AdminUpdate) AddRoleIDs(ids ...xid.ID) *AdminUpdate {
 	au.mutation.AddRoleIDs(ids...)
 	return au
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (au *AdminUpdate) AddRoles(r ...*Role) *AdminUpdate {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -175,14 +176,14 @@ func (au *AdminUpdate) ClearRoles() *AdminUpdate {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (au *AdminUpdate) RemoveRoleIDs(ids ...string) *AdminUpdate {
+func (au *AdminUpdate) RemoveRoleIDs(ids ...xid.ID) *AdminUpdate {
 	au.mutation.RemoveRoleIDs(ids...)
 	return au
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (au *AdminUpdate) RemoveRoles(r ...*Role) *AdminUpdate {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -469,14 +470,14 @@ func (auo *AdminUpdateOne) ClearDisplayName() *AdminUpdateOne {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (auo *AdminUpdateOne) AddRoleIDs(ids ...string) *AdminUpdateOne {
+func (auo *AdminUpdateOne) AddRoleIDs(ids ...xid.ID) *AdminUpdateOne {
 	auo.mutation.AddRoleIDs(ids...)
 	return auo
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (auo *AdminUpdateOne) AddRoles(r ...*Role) *AdminUpdateOne {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -495,14 +496,14 @@ func (auo *AdminUpdateOne) ClearRoles() *AdminUpdateOne {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (auo *AdminUpdateOne) RemoveRoleIDs(ids ...string) *AdminUpdateOne {
+func (auo *AdminUpdateOne) RemoveRoleIDs(ids ...xid.ID) *AdminUpdateOne {
 	auo.mutation.RemoveRoleIDs(ids...)
 	return auo
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (auo *AdminUpdateOne) RemoveRoles(r ...*Role) *AdminUpdateOne {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

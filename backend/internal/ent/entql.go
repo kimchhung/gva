@@ -4,10 +4,6 @@ package ent
 
 import (
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/comic"
-	"github.com/gva/internal/ent/comicchapter"
-	"github.com/gva/internal/ent/comicimg"
-	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
@@ -21,7 +17,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 8)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   admin.Table,
@@ -45,90 +41,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   comic.Table,
-			Columns: comic.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: comic.FieldID,
-			},
-		},
-		Type: "Comic",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			comic.FieldCreatedAt:            {Type: field.TypeTime, Column: comic.FieldCreatedAt},
-			comic.FieldUpdatedAt:            {Type: field.TypeTime, Column: comic.FieldUpdatedAt},
-			comic.FieldChapter:              {Type: field.TypeUint, Column: comic.FieldChapter},
-			comic.FieldTitle:                {Type: field.TypeString, Column: comic.FieldTitle},
-			comic.FieldSlug:                 {Type: field.TypeString, Column: comic.FieldSlug},
-			comic.FieldCovers:               {Type: field.TypeJSON, Column: comic.FieldCovers},
-			comic.FieldStatus:               {Type: field.TypeString, Column: comic.FieldStatus},
-			comic.FieldIsTranslateCompleted: {Type: field.TypeBool, Column: comic.FieldIsTranslateCompleted},
-			comic.FieldUpCount:              {Type: field.TypeUint, Column: comic.FieldUpCount},
-			comic.FieldFinalChapterID:       {Type: field.TypeString, Column: comic.FieldFinalChapterID},
-			comic.FieldLastChapterID:        {Type: field.TypeString, Column: comic.FieldLastChapterID},
-		},
-	}
-	graph.Nodes[2] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   comicchapter.Table,
-			Columns: comicchapter.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: comicchapter.FieldID,
-			},
-		},
-		Type: "ComicChapter",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			comicchapter.FieldCreatedAt:     {Type: field.TypeTime, Column: comicchapter.FieldCreatedAt},
-			comicchapter.FieldUpdatedAt:     {Type: field.TypeTime, Column: comicchapter.FieldUpdatedAt},
-			comicchapter.FieldChapter:       {Type: field.TypeUint, Column: comicchapter.FieldChapter},
-			comicchapter.FieldTitle:         {Type: field.TypeString, Column: comicchapter.FieldTitle},
-			comicchapter.FieldVolumn:        {Type: field.TypeString, Column: comicchapter.FieldVolumn},
-			comicchapter.FieldLang:          {Type: field.TypeString, Column: comicchapter.FieldLang},
-			comicchapter.FieldUpCount:       {Type: field.TypeUint, Column: comicchapter.FieldUpCount},
-			comicchapter.FieldDownCount:     {Type: field.TypeUint, Column: comicchapter.FieldDownCount},
-			comicchapter.FieldIsLastChapter: {Type: field.TypeBool, Column: comicchapter.FieldIsLastChapter},
-		},
-	}
-	graph.Nodes[3] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   comicimg.Table,
-			Columns: comicimg.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: comicimg.FieldID,
-			},
-		},
-		Type: "ComicImg",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			comicimg.FieldCreatedAt:     {Type: field.TypeTime, Column: comicimg.FieldCreatedAt},
-			comicimg.FieldUpdatedAt:     {Type: field.TypeTime, Column: comicimg.FieldUpdatedAt},
-			comicimg.FieldB2key:         {Type: field.TypeString, Column: comicimg.FieldB2key},
-			comicimg.FieldHeight:        {Type: field.TypeInt, Column: comicimg.FieldHeight},
-			comicimg.FieldName:          {Type: field.TypeString, Column: comicimg.FieldName},
-			comicimg.FieldOptimizedSize: {Type: field.TypeInt64, Column: comicimg.FieldOptimizedSize},
-			comicimg.FieldSize:          {Type: field.TypeInt64, Column: comicimg.FieldSize},
-			comicimg.FieldWidth:         {Type: field.TypeInt, Column: comicimg.FieldWidth},
-		},
-	}
-	graph.Nodes[4] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   genre.Table,
-			Columns: genre.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: genre.FieldID,
-			},
-		},
-		Type: "Genre",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			genre.FieldCreatedAt: {Type: field.TypeTime, Column: genre.FieldCreatedAt},
-			genre.FieldUpdatedAt: {Type: field.TypeTime, Column: genre.FieldUpdatedAt},
-			genre.FieldName:      {Type: field.TypeString, Column: genre.FieldName},
-			genre.FieldType:      {Type: field.TypeEnum, Column: genre.FieldType},
-		},
-	}
-	graph.Nodes[5] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permission.Table,
 			Columns: permission.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -146,7 +58,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldOrder:     {Type: field.TypeInt, Column: permission.FieldOrder},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -167,7 +79,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldIsChangeable: {Type: field.TypeBool, Column: role.FieldIsChangeable},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   route.Table,
 			Columns: route.Columns,
@@ -203,78 +115,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Admin",
 		"Role",
-	)
-	graph.MustAddE(
-		"chapters",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   comic.ChaptersTable,
-			Columns: []string{comic.ChaptersColumn},
-			Bidi:    false,
-		},
-		"Comic",
-		"ComicChapter",
-	)
-	graph.MustAddE(
-		"last_chapter",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   comic.LastChapterTable,
-			Columns: []string{comic.LastChapterColumn},
-			Bidi:    false,
-		},
-		"Comic",
-		"ComicChapter",
-	)
-	graph.MustAddE(
-		"final_chapter",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   comic.FinalChapterTable,
-			Columns: []string{comic.FinalChapterColumn},
-			Bidi:    false,
-		},
-		"Comic",
-		"ComicChapter",
-	)
-	graph.MustAddE(
-		"imgs",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   comicchapter.ImgsTable,
-			Columns: []string{comicchapter.ImgsColumn},
-			Bidi:    false,
-		},
-		"ComicChapter",
-		"ComicImg",
-	)
-	graph.MustAddE(
-		"comic",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   comicchapter.ComicTable,
-			Columns: []string{comicchapter.ComicColumn},
-			Bidi:    false,
-		},
-		"ComicChapter",
-		"Comic",
-	)
-	graph.MustAddE(
-		"chapter",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   comicimg.ChapterTable,
-			Columns: []string{comicimg.ChapterColumn},
-			Bidi:    false,
-		},
-		"ComicImg",
-		"ComicChapter",
 	)
 	graph.MustAddE(
 		"roles",
@@ -464,410 +304,6 @@ func (f *AdminFilter) WhereHasRolesWith(preds ...predicate.Role) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (cq *ComicQuery) addPredicate(pred func(s *sql.Selector)) {
-	cq.predicates = append(cq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the ComicQuery builder.
-func (cq *ComicQuery) Filter() *ComicFilter {
-	return &ComicFilter{config: cq.config, predicateAdder: cq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *ComicMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the ComicMutation builder.
-func (m *ComicMutation) Filter() *ComicFilter {
-	return &ComicFilter{config: m.config, predicateAdder: m}
-}
-
-// ComicFilter provides a generic filtering capability at runtime for ComicQuery.
-type ComicFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *ComicFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *ComicFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(comic.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *ComicFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(comic.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *ComicFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(comic.FieldUpdatedAt))
-}
-
-// WhereChapter applies the entql uint predicate on the chapter field.
-func (f *ComicFilter) WhereChapter(p entql.UintP) {
-	f.Where(p.Field(comic.FieldChapter))
-}
-
-// WhereTitle applies the entql string predicate on the title field.
-func (f *ComicFilter) WhereTitle(p entql.StringP) {
-	f.Where(p.Field(comic.FieldTitle))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *ComicFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(comic.FieldSlug))
-}
-
-// WhereCovers applies the entql json.RawMessage predicate on the covers field.
-func (f *ComicFilter) WhereCovers(p entql.BytesP) {
-	f.Where(p.Field(comic.FieldCovers))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *ComicFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(comic.FieldStatus))
-}
-
-// WhereIsTranslateCompleted applies the entql bool predicate on the isTranslateCompleted field.
-func (f *ComicFilter) WhereIsTranslateCompleted(p entql.BoolP) {
-	f.Where(p.Field(comic.FieldIsTranslateCompleted))
-}
-
-// WhereUpCount applies the entql uint predicate on the up_count field.
-func (f *ComicFilter) WhereUpCount(p entql.UintP) {
-	f.Where(p.Field(comic.FieldUpCount))
-}
-
-// WhereFinalChapterID applies the entql string predicate on the final_chapter_id field.
-func (f *ComicFilter) WhereFinalChapterID(p entql.StringP) {
-	f.Where(p.Field(comic.FieldFinalChapterID))
-}
-
-// WhereLastChapterID applies the entql string predicate on the last_chapter_id field.
-func (f *ComicFilter) WhereLastChapterID(p entql.StringP) {
-	f.Where(p.Field(comic.FieldLastChapterID))
-}
-
-// WhereHasChapters applies a predicate to check if query has an edge chapters.
-func (f *ComicFilter) WhereHasChapters() {
-	f.Where(entql.HasEdge("chapters"))
-}
-
-// WhereHasChaptersWith applies a predicate to check if query has an edge chapters with a given conditions (other predicates).
-func (f *ComicFilter) WhereHasChaptersWith(preds ...predicate.ComicChapter) {
-	f.Where(entql.HasEdgeWith("chapters", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasLastChapter applies a predicate to check if query has an edge last_chapter.
-func (f *ComicFilter) WhereHasLastChapter() {
-	f.Where(entql.HasEdge("last_chapter"))
-}
-
-// WhereHasLastChapterWith applies a predicate to check if query has an edge last_chapter with a given conditions (other predicates).
-func (f *ComicFilter) WhereHasLastChapterWith(preds ...predicate.ComicChapter) {
-	f.Where(entql.HasEdgeWith("last_chapter", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasFinalChapter applies a predicate to check if query has an edge final_chapter.
-func (f *ComicFilter) WhereHasFinalChapter() {
-	f.Where(entql.HasEdge("final_chapter"))
-}
-
-// WhereHasFinalChapterWith applies a predicate to check if query has an edge final_chapter with a given conditions (other predicates).
-func (f *ComicFilter) WhereHasFinalChapterWith(preds ...predicate.ComicChapter) {
-	f.Where(entql.HasEdgeWith("final_chapter", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (ccq *ComicChapterQuery) addPredicate(pred func(s *sql.Selector)) {
-	ccq.predicates = append(ccq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the ComicChapterQuery builder.
-func (ccq *ComicChapterQuery) Filter() *ComicChapterFilter {
-	return &ComicChapterFilter{config: ccq.config, predicateAdder: ccq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *ComicChapterMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the ComicChapterMutation builder.
-func (m *ComicChapterMutation) Filter() *ComicChapterFilter {
-	return &ComicChapterFilter{config: m.config, predicateAdder: m}
-}
-
-// ComicChapterFilter provides a generic filtering capability at runtime for ComicChapterQuery.
-type ComicChapterFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *ComicChapterFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *ComicChapterFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(comicchapter.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *ComicChapterFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(comicchapter.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *ComicChapterFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(comicchapter.FieldUpdatedAt))
-}
-
-// WhereChapter applies the entql uint predicate on the chapter field.
-func (f *ComicChapterFilter) WhereChapter(p entql.UintP) {
-	f.Where(p.Field(comicchapter.FieldChapter))
-}
-
-// WhereTitle applies the entql string predicate on the title field.
-func (f *ComicChapterFilter) WhereTitle(p entql.StringP) {
-	f.Where(p.Field(comicchapter.FieldTitle))
-}
-
-// WhereVolumn applies the entql string predicate on the volumn field.
-func (f *ComicChapterFilter) WhereVolumn(p entql.StringP) {
-	f.Where(p.Field(comicchapter.FieldVolumn))
-}
-
-// WhereLang applies the entql string predicate on the lang field.
-func (f *ComicChapterFilter) WhereLang(p entql.StringP) {
-	f.Where(p.Field(comicchapter.FieldLang))
-}
-
-// WhereUpCount applies the entql uint predicate on the up_count field.
-func (f *ComicChapterFilter) WhereUpCount(p entql.UintP) {
-	f.Where(p.Field(comicchapter.FieldUpCount))
-}
-
-// WhereDownCount applies the entql uint predicate on the down_count field.
-func (f *ComicChapterFilter) WhereDownCount(p entql.UintP) {
-	f.Where(p.Field(comicchapter.FieldDownCount))
-}
-
-// WhereIsLastChapter applies the entql bool predicate on the is_last_chapter field.
-func (f *ComicChapterFilter) WhereIsLastChapter(p entql.BoolP) {
-	f.Where(p.Field(comicchapter.FieldIsLastChapter))
-}
-
-// WhereHasImgs applies a predicate to check if query has an edge imgs.
-func (f *ComicChapterFilter) WhereHasImgs() {
-	f.Where(entql.HasEdge("imgs"))
-}
-
-// WhereHasImgsWith applies a predicate to check if query has an edge imgs with a given conditions (other predicates).
-func (f *ComicChapterFilter) WhereHasImgsWith(preds ...predicate.ComicImg) {
-	f.Where(entql.HasEdgeWith("imgs", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasComic applies a predicate to check if query has an edge comic.
-func (f *ComicChapterFilter) WhereHasComic() {
-	f.Where(entql.HasEdge("comic"))
-}
-
-// WhereHasComicWith applies a predicate to check if query has an edge comic with a given conditions (other predicates).
-func (f *ComicChapterFilter) WhereHasComicWith(preds ...predicate.Comic) {
-	f.Where(entql.HasEdgeWith("comic", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (ciq *ComicImgQuery) addPredicate(pred func(s *sql.Selector)) {
-	ciq.predicates = append(ciq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the ComicImgQuery builder.
-func (ciq *ComicImgQuery) Filter() *ComicImgFilter {
-	return &ComicImgFilter{config: ciq.config, predicateAdder: ciq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *ComicImgMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the ComicImgMutation builder.
-func (m *ComicImgMutation) Filter() *ComicImgFilter {
-	return &ComicImgFilter{config: m.config, predicateAdder: m}
-}
-
-// ComicImgFilter provides a generic filtering capability at runtime for ComicImgQuery.
-type ComicImgFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *ComicImgFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *ComicImgFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(comicimg.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *ComicImgFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(comicimg.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *ComicImgFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(comicimg.FieldUpdatedAt))
-}
-
-// WhereB2key applies the entql string predicate on the b2key field.
-func (f *ComicImgFilter) WhereB2key(p entql.StringP) {
-	f.Where(p.Field(comicimg.FieldB2key))
-}
-
-// WhereHeight applies the entql int predicate on the height field.
-func (f *ComicImgFilter) WhereHeight(p entql.IntP) {
-	f.Where(p.Field(comicimg.FieldHeight))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *ComicImgFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(comicimg.FieldName))
-}
-
-// WhereOptimizedSize applies the entql int64 predicate on the optimized_size field.
-func (f *ComicImgFilter) WhereOptimizedSize(p entql.Int64P) {
-	f.Where(p.Field(comicimg.FieldOptimizedSize))
-}
-
-// WhereSize applies the entql int64 predicate on the size field.
-func (f *ComicImgFilter) WhereSize(p entql.Int64P) {
-	f.Where(p.Field(comicimg.FieldSize))
-}
-
-// WhereWidth applies the entql int predicate on the width field.
-func (f *ComicImgFilter) WhereWidth(p entql.IntP) {
-	f.Where(p.Field(comicimg.FieldWidth))
-}
-
-// WhereHasChapter applies a predicate to check if query has an edge chapter.
-func (f *ComicImgFilter) WhereHasChapter() {
-	f.Where(entql.HasEdge("chapter"))
-}
-
-// WhereHasChapterWith applies a predicate to check if query has an edge chapter with a given conditions (other predicates).
-func (f *ComicImgFilter) WhereHasChapterWith(preds ...predicate.ComicChapter) {
-	f.Where(entql.HasEdgeWith("chapter", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (gq *GenreQuery) addPredicate(pred func(s *sql.Selector)) {
-	gq.predicates = append(gq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the GenreQuery builder.
-func (gq *GenreQuery) Filter() *GenreFilter {
-	return &GenreFilter{config: gq.config, predicateAdder: gq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *GenreMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the GenreMutation builder.
-func (m *GenreMutation) Filter() *GenreFilter {
-	return &GenreFilter{config: m.config, predicateAdder: m}
-}
-
-// GenreFilter provides a generic filtering capability at runtime for GenreQuery.
-type GenreFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *GenreFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *GenreFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(genre.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *GenreFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(genre.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *GenreFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(genre.FieldUpdatedAt))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *GenreFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(genre.FieldName))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *GenreFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(genre.FieldType))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (pq *PermissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
 }
@@ -896,7 +332,7 @@ type PermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -980,7 +416,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1102,7 +538,7 @@ type RouteFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RouteFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

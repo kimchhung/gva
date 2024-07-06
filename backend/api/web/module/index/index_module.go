@@ -1,7 +1,7 @@
 package index
 
 import (
-	"github.com/gva/app/constant"
+	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/echoc"
 
 	"go.uber.org/fx"
@@ -14,6 +14,6 @@ var IndexModule = fx.Module("IndexModule",
 	// Regiser Controller
 	fx.Provide(fx.Annotate(NewIndexController,
 		fx.As(new(echoc.Controller)),
-		fx.ResultTags(constant.TagWebController),
+		fx.ResultTags(controller.TagWebController),
 	)),
 )

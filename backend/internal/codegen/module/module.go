@@ -11,7 +11,7 @@ import (
 	"github.com/gva/api/admin/module/{{.EntitySnake}}/repository"
 	"github.com/gva/api/admin/module/{{.EntitySnake}}/service"
 	"github.com/gva/internal/rctrl"
-	"github.com/gva/app/constant"
+	"github.com/gva/app/common/controller"
 
 	"go.uber.org/fx"
 )
@@ -27,7 +27,7 @@ var New{{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 		fx.Annotate(
 			controller.New{{.EntityPascal}}Controller,
 			fx.As(new(echoc.Controller)),
-			fx.ResultTags(constant.APIAdminControllerGroup),
+			fx.ResultTags(controller.APIAdminControllerGroup),
 		),
 	),
 )

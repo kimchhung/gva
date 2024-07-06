@@ -21,54 +21,6 @@ func (f AdminFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdminMutation", m)
 }
 
-// The ComicFunc type is an adapter to allow the use of ordinary
-// function as Comic mutator.
-type ComicFunc func(context.Context, *ent.ComicMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ComicFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ComicMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ComicMutation", m)
-}
-
-// The ComicChapterFunc type is an adapter to allow the use of ordinary
-// function as ComicChapter mutator.
-type ComicChapterFunc func(context.Context, *ent.ComicChapterMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ComicChapterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ComicChapterMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ComicChapterMutation", m)
-}
-
-// The ComicImgFunc type is an adapter to allow the use of ordinary
-// function as ComicImg mutator.
-type ComicImgFunc func(context.Context, *ent.ComicImgMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ComicImgFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ComicImgMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ComicImgMutation", m)
-}
-
-// The GenreFunc type is an adapter to allow the use of ordinary
-// function as Genre mutator.
-type GenreFunc func(context.Context, *ent.GenreMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f GenreFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.GenreMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GenreMutation", m)
-}
-
 // The PermissionFunc type is an adapter to allow the use of ordinary
 // function as Permission mutator.
 type PermissionFunc func(context.Context, *ent.PermissionMutation) (ent.Value, error)

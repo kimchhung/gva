@@ -1,8 +1,7 @@
 package index
 
 import (
-	"github.com/gva/app/constant"
-
+	"github.com/gva/app/common/controller"
 	"go.uber.org/fx"
 )
 
@@ -11,5 +10,5 @@ var IndexModule = fx.Module("IndexModule",
 	fx.Provide(NewIndexService),
 
 	// Regiser Controller
-	constant.ProvideAdminController(NewIndexController),
+	controller.ProvideAdminController(NewIndexController),
 )

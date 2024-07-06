@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gva/app/database/schema/xid"
 )
 
 const (
@@ -119,7 +120,7 @@ var (
 	// DefaultOrder holds the default value on creation for the "order" field.
 	DefaultOrder int
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() string
+	DefaultID func() xid.ID
 )
 
 // Type defines the type for the "type" enum field.

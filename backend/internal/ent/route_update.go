@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/types"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -89,15 +90,15 @@ func (ru *RouteUpdate) AddDeletedAt(i int) *RouteUpdate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (ru *RouteUpdate) SetParentID(s string) *RouteUpdate {
-	ru.mutation.SetParentID(s)
+func (ru *RouteUpdate) SetParentID(x xid.ID) *RouteUpdate {
+	ru.mutation.SetParentID(x)
 	return ru
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (ru *RouteUpdate) SetNillableParentID(s *string) *RouteUpdate {
-	if s != nil {
-		ru.SetParentID(*s)
+func (ru *RouteUpdate) SetNillableParentID(x *xid.ID) *RouteUpdate {
+	if x != nil {
+		ru.SetParentID(*x)
 	}
 	return ru
 }
@@ -231,14 +232,14 @@ func (ru *RouteUpdate) SetParent(r *Route) *RouteUpdate {
 }
 
 // AddChildIDs adds the "children" edge to the Route entity by IDs.
-func (ru *RouteUpdate) AddChildIDs(ids ...string) *RouteUpdate {
+func (ru *RouteUpdate) AddChildIDs(ids ...xid.ID) *RouteUpdate {
 	ru.mutation.AddChildIDs(ids...)
 	return ru
 }
 
 // AddChildren adds the "children" edges to the Route entity.
 func (ru *RouteUpdate) AddChildren(r ...*Route) *RouteUpdate {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -246,14 +247,14 @@ func (ru *RouteUpdate) AddChildren(r ...*Route) *RouteUpdate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ru *RouteUpdate) AddRoleIDs(ids ...string) *RouteUpdate {
+func (ru *RouteUpdate) AddRoleIDs(ids ...xid.ID) *RouteUpdate {
 	ru.mutation.AddRoleIDs(ids...)
 	return ru
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ru *RouteUpdate) AddRoles(r ...*Role) *RouteUpdate {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -278,14 +279,14 @@ func (ru *RouteUpdate) ClearChildren() *RouteUpdate {
 }
 
 // RemoveChildIDs removes the "children" edge to Route entities by IDs.
-func (ru *RouteUpdate) RemoveChildIDs(ids ...string) *RouteUpdate {
+func (ru *RouteUpdate) RemoveChildIDs(ids ...xid.ID) *RouteUpdate {
 	ru.mutation.RemoveChildIDs(ids...)
 	return ru
 }
 
 // RemoveChildren removes "children" edges to Route entities.
 func (ru *RouteUpdate) RemoveChildren(r ...*Route) *RouteUpdate {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -299,14 +300,14 @@ func (ru *RouteUpdate) ClearRoles() *RouteUpdate {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (ru *RouteUpdate) RemoveRoleIDs(ids ...string) *RouteUpdate {
+func (ru *RouteUpdate) RemoveRoleIDs(ids ...xid.ID) *RouteUpdate {
 	ru.mutation.RemoveRoleIDs(ids...)
 	return ru
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (ru *RouteUpdate) RemoveRoles(r ...*Role) *RouteUpdate {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -635,15 +636,15 @@ func (ruo *RouteUpdateOne) AddDeletedAt(i int) *RouteUpdateOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (ruo *RouteUpdateOne) SetParentID(s string) *RouteUpdateOne {
-	ruo.mutation.SetParentID(s)
+func (ruo *RouteUpdateOne) SetParentID(x xid.ID) *RouteUpdateOne {
+	ruo.mutation.SetParentID(x)
 	return ruo
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (ruo *RouteUpdateOne) SetNillableParentID(s *string) *RouteUpdateOne {
-	if s != nil {
-		ruo.SetParentID(*s)
+func (ruo *RouteUpdateOne) SetNillableParentID(x *xid.ID) *RouteUpdateOne {
+	if x != nil {
+		ruo.SetParentID(*x)
 	}
 	return ruo
 }
@@ -777,14 +778,14 @@ func (ruo *RouteUpdateOne) SetParent(r *Route) *RouteUpdateOne {
 }
 
 // AddChildIDs adds the "children" edge to the Route entity by IDs.
-func (ruo *RouteUpdateOne) AddChildIDs(ids ...string) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) AddChildIDs(ids ...xid.ID) *RouteUpdateOne {
 	ruo.mutation.AddChildIDs(ids...)
 	return ruo
 }
 
 // AddChildren adds the "children" edges to the Route entity.
 func (ruo *RouteUpdateOne) AddChildren(r ...*Route) *RouteUpdateOne {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -792,14 +793,14 @@ func (ruo *RouteUpdateOne) AddChildren(r ...*Route) *RouteUpdateOne {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ruo *RouteUpdateOne) AddRoleIDs(ids ...string) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) AddRoleIDs(ids ...xid.ID) *RouteUpdateOne {
 	ruo.mutation.AddRoleIDs(ids...)
 	return ruo
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ruo *RouteUpdateOne) AddRoles(r ...*Role) *RouteUpdateOne {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -824,14 +825,14 @@ func (ruo *RouteUpdateOne) ClearChildren() *RouteUpdateOne {
 }
 
 // RemoveChildIDs removes the "children" edge to Route entities by IDs.
-func (ruo *RouteUpdateOne) RemoveChildIDs(ids ...string) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) RemoveChildIDs(ids ...xid.ID) *RouteUpdateOne {
 	ruo.mutation.RemoveChildIDs(ids...)
 	return ruo
 }
 
 // RemoveChildren removes "children" edges to Route entities.
 func (ruo *RouteUpdateOne) RemoveChildren(r ...*Route) *RouteUpdateOne {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -845,14 +846,14 @@ func (ruo *RouteUpdateOne) ClearRoles() *RouteUpdateOne {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (ruo *RouteUpdateOne) RemoveRoleIDs(ids ...string) *RouteUpdateOne {
+func (ruo *RouteUpdateOne) RemoveRoleIDs(ids ...xid.ID) *RouteUpdateOne {
 	ruo.mutation.RemoveRoleIDs(ids...)
 	return ruo
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (ruo *RouteUpdateOne) RemoveRoles(r ...*Role) *RouteUpdateOne {
-	ids := make([]string, len(r))
+	ids := make([]xid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

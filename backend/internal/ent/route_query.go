@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -168,8 +169,8 @@ func (rq *RouteQuery) FirstX(ctx context.Context) *Route {
 
 // FirstID returns the first Route ID from the query.
 // Returns a *NotFoundError when no Route ID was found.
-func (rq *RouteQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (rq *RouteQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
+	var ids []xid.ID
 	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -181,7 +182,7 @@ func (rq *RouteQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rq *RouteQuery) FirstIDX(ctx context.Context) string {
+func (rq *RouteQuery) FirstIDX(ctx context.Context) xid.ID {
 	id, err := rq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -219,8 +220,8 @@ func (rq *RouteQuery) OnlyX(ctx context.Context) *Route {
 // OnlyID is like Only, but returns the only Route ID in the query.
 // Returns a *NotSingularError when more than one Route ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rq *RouteQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (rq *RouteQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
+	var ids []xid.ID
 	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -236,7 +237,7 @@ func (rq *RouteQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rq *RouteQuery) OnlyIDX(ctx context.Context) string {
+func (rq *RouteQuery) OnlyIDX(ctx context.Context) xid.ID {
 	id, err := rq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -264,7 +265,7 @@ func (rq *RouteQuery) AllX(ctx context.Context) []*Route {
 }
 
 // IDs executes the query and returns a list of Route IDs.
-func (rq *RouteQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (rq *RouteQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
@@ -276,7 +277,7 @@ func (rq *RouteQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rq *RouteQuery) IDsX(ctx context.Context) []string {
+func (rq *RouteQuery) IDsX(ctx context.Context) []xid.ID {
 	ids, err := rq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -538,8 +539,8 @@ func (rq *RouteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Route,
 }
 
 func (rq *RouteQuery) loadParent(ctx context.Context, query *RouteQuery, nodes []*Route, init func(*Route), assign func(*Route, *Route)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Route)
+	ids := make([]xid.ID, 0, len(nodes))
+	nodeids := make(map[xid.ID][]*Route)
 	for i := range nodes {
 		if nodes[i].ParentID == nil {
 			continue
@@ -571,7 +572,7 @@ func (rq *RouteQuery) loadParent(ctx context.Context, query *RouteQuery, nodes [
 }
 func (rq *RouteQuery) loadChildren(ctx context.Context, query *RouteQuery, nodes []*Route, init func(*Route), assign func(*Route, *Route)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Route)
+	nodeids := make(map[xid.ID]*Route)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -604,8 +605,8 @@ func (rq *RouteQuery) loadChildren(ctx context.Context, query *RouteQuery, nodes
 }
 func (rq *RouteQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Route, init func(*Route), assign func(*Route, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[string]*Route)
-	nids := make(map[string]map[*Route]struct{})
+	byID := make(map[xid.ID]*Route)
+	nids := make(map[xid.ID]map[*Route]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -635,11 +636,11 @@ func (rq *RouteQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullString)}, values...), nil
+				return append([]any{new(xid.ID)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := values[0].(*sql.NullString).String
-				inValue := values[1].(*sql.NullString).String
+				outValue := *values[0].(*xid.ID)
+				inValue := *values[1].(*xid.ID)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Route]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])

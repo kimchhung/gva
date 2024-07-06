@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
 )
 
@@ -17,7 +18,7 @@ import (
 type Admin struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID string `json:"id" rql:"filter,sort"`
+	ID xid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -73,10 +74,12 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case admin.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
-		case admin.FieldID, admin.FieldUsername, admin.FieldPassword, admin.FieldDisplayName:
+		case admin.FieldUsername, admin.FieldPassword, admin.FieldDisplayName:
 			values[i] = new(sql.NullString)
 		case admin.FieldCreatedAt, admin.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case admin.FieldID:
+			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -93,10 +96,10 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case admin.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*xid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				a.ID = value.String
+			} else if value != nil {
+				a.ID = *value
 			}
 		case admin.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

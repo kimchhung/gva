@@ -9,6 +9,7 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/migrate"
 
 	"entgo.io/ent"
@@ -16,10 +17,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/comic"
-	"github.com/gva/internal/ent/comicchapter"
-	"github.com/gva/internal/ent/comicimg"
-	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -36,14 +33,6 @@ type Client struct {
 	Schema *migrate.Schema
 	// Admin is the client for interacting with the Admin builders.
 	Admin *AdminClient
-	// Comic is the client for interacting with the Comic builders.
-	Comic *ComicClient
-	// ComicChapter is the client for interacting with the ComicChapter builders.
-	ComicChapter *ComicChapterClient
-	// ComicImg is the client for interacting with the ComicImg builders.
-	ComicImg *ComicImgClient
-	// Genre is the client for interacting with the Genre builders.
-	Genre *GenreClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Role is the client for interacting with the Role builders.
@@ -62,10 +51,6 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Admin = NewAdminClient(c.config)
-	c.Comic = NewComicClient(c.config)
-	c.ComicChapter = NewComicChapterClient(c.config)
-	c.ComicImg = NewComicImgClient(c.config)
-	c.Genre = NewGenreClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Route = NewRouteClient(c.config)
@@ -161,16 +146,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Admin:        NewAdminClient(cfg),
-		Comic:        NewComicClient(cfg),
-		ComicChapter: NewComicChapterClient(cfg),
-		ComicImg:     NewComicImgClient(cfg),
-		Genre:        NewGenreClient(cfg),
-		Permission:   NewPermissionClient(cfg),
-		Role:         NewRoleClient(cfg),
-		Route:        NewRouteClient(cfg),
+		ctx:        ctx,
+		config:     cfg,
+		Admin:      NewAdminClient(cfg),
+		Permission: NewPermissionClient(cfg),
+		Role:       NewRoleClient(cfg),
+		Route:      NewRouteClient(cfg),
 	}, nil
 }
 
@@ -188,16 +169,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Admin:        NewAdminClient(cfg),
-		Comic:        NewComicClient(cfg),
-		ComicChapter: NewComicChapterClient(cfg),
-		ComicImg:     NewComicImgClient(cfg),
-		Genre:        NewGenreClient(cfg),
-		Permission:   NewPermissionClient(cfg),
-		Role:         NewRoleClient(cfg),
-		Route:        NewRouteClient(cfg),
+		ctx:        ctx,
+		config:     cfg,
+		Admin:      NewAdminClient(cfg),
+		Permission: NewPermissionClient(cfg),
+		Role:       NewRoleClient(cfg),
+		Route:      NewRouteClient(cfg),
 	}, nil
 }
 
@@ -226,23 +203,19 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	for _, n := range []interface{ Use(...Hook) }{
-		c.Admin, c.Comic, c.ComicChapter, c.ComicImg, c.Genre, c.Permission, c.Role,
-		c.Route,
-	} {
-		n.Use(hooks...)
-	}
+	c.Admin.Use(hooks...)
+	c.Permission.Use(hooks...)
+	c.Role.Use(hooks...)
+	c.Route.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Admin, c.Comic, c.ComicChapter, c.ComicImg, c.Genre, c.Permission, c.Role,
-		c.Route,
-	} {
-		n.Intercept(interceptors...)
-	}
+	c.Admin.Intercept(interceptors...)
+	c.Permission.Intercept(interceptors...)
+	c.Role.Intercept(interceptors...)
+	c.Route.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -250,14 +223,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdminMutation:
 		return c.Admin.mutate(ctx, m)
-	case *ComicMutation:
-		return c.Comic.mutate(ctx, m)
-	case *ComicChapterMutation:
-		return c.ComicChapter.mutate(ctx, m)
-	case *ComicImgMutation:
-		return c.ComicImg.mutate(ctx, m)
-	case *GenreMutation:
-		return c.Genre.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
 	case *RoleMutation:
@@ -330,7 +295,7 @@ func (c *AdminClient) UpdateOne(a *Admin) *AdminUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AdminClient) UpdateOneID(id string) *AdminUpdateOne {
+func (c *AdminClient) UpdateOneID(id xid.ID) *AdminUpdateOne {
 	mutation := newAdminMutation(c.config, OpUpdateOne, withAdminID(id))
 	return &AdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -347,7 +312,7 @@ func (c *AdminClient) DeleteOne(a *Admin) *AdminDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AdminClient) DeleteOneID(id string) *AdminDeleteOne {
+func (c *AdminClient) DeleteOneID(id xid.ID) *AdminDeleteOne {
 	builder := c.Delete().Where(admin.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -364,12 +329,12 @@ func (c *AdminClient) Query() *AdminQuery {
 }
 
 // Get returns a Admin entity by its id.
-func (c *AdminClient) Get(ctx context.Context, id string) (*Admin, error) {
+func (c *AdminClient) Get(ctx context.Context, id xid.ID) (*Admin, error) {
 	return c.Query().Where(admin.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AdminClient) GetX(ctx context.Context, id string) *Admin {
+func (c *AdminClient) GetX(ctx context.Context, id xid.ID) *Admin {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -420,652 +385,6 @@ func (c *AdminClient) mutate(ctx context.Context, m *AdminMutation) (Value, erro
 		return (&AdminDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Admin mutation op: %q", m.Op())
-	}
-}
-
-// ComicClient is a client for the Comic schema.
-type ComicClient struct {
-	config
-}
-
-// NewComicClient returns a client for the Comic from the given config.
-func NewComicClient(c config) *ComicClient {
-	return &ComicClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `comic.Hooks(f(g(h())))`.
-func (c *ComicClient) Use(hooks ...Hook) {
-	c.hooks.Comic = append(c.hooks.Comic, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `comic.Intercept(f(g(h())))`.
-func (c *ComicClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Comic = append(c.inters.Comic, interceptors...)
-}
-
-// Create returns a builder for creating a Comic entity.
-func (c *ComicClient) Create() *ComicCreate {
-	mutation := newComicMutation(c.config, OpCreate)
-	return &ComicCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Comic entities.
-func (c *ComicClient) CreateBulk(builders ...*ComicCreate) *ComicCreateBulk {
-	return &ComicCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *ComicClient) MapCreateBulk(slice any, setFunc func(*ComicCreate, int)) *ComicCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &ComicCreateBulk{err: fmt.Errorf("calling to ComicClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*ComicCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &ComicCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Comic.
-func (c *ComicClient) Update() *ComicUpdate {
-	mutation := newComicMutation(c.config, OpUpdate)
-	return &ComicUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ComicClient) UpdateOne(co *Comic) *ComicUpdateOne {
-	mutation := newComicMutation(c.config, OpUpdateOne, withComic(co))
-	return &ComicUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ComicClient) UpdateOneID(id string) *ComicUpdateOne {
-	mutation := newComicMutation(c.config, OpUpdateOne, withComicID(id))
-	return &ComicUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Comic.
-func (c *ComicClient) Delete() *ComicDelete {
-	mutation := newComicMutation(c.config, OpDelete)
-	return &ComicDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *ComicClient) DeleteOne(co *Comic) *ComicDeleteOne {
-	return c.DeleteOneID(co.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ComicClient) DeleteOneID(id string) *ComicDeleteOne {
-	builder := c.Delete().Where(comic.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ComicDeleteOne{builder}
-}
-
-// Query returns a query builder for Comic.
-func (c *ComicClient) Query() *ComicQuery {
-	return &ComicQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeComic},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Comic entity by its id.
-func (c *ComicClient) Get(ctx context.Context, id string) (*Comic, error) {
-	return c.Query().Where(comic.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ComicClient) GetX(ctx context.Context, id string) *Comic {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryChapters queries the chapters edge of a Comic.
-func (c *ComicClient) QueryChapters(co *Comic) *ComicChapterQuery {
-	query := (&ComicChapterClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comic.Table, comic.FieldID, id),
-			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, comic.ChaptersTable, comic.ChaptersColumn),
-		)
-		schemaConfig := co.schemaConfig
-		step.To.Schema = schemaConfig.ComicChapter
-		step.Edge.Schema = schemaConfig.ComicChapter
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryLastChapter queries the last_chapter edge of a Comic.
-func (c *ComicClient) QueryLastChapter(co *Comic) *ComicChapterQuery {
-	query := (&ComicChapterClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comic.Table, comic.FieldID, id),
-			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, comic.LastChapterTable, comic.LastChapterColumn),
-		)
-		schemaConfig := co.schemaConfig
-		step.To.Schema = schemaConfig.ComicChapter
-		step.Edge.Schema = schemaConfig.Comic
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryFinalChapter queries the final_chapter edge of a Comic.
-func (c *ComicClient) QueryFinalChapter(co *Comic) *ComicChapterQuery {
-	query := (&ComicChapterClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comic.Table, comic.FieldID, id),
-			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, comic.FinalChapterTable, comic.FinalChapterColumn),
-		)
-		schemaConfig := co.schemaConfig
-		step.To.Schema = schemaConfig.ComicChapter
-		step.Edge.Schema = schemaConfig.Comic
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ComicClient) Hooks() []Hook {
-	return c.hooks.Comic
-}
-
-// Interceptors returns the client interceptors.
-func (c *ComicClient) Interceptors() []Interceptor {
-	return c.inters.Comic
-}
-
-func (c *ComicClient) mutate(ctx context.Context, m *ComicMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&ComicCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&ComicUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&ComicUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&ComicDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Comic mutation op: %q", m.Op())
-	}
-}
-
-// ComicChapterClient is a client for the ComicChapter schema.
-type ComicChapterClient struct {
-	config
-}
-
-// NewComicChapterClient returns a client for the ComicChapter from the given config.
-func NewComicChapterClient(c config) *ComicChapterClient {
-	return &ComicChapterClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `comicchapter.Hooks(f(g(h())))`.
-func (c *ComicChapterClient) Use(hooks ...Hook) {
-	c.hooks.ComicChapter = append(c.hooks.ComicChapter, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `comicchapter.Intercept(f(g(h())))`.
-func (c *ComicChapterClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ComicChapter = append(c.inters.ComicChapter, interceptors...)
-}
-
-// Create returns a builder for creating a ComicChapter entity.
-func (c *ComicChapterClient) Create() *ComicChapterCreate {
-	mutation := newComicChapterMutation(c.config, OpCreate)
-	return &ComicChapterCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of ComicChapter entities.
-func (c *ComicChapterClient) CreateBulk(builders ...*ComicChapterCreate) *ComicChapterCreateBulk {
-	return &ComicChapterCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *ComicChapterClient) MapCreateBulk(slice any, setFunc func(*ComicChapterCreate, int)) *ComicChapterCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &ComicChapterCreateBulk{err: fmt.Errorf("calling to ComicChapterClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*ComicChapterCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &ComicChapterCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for ComicChapter.
-func (c *ComicChapterClient) Update() *ComicChapterUpdate {
-	mutation := newComicChapterMutation(c.config, OpUpdate)
-	return &ComicChapterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ComicChapterClient) UpdateOne(cc *ComicChapter) *ComicChapterUpdateOne {
-	mutation := newComicChapterMutation(c.config, OpUpdateOne, withComicChapter(cc))
-	return &ComicChapterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ComicChapterClient) UpdateOneID(id string) *ComicChapterUpdateOne {
-	mutation := newComicChapterMutation(c.config, OpUpdateOne, withComicChapterID(id))
-	return &ComicChapterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for ComicChapter.
-func (c *ComicChapterClient) Delete() *ComicChapterDelete {
-	mutation := newComicChapterMutation(c.config, OpDelete)
-	return &ComicChapterDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *ComicChapterClient) DeleteOne(cc *ComicChapter) *ComicChapterDeleteOne {
-	return c.DeleteOneID(cc.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ComicChapterClient) DeleteOneID(id string) *ComicChapterDeleteOne {
-	builder := c.Delete().Where(comicchapter.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ComicChapterDeleteOne{builder}
-}
-
-// Query returns a query builder for ComicChapter.
-func (c *ComicChapterClient) Query() *ComicChapterQuery {
-	return &ComicChapterQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeComicChapter},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a ComicChapter entity by its id.
-func (c *ComicChapterClient) Get(ctx context.Context, id string) (*ComicChapter, error) {
-	return c.Query().Where(comicchapter.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ComicChapterClient) GetX(ctx context.Context, id string) *ComicChapter {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryImgs queries the imgs edge of a ComicChapter.
-func (c *ComicChapterClient) QueryImgs(cc *ComicChapter) *ComicImgQuery {
-	query := (&ComicImgClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := cc.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comicchapter.Table, comicchapter.FieldID, id),
-			sqlgraph.To(comicimg.Table, comicimg.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, comicchapter.ImgsTable, comicchapter.ImgsColumn),
-		)
-		schemaConfig := cc.schemaConfig
-		step.To.Schema = schemaConfig.ComicImg
-		step.Edge.Schema = schemaConfig.ComicImg
-		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryComic queries the comic edge of a ComicChapter.
-func (c *ComicChapterClient) QueryComic(cc *ComicChapter) *ComicQuery {
-	query := (&ComicClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := cc.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comicchapter.Table, comicchapter.FieldID, id),
-			sqlgraph.To(comic.Table, comic.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, comicchapter.ComicTable, comicchapter.ComicColumn),
-		)
-		schemaConfig := cc.schemaConfig
-		step.To.Schema = schemaConfig.Comic
-		step.Edge.Schema = schemaConfig.ComicChapter
-		fromV = sqlgraph.Neighbors(cc.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ComicChapterClient) Hooks() []Hook {
-	return c.hooks.ComicChapter
-}
-
-// Interceptors returns the client interceptors.
-func (c *ComicChapterClient) Interceptors() []Interceptor {
-	return c.inters.ComicChapter
-}
-
-func (c *ComicChapterClient) mutate(ctx context.Context, m *ComicChapterMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&ComicChapterCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&ComicChapterUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&ComicChapterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&ComicChapterDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown ComicChapter mutation op: %q", m.Op())
-	}
-}
-
-// ComicImgClient is a client for the ComicImg schema.
-type ComicImgClient struct {
-	config
-}
-
-// NewComicImgClient returns a client for the ComicImg from the given config.
-func NewComicImgClient(c config) *ComicImgClient {
-	return &ComicImgClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `comicimg.Hooks(f(g(h())))`.
-func (c *ComicImgClient) Use(hooks ...Hook) {
-	c.hooks.ComicImg = append(c.hooks.ComicImg, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `comicimg.Intercept(f(g(h())))`.
-func (c *ComicImgClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ComicImg = append(c.inters.ComicImg, interceptors...)
-}
-
-// Create returns a builder for creating a ComicImg entity.
-func (c *ComicImgClient) Create() *ComicImgCreate {
-	mutation := newComicImgMutation(c.config, OpCreate)
-	return &ComicImgCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of ComicImg entities.
-func (c *ComicImgClient) CreateBulk(builders ...*ComicImgCreate) *ComicImgCreateBulk {
-	return &ComicImgCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *ComicImgClient) MapCreateBulk(slice any, setFunc func(*ComicImgCreate, int)) *ComicImgCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &ComicImgCreateBulk{err: fmt.Errorf("calling to ComicImgClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*ComicImgCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &ComicImgCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for ComicImg.
-func (c *ComicImgClient) Update() *ComicImgUpdate {
-	mutation := newComicImgMutation(c.config, OpUpdate)
-	return &ComicImgUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ComicImgClient) UpdateOne(ci *ComicImg) *ComicImgUpdateOne {
-	mutation := newComicImgMutation(c.config, OpUpdateOne, withComicImg(ci))
-	return &ComicImgUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ComicImgClient) UpdateOneID(id string) *ComicImgUpdateOne {
-	mutation := newComicImgMutation(c.config, OpUpdateOne, withComicImgID(id))
-	return &ComicImgUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for ComicImg.
-func (c *ComicImgClient) Delete() *ComicImgDelete {
-	mutation := newComicImgMutation(c.config, OpDelete)
-	return &ComicImgDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *ComicImgClient) DeleteOne(ci *ComicImg) *ComicImgDeleteOne {
-	return c.DeleteOneID(ci.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ComicImgClient) DeleteOneID(id string) *ComicImgDeleteOne {
-	builder := c.Delete().Where(comicimg.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ComicImgDeleteOne{builder}
-}
-
-// Query returns a query builder for ComicImg.
-func (c *ComicImgClient) Query() *ComicImgQuery {
-	return &ComicImgQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeComicImg},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a ComicImg entity by its id.
-func (c *ComicImgClient) Get(ctx context.Context, id string) (*ComicImg, error) {
-	return c.Query().Where(comicimg.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ComicImgClient) GetX(ctx context.Context, id string) *ComicImg {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryChapter queries the chapter edge of a ComicImg.
-func (c *ComicImgClient) QueryChapter(ci *ComicImg) *ComicChapterQuery {
-	query := (&ComicChapterClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(comicimg.Table, comicimg.FieldID, id),
-			sqlgraph.To(comicchapter.Table, comicchapter.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, comicimg.ChapterTable, comicimg.ChapterColumn),
-		)
-		schemaConfig := ci.schemaConfig
-		step.To.Schema = schemaConfig.ComicChapter
-		step.Edge.Schema = schemaConfig.ComicImg
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ComicImgClient) Hooks() []Hook {
-	return c.hooks.ComicImg
-}
-
-// Interceptors returns the client interceptors.
-func (c *ComicImgClient) Interceptors() []Interceptor {
-	return c.inters.ComicImg
-}
-
-func (c *ComicImgClient) mutate(ctx context.Context, m *ComicImgMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&ComicImgCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&ComicImgUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&ComicImgUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&ComicImgDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown ComicImg mutation op: %q", m.Op())
-	}
-}
-
-// GenreClient is a client for the Genre schema.
-type GenreClient struct {
-	config
-}
-
-// NewGenreClient returns a client for the Genre from the given config.
-func NewGenreClient(c config) *GenreClient {
-	return &GenreClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `genre.Hooks(f(g(h())))`.
-func (c *GenreClient) Use(hooks ...Hook) {
-	c.hooks.Genre = append(c.hooks.Genre, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `genre.Intercept(f(g(h())))`.
-func (c *GenreClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Genre = append(c.inters.Genre, interceptors...)
-}
-
-// Create returns a builder for creating a Genre entity.
-func (c *GenreClient) Create() *GenreCreate {
-	mutation := newGenreMutation(c.config, OpCreate)
-	return &GenreCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Genre entities.
-func (c *GenreClient) CreateBulk(builders ...*GenreCreate) *GenreCreateBulk {
-	return &GenreCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *GenreClient) MapCreateBulk(slice any, setFunc func(*GenreCreate, int)) *GenreCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &GenreCreateBulk{err: fmt.Errorf("calling to GenreClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*GenreCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &GenreCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Genre.
-func (c *GenreClient) Update() *GenreUpdate {
-	mutation := newGenreMutation(c.config, OpUpdate)
-	return &GenreUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *GenreClient) UpdateOne(ge *Genre) *GenreUpdateOne {
-	mutation := newGenreMutation(c.config, OpUpdateOne, withGenre(ge))
-	return &GenreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *GenreClient) UpdateOneID(id string) *GenreUpdateOne {
-	mutation := newGenreMutation(c.config, OpUpdateOne, withGenreID(id))
-	return &GenreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Genre.
-func (c *GenreClient) Delete() *GenreDelete {
-	mutation := newGenreMutation(c.config, OpDelete)
-	return &GenreDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *GenreClient) DeleteOne(ge *Genre) *GenreDeleteOne {
-	return c.DeleteOneID(ge.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *GenreClient) DeleteOneID(id string) *GenreDeleteOne {
-	builder := c.Delete().Where(genre.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &GenreDeleteOne{builder}
-}
-
-// Query returns a query builder for Genre.
-func (c *GenreClient) Query() *GenreQuery {
-	return &GenreQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeGenre},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Genre entity by its id.
-func (c *GenreClient) Get(ctx context.Context, id string) (*Genre, error) {
-	return c.Query().Where(genre.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *GenreClient) GetX(ctx context.Context, id string) *Genre {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *GenreClient) Hooks() []Hook {
-	return c.hooks.Genre
-}
-
-// Interceptors returns the client interceptors.
-func (c *GenreClient) Interceptors() []Interceptor {
-	return c.inters.Genre
-}
-
-func (c *GenreClient) mutate(ctx context.Context, m *GenreMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&GenreCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&GenreUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&GenreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&GenreDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Genre mutation op: %q", m.Op())
 	}
 }
 
@@ -1130,7 +449,7 @@ func (c *PermissionClient) UpdateOne(pe *Permission) *PermissionUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PermissionClient) UpdateOneID(id string) *PermissionUpdateOne {
+func (c *PermissionClient) UpdateOneID(id xid.ID) *PermissionUpdateOne {
 	mutation := newPermissionMutation(c.config, OpUpdateOne, withPermissionID(id))
 	return &PermissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1147,7 +466,7 @@ func (c *PermissionClient) DeleteOne(pe *Permission) *PermissionDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PermissionClient) DeleteOneID(id string) *PermissionDeleteOne {
+func (c *PermissionClient) DeleteOneID(id xid.ID) *PermissionDeleteOne {
 	builder := c.Delete().Where(permission.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1164,12 +483,12 @@ func (c *PermissionClient) Query() *PermissionQuery {
 }
 
 // Get returns a Permission entity by its id.
-func (c *PermissionClient) Get(ctx context.Context, id string) (*Permission, error) {
+func (c *PermissionClient) Get(ctx context.Context, id xid.ID) (*Permission, error) {
 	return c.Query().Where(permission.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PermissionClient) GetX(ctx context.Context, id string) *Permission {
+func (c *PermissionClient) GetX(ctx context.Context, id xid.ID) *Permission {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1282,7 +601,7 @@ func (c *RoleClient) UpdateOne(r *Role) *RoleUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RoleClient) UpdateOneID(id string) *RoleUpdateOne {
+func (c *RoleClient) UpdateOneID(id xid.ID) *RoleUpdateOne {
 	mutation := newRoleMutation(c.config, OpUpdateOne, withRoleID(id))
 	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1299,7 +618,7 @@ func (c *RoleClient) DeleteOne(r *Role) *RoleDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RoleClient) DeleteOneID(id string) *RoleDeleteOne {
+func (c *RoleClient) DeleteOneID(id xid.ID) *RoleDeleteOne {
 	builder := c.Delete().Where(role.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1316,12 +635,12 @@ func (c *RoleClient) Query() *RoleQuery {
 }
 
 // Get returns a Role entity by its id.
-func (c *RoleClient) Get(ctx context.Context, id string) (*Role, error) {
+func (c *RoleClient) Get(ctx context.Context, id xid.ID) (*Role, error) {
 	return c.Query().Where(role.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RoleClient) GetX(ctx context.Context, id string) *Role {
+func (c *RoleClient) GetX(ctx context.Context, id xid.ID) *Role {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1474,7 +793,7 @@ func (c *RouteClient) UpdateOne(r *Route) *RouteUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RouteClient) UpdateOneID(id string) *RouteUpdateOne {
+func (c *RouteClient) UpdateOneID(id xid.ID) *RouteUpdateOne {
 	mutation := newRouteMutation(c.config, OpUpdateOne, withRouteID(id))
 	return &RouteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1491,7 +810,7 @@ func (c *RouteClient) DeleteOne(r *Route) *RouteDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RouteClient) DeleteOneID(id string) *RouteDeleteOne {
+func (c *RouteClient) DeleteOneID(id xid.ID) *RouteDeleteOne {
 	builder := c.Delete().Where(route.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1508,12 +827,12 @@ func (c *RouteClient) Query() *RouteQuery {
 }
 
 // Get returns a Route entity by its id.
-func (c *RouteClient) Get(ctx context.Context, id string) (*Route, error) {
+func (c *RouteClient) Get(ctx context.Context, id xid.ID) (*Route, error) {
 	return c.Query().Where(route.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RouteClient) GetX(ctx context.Context, id string) *Route {
+func (c *RouteClient) GetX(ctx context.Context, id xid.ID) *Route {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1608,11 +927,10 @@ func (c *RouteClient) mutate(ctx context.Context, m *RouteMutation) (Value, erro
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Comic, ComicChapter, ComicImg, Genre, Permission, Role, Route []ent.Hook
+		Admin, Permission, Role, Route []ent.Hook
 	}
 	inters struct {
-		Admin, Comic, ComicChapter, ComicImg, Genre, Permission, Role,
-		Route []ent.Interceptor
+		Admin, Permission, Role, Route []ent.Interceptor
 	}
 )
 

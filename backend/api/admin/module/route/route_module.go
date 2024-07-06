@@ -1,8 +1,7 @@
 package route
 
 import (
-	"github.com/gva/app/constant"
-
+	"github.com/gva/app/common/controller"
 	"go.uber.org/fx"
 )
 
@@ -12,5 +11,5 @@ var RouteModule = fx.Module("RouteModule",
 	fx.Provide(NewRouteService),
 
 	// Regiser Controller
-	constant.ProvideAdminController(NewRouteController),
+	controller.ProvideAdminController(NewRouteController),
 )

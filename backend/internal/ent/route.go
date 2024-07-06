@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/gva/app/database/schema/types"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/route"
 )
 
@@ -18,7 +19,7 @@ import (
 type Route struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID string `json:"id" rql:"filter,sort"`
+	ID xid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,7 +29,7 @@ type Route struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// ParentID holds the value of the "parent_id" field.
-	ParentID *string `json:"parentId,omitempty" rql:"filter,sort"`
+	ParentID *xid.ID `json:"parentId,omitempty" rql:"filter,sort"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty" rql:"filter,sort"`
 	// Component holds the value of the "component" field.
@@ -101,16 +102,20 @@ func (*Route) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case route.FieldParentID:
+			values[i] = &sql.NullScanner{S: new(xid.ID)}
 		case route.FieldMeta:
 			values[i] = new([]byte)
 		case route.FieldIsEnable:
 			values[i] = new(sql.NullBool)
 		case route.FieldDeletedAt, route.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case route.FieldID, route.FieldParentID, route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType:
+		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType:
 			values[i] = new(sql.NullString)
 		case route.FieldCreatedAt, route.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case route.FieldID:
+			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -127,10 +132,10 @@ func (r *Route) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case route.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*xid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				r.ID = value.String
+			} else if value != nil {
+				r.ID = *value
 			}
 		case route.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -157,11 +162,11 @@ func (r *Route) assignValues(columns []string, values []any) error {
 				r.DeletedAt = int(value.Int64)
 			}
 		case route.FieldParentID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				r.ParentID = new(string)
-				*r.ParentID = value.String
+				r.ParentID = new(xid.ID)
+				*r.ParentID = *value.S.(*xid.ID)
 			}
 		case route.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -273,7 +278,7 @@ func (r *Route) String() string {
 	builder.WriteString(", ")
 	if v := r.ParentID; v != nil {
 		builder.WriteString("parent_id=")
-		builder.WriteString(*v)
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("path=")

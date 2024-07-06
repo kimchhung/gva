@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gva/app/database/schema/softdelete"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/route"
@@ -48,7 +49,7 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 		return
 	}
 
-	childToParent := map[string]string{}
+	childToParent := map[xid.ID]xid.ID{}
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 		tx.Route.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
 

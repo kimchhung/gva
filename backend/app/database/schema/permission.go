@@ -2,7 +2,7 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
-	"github.com/gva/app/database/schema/pulid"
+	"github.com/gva/app/database/schema/xid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -15,7 +15,7 @@ type Permission struct {
 
 func (Permission) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		pulid.MixinWithPrefix("PMS"),
+		xid.MixinWithPrefix("perm"),
 		mixins.TimeMixin{},
 	}
 }

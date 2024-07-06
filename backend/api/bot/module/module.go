@@ -3,7 +3,7 @@ package module
 import (
 	"github.com/gva/api/bot/module/comic"
 	"github.com/gva/api/bot/module/index"
-	"github.com/gva/app/constant"
+	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/echoc"
 
 	"go.uber.org/fx"
@@ -19,10 +19,10 @@ var NewbotModules = fx.Module("bot-module",
 			fx.As(new(echoc.ModuleRouter)),
 
 			// take group params from container => []echoc.Controller -> NewRouter
-			fx.ParamTags(constant.BotAdminController),
+			fx.ParamTags(controller.BotAdminController),
 
 			// register to container as member of module group
-			fx.ResultTags(constant.TagModule),
+			fx.ResultTags(controller.TagModule),
 		),
 	),
 )

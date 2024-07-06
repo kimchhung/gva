@@ -2,9 +2,9 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
-	"github.com/gva/app/database/schema/pulid"
 	"github.com/gva/app/database/schema/softdelete"
 	"github.com/gva/app/database/schema/types"
+	"github.com/gva/app/database/schema/xid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -18,7 +18,7 @@ type Route struct {
 
 func (Route) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		pulid.MixinWithPrefix("RT"),
+		xid.MixinWithPrefix("route"),
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},
@@ -38,7 +38,7 @@ func (Route) Indexes() []ent.Index {
 func (Route) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("parent_id").
-			GoType(pulid.ID("")).
+			GoType(xid.ID("")).
 			Optional().
 			Nillable().
 			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),

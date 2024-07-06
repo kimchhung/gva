@@ -8,11 +8,8 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/comic"
-	"github.com/gva/internal/ent/comicchapter"
-	"github.com/gva/internal/ent/comicimg"
-	"github.com/gva/internal/ent/genre"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
 	"github.com/gva/internal/ent/route"
@@ -21,6 +18,7 @@ import (
 
 // Noder wraps the basic Node method.
 type Noder interface {
+	Node(context.Context) (*Node, error)
 	IsNode()
 }
 
@@ -28,26 +26,6 @@ var adminImplementors = []string{"Admin", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Admin) IsNode() {}
-
-var comicImplementors = []string{"Comic", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Comic) IsNode() {}
-
-var comicchapterImplementors = []string{"ComicChapter", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ComicChapter) IsNode() {}
-
-var comicimgImplementors = []string{"ComicImg", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*ComicImg) IsNode() {}
-
-var genreImplementors = []string{"Genre", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Genre) IsNode() {}
 
 var permissionImplementors = []string{"Permission", "Node"}
 
@@ -72,7 +50,7 @@ type NodeOption func(*nodeOptions)
 // WithNodeType sets the node Type resolver function (i.e. the table to query).
 // If was not provided, the table will be derived from the universal-id
 // configuration as described in: https://entgo.io/docs/migrate/#universal-ids.
-func WithNodeType(f func(context.Context, string) (string, error)) NodeOption {
+func WithNodeType(f func(context.Context, xid.ID) (string, error)) NodeOption {
 	return func(o *nodeOptions) {
 		o.nodeType = f
 	}
@@ -80,13 +58,13 @@ func WithNodeType(f func(context.Context, string) (string, error)) NodeOption {
 
 // WithFixedNodeType sets the Type of the node to a fixed value.
 func WithFixedNodeType(t string) NodeOption {
-	return WithNodeType(func(context.Context, string) (string, error) {
+	return WithNodeType(func(context.Context, xid.ID) (string, error) {
 		return t, nil
 	})
 }
 
 type nodeOptions struct {
-	nodeType func(context.Context, string) (string, error)
+	nodeType func(context.Context, xid.ID) (string, error)
 }
 
 func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
@@ -95,7 +73,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 		opt(nopts)
 	}
 	if nopts.nodeType == nil {
-		nopts.nodeType = func(ctx context.Context, id string) (string, error) {
+		nopts.nodeType = func(ctx context.Context, id xid.ID) (string, error) {
 			return "", fmt.Errorf("cannot resolve noder (%v) without its type", id)
 		}
 	}
@@ -107,7 +85,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 //
 //	c.Noder(ctx, id)
 //	c.Noder(ctx, id, ent.WithNodeType(typeResolver))
-func (c *Client) Noder(ctx context.Context, id string, opts ...NodeOption) (_ Noder, err error) {
+func (c *Client) Noder(ctx context.Context, id xid.ID, opts ...NodeOption) (_ Noder, err error) {
 	defer func() {
 		if IsNotFound(err) {
 			err = multierror.Append(err, entgql.ErrNodeNotFound(id))
@@ -120,56 +98,28 @@ func (c *Client) Noder(ctx context.Context, id string, opts ...NodeOption) (_ No
 	return c.noder(ctx, table, id)
 }
 
-func (c *Client) noder(ctx context.Context, table string, id string) (Noder, error) {
+func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, error) {
 	switch table {
 	case admin.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Admin.Query().
-			Where(admin.ID(id))
+			Where(admin.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, adminImplementors...); err != nil {
 				return nil, err
 			}
 		}
 		return query.Only(ctx)
-	case comic.Table:
-		query := c.Comic.Query().
-			Where(comic.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case comicchapter.Table:
-		query := c.ComicChapter.Query().
-			Where(comicchapter.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicchapterImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case comicimg.Table:
-		query := c.ComicImg.Query().
-			Where(comicimg.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, comicimgImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case genre.Table:
-		query := c.Genre.Query().
-			Where(genre.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, genreImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
 	case permission.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Permission.Query().
-			Where(permission.ID(id))
+			Where(permission.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, permissionImplementors...); err != nil {
 				return nil, err
@@ -177,8 +127,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case role.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Role.Query().
-			Where(role.ID(id))
+			Where(role.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, roleImplementors...); err != nil {
 				return nil, err
@@ -186,8 +140,12 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 		}
 		return query.Only(ctx)
 	case route.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
 		query := c.Route.Query().
-			Where(route.ID(id))
+			Where(route.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, routeImplementors...); err != nil {
 				return nil, err
@@ -199,7 +157,7 @@ func (c *Client) noder(ctx context.Context, table string, id string) (Noder, err
 	}
 }
 
-func (c *Client) Noders(ctx context.Context, ids []string, opts ...NodeOption) ([]Noder, error) {
+func (c *Client) Noders(ctx context.Context, ids []xid.ID, opts ...NodeOption) ([]Noder, error) {
 	switch len(ids) {
 	case 1:
 		noder, err := c.Noder(ctx, ids[0], opts...)
@@ -213,8 +171,8 @@ func (c *Client) Noders(ctx context.Context, ids []string, opts ...NodeOption) (
 
 	noders := make([]Noder, len(ids))
 	errors := make([]error, len(ids))
-	tables := make(map[string][]string)
-	id2idx := make(map[string][]int, len(ids))
+	tables := make(map[string][]xid.ID)
+	id2idx := make(map[xid.ID][]int, len(ids))
 	nopts := c.newNodeOpts(opts)
 	for i, id := range ids {
 		table, err := nopts.nodeType(ctx, id)
@@ -260,9 +218,9 @@ func (c *Client) Noders(ctx context.Context, ids []string, opts ...NodeOption) (
 	return noders, nil
 }
 
-func (c *Client) noders(ctx context.Context, table string, ids []string) ([]Noder, error) {
+func (c *Client) noders(ctx context.Context, table string, ids []xid.ID) ([]Noder, error) {
 	noders := make([]Noder, len(ids))
-	idmap := make(map[string][]*Noder, len(ids))
+	idmap := make(map[xid.ID][]*Noder, len(ids))
 	for i, id := range ids {
 		idmap[id] = append(idmap[id], &noders[i])
 	}
@@ -271,70 +229,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []string) ([]Node
 		query := c.Admin.Query().
 			Where(admin.IDIn(ids...))
 		query, err := query.CollectFields(ctx, adminImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case comic.Table:
-		query := c.Comic.Query().
-			Where(comic.IDIn(ids...))
-		query, err := query.CollectFields(ctx, comicImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case comicchapter.Table:
-		query := c.ComicChapter.Query().
-			Where(comicchapter.IDIn(ids...))
-		query, err := query.CollectFields(ctx, comicchapterImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case comicimg.Table:
-		query := c.ComicImg.Query().
-			Where(comicimg.IDIn(ids...))
-		query, err := query.CollectFields(ctx, comicimgImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case genre.Table:
-		query := c.Genre.Query().
-			Where(genre.IDIn(ids...))
-		query, err := query.CollectFields(ctx, genreImplementors...)
 		if err != nil {
 			return nil, err
 		}

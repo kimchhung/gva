@@ -11,7 +11,7 @@ import (
 var (
 	// AdminsColumns holds the columns for the "admins" table.
 	AdminsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
@@ -39,113 +39,9 @@ var (
 			},
 		},
 	}
-	// ComicsColumns holds the columns for the "comics" table.
-	ComicsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "chapter", Type: field.TypeUint},
-		{Name: "title", Type: field.TypeString},
-		{Name: "slug", Type: field.TypeString},
-		{Name: "covers", Type: field.TypeJSON},
-		{Name: "status", Type: field.TypeString},
-		{Name: "is_translate_completed", Type: field.TypeBool, Default: false},
-		{Name: "up_count", Type: field.TypeUint, Default: 0},
-		{Name: "last_chapter_id", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "final_chapter_id", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-	}
-	// ComicsTable holds the schema information for the "comics" table.
-	ComicsTable = &schema.Table{
-		Name:       "comics",
-		Columns:    ComicsColumns,
-		PrimaryKey: []*schema.Column{ComicsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "comics_comic_chapters_last_chapter",
-				Columns:    []*schema.Column{ComicsColumns[10]},
-				RefColumns: []*schema.Column{ComicChaptersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "comics_comic_chapters_final_chapter",
-				Columns:    []*schema.Column{ComicsColumns[11]},
-				RefColumns: []*schema.Column{ComicChaptersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
-	// ComicChaptersColumns holds the columns for the "comic_chapters" table.
-	ComicChaptersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "chapter", Type: field.TypeUint},
-		{Name: "title", Type: field.TypeString, Nullable: true},
-		{Name: "volumn", Type: field.TypeString, Nullable: true},
-		{Name: "lang", Type: field.TypeString},
-		{Name: "up_count", Type: field.TypeUint, Default: 0},
-		{Name: "down_count", Type: field.TypeUint, Default: 0},
-		{Name: "is_last_chapter", Type: field.TypeBool, Default: false},
-		{Name: "comic_chapters", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-	}
-	// ComicChaptersTable holds the schema information for the "comic_chapters" table.
-	ComicChaptersTable = &schema.Table{
-		Name:       "comic_chapters",
-		Columns:    ComicChaptersColumns,
-		PrimaryKey: []*schema.Column{ComicChaptersColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "comic_chapters_comics_chapters",
-				Columns:    []*schema.Column{ComicChaptersColumns[10]},
-				RefColumns: []*schema.Column{ComicsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
-	// ComicImgsColumns holds the columns for the "comic_imgs" table.
-	ComicImgsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "b2key", Type: field.TypeString, Unique: true},
-		{Name: "height", Type: field.TypeInt},
-		{Name: "name", Type: field.TypeString},
-		{Name: "optimized_size", Type: field.TypeInt64},
-		{Name: "size", Type: field.TypeInt64},
-		{Name: "width", Type: field.TypeInt},
-		{Name: "comic_chapter_imgs", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-	}
-	// ComicImgsTable holds the schema information for the "comic_imgs" table.
-	ComicImgsTable = &schema.Table{
-		Name:       "comic_imgs",
-		Columns:    ComicImgsColumns,
-		PrimaryKey: []*schema.Column{ComicImgsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "comic_imgs_comic_chapters_imgs",
-				Columns:    []*schema.Column{ComicImgsColumns[9]},
-				RefColumns: []*schema.Column{ComicChaptersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
-	// GenresColumns holds the columns for the "genres" table.
-	GenresColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "name", Type: field.TypeString},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"comic"}},
-	}
-	// GenresTable holds the schema information for the "genres" table.
-	GenresTable = &schema.Table{
-		Name:       "genres",
-		Columns:    GenresColumns,
-		PrimaryKey: []*schema.Column{GenresColumns[0]},
-	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "group", Type: field.TypeString},
@@ -161,7 +57,7 @@ var (
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
@@ -186,7 +82,7 @@ var (
 	}
 	// RoutesColumns holds the columns for the "routes" table.
 	RoutesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
@@ -198,7 +94,7 @@ var (
 		{Name: "order", Type: field.TypeInt, Nullable: true, Default: 0},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
 		{Name: "meta", Type: field.TypeJSON},
-		{Name: "parent_id", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "parent_id", Type: field.TypeString, Nullable: true},
 	}
 	// RoutesTable holds the schema information for the "routes" table.
 	RoutesTable = &schema.Table{
@@ -231,8 +127,8 @@ var (
 	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
-		{Name: "admin_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "role_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "admin_id", Type: field.TypeString},
+		{Name: "role_id", Type: field.TypeString},
 	}
 	// AdminRolesTable holds the schema information for the "admin_roles" table.
 	AdminRolesTable = &schema.Table{
@@ -256,8 +152,8 @@ var (
 	}
 	// RolePermissionsColumns holds the columns for the "role_permissions" table.
 	RolePermissionsColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "permission_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "role_id", Type: field.TypeString},
+		{Name: "permission_id", Type: field.TypeString},
 	}
 	// RolePermissionsTable holds the schema information for the "role_permissions" table.
 	RolePermissionsTable = &schema.Table{
@@ -281,8 +177,8 @@ var (
 	}
 	// RoleRoutesColumns holds the columns for the "role_routes" table.
 	RoleRoutesColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
-		{Name: "route_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(21)"}},
+		{Name: "role_id", Type: field.TypeString},
+		{Name: "route_id", Type: field.TypeString},
 	}
 	// RoleRoutesTable holds the schema information for the "role_routes" table.
 	RoleRoutesTable = &schema.Table{
@@ -307,10 +203,6 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminsTable,
-		ComicsTable,
-		ComicChaptersTable,
-		ComicImgsTable,
-		GenresTable,
 		PermissionsTable,
 		RolesTable,
 		RoutesTable,
@@ -321,10 +213,6 @@ var (
 )
 
 func init() {
-	ComicsTable.ForeignKeys[0].RefTable = ComicChaptersTable
-	ComicsTable.ForeignKeys[1].RefTable = ComicChaptersTable
-	ComicChaptersTable.ForeignKeys[0].RefTable = ComicsTable
-	ComicImgsTable.ForeignKeys[0].RefTable = ComicChaptersTable
 	RoutesTable.ForeignKeys[0].RefTable = RoutesTable
 	AdminRolesTable.ForeignKeys[0].RefTable = AdminsTable
 	AdminRolesTable.ForeignKeys[1].RefTable = RolesTable

@@ -1,0 +1,24 @@
+{{ define "xid" }}
+
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+// prefixMap maps XID prefixes to table names.
+var prefixMap = map[string]string{
+	"admin": admin.Table,
+	"perm":  permission.Table,
+	"role":  role.Table,
+	"route": route.Table,
+}
+
+// IDToType maps a xid.ID to the underlying table.
+func IDToType(ctx context.Context, id xid.ID) (string, error) {
+	prefix:=id.Prefix()
+	typ := prefixMap[prefix]
+	if typ == "" {
+		return "", fmt.Errorf("IDToType: could not map prefix [%s] to a type", prefix)
+	}
+	return typ, nil
+}
+
+{{ end }}
