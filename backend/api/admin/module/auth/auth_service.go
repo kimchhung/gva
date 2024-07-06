@@ -51,7 +51,7 @@ func (s *AuthService) RegisterAdmin(ctx context.Context, dto *dto.RegisterReques
 
 	// Generate a JWT token for the authenticated user
 	token, err := s.jwt_s.GenerateToken(
-		s.jwt_s.AddClaimPayload("id", fmt.Sprintf("%d", admin.ID)),
+		s.jwt_s.AddClaimPayload("id", fmt.Sprintf("%v", admin.ID)),
 		s.jwt_s.AddTokenExpiredAt(time.Now().Add(time.Hour*300)),
 	)
 
@@ -85,7 +85,7 @@ func (s *AuthService) LoginAdmin(ctx context.Context, dto *dto.LoginRequest) (st
 
 	// Generate a JWT token for the authenticated user
 	token, err := s.jwt_s.GenerateToken(
-		s.jwt_s.AddClaimPayload("id", fmt.Sprintf("%d", admin.ID)),
+		s.jwt_s.AddClaimPayload("id", fmt.Sprintf("%v", admin.ID)),
 		s.jwt_s.AddTokenExpiredAt(time.Now().Add(time.Hour*300)),
 	)
 
