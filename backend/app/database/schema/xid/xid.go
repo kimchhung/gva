@@ -41,6 +41,7 @@ type ID string
 
 // newULID returns a new ULID for time.Now() using the default entropy source.
 func newId(prefix string) ID {
+	xid.New()
 	return ID(prefix + seperator + xid.New().String())
 }
 
@@ -52,6 +53,15 @@ func MustNew(prefix string) ID {
 // -1 if not found
 func (u ID) PrefixIndex() int {
 	return strings.Index(string(u), seperator)
+}
+
+func (u ID) XID() xid.ID {
+	prefixIndex := u.PrefixIndex()
+	if prefixIndex < 0 {
+		return xid.ID{}
+	}
+	xid, _ := xid.FromString(string(u)[prefixIndex:])
+	return xid
 }
 
 func (u ID) Prefix() string {
