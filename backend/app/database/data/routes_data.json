@@ -76,13 +76,54 @@
           "createdAt": "2024-06-16T06:06:04Z",
           "updatedAt": "2024-06-16T06:06:04Z",
           "isEnable": true,
-
           "path": "menu",
           "component": "views/Authorization/Menu/Menu",
           "name": "Menu",
           "type": "menu",
           "meta": { "title": "router.menuManagement" },
-          "edges": {}
+          "edges": {
+            "children": [
+              {
+                "path": "add",
+                "name": "Menu add",
+                "type": "button",
+                "component": "views/Authorization/Menu/Add",
+                "meta": {
+                  "title": "button.add",
+                  "noTagsView": true,
+                  "noCache": true,
+                  "hidden": true,
+                  "canTo": true
+                }
+              },
+              {
+                "path": "edit",
+                "name": "Menu edit",
+                "type": "button",
+                "component": "views/Authorization/Menu/Edit",
+                "meta": {
+                  "title": "button.edit",
+                  "noTagsView": true,
+                  "noCache": true,
+                  "hidden": true,
+                  "canTo": true
+                }
+              },
+              {
+                "path": "detail",
+                "name": "Menu detail",
+                "type": "button",
+                "component": "views/Authorization/Menu/Detail",
+                "meta": {
+                  "title": "button.detail",
+                  "noTagsView": true,
+                  "noCache": true,
+                  "hidden": true,
+                  "canTo": true
+                }
+              }
+            ]
+          }
         },
         {
           "createdAt": "2024-06-16T06:06:04Z",

@@ -9,6 +9,18 @@ declare global {
   declare type ElRef<T extends HTMLElement = HTMLDivElement> = Nullable<T>
 
   declare type Recordable<T = any, K = string> = Record<K extends null | undefined ? string : K, T>
+  declare type RecordWithID = Recordable & {
+    id: string
+  }
+
+  declare type RecordEdgeSelfRelation<T extends Recordable, K extends keyof T> = Recordable & {
+    id: string
+    parent: RecordWithSelfRelation
+    edges: {
+      children: RecordWithSelfRelation[]
+    }
+    [K]: T[K]
+  }
 
   declare type RemoveReadonly<T> = {
     -readonly [P in keyof T]: T[P]

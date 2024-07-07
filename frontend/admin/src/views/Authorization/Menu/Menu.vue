@@ -1,39 +1,29 @@
 <script setup lang="tsx">
 import { convertEdgeChildren } from '@/api/admin/types'
-
-import { createRouter, deleteRouter, getRouters, updateRouter } from '@/api/route'
+import { deleteRouter, getRouters } from '@/api/route'
 import { MenuRoute } from '@/api/route/types'
 import { useApi } from '@/axios'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
-import { Dialog } from '@/components/Dialog'
-import { FormSchema } from '@/components/Form'
 import { Icon } from '@/components/Icon'
-import { Search } from '@/components/Search'
 import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useTable } from '@/hooks/web/useTable'
 import { ElMessage, ElTag } from 'element-plus'
-import { reactive, ref, unref } from 'vue'
+import { reactive } from 'vue'
 
-import Detail from './components/Detail.vue'
-import Write from './components/Write.vue'
+import { useIcon } from '@/hooks/web/useIcon'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
+const { push } = useRouter()
 
-const { tableRegister, tableState, tableMethods } = useTable({
+const { tableRegister, tableState } = useTable<MenuRoute>({
   fetchDataApi: async (props) => {
     const [data] = await useApi(() => getRouters(props))
-    if (!data) return { list: [] }
-
-    return {
-      list: convertEdgeChildren(data)
-    }
+    return { list: convertEdgeChildren(data || []) as MenuRoute[] }
   }
 })
-
-const { dataList, loading } = tableState
-const { getList } = tableMethods
 
 const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   {
@@ -41,13 +31,12 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     label: t('common.index'),
     type: 'index'
   },
-
   {
     field: 'meta.title',
     label: t('meta.title'),
     slots: {
-      default: (data) => {
-        const title = t(data.row.meta.title)
+      default: ({ row }) => {
+        const title = t(row.meta.title)
         return <>{title}</>
       }
     }
@@ -57,8 +46,8 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     label: t('meta.icon'),
     width: 80,
     slots: {
-      default: (data) => {
-        const icon = data.row.meta.icon
+      default: ({ row }) => {
+        const icon = row.meta.icon
         if (icon) {
           return (
             <>
@@ -86,8 +75,8 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     field: 'component',
     label: t('meta.component'),
     slots: {
-      default: (data) => {
-        const component = data.row.component
+      default: ({ row }) => {
+        const component = row.component
         return (
           <>
             {component === '#' ? 'Top directory' : component === '##' ? 'Subdirectory' : component}
@@ -104,11 +93,11 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     field: 'isEnable',
     label: t('meta.isEnable'),
     slots: {
-      default: (data) => {
+      default: ({ row }) => {
         return (
           <>
-            <ElTag type={data.row.isEnable ? 'success' : 'danger'}>
-              {data.row.isEnable ? t('tagStatus.enable') : t('tagStatus.disable')}
+            <ElTag type={row.isEnable ? 'success' : 'danger'}>
+              {row.isEnable ? t('tagStatus.enable') : t('tagStatus.disable')}
             </ElTag>
           </>
         )
@@ -120,19 +109,27 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     label: t('common.action'),
     width: 250,
     slots: {
-      default: (data) => {
-        const row = data.row
+      default: ({ row }) => {
         return (
           <>
-            <BaseButton type="primary" onClick={() => action(row, 'edit')}>
-              {t('button.edit')}
-            </BaseButton>
-            <BaseButton type="success" onClick={() => action(row, 'detail')}>
+            <BaseButton
+              icon={useIcon({ icon: 'ep:view' })}
+              type="success"
+              onClick={() => action(row, 'detail')}
+            >
               {t('button.detail')}
             </BaseButton>
-            <BaseButton type="danger" onClick={() => action(row, 'delete')}>
-              {t('button.del')}
-            </BaseButton>
+            <BaseButton
+              icon={useIcon({ icon: 'ep:edit' })}
+              type="primary"
+              onClick={() => action(row, 'edit')}
+            />
+
+            <BaseButton
+              icon={useIcon({ icon: 'ep:delete' })}
+              type="danger"
+              onClick={() => action(row, 'delete')}
+            />
           </>
         )
       }
@@ -140,110 +137,37 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   }
 ])
 
-const searchSchema = reactive<FormSchema[]>([
-  {
-    field: 'meta.title',
-    label: t('meta.menuName'),
-    component: 'Input'
-  }
-])
-
-const searchParams = ref({})
-const setSearchParams = (data) => {
-  searchParams.value = data
-  getList()
-}
-
-const dialogVisible = ref(false)
-const dialogTitle = ref('')
-
-const currentRow = ref()
-const actionType = ref('')
-
-const writeRef = ref<ComponentRef<typeof Write>>()
-
-const saveLoading = ref(false)
-
-const action = (row: MenuRoute, type: 'edit' | 'detail' | 'delete') => {
+const action = (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete') => {
   switch (type) {
-    case 'delete':
-      if (row?.id) {
-        deleteRouter(Number(row?.id)).then(() => {
-          ElMessage.success({
-            message: 'delete successfully'
-          })
-        })
-      }
-
-      break
-
     default:
-      dialogTitle.value = t(type === 'edit' ? 'button.edit' : 'button.detail')
-      actionType.value = type
-      currentRow.value = row
-      dialogVisible.value = true
+      push({ path: `/authorization/menu/${type}`, query: { id: row?.id } })
+      // push(`/authorization/menu-${type}?id=${row.id}`)
+      break
+    case 'delete':
+      deleteRouter(Number(row?.id)).then(() => {
+        ElMessage.success({
+          message: 'delete successfully'
+        })
+      })
       break
   }
-}
-
-const AddAction = () => {
-  dialogTitle.value = t('button.add')
-  currentRow.value = undefined
-  dialogVisible.value = true
-  actionType.value = ''
-}
-
-const save = async () => {
-  const write = unref(writeRef)
-  const formData = (await write?.submit()) as MenuRoute
-
-  if (!formData) {
-    return
-  }
-
-  const createOrUpdate = () => {
-    const isCreate = !formData?.id
-    return (
-      useApi(() => (isCreate ? createRouter(formData) : updateRouter(formData))),
-      { loading: saveLoading, onFinally: () => (dialogVisible.value = false) }
-    )
-  }
-
-  return await createOrUpdate()
 }
 </script>
 
 <template>
   <ContentWrap>
-    <Search :schema="searchSchema" @reset="setSearchParams" @search="setSearchParams" />
     <div class="mb-10px">
-      <BaseButton type="primary" @click="AddAction">{{ t('button.add') }}</BaseButton>
+      <BaseButton type="primary" @click="action({}, 'add')"> {{ t('button.add') }}</BaseButton>
     </div>
+
     <Table
+      v-model:pageSize="tableState.pageSize"
+      v-model:currentPage="tableState.page"
       :columns="tableColumns"
-      default-expand-all
-      node-key="id"
-      :data="dataList"
-      :loading="loading"
+      :data="tableState.dataList"
+      :loading="tableState.isLoading"
+      :pagination="{ total: tableState.total }"
       @register="tableRegister"
     />
   </ContentWrap>
-
-  <Dialog v-model="dialogVisible" :title="dialogTitle">
-    <Write v-if="actionType !== 'detail'" ref="writeRef" :current-row="currentRow" />
-
-    <Detail v-if="actionType === 'detail'" :current-row="currentRow" />
-
-    <template #footer>
-      <BaseButton
-        v-if="actionType !== 'detail'"
-        type="primary"
-        :loading="saveLoading"
-        @click="save"
-      >
-        {{ t('button.save') }}
-      </BaseButton>
-      <BaseButton @click="dialogVisible = false">{{ t('button.close') }}</BaseButton>
-    </template>
-  </Dialog>
 </template>

@@ -32,54 +32,45 @@ func getRouteData() (routes []*ent.Route) {
 	return routes
 }
 
-func (RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
+func (s RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 	routers := getRouteData()
 
 	return database.WithTx(ctx, conn, func(tx *ent.Tx) error {
-		creatRoutes := make([]*ent.RouteCreate, len(routers))
-		for i, r := range routers {
 
-			createChildren := make([]*ent.RouteCreate, len(r.Edges.Children))
-			for _i, c := range r.Edges.Children {
-				createChildren[_i] = tx.Route.Create().
-					SetIsEnable(true).
-					SetPath(c.Path).
-					SetComponent(c.Component).
-					SetNillableRedirect(c.Redirect).
-					SetName(c.Name).
-					SetType(c.Type).
-					SetMeta(c.Meta).
-					SetOrder(_i)
-			}
-
-			createdChildren, err := tx.Route.CreateBulk(createChildren...).Save(ctx)
-			if err != nil {
-				return fmt.Errorf("createdChildren: %v", err)
-			}
-
-			creatRoutes[i] = tx.Route.Create().
-				SetComponent(r.Component).
-				SetPath(r.Path).
-				SetIsEnable(true).
-				SetMeta(r.Meta).
-				SetName(r.Name).
-				SetNillableRedirect(r.Redirect).
-				SetType(r.Type).
-				SetOrder(i).
-				AddChildren(createdChildren...)
+		_, err := s.seedRouteRecursively(ctx, tx, routers...)
+		if err != nil {
+			return err
 		}
 
-		_, err := tx.Route.CreateBulk(creatRoutes...).Save(ctx)
-		return err
+		return nil
 	})
-
 }
 
-// rollback calls to tx.Rollback and wraps the given error
-// with the rollback error if occurred.
-func rollback(tx *ent.Tx, err error) error {
-	if rerr := tx.Rollback(); rerr != nil {
-		err = fmt.Errorf("%w: %v", err, rerr)
+// seedRouteRecursively seeds a single route and its children recursively
+func (s RouterSeeder) seedRouteRecursively(ctx context.Context, tx *ent.Tx, routes ...*ent.Route) (createdRoutes []*ent.Route, err error) {
+	for i, r := range routes {
+		createRoute := tx.Route.Create().
+			SetComponent(r.Component).
+			SetPath(r.Path).
+			SetIsEnable(true).
+			SetMeta(r.Meta).
+			SetName(r.Name).
+			SetOrder(i).
+			SetNillableRedirect(r.Redirect).
+			SetType(r.Type).
+			SetOrder(len(r.Edges.Children)) // Assuming order is determined by the number of children
+
+		var createdChildren []*ent.Route
+		if len(r.Edges.Children) > 0 {
+			createdChildren, err = s.seedRouteRecursively(ctx, tx, r.Edges.Children...)
+			if err != nil {
+				return nil, fmt.Errorf("failed to seed child route: %v", err)
+			}
+		}
+
+		createdRoute := createRoute.AddChildren(createdChildren...).SaveX(ctx)
+		createdRoutes = append(createdRoutes, createdRoute)
 	}
-	return err
+
+	return createdRoutes, nil
 }

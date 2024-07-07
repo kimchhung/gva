@@ -1,19 +1,16 @@
 <script setup lang="tsx">
-import { convertEdgeChildren } from '@/api/admin/types'
-
-import { getRouters } from '@/api/route'
 import { MenuRoute } from '@/api/route/types'
 import { Form, FormSchema } from '@/components/Form'
 import { MenuTypeEnum } from '@/constants/menuType'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useValidator } from '@/hooks/web/useValidator'
+import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { cloneDeep } from 'lodash-es'
 import { PropType, reactive, ref, unref, watch } from 'vue'
 import AddButtonPermission from './AddButtonPermission.vue'
 
 const { t } = useI18n()
-
 const { required } = useValidator()
 
 const props = defineProps({
@@ -127,8 +124,7 @@ const formSchema = reactive<FormSchema[]>([
       }
     },
     optionApi: async () => {
-      const res = await getRouters()
-      const list = convertEdgeChildren(res.data)
+      const list = useAdminStoreWithOut().getRoleRouters
       return list || []
     }
   },

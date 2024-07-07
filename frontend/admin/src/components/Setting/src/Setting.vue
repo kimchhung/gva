@@ -193,74 +193,28 @@ const time = computed(() => currentTime?.value?.format('HH:mm:ss Z'))
       <LayoutRadioPicker />
 
       <ElDivider>{{ t('setting.systemTheme') }}</ElDivider>
-      <ColorRadioPicker
-        v-model="systemTheme"
-        :schema="[
-          '#409eff',
-          '#14b8a6',
-          '#06b6d4',
-          '#6366f1',
-          '#ec4899',
-          '#0096c7',
-          '#9c27b0',
-          '#ff9800'
-        ]"
-        @change="setSystemTheme"
-      />
-
-      <ElDivider>{{ t('setting.headerTheme') }}</ElDivider>
-      <ColorRadioPicker
-        v-model="headerTheme"
-        :schema="[
-          '#fff',
-          '#151515',
-          '#5172dc',
-          '#e74c3c',
-          '#24292e',
-          '#394664',
-          '#009688',
-          '#383f45'
-        ]"
-        @change="setHeaderTheme"
-      />
-
-      <ElDivider>{{ t('setting.menuTheme') }}</ElDivider>
-      <ColorRadioPicker
-        v-model="menuTheme"
-        :schema="[
-          '#fff',
-          '#151515',
-          '#5172dc',
-          '#e74c3c',
-          '#24292e',
-          '#394664',
-          '#009688',
-          '#383f45'
-        ]"
-        @change="setMenuTheme"
-      />
-
-      <ElDivider>{{ t('setting.borderTheme') }}</ElDivider>
-      <ColorRadioPicker
-        v-model="borderTheme"
-        :schema="[
-          '#fff',
-          '#f1f5f9',
-          '#e2e8f0',
-          '#cbd5e1',
-          '#64748b',
-          '#334155',
-          '#1e293b',
-          '#0f172a'
-        ]"
-        @change="setBorderTheme"
-      />
+      <div class="flex justify-between items-center">
+        <span class="text-14px">{{ t('setting.systemTheme') }}</span>
+        <ColorRadioPicker v-model="systemTheme" @change="setSystemTheme" />
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-14px">{{ t('setting.headerTheme') }}</span>
+        <ColorRadioPicker v-model="headerTheme" @change="setHeaderTheme" />
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-14px">{{ t('setting.menuTheme') }}</span>
+        <ColorRadioPicker v-model="menuTheme" @change="setMenuTheme" />
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-14px">{{ t('setting.borderTheme') }}</span>
+        <ColorRadioPicker v-model="borderTheme" @change="setBorderTheme" />
+      </div>
     </div>
 
     <ElDivider>{{ t('setting.interfaceDisplay') }}</ElDivider>
     <InterfaceDisplay />
-
     <ElDivider />
+
     <div>
       <BaseButton type="primary" class="w-full" @click="copyConfig">{{
         t('setting.copy')

@@ -2,7 +2,7 @@
 import { useDesign } from '@/hooks/web/useDesign'
 import { propTypes } from '@/utils/propTypes'
 import { PropType, ref, unref, watch } from 'vue'
-
+import { ElColorPicker } from 'element-plus'
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('color-radio-picker')
@@ -19,6 +19,23 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const colorVal = ref(props.modelValue)
 
+const predefineColors = ref([
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  'rgba(255, 69, 0, 0.68)',
+  'rgb(255, 120, 0)',
+  'hsv(51, 100, 98)',
+  'hsva(120, 40, 94, 0.5)',
+  'hsl(181, 100%, 37%)',
+  'hsla(209, 100%, 56%, 0.73)',
+  '#c7158577'
+])
+
 watch(
   () => props.modelValue,
   (val: string) => {
@@ -27,7 +44,6 @@ watch(
   }
 )
 
-// 监听
 watch(
   () => colorVal.value,
   (val: string) => {
@@ -39,18 +55,13 @@ watch(
 
 <template>
   <div :class="prefixCls" class="flex flex-wrap space-x-14px">
-    <span
-      v-for="(item, i) in schema"
-      :key="`radio-${i}`"
-      class="w-20px h-20px cursor-pointer rounded-4px border-solid border-gray-300 border-1px text-center leading-20px mb-5px"
-      :class="{ 'is-active': colorVal === item }"
-      :style="{
-        background: item
-      }"
-      @click="colorVal = item"
-    >
-      <Icon v-if="colorVal === item" color="#fff" icon="ep:check" :size="16" />
-    </span>
+    <ElColorPicker
+      :predefine="predefineColors"
+      :label="color"
+      :show-alpha="true"
+      v-model="colorVal"
+      :teleported="false"
+    />
   </div>
 </template>
 

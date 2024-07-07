@@ -230,7 +230,8 @@ export default {
     remove: 'Remove',
     save: 'Save',
     add: 'Add',
-    del: 'Delete'
+    del: 'Delete',
+    delete: 'Delete'
   },
   exampleDemo: {
     title: 'Title',

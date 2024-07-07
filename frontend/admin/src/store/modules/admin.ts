@@ -64,6 +64,7 @@ export const useAdminStore = defineStore('admin', {
       if (data) this.setAdminInfo(data)
     },
     async fetchAdminRouters() {
+      console.log('what', 'fetchAdminRouters')
       const [data] = await useApi(() => getRouters({ limit: 100, page: 1, isGroupNested: true }))
       if (data) this.setRoleRouters(convertEdgeChildren(data as any))
       return this.routers

@@ -1,40 +1,47 @@
 import { Table, TableColumn, TableExpose, TableProps, TableSetProps } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox, ElTable } from 'element-plus'
-import { nextTick, onMounted, ref, unref, watch } from 'vue'
+import { nextTick, onMounted, reactive, ref, unref, watch } from 'vue'
 import { QueryPagi } from './usePagi'
 
 const { t } = useI18n()
 
-type UseTableConfig = {
+type UseTableConfig<T = any> = {
   /**
-   * 是否初始化的时候请求一次
+   * Do you request once when you initialize
    */
   immediate?: boolean
-  fetchDataApi: (props?: QueryPagi) => Promise<{
-    list: any[]
+  fetchDataApi: (props: QueryPagi) => Promise<{
+    list: T[]
     total?: number
   }>
   fetchDelApi?: () => Promise<boolean>
 }
 
-export const useTable = (config: UseTableConfig) => {
+export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
   const { immediate = true } = config
-
-  const loading = ref(false)
 
   const fetchProps = ref({
     page: 1,
     limit: 20
   } as QueryPagi)
 
-  const total = ref(0)
-  const dataList = ref<any[]>([])
+  const tableState = reactive({
+    isLoading: false,
+    page: 0,
+    pageSize: 20,
+    total: 0,
+    dataList: [] as any[]
+  })
 
   watch(
     () => fetchProps.value,
-    () => {
-      methods.getList()
+    (v) => {
+      tableState.page = v.page
+      tableState.pageSize = v.limit
+
+      console.log(fetchProps.value)
+      // methods.getList()
     }
   )
 
@@ -46,7 +53,7 @@ export const useTable = (config: UseTableConfig) => {
         methods.getList()
       } else {
         fetchProps.value.page = 1
-        methods.getList()
+        // methods.getList()
       }
     }
   )
@@ -82,17 +89,17 @@ export const useTable = (config: UseTableConfig) => {
      * Get the form data
      */
     getList: async () => {
-      loading.value = true
+      tableState.isLoading = true
       try {
         const res = await config?.fetchDataApi(unref(fetchProps.value))
         if (res) {
-          dataList.value = res.list
-          total.value = res.total || 0
+          tableState.dataList = res.list
+          tableState.total = res.total || 0
         }
       } catch (err) {
         console.log('fetchDataApi error')
       } finally {
-        loading.value = false
+        tableState.isLoading = false
       }
     },
 
@@ -170,7 +177,7 @@ export const useTable = (config: UseTableConfig) => {
 
           // 计算出临界点
           const current =
-            unref(total) % unref(fetchProps.value.limit) === idsLength ||
+            unref(tableState.total) % unref(fetchProps.value.limit) === idsLength ||
             unref(fetchProps.value.limit) === 1
               ? unref(fetchProps.value.page) > 1
                 ? unref(fetchProps.value.page) - 1
@@ -187,12 +194,6 @@ export const useTable = (config: UseTableConfig) => {
   return {
     tableRegister: register,
     tableMethods: methods,
-    tableState: {
-      limit: fetchProps.value.limit,
-      page: fetchProps.value.page,
-      total,
-      dataList,
-      loading
-    }
+    tableState
   }
 }

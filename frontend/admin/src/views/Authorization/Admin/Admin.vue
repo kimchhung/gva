@@ -33,7 +33,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
     return true
   }
 })
-const { total, loading, dataList, pageSize, currentPage } = tableState
+
 const { getList } = tableMethods
 
 const crudSchemas = reactive<CrudSchema[]>([
@@ -167,7 +167,7 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
 
 const searchParams = ref({})
 const setSearchParams = (params: any) => {
-  currentPage.value = 1
+  tableState.page = 1
   searchParams.value = params
   getList()
 }
@@ -287,14 +287,14 @@ const save = async () => {
         </BaseButton>
       </div>
       <Table
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
+        v-model:current-page="tableState.page"
+        v-model:page-size="tableState.pageSize"
         :columns="allSchemas.tableColumns"
-        :data="dataList"
-        :loading="loading"
+        :data="tableState.dataList"
+        :loading="tableState.isLoading"
         @register="tableRegister"
         :pagination="{
-          total
+          total: tableState.total
         }"
       />
     </ContentWrap>

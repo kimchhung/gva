@@ -10,10 +10,14 @@ export const useTimeStore = defineStore('time', {
     timeDiff: 0,
     loading: false,
     currentTime: null as dayjs.Dayjs | null,
-    timer: null as NodeJS.Timeout | null
+    isInit: false
   }),
   actions: {
-    async sync() {
+    now() {
+      return dayjs().add(this.timeDiff, 'ms')
+    },
+
+    async syncTimeDiff() {
       const [data] = await useApi(() => getServerTime(), {
         loading: this.$state,
         onError: (error) => console.error('Failed to sync time:', error)
@@ -21,27 +25,19 @@ export const useTimeStore = defineStore('time', {
 
       if (data) {
         const now = dayjs()
-        this.timeDiff = dayjs(data).diff(now)
+        this.timeDiff = dayjs(data).diff(now, 'ms')
       }
     },
-    now() {
-      return dayjs().add(this.timeDiff)
+
+    async startSyncTimeDiff() {
+      await this.syncTimeDiff()
+      return setInterval(this.syncTimeDiff, 50000)
     },
 
-    async startTimer() {
-      if (this.timer) {
-        return
-      }
-
-      await this.sync()
-
-      this.timer = setInterval(() => {
+    startTimer() {
+      setInterval(() => {
         this.currentTime = this.now()
       }, 1000)
-
-      this.timer = setInterval(() => {
-        this.sync()
-      }, 15000)
     }
   }
 })
@@ -49,8 +45,11 @@ export const useTimeStore = defineStore('time', {
 export const useServerTime = () => {
   const timeStore = useTimeStore(store)
 
-  onBeforeMount(() => {
+  onBeforeMount(async () => {
+    if (timeStore.isInit) return
+    await timeStore.startSyncTimeDiff()
     timeStore.startTimer()
+    timeStore.isInit = true
   })
 
   return timeStore

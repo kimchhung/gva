@@ -43,7 +43,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
     return true
   }
 })
-const { loading, dataList, total, currentPage, pageSize } = tableState
+
 const { getList, getElTableExpose, delList } = tableMethods
 
 getList()
@@ -52,7 +52,7 @@ useEventBus({
   name: 'getList',
   callback: (type: string) => {
     if (type === 'add') {
-      currentPage.value = 1
+      tableState.page = 1
     }
     getList()
   }
@@ -280,16 +280,13 @@ const action = (row: Recordable, type: string) => {
     </div>
 
     <Table
-      v-model:pageSize="pageSize"
-      v-model:currentPage="currentPage"
+      v-model:pageSize="tableState.pageSize"
+      v-model:currentPage="tableState.page"
       :columns="allSchemas.tableColumns"
-      :data="dataList"
-      :loading="loading"
-      :pagination="{
-        total: total
-      }"
+      :data="tableState.dataList"
+      :loading="tableState.isLoading"
+      :pagination="{ total: tableState.total }"
       @register="tableRegister"
     />
   </ContentWrap>
 </template>
-@/hooks/event/useEventBus

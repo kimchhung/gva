@@ -297,6 +297,7 @@ export default {
     remove: '移除',
     save: '保存',
     add: '添加',
-    del: '删除'
+    del: '删除',
+    delete: '删除'
   }
 }

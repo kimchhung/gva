@@ -61,12 +61,11 @@ export const useTagsViewStore = defineStore('tagsView', {
         return
       this.cachedViews = cacheMap
     },
-    // 删除某个
     delView(view: RouteLocationNormalizedLoaded) {
       this.delVisitedView(view)
       this.addCachedView()
     },
-    // 删除tag
+
     delVisitedView(view: RouteLocationNormalizedLoaded) {
       for (const [i, v] of this.visitedViews.entries()) {
         if (v.path === view.path) {
@@ -75,7 +74,6 @@ export const useTagsViewStore = defineStore('tagsView', {
         }
       }
     },
-    // 删除缓存
     delCachedView() {
       const route = router.currentRoute.value
       const index = findIndex<string>(this.getCachedViews, (v) => v === route.name)
@@ -83,12 +81,10 @@ export const useTagsViewStore = defineStore('tagsView', {
         this.cachedViews.delete(this.getCachedViews[index])
       }
     },
-    // 删除所有缓存和tag
     delAllViews() {
       this.delAllVisitedViews()
       this.addCachedView()
     },
-    // 删除所有tag
     delAllVisitedViews() {
       const userStore = useAdminStoreWithOut()
 
@@ -97,7 +93,6 @@ export const useTagsViewStore = defineStore('tagsView', {
         ? this.visitedViews.filter((tag) => tag?.meta?.affix)
         : []
     },
-    // 删除其它
     delOthersViews(view: RouteLocationNormalizedLoaded) {
       this.delOthersVisitedViews(view)
       this.addCachedView()
@@ -108,7 +103,6 @@ export const useTagsViewStore = defineStore('tagsView', {
         return v?.meta?.affix || v.path === view.path
       })
     },
-    // 删除左侧
     delLeftViews(view: RouteLocationNormalizedLoaded) {
       const index = findIndex<RouteLocationNormalizedLoaded>(
         this.visitedViews,
@@ -121,7 +115,6 @@ export const useTagsViewStore = defineStore('tagsView', {
         this.addCachedView()
       }
     },
-    // 删除右侧
     delRightViews(view: RouteLocationNormalizedLoaded) {
       const index = findIndex<RouteLocationNormalizedLoaded>(
         this.visitedViews,
@@ -142,7 +135,6 @@ export const useTagsViewStore = defineStore('tagsView', {
         }
       }
     },
-    // 设置当前选中的tag
     setSelectedTag(tag: RouteLocationNormalizedLoaded) {
       this.selectedTag = tag
     },
