@@ -9,9 +9,8 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { useRouter } from 'vue-router'
 
-import { loginApi } from '@/api/admin'
-import { AdminLoginType } from '@/api/admin/types'
-import { useApi } from '@/axios'
+import { api } from '@/api'
+import { AuthLoginBody } from '@/api/auth/types'
 import { BaseButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { useValidator } from '@/hooks/web/useValidator'
@@ -215,10 +214,8 @@ const signIn = async () => {
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
     if (isValid) {
-      const formData = await getFormData<AdminLoginType>()
-      const [data] = await useApi(() => loginApi(formData), {
-        loading
-      })
+      const formData = await getFormData<AuthLoginBody>()
+      const [data] = await api.auth.login({ body: formData })
 
       if (!data) {
         return

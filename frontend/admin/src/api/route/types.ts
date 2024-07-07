@@ -1,8 +1,22 @@
+import { UseAPIOption } from '@/axios'
 import { MenuTypeEnum } from '@/constants/menuType'
+import { QueryPagi } from '@/hooks/web/usePagi'
 
-export type BaseTime = {
-  createdAt: string
-  updatedAt: string
+export type CreateRoute = UseAPIOption & {
+  body: MenuRoute
+}
+
+export type UpdateRoute = UseAPIOption & {
+  id: string
+  body: Partial<MenuRoute>
+}
+
+export type GetRoute = UseAPIOption & {
+  id: string
+}
+
+export type GetManyRoute = UseAPIOption & {
+  query: QueryPagi & { isGroupNested?: boolean }
 }
 
 export type MenuRoute = {

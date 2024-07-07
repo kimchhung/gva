@@ -1,10 +1,11 @@
 import { CONTENT_TYPE, SUCCESS_CODE } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
+import { AxiosError } from 'axios'
 import service from './service'
 
 type Loading = Record<string, boolean>
 
-type FetchOption<L = Loading> = {
+export type FetchOption<L extends Loading = any> = {
   loading?: L
 
   /**
@@ -14,15 +15,29 @@ type FetchOption<L = Loading> = {
   loadingKey?: keyof L
 
   onFinally?: () => void
-  onError?: (error) => void
+  onError?: (error: Error | AxiosError) => void
 }
 
-type FetchFunc<T> = () => Promise<IResponse<T>>
+export type FetchFunc<T> = () => Promise<IResponse<T>>
+
+export type UseAPIOption = {
+  opt?: FetchOption
+}
 
 /** api response tranformer
  * @returns [data,error,reponse]
  */
-export const useApi = async <T, E = any, L = Loading>(fn: FetchFunc<T>, opt?: FetchOption<L>) => {
+export const useAPI = async <
+  T = any,
+  E extends Error | AxiosError = Error,
+  L extends Loading = any
+>({
+  fn,
+  opt
+}: {
+  fn: FetchFunc<T>
+  opt?: FetchOption<L>
+}) => {
   const setIsLoading = (bool: boolean) => {
     if (!opt?.loading) return
     //@ts-ignore
@@ -40,7 +55,7 @@ export const useApi = async <T, E = any, L = Loading>(fn: FetchFunc<T>, opt?: Fe
 
     return [resp.data, null, resp] as const
   } catch (error) {
-    opt?.onError?.(error)
+    opt?.onError?.(error as E)
     return [null, error as E, null, null] as const
   } finally {
     opt?.onFinally?.()

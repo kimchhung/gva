@@ -1,17 +1,17 @@
-import { getAdminInfoReq } from '@/api/admin'
-import { AdminInfo, convertEdgeChildren } from '@/api/admin/types'
+import { api } from '@/api'
 
-import { getRouters } from '@/api/route'
-import { useApi } from '@/axios'
+import { Admin } from '@/api/admin/types'
 import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
+import { convertEdgeChildren } from '@/utils/routerHelper'
 import { ElMessageBox } from 'element-plus'
 import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useTagsViewStore } from './tagsView'
 
 type AdminState = {
-  adminInfo?: AdminInfo
+  adminInfo?: Admin
+  loading: boolean
   tokenKey: string
   token: string
   routers?: AppCustomRouteRecordRaw[]
@@ -21,6 +21,7 @@ export const useAdminStore = defineStore('admin', {
   state: (): AdminState => {
     return {
       adminInfo: undefined,
+      loading: false,
       tokenKey: 'Authorization',
       token: '',
       routers: undefined
@@ -53,20 +54,22 @@ export const useAdminStore = defineStore('admin', {
     setToken(token: string) {
       this.token = token
     },
-    setAdminInfo(userInfo?: AdminInfo) {
+    setAdminInfo(userInfo?: Admin) {
       this.adminInfo = userInfo
     },
     setRoleRouters(roleRouters: AppCustomRouteRecordRaw[]) {
       this.routers = roleRouters
     },
     async fetchUserInfo() {
-      const [data] = await useApi(() => getAdminInfoReq())
+      const [data] = await api.auth({ opt: { loading: this } })
       if (data) this.setAdminInfo(data)
     },
     async fetchAdminRouters() {
-      console.log('what', 'fetchAdminRouters')
-      const [data] = await useApi(() => getRouters({ limit: 100, page: 1, isGroupNested: true }))
-      if (data) this.setRoleRouters(convertEdgeChildren(data as any))
+      const [data] = await api.route.getMany({
+        query: { limit: 100, page: 1, isGroupNested: true }
+      })
+
+      if (data) this.setRoleRouters(convertEdgeChildren(data))
       return this.routers
     },
     logoutConfirm() {

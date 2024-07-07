@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { updateRouter } from '@/api/route'
+import { api } from '@/api'
 import { MenuRoute } from '@/api/route/types'
-import { useApi } from '@/axios'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, unref } from 'vue'
@@ -36,13 +35,16 @@ const save = async () => {
   const write = unref(writeRef)
   const formData = await write?.submit()
 
-  if (formData) {
-    const [res] = await useApi(() => updateRouter(formData as MenuRoute), {
-      loading
-    })
+  if (!formData) return
 
-    if (res) goBack()
-  }
+  const { id, ...body } = formData as MenuRoute
+  const [data] = await api.route.update({
+    id,
+    body,
+    opt: { loading }
+  })
+
+  if (data) goBack()
 }
 </script>
 

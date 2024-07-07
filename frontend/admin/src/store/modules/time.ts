@@ -1,5 +1,4 @@
-import { getServerTime } from '@/api'
-import { useApi } from '@/axios'
+import { api } from '@/api'
 import dayjs from 'dayjs'
 import { defineStore } from 'pinia'
 import { onBeforeMount } from 'vue'
@@ -18,9 +17,11 @@ export const useTimeStore = defineStore('time', {
     },
 
     async syncTimeDiff() {
-      const [data] = await useApi(() => getServerTime(), {
-        loading: this.$state,
-        onError: (error) => console.error('Failed to sync time:', error)
+      const [data] = await api.now({
+        opt: {
+          loading: this.$state,
+          onError: (error) => console.error('Failed to sync time:', error)
+        }
       })
 
       if (data) {

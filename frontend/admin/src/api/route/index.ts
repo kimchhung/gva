@@ -1,24 +1,39 @@
-import request from '@/axios'
-import { QueryPagi, createQueryPayload } from '@/hooks/web/usePagi'
-import { MenuRoute } from './types'
+import req, { useAPI } from '@/axios'
+import { createQueryPayload } from '@/hooks/web/usePagi'
+import { CreateRoute, GetManyRoute, GetRoute, MenuRoute, UpdateRoute } from './types'
 
-type getTypeQuery = QueryPagi & { isGroupNested?: boolean }
+export const routeResource = (base = '/routes') => {
+  const get = (id: string) => {
+    return req.get<MenuRoute>({ url: `${base}/${id}` })
+  }
 
-export const getRouters = (query: getTypeQuery = { limit: 100, page: 1 }) => {
-  return request.get<MenuRoute[]>({
-    url: '/routes',
-    params: createQueryPayload(query)
-  })
-}
+  get.getMany = ({ query, opt }: GetManyRoute) => {
+    return useAPI({
+      fn: () => req.get<MenuRoute[]>({ url: base, params: createQueryPayload(query) }),
+      opt
+    })
+  }
 
-export const createRouter = (body: MenuRoute) => {
-  return request.post<MenuRoute>({ url: '/routes', data: body })
-}
+  get.create = ({ body, opt }: CreateRoute) => {
+    return useAPI({
+      fn: () => req.post<MenuRoute>({ url: base, data: body }),
+      opt
+    })
+  }
 
-export const updateRouter = (body: { id?: number } & MenuRoute) => {
-  return request.put<MenuRoute>({ url: `/routes/${body?.id}`, data: body })
-}
+  get.update = ({ id, body, opt }: UpdateRoute) => {
+    return useAPI({
+      fn: () => req.put<MenuRoute>({ url: `${base}/${id}`, data: body }),
+      opt
+    })
+  }
 
-export const deleteRouter = (id: number) => {
-  return request.delete<any>({ url: `/routes/${id}` })
+  get.delete = ({ id, opt }: GetRoute) => {
+    return useAPI({
+      fn: () => req.delete<MenuRoute>({ url: `${base}/${id}` }),
+      opt
+    })
+  }
+
+  return get
 }

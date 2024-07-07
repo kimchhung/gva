@@ -1,26 +1,24 @@
 <script setup lang="tsx">
-import { convertEdgeChildren } from '@/api/admin/types'
-import { deleteRouter, getRouters } from '@/api/route'
+import { api } from '@/api'
 import { MenuRoute } from '@/api/route/types'
-import { useApi } from '@/axios'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
 import { Icon } from '@/components/Icon'
 import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useIcon } from '@/hooks/web/useIcon'
 import { useTable } from '@/hooks/web/useTable'
+import { convertEdgeChildren } from '@/utils/routerHelper'
 import { ElMessage, ElTag } from 'element-plus'
 import { reactive } from 'vue'
-
-import { useIcon } from '@/hooks/web/useIcon'
 import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const { push } = useRouter()
 
 const { tableRegister, tableState } = useTable<MenuRoute>({
-  fetchDataApi: async (props) => {
-    const [data] = await useApi(() => getRouters(props))
+  fetchDataApi: async (query) => {
+    const [data] = await api.route.getMany({ query })
     return { list: convertEdgeChildren(data || []) as MenuRoute[] }
   }
 })
@@ -137,18 +135,20 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   }
 ])
 
-const action = (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete') => {
+const action = async (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete') => {
   switch (type) {
     default:
       push({ path: `/authorization/menu/${type}`, query: { id: row?.id } })
-      // push(`/authorization/menu-${type}?id=${row.id}`)
+
       break
     case 'delete':
-      deleteRouter(Number(row?.id)).then(() => {
+      const [res] = await api.route.delete({ id: row?.id })
+      if (res) {
         ElMessage.success({
           message: 'delete successfully'
         })
-      })
+      }
+
       break
   }
 }

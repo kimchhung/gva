@@ -1,5 +1,22 @@
-import request from '@/axios'
+import req, { useAPI, UseAPIOption } from '@/axios'
+import { authResource } from './auth'
+import { nodeResource } from './node'
+import { routeResource } from './route'
 
-export const getServerTime = () => {
-  return request.get<string>({ url: '/now' })
+const getNow = ({ opt }: UseAPIOption) => {
+  return useAPI({
+    fn: () => req.get<string>({ url: '/now' }),
+    opt
+  })
+}
+
+export const api = {
+  now: getNow,
+
+  /* pattern */
+  node: nodeResource(),
+  // ---------------
+
+  auth: authResource(),
+  route: routeResource()
 }

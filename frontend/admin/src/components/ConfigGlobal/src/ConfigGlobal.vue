@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { provide, computed, watch, onMounted } from 'vue'
-import { propTypes } from '@/utils/propTypes'
-import { ComponentSize, ElConfigProvider } from 'element-plus'
-import { useLocaleStore } from '@/store/modules/locale'
-import { useWindowSize } from '@vueuse/core'
-import { useAppStore } from '@/store/modules/app'
-import { setCssVar } from '@/utils'
 import { useDesign } from '@/hooks/web/useDesign'
+import { useAppStore } from '@/store/modules/app'
+import { useLocaleStore } from '@/store/modules/locale'
+import { setCssVar } from '@/utils'
+import { propTypes } from '@/utils/propTypes'
+import { useWindowSize } from '@vueuse/core'
+import { ComponentSize, ElConfigProvider } from 'element-plus'
+import { computed, onMounted, provide, watch } from 'vue'
 
 const { variables } = useDesign()
 
@@ -18,14 +18,14 @@ const props = defineProps({
 
 provide('configGlobal', props)
 
-// 初始化所有主题色
+// Initialize all themes
 onMounted(() => {
   appStore.setCssVarTheme()
 })
 
 const { width } = useWindowSize()
 
-// 监听窗口变化
+// Monitoring window changes
 watch(
   () => width.value,
   (width: number) => {
