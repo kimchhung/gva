@@ -1,6 +1,5 @@
 <script setup lang="tsx">
-import { api } from '@/api'
-import { MenuRoute } from '@/api/route/types'
+import { MenuRoute } from '@/api/menu/types'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
 import { Icon } from '@/components/Icon'
@@ -18,7 +17,7 @@ const { push } = useRouter()
 
 const { tableRegister, tableState } = useTable<MenuRoute>({
   fetchDataApi: async (query) => {
-    const [data] = await api.route.getMany({ query })
+    const [data] = await api.menu.getMany({ query })
     return { list: convertEdgeChildren(data || []) as MenuRoute[] }
   }
 })
@@ -142,7 +141,7 @@ const action = async (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete
 
       break
     case 'delete':
-      const [res] = await api.route.delete({ id: row?.id })
+      const [res] = await api.menu.delete({ id: row?.id })
       if (res) {
         ElMessage.success({
           message: 'delete successfully'

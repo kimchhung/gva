@@ -20,6 +20,7 @@
     "noUnusedParameters": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
+    "isolatedModules": true,
     "skipLibCheck": true,
     "paths": {
       "@/*": ["src/*"]

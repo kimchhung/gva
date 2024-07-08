@@ -80,7 +80,7 @@ const request = async (option: AxiosConfig) => {
   return resp
 }
 
-export default {
+const req = {
   get: <T = any>(option: AxiosConfig) => {
     return request({ method: 'get', ...option }) as Promise<IResponse<T>>
   },
@@ -103,3 +103,5 @@ export default {
     return service.cancelAllRequest()
   }
 }
+
+export default req

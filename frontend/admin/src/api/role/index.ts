@@ -1,5 +1,12 @@
-import request from '@/axios'
+import { CRUD } from '../node'
 
-export const getRoleListApi = () => {
-  return request.get<any>({ url: '/mock/role/table' })
+export class RoleAPI extends CRUD {
+  constructor(name: string) {
+    super(name)
+  }
+}
+
+export const module: APIModule = {
+  name: 'role',
+  resource: new RoleAPI('menu')
 }

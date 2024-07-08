@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { MenuRoute } from '@/api/route/types'
+import { MenuRoute } from '@/api/menu/types'
 import { Form, FormSchema } from '@/components/Form'
 import { MenuTypeEnum } from '@/constants/menuType'
 import { useForm } from '@/hooks/web/useForm'

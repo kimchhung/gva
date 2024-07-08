@@ -5,7 +5,7 @@ import { ref, unref } from 'vue'
 import { useRouter } from 'vue-router'
 import Write from './components/Write.vue'
 
-import { MenuRoute } from '@/api/route/types'
+import { MenuRoute } from '@/api/menu/types'
 import { BaseButton } from '@/components/Button'
 // import { saveTableApi } from '@/api/table'
 
@@ -27,7 +27,7 @@ const save = async () => {
   const formData = await write?.submit()
 
   if (formData) {
-    const [res] = await api.route.create({
+    const [res] = await api.menu.create({
       body: formData as MenuRoute,
       opt: { loading }
     })

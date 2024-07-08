@@ -1,19 +1,18 @@
 import { UseAPIOption } from '@/axios'
 import { QueryPagi } from '@/hooks/web/usePagi'
 
-export type Node = {
+export type Node<T = Record<string, any>> = T & {
   id: string
-  name: string
   createdAt: string
 }
 
-export type CreateNode = UseAPIOption & {
-  body: Node
+export type CreateNode<T = any> = UseAPIOption & {
+  body: Node<T>
 }
 
-export type UpdateNode = UseAPIOption & {
+export type UpdateNode<T = any> = UseAPIOption & {
   id: string
-  body: Partial<Node>
+  body: Partial<Node<T>>
 }
 
 export type GetNode = UseAPIOption & {

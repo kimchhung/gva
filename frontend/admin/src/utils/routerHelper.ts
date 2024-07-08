@@ -1,4 +1,4 @@
-import { MenuRoute } from '@/api/route/types'
+import { MenuRoute } from '@/api/menu/types'
 import { isUrl } from '@/utils/is'
 import { cloneDeep, omit } from 'lodash-es'
 import type {

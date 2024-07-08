@@ -1,40 +1,26 @@
 import req, { useAPI, UseAPIOption } from '@/axios'
 import { App } from 'vue'
 
-const modules = import.meta.glob<
-  true,
-  'string',
-  {
-    default: APIModule
-  }
->('./**/index.ts', {
-  eager: true
-})
+const modules = import.meta.glob('./**/index.ts', { eager: true })
 
-export type CreateApi = ReturnType<typeof createApi>
+export type NowAPI = typeof now
 
-const getNow = ({ opt }: UseAPIOption) => {
-  console.log({ modules })
-
-  return useAPI({
+const now = ({ opt }: UseAPIOption) =>
+  useAPI({
     fn: () => req.get<string>({ url: '/now' }),
     opt
   })
-}
 
-const createApi = async () => {
-  const api = {
-    now: getNow
-  }
+const createApi = () => {
+  const api = { now }
 
-  for (const key in modules) {
-    const m = modules[key].default
-    if (m?.name && m?.resource) {
-      api[m.name] = m.resource
+  for (const path in modules) {
+    const { module } = modules[path] as { module: APIModule }
+    if (module) {
+      api[module.name] = module.resource
     }
   }
-  const [data] = await api['auth']({})
-  console.log({ data })
+
   return api
 }
 
@@ -42,15 +28,15 @@ const createApi = async () => {
  * const { node, route } = inject('api')
  * route.getMany()
  */
-export const setupApi = async (app: App<Element>) => {
+export const setupAPI = (app: App<Element>) => {
   if (typeof window === 'undefined') {
     return
   }
 
-  if (!globalThis.api) {
-    globalThis.api = createApi() as any
-  }
+  /* eslint no-var: */
+  var api = createApi() as API
+  globalThis.api = api
+  app.provide('api', api)
 
-  app.provide('api', globalThis.api)
-  window.api = globalThis.api
+  console.log({ api })
 }

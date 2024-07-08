@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MenuRoute } from '@/api/route/types'
+import { MenuRoute } from '@/api/menu/types'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, unref } from 'vue'
@@ -37,7 +37,7 @@ const save = async () => {
   if (!formData) return
 
   const { id, ...body } = formData as MenuRoute
-  const [data] = await api.route.update({
+  const [data] = await api.menu.update({
     id,
     body,
     opt: { loading }

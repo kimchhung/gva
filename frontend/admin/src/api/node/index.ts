@@ -2,47 +2,47 @@ import req, { useAPI } from '@/axios'
 import { createQueryPayload } from '@/hooks/web/usePagi'
 import { CreateNode, GetManyNode, GetNode, Node, UpdateNode } from './types'
 
-export type Resource = ReturnType<typeof resource>
+export class CRUD<T = Node<{}>> {
+  name: string
+  base: string
 
-const resource = (base = '/nodes') => {
-  const get = (id: string) => {
-    return req.get<Node>({ url: `${base}/${id}` })
+  constructor(name: string) {
+    this.name = name
+    this.base = `/${this.name.replace('/', '')}s`
   }
 
-  get.getMany = ({ query, opt }: GetManyNode) => {
+  get({ id, opt }: GetNode) {
     return useAPI({
-      fn: () => req.get<Node[]>({ url: base, params: createQueryPayload(query) }),
+      fn: () => req.get<Node<T>>({ url: `${this.base}/${id}` }),
       opt
     })
   }
 
-  get.create = ({ body, opt }: CreateNode) => {
+  getMany({ query, opt }: GetManyNode) {
     return useAPI({
-      fn: () => req.post<Node>({ url: base, data: body }),
+      fn: () => req.get<Node<T>[]>({ url: this.base, params: createQueryPayload(query) }),
       opt
     })
   }
 
-  get.update = ({ id, body, opt }: UpdateNode) => {
+  create({ body, opt }: CreateNode) {
     return useAPI({
-      fn: () => req.put<Node>({ url: `${base}/${id}`, data: body }),
+      fn: () => req.post<Node<T>>({ url: this.base, data: body }),
       opt
     })
   }
 
-  get.delete = ({ id, opt }: GetNode) => {
+  update({ id, body, opt }: UpdateNode) {
     return useAPI({
-      fn: () => req.delete<Node>({ url: `${base}/${id}` }),
+      fn: () => req.put<Node<T>>({ url: `${this.base}/${id}`, data: body }),
       opt
     })
   }
 
-  return get
+  delete({ id, opt }: GetNode) {
+    return useAPI({
+      fn: () => req.delete<Node<T>>({ url: `${this.base}/${id}` }),
+      opt
+    })
+  }
 }
-
-const module: APIModule = {
-  name: 'node',
-  resource
-}
-
-export default module

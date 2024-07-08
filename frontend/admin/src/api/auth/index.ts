@@ -2,30 +2,31 @@ import req, { useAPI } from '@/axios'
 import { Admin } from '../admin/types'
 import { AuthLoginReq, AuthLoginResp, AuthMe } from './types'
 
-export type Resource = ReturnType<typeof resource>
+export class AuthAPI {
+  name: string
+  base: string
 
-export const resource = (base = '/auth') => {
-  const me = ({ opt }: AuthMe) => {
-    console.log('resource,auth')
+  constructor(name: string) {
+    this.name = name
+    this.base = `/${this.name.replace('/', '')}s`
+  }
+
+  me({ opt }: AuthMe) {
     return useAPI({
-      fn: () => req.get<Admin>({ url: `${base}/login` }),
+      fn: () => req.get<Admin>({ url: `${this.base}/me` }),
       opt
     })
   }
 
-  me.login = ({ body, opt }: AuthLoginReq) => {
+  login({ body, opt }: AuthLoginReq) {
     return useAPI({
-      fn: () => req.get<AuthLoginResp>({ url: `${base}/login`, data: body }),
+      fn: () => req.post<AuthLoginResp>({ url: `${this.base}/login`, data: body }),
       opt
     })
   }
-
-  return me
 }
 
-const module: APIModule = {
+export const module: APIModule = {
   name: 'auth',
-  resource
+  resource: new AuthAPI('auth')
 }
-
-export default module

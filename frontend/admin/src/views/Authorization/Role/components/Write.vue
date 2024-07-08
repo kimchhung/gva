@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { getRouters } from '@/api/route'
+import { getRouters } from '@/api/menu'
 import { useAPI } from '@/axios'
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'

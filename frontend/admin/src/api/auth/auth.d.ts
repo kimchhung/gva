@@ -1,7 +1,7 @@
-import { Resource } from '.'
+import { AuthAPI } from '.'
 
 declare global {
   interface API {
-    auth: Resource
+    auth: AuthAPI
   }
 }

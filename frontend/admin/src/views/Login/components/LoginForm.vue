@@ -1,21 +1,18 @@
 <script setup lang="tsx">
+import { AuthLoginBody } from '@/api/auth/types'
+import { BaseButton } from '@/components/Button'
 import { Form, FormSchema } from '@/components/Form'
+import { Icon } from '@/components/Icon'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useValidator } from '@/hooks/web/useValidator'
+import { useAdminStore } from '@/store/modules/admin'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { ElLink } from 'element-plus'
 import { onMounted, reactive, ref, watch } from 'vue'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { useRouter } from 'vue-router'
-
-import { api } from '@/api'
-import { AuthLoginBody } from '@/api/auth/types'
-import { BaseButton } from '@/components/Button'
-import { Icon } from '@/components/Icon'
-import { useValidator } from '@/hooks/web/useValidator'
-import { useAdminStore } from '@/store/modules/admin'
-
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
