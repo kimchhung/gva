@@ -587,7 +587,7 @@ const docTemplateadmin = `{
                                             "additionalProperties": {
                                                 "allOf": [
                                                     {
-                                                        "$ref": "#/definitions/dto.RouteResponse"
+                                                        "$ref": "#/definitions/dto.MenuResponse"
                                                     },
                                                     {
                                                         "type": "object",
@@ -595,7 +595,7 @@ const docTemplateadmin = `{
                                                             "list": {
                                                                 "type": "array",
                                                                 "items": {
-                                                                    "$ref": "#/definitions/dto.RouteResponse"
+                                                                    "$ref": "#/definitions/dto.MenuResponse"
                                                                 }
                                                             }
                                                         }
@@ -635,7 +635,7 @@ const docTemplateadmin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RouteRequest"
+                            "$ref": "#/definitions/dto.MenuRequest"
                         }
                     }
                 ],
@@ -651,7 +651,7 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.RouteResponse"
+                                            "$ref": "#/definitions/dto.MenuResponse"
                                         }
                                     }
                                 }
@@ -687,7 +687,7 @@ const docTemplateadmin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RouteRequest"
+                            "$ref": "#/definitions/dto.MenuRequest"
                         }
                     },
                     {
@@ -710,7 +710,7 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.RouteResponse"
+                                            "$ref": "#/definitions/dto.MenuResponse"
                                         }
                                     }
                                 }
@@ -951,7 +951,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "dto.RouteRequest": {
+        "dto.MenuRequest": {
             "type": "object",
             "required": [
                 "component",
@@ -969,7 +969,7 @@ const docTemplateadmin = `{
                     "type": "boolean"
                 },
                 "meta": {
-                    "$ref": "#/definitions/types.RouteMeta"
+                    "$ref": "#/definitions/types.MenuMeta"
                 },
                 "name": {
                     "type": "string"
@@ -987,7 +987,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "dto.RouteResponse": {
+        "dto.MenuResponse": {
             "type": "object",
             "properties": {
                 "component": {
@@ -1002,7 +1002,7 @@ const docTemplateadmin = `{
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RouteQuery when eager-loading is set.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/ent.RouteEdges"
+                            "$ref": "#/definitions/ent.MenuEdges"
                         }
                     ]
                 },
@@ -1018,7 +1018,7 @@ const docTemplateadmin = `{
                     "description": "Meta holds the value of the \"meta\" field.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.RouteMeta"
+                            "$ref": "#/definitions/types.MenuMeta"
                         }
                     ]
                 },
@@ -1227,12 +1227,12 @@ const docTemplateadmin = `{
                     "description": "Routes holds the value of the routes edge.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ent.Route"
+                        "$ref": "#/definitions/ent.Menu"
                     }
                 }
             }
         },
-        "ent.Route": {
+        "ent.Menu": {
             "type": "object",
             "properties": {
                 "component": {
@@ -1247,7 +1247,7 @@ const docTemplateadmin = `{
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RouteQuery when eager-loading is set.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/ent.RouteEdges"
+                            "$ref": "#/definitions/ent.MenuEdges"
                         }
                     ]
                 },
@@ -1263,7 +1263,7 @@ const docTemplateadmin = `{
                     "description": "Meta holds the value of the \"meta\" field.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.RouteMeta"
+                            "$ref": "#/definitions/types.MenuMeta"
                         }
                     ]
                 },
@@ -1297,21 +1297,21 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "ent.RouteEdges": {
+        "ent.MenuEdges": {
             "type": "object",
             "properties": {
                 "children": {
                     "description": "Children holds the value of the children edge.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ent.Route"
+                        "$ref": "#/definitions/ent.Menu"
                     }
                 },
                 "parent": {
                     "description": "Parent holds the value of the parent edge.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/ent.Route"
+                            "$ref": "#/definitions/ent.Menu"
                         }
                     ]
                 },
@@ -1372,7 +1372,7 @@ const docTemplateadmin = `{
                 "TypeExternalLink"
             ]
         },
-        "types.RouteMeta": {
+        "types.MenuMeta": {
             "type": "object",
             "properties": {
                 "activeMenu": {

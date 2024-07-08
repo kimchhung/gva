@@ -39,6 +39,6 @@ func (Role) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("admins", Admin.Type).Ref("roles"),
 		edge.To("permissions", Permission.Type),
-		edge.To("routes", Route.Type),
+		edge.To("routes", Menu.Type),
 	}
 }

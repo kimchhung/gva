@@ -60,6 +60,38 @@ func (d *Department) Members(ctx context.Context) (result []*Admin, err error) {
 	return result, err
 }
 
+func (m *Menu) Parent(ctx context.Context) (*Menu, error) {
+	result, err := m.Edges.ParentOrErr()
+	if IsNotLoaded(err) {
+		result, err = m.QueryParent().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (m *Menu) Children(ctx context.Context) (result []*Menu, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = m.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = m.Edges.ChildrenOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = m.QueryChildren().All(ctx)
+	}
+	return result, err
+}
+
+func (m *Menu) Roles(ctx context.Context) (result []*Role, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = m.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = m.Edges.RolesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = m.QueryRoles().All(ctx)
+	}
+	return result, err
+}
+
 func (pe *Permission) Roles(ctx context.Context) (result []*Role, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = pe.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)
@@ -116,46 +148,14 @@ func (r *Role) Permissions(ctx context.Context) (result []*Permission, err error
 	return result, err
 }
 
-func (r *Role) Routes(ctx context.Context) (result []*Route, err error) {
+func (r *Role) Routes(ctx context.Context) (result []*Menu, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = r.NamedRoutes(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = r.Edges.RoutesOrErr()
+		result, err = r.Edges.MenusOrErr()
 	}
 	if IsNotLoaded(err) {
 		result, err = r.QueryRoutes().All(ctx)
-	}
-	return result, err
-}
-
-func (r *Route) Parent(ctx context.Context) (*Route, error) {
-	result, err := r.Edges.ParentOrErr()
-	if IsNotLoaded(err) {
-		result, err = r.QueryParent().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
-func (r *Route) Children(ctx context.Context) (result []*Route, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = r.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = r.Edges.ChildrenOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = r.QueryChildren().All(ctx)
-	}
-	return result, err
-}
-
-func (r *Route) Roles(ctx context.Context) (result []*Role, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = r.NamedRoles(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = r.Edges.RolesOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = r.QueryRoles().All(ctx)
 	}
 	return result, err
 }

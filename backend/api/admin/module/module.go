@@ -15,7 +15,7 @@ import (
 var NewAdminModules = fx.Module("admin-module",
 	admin.AdminModule,
 	auth.AuthModule,
-	route.RouteModule,
+	route.MenuModule,
 	permission.PermissionModule,
 	index.IndexModule,
 

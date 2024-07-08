@@ -12,8 +12,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
-	parentMapRoute := make(map[xid.ID][]*ent.Route)
+func GroupRouteToNested(flatRoutes []*ent.Menu) (parentRoutes []*ent.Menu) {
+	parentMapRoute := make(map[xid.ID][]*ent.Menu)
 
 	for _, route := range flatRoutes {
 		if route.ParentID != nil {
@@ -29,14 +29,14 @@ func GroupRouteToNested(flatRoutes []*ent.Route) (parentRoutes []*ent.Route) {
 		}
 	}
 
-	slices.SortFunc(parentRoutes, func(a *ent.Route, b *ent.Route) int {
+	slices.SortFunc(parentRoutes, func(a *ent.Menu, b *ent.Menu) int {
 		return a.Order - b.Order
 	})
 
 	return parentRoutes
 }
 
-func FlattenNestedRoutes(parentRoutes []*ent.Route) (flatRoutes []*ent.Route) {
+func FlattenNestedRoutes(parentRoutes []*ent.Menu) (flatRoutes []*ent.Menu) {
 	for _, p := range parentRoutes {
 		flatRoutes = append(flatRoutes, p)
 
@@ -48,7 +48,7 @@ func FlattenNestedRoutes(parentRoutes []*ent.Route) (flatRoutes []*ent.Route) {
 	return flatRoutes
 }
 
-func AppendRouteChildrens(parentID xid.ID, parentMapRoute map[xid.ID][]*ent.Route) (children []*ent.Route) {
+func AppendRouteChildrens(parentID xid.ID, parentMapRoute map[xid.ID][]*ent.Menu) (children []*ent.Menu) {
 	children, ok := parentMapRoute[parentID]
 	if !ok {
 		return nil
@@ -61,7 +61,7 @@ func AppendRouteChildrens(parentID xid.ID, parentMapRoute map[xid.ID][]*ent.Rout
 	return children
 }
 
-func PrintRoutes(routes []*echo.Route) {
+func PrintRoutes(routes []*echo.Menu) {
 
 	// Create a new table
 	table := uitable.New()

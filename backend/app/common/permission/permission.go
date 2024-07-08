@@ -1,6 +1,7 @@
 package permission
 
 import (
+	"fmt"
 	"strings"
 
 	appctx "github.com/gva/app/common/context"
@@ -11,30 +12,97 @@ import (
 )
 
 var (
-	groups []string
-	keys   []PermissionKey
+	validGroups = make(map[PermissionGroup]struct{})
+	validKeys   = make(map[PermissionKey]struct{})
 )
 
-type PermissionKey string
-
-func (p PermissionKey) Group() string {
-	parts := strings.SplitN(string(p), ".", 2)
-	if len(parts) > 1 {
-		return parts[0]
+func Groups() (groups []PermissionGroup) {
+	for g := range validGroups {
+		groups = append(groups, g)
 	}
-	return ""
+	return groups
 }
 
-func Groups() []string {
-	list := make([]string, len(groups))
-	copy(list, groups)
-	return list
+func Keys() (keys []PermissionKey) {
+	for g := range validKeys {
+		keys = append(keys, g)
+	}
+	return keys
 }
 
-func Keys() []PermissionKey {
-	list := make([]PermissionKey, len(keys))
-	copy(list, keys)
-	return list
+func HasGroup(group PermissionGroup) bool {
+	_, has := validGroups[group]
+	return has
+}
+
+func HasKey(key PermissionKey) bool {
+	_, has := validKeys[key]
+	return has
+}
+
+func newKey(group PermissionGroup, action PermissionAction) PermissionKey {
+	key := PermissionKey(fmt.Sprintf("%s.%s", group, action))
+
+	validGroups[group] = struct{}{}
+	validKeys[key] = struct{}{}
+	return key
+}
+
+type (
+	// Admin.View
+	PermissionKey string
+
+	// Admin
+	PermissionGroup string
+
+	// View
+	PermissionAction string
+)
+
+const (
+	ActionSuper  PermissionAction = "Super"
+	ActionView   PermissionAction = "View"
+	ActionAdd    PermissionAction = "Add"
+	ActionEdit   PermissionAction = "Edit"
+	ActionDelete PermissionAction = "Delete"
+)
+
+var (
+	PermissionSeperator = "."
+)
+
+func (k PermissionKey) Value() (group PermissionGroup, action PermissionAction, err error) {
+	if err := k.Valid(); err != nil {
+		return group, action, err
+	}
+
+	parts := strings.SplitN(string(k), PermissionSeperator, 2)
+	return PermissionGroup(parts[0]), PermissionAction(parts[1]), nil
+}
+
+func (k PermissionKey) Valid() error {
+	if HasKey(k) {
+		return nil
+	}
+
+	return fmt.Errorf("invalid permission key %s", k)
+}
+
+func (p PermissionGroup) Valid() error {
+	if HasGroup(p) {
+		return nil
+	}
+
+	return fmt.Errorf("invalid permission key %s", p)
+}
+
+func (p PermissionAction) Valid() error {
+	switch p {
+	case ActionSuper, ActionView, ActionAdd, ActionEdit, ActionDelete:
+		return nil
+	}
+
+	return fmt.Errorf("invalid permission key %s", p)
 }
 
 func RequireAny(permissions ...PermissionKey) echo.HandlerFunc {
@@ -96,12 +164,17 @@ func OnlySuperAdmin() echo.HandlerFunc {
 	}
 }
 
-func createBulkPermissionDto(conn *ent.Client, group string, keys ...PermissionKey) []*ent.PermissionCreate {
+func createBulkPermissionDto(conn *ent.Client, keys ...PermissionKey) []*ent.PermissionCreate {
 	bulks := make([]*ent.PermissionCreate, len(keys))
 
 	for i, key := range keys {
+		group, _, err := key.Value()
+		if err != nil {
+			panic(err)
+		}
+
 		bulks[i] = conn.Permission.Create().
-			SetGroup(group).
+			SetGroup(string(group)).
 			SetKey(string(key)).
 			SetName(string(key)).
 			SetOrder(i)

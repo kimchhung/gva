@@ -1,12 +1,12 @@
 # Makefile for some commands.
-# route file app/database/data/routes_data.json
+# route file app/database/data/menu_data.json
 # pull route from db to file
-admincmd.pull.route:
-	go run cmd/admincmd/main.go pull.route
+admincmd.pull.Menu:
+	go run cmd/admincmd/main.go pull.Menu
 
 # push route from file to db
-admincmd.push.route:
-	go run cmd/admincmd/main.go push.route
+admincmd.push.Menu:
+	go run cmd/admincmd/main.go push.Menu
 
 # push route from file to db
 admincmd.seeds:

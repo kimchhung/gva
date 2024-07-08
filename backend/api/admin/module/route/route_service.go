@@ -14,19 +14,19 @@ import (
 )
 
 type RouteService struct {
-	repo *repository.RouteRepository
+	repo *repository.MenuRepository
 }
 
-func NewRouteService(repo *repository.RouteRepository) *RouteService {
+func NewRouteService(repo *repository.MenuRepository) *RouteService {
 	return &RouteService{
 		repo: repo,
 	}
 }
 
-func (s *RouteService) toDto(value ...*ent.Route) []*dto.RouteResponse {
-	list := make([]*dto.RouteResponse, len(value))
+func (s *RouteService) toDto(value ...*ent.Menu) []*dto.MenuResponse {
+	list := make([]*dto.MenuResponse, len(value))
 	for i, v := range value {
-		list[i] = &dto.RouteResponse{
+		list[i] = &dto.MenuResponse{
 			Route: v,
 		}
 	}
@@ -34,7 +34,7 @@ func (s *RouteService) toDto(value ...*ent.Route) []*dto.RouteResponse {
 	return list
 }
 
-func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest) ([]*dto.RouteResponse, *pagi.Meta, error) {
+func (s *RouteService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest) ([]*dto.MenuResponse, *pagi.Meta, error) {
 	query := s.repo.Q(
 		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
 		pagi.WithSort(p.Sort...),
@@ -59,7 +59,7 @@ func (s *RouteService) Paginate(ctx context.Context, p *dto.RoutePaginateRequest
 	return s.toDto(list...), meta, nil
 }
 
-func (s *RouteService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.RouteResponse, error) {
+func (s *RouteService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
 	data, err := s.repo.Q().Where(route.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (s *RouteService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.RouteR
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*dto.RouteResponse, error) {
+func (s *RouteService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	data, err := s.repo.C().Create().
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -84,7 +84,7 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.RouteRequest) (*d
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.RouteRequest) (*dto.RouteResponse, error) {
+func (s *RouteService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	data, err := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).

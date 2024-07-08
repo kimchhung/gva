@@ -18,14 +18,14 @@ type Tx struct {
 	Admin *AdminClient
 	// Department is the client for interacting with the Department builders.
 	Department *DepartmentClient
+	// Menu is the client for interacting with the Menu builders.
+	Menu *MenuClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Region is the client for interacting with the Region builders.
 	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
-	// Route is the client for interacting with the Route builders.
-	Route *RouteClient
 
 	// lazily loaded.
 	client     *Client
@@ -159,10 +159,10 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
 	tx.Department = NewDepartmentClient(tx.config)
+	tx.Menu = NewMenuClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
-	tx.Route = NewRouteClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

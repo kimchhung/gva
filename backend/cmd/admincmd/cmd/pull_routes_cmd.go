@@ -12,7 +12,7 @@ import (
 )
 
 var pullRouteCmd = &cobra.Command{
-	Use:   "pull.route",
+	Use:   "pull.Menu",
 	Short: "Pull routes from the database",
 	Long:  `This command pulls routes from the database and performs necessary operations.`,
 	Run: func(cmd *cobra.Command, args []string) {

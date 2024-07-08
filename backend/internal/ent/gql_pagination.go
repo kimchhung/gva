@@ -17,10 +17,10 @@ import (
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -693,6 +693,302 @@ func (d *Department) ToEdge(order *DepartmentOrder) *DepartmentEdge {
 	return &DepartmentEdge{
 		Node:   d,
 		Cursor: order.Field.toCursor(d),
+	}
+}
+
+// MenuEdge is the edge representation of Menu.
+type MenuEdge struct {
+	Node   *Menu  `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// MenuConnection is the connection containing edges to Menu.
+type MenuConnection struct {
+	Edges      []*MenuEdge `json:"edges"`
+	PageInfo   PageInfo    `json:"pageInfo"`
+	TotalCount int         `json:"totalCount"`
+}
+
+func (c *MenuConnection) build(nodes []*Menu, pager *menuPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Menu
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Menu {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Menu {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*MenuEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &MenuEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// MenuPaginateOption enables pagination customization.
+type MenuPaginateOption func(*menuPager) error
+
+// WithMenuOrder configures pagination ordering.
+func WithMenuOrder(order *MenuOrder) MenuPaginateOption {
+	if order == nil {
+		order = DefaultMenuOrder
+	}
+	o := *order
+	return func(pager *menuPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMenuOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMenuFilter configures pagination filter.
+func WithMenuFilter(filter func(*MenuQuery) (*MenuQuery, error)) MenuPaginateOption {
+	return func(pager *menuPager) error {
+		if filter == nil {
+			return errors.New("MenuQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type menuPager struct {
+	reverse bool
+	order   *MenuOrder
+	filter  func(*MenuQuery) (*MenuQuery, error)
+}
+
+func newMenuPager(opts []MenuPaginateOption, reverse bool) (*menuPager, error) {
+	pager := &menuPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMenuOrder
+	}
+	return pager, nil
+}
+
+func (p *menuPager) applyFilter(query *MenuQuery) (*MenuQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *menuPager) toCursor(m *Menu) Cursor {
+	return p.order.Field.toCursor(m)
+}
+
+func (p *menuPager) applyCursors(query *MenuQuery, after, before *Cursor) (*MenuQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMenuOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *menuPager) applyOrder(query *MenuQuery) *MenuQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultMenuOrder.Field {
+		query = query.Order(DefaultMenuOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *menuPager) orderExpr(query *MenuQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultMenuOrder.Field {
+			b.Comma().Ident(DefaultMenuOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Menu.
+func (m *MenuQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MenuPaginateOption,
+) (*MenuConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMenuPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if m, err = pager.applyFilter(m); err != nil {
+		return nil, err
+	}
+	conn := &MenuConnection{Edges: []*MenuEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := m.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if m, err = pager.applyCursors(m, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		m.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := m.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	m = pager.applyOrder(m)
+	nodes, err := m.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// MenuOrderFieldID orders Menu by id.
+	MenuOrderFieldID = &MenuOrderField{
+		Value: func(m *Menu) (ent.Value, error) {
+			return m.ID, nil
+		},
+		column: menu.FieldID,
+		toTerm: menu.ByID,
+		toCursor: func(m *Menu) Cursor {
+			return Cursor{
+				ID:    m.ID,
+				Value: m.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f MenuOrderField) String() string {
+	var str string
+	switch f.column {
+	case MenuOrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f MenuOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *MenuOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("MenuOrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *MenuOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid MenuOrderField", str)
+	}
+	return nil
+}
+
+// MenuOrderField defines the ordering field of Menu.
+type MenuOrderField struct {
+	// Value extracts the ordering value from the given Menu.
+	Value    func(*Menu) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) menu.OrderOption
+	toCursor func(*Menu) Cursor
+}
+
+// MenuOrder defines the ordering of Menu.
+type MenuOrder struct {
+	Direction OrderDirection  `json:"direction"`
+	Field     *MenuOrderField `json:"field"`
+}
+
+// DefaultMenuOrder is the default ordering of Menu.
+var DefaultMenuOrder = &MenuOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &MenuOrderField{
+		Value: func(m *Menu) (ent.Value, error) {
+			return m.ID, nil
+		},
+		column: menu.FieldID,
+		toTerm: menu.ByID,
+		toCursor: func(m *Menu) Cursor {
+			return Cursor{ID: m.ID}
+		},
+	},
+}
+
+// ToEdge converts Menu into MenuEdge.
+func (m *Menu) ToEdge(order *MenuOrder) *MenuEdge {
+	if order == nil {
+		order = DefaultMenuOrder
+	}
+	return &MenuEdge{
+		Node:   m,
+		Cursor: order.Field.toCursor(m),
 	}
 }
 
@@ -1579,302 +1875,6 @@ func (r *Role) ToEdge(order *RoleOrder) *RoleEdge {
 		order = DefaultRoleOrder
 	}
 	return &RoleEdge{
-		Node:   r,
-		Cursor: order.Field.toCursor(r),
-	}
-}
-
-// RouteEdge is the edge representation of Route.
-type RouteEdge struct {
-	Node   *Route `json:"node"`
-	Cursor Cursor `json:"cursor"`
-}
-
-// RouteConnection is the connection containing edges to Route.
-type RouteConnection struct {
-	Edges      []*RouteEdge `json:"edges"`
-	PageInfo   PageInfo     `json:"pageInfo"`
-	TotalCount int          `json:"totalCount"`
-}
-
-func (c *RouteConnection) build(nodes []*Route, pager *routePager, after *Cursor, first *int, before *Cursor, last *int) {
-	c.PageInfo.HasNextPage = before != nil
-	c.PageInfo.HasPreviousPage = after != nil
-	if first != nil && *first+1 == len(nodes) {
-		c.PageInfo.HasNextPage = true
-		nodes = nodes[:len(nodes)-1]
-	} else if last != nil && *last+1 == len(nodes) {
-		c.PageInfo.HasPreviousPage = true
-		nodes = nodes[:len(nodes)-1]
-	}
-	var nodeAt func(int) *Route
-	if last != nil {
-		n := len(nodes) - 1
-		nodeAt = func(i int) *Route {
-			return nodes[n-i]
-		}
-	} else {
-		nodeAt = func(i int) *Route {
-			return nodes[i]
-		}
-	}
-	c.Edges = make([]*RouteEdge, len(nodes))
-	for i := range nodes {
-		node := nodeAt(i)
-		c.Edges[i] = &RouteEdge{
-			Node:   node,
-			Cursor: pager.toCursor(node),
-		}
-	}
-	if l := len(c.Edges); l > 0 {
-		c.PageInfo.StartCursor = &c.Edges[0].Cursor
-		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
-	}
-	if c.TotalCount == 0 {
-		c.TotalCount = len(nodes)
-	}
-}
-
-// RoutePaginateOption enables pagination customization.
-type RoutePaginateOption func(*routePager) error
-
-// WithRouteOrder configures pagination ordering.
-func WithRouteOrder(order *RouteOrder) RoutePaginateOption {
-	if order == nil {
-		order = DefaultRouteOrder
-	}
-	o := *order
-	return func(pager *routePager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
-		}
-		if o.Field == nil {
-			o.Field = DefaultRouteOrder.Field
-		}
-		pager.order = &o
-		return nil
-	}
-}
-
-// WithRouteFilter configures pagination filter.
-func WithRouteFilter(filter func(*RouteQuery) (*RouteQuery, error)) RoutePaginateOption {
-	return func(pager *routePager) error {
-		if filter == nil {
-			return errors.New("RouteQuery filter cannot be nil")
-		}
-		pager.filter = filter
-		return nil
-	}
-}
-
-type routePager struct {
-	reverse bool
-	order   *RouteOrder
-	filter  func(*RouteQuery) (*RouteQuery, error)
-}
-
-func newRoutePager(opts []RoutePaginateOption, reverse bool) (*routePager, error) {
-	pager := &routePager{reverse: reverse}
-	for _, opt := range opts {
-		if err := opt(pager); err != nil {
-			return nil, err
-		}
-	}
-	if pager.order == nil {
-		pager.order = DefaultRouteOrder
-	}
-	return pager, nil
-}
-
-func (p *routePager) applyFilter(query *RouteQuery) (*RouteQuery, error) {
-	if p.filter != nil {
-		return p.filter(query)
-	}
-	return query, nil
-}
-
-func (p *routePager) toCursor(r *Route) Cursor {
-	return p.order.Field.toCursor(r)
-}
-
-func (p *routePager) applyCursors(query *RouteQuery, after, before *Cursor) (*RouteQuery, error) {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultRouteOrder.Field.column, p.order.Field.column, direction) {
-		query = query.Where(predicate)
-	}
-	return query, nil
-}
-
-func (p *routePager) applyOrder(query *RouteQuery) *RouteQuery {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultRouteOrder.Field {
-		query = query.Order(DefaultRouteOrder.Field.toTerm(direction.OrderTermOption()))
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return query
-}
-
-func (p *routePager) orderExpr(query *RouteQuery) sql.Querier {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultRouteOrder.Field {
-			b.Comma().Ident(DefaultRouteOrder.Field.column).Pad().WriteString(string(direction))
-		}
-	})
-}
-
-// Paginate executes the query and returns a relay based cursor connection to Route.
-func (r *RouteQuery) Paginate(
-	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...RoutePaginateOption,
-) (*RouteConnection, error) {
-	if err := validateFirstLast(first, last); err != nil {
-		return nil, err
-	}
-	pager, err := newRoutePager(opts, last != nil)
-	if err != nil {
-		return nil, err
-	}
-	if r, err = pager.applyFilter(r); err != nil {
-		return nil, err
-	}
-	conn := &RouteConnection{Edges: []*RouteEdge{}}
-	ignoredEdges := !hasCollectedField(ctx, edgesField)
-	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
-		hasPagination := after != nil || first != nil || before != nil || last != nil
-		if hasPagination || ignoredEdges {
-			c := r.Clone()
-			c.ctx.Fields = nil
-			if conn.TotalCount, err = c.Count(ctx); err != nil {
-				return nil, err
-			}
-			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
-			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
-		}
-	}
-	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
-		return conn, nil
-	}
-	if r, err = pager.applyCursors(r, after, before); err != nil {
-		return nil, err
-	}
-	limit := paginateLimit(first, last)
-	if limit != 0 {
-		r.Limit(limit)
-	}
-	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := r.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
-			return nil, err
-		}
-	}
-	r = pager.applyOrder(r)
-	nodes, err := r.All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	conn.build(nodes, pager, after, first, before, last)
-	return conn, nil
-}
-
-var (
-	// RouteOrderFieldID orders Route by id.
-	RouteOrderFieldID = &RouteOrderField{
-		Value: func(r *Route) (ent.Value, error) {
-			return r.ID, nil
-		},
-		column: route.FieldID,
-		toTerm: route.ByID,
-		toCursor: func(r *Route) Cursor {
-			return Cursor{
-				ID:    r.ID,
-				Value: r.ID,
-			}
-		},
-	}
-)
-
-// String implement fmt.Stringer interface.
-func (f RouteOrderField) String() string {
-	var str string
-	switch f.column {
-	case RouteOrderFieldID.column:
-		str = "id"
-	}
-	return str
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (f RouteOrderField) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(f.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (f *RouteOrderField) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("RouteOrderField %T must be a string", v)
-	}
-	switch str {
-	case "id":
-		*f = *RouteOrderFieldID
-	default:
-		return fmt.Errorf("%s is not a valid RouteOrderField", str)
-	}
-	return nil
-}
-
-// RouteOrderField defines the ordering field of Route.
-type RouteOrderField struct {
-	// Value extracts the ordering value from the given Route.
-	Value    func(*Route) (ent.Value, error)
-	column   string // field or computed.
-	toTerm   func(...sql.OrderTermOption) route.OrderOption
-	toCursor func(*Route) Cursor
-}
-
-// RouteOrder defines the ordering of Route.
-type RouteOrder struct {
-	Direction OrderDirection   `json:"direction"`
-	Field     *RouteOrderField `json:"field"`
-}
-
-// DefaultRouteOrder is the default ordering of Route.
-var DefaultRouteOrder = &RouteOrder{
-	Direction: entgql.OrderDirectionAsc,
-	Field: &RouteOrderField{
-		Value: func(r *Route) (ent.Value, error) {
-			return r.ID, nil
-		},
-		column: route.FieldID,
-		toTerm: route.ByID,
-		toCursor: func(r *Route) Cursor {
-			return Cursor{ID: r.ID}
-		},
-	},
-}
-
-// ToEdge converts Route into RouteEdge.
-func (r *Route) ToEdge(order *RouteOrder) *RouteEdge {
-	if order == nil {
-		order = DefaultRouteOrder
-	}
-	return &RouteEdge{
 		Node:   r,
 		Cursor: order.Field.toCursor(r),
 	}

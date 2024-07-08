@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	routeDataPath = "./app/database/data/routes_data.json"
+	routeDataPath = "./app/database/data/menu_data.json"
 )
 
 var pushRouteCmd = &cobra.Command{
-	Use:   "push.route",
+	Use:   "push.Menu",
 	Short: "push routes from json to database, delete and recreate base on file",
 	Long:  `This command pulls routes from the database and performs necessary operations.`,
 	Run: func(cmd *cobra.Command, args []string) {

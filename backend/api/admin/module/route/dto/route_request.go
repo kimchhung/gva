@@ -8,12 +8,12 @@ import (
 
 // Requests & responses Data Transfer Object
 type RouteRequest struct {
-	Name      string          `json:"name,omitempty" validate:"required"`
-	Path      string          `json:"path,omitempty" validate:"required"`
-	Component string          `json:"component,omitempty" validate:"required"`
-	IsEnable  bool            `json:"isEnable"  validate:"required"`
-	Type      route.Type      `json:"type,omitempty" validate:"required"`
-	Meta      types.RouteMeta `json:"meta,omitempty" validate:"required"`
+	Name      string         `json:"name,omitempty" validate:"required"`
+	Path      string         `json:"path,omitempty" validate:"required"`
+	Component string         `json:"component,omitempty" validate:"required"`
+	IsEnable  bool           `json:"isEnable"  validate:"required"`
+	Type      route.Type     `json:"type,omitempty" validate:"required"`
+	Meta      types.MenuMeta `json:"meta,omitempty" validate:"required"`
 
 	// optionals
 	ParentID *int `json:"parentId,omitempty"  validate:"min=0,omitempty"`

@@ -18,7 +18,7 @@ BodyParser(&Person{})
 Swagger
 
 	// @Param 		<name> <params-type> <value-type> <required> <description>
-	// @Param 		info body dto.RouteRequest true "Route Info"
+	// @Param 		info body dto.MenuRequest true "Route Info"
 */
 func BodyParser(out any) Parser {
 	return func(c echo.Context) (any, error) {

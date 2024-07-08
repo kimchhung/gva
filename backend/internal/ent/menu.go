@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/gva/app/database/schema/types"
 	"github.com/gva/app/database/schema/xid"
-	"github.com/gva/internal/ent/route"
+	"github.com/gva/internal/ent/menu"
 )
 
-// Route is the model entity for the Route schema.
-type Route struct {
+// Menu is the model entity for the Menu schema.
+type Menu struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
 	ID xid.ID `json:"id" rql:"filter,sort"`
@@ -41,21 +41,21 @@ type Route struct {
 	// Order holds the value of the "order" field.
 	Order int `json:"order,omitempty" rql:"filter,sort"`
 	// Type holds the value of the "type" field.
-	Type route.Type `json:"type,omitempty" rql:"filter,sort"`
+	Type menu.Type `json:"type,omitempty" rql:"filter,sort"`
 	// Meta holds the value of the "meta" field.
-	Meta types.RouteMeta `json:"meta,omitempty"`
+	Meta types.MenuMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the RouteQuery when eager-loading is set.
-	Edges        RouteEdges `json:"edges" rql:"-"`
+	// The values are being populated by the MenuQuery when eager-loading is set.
+	Edges        MenuEdges `json:"edges" rql:"-"`
 	selectValues sql.SelectValues
 }
 
-// RouteEdges holds the relations/edges for other nodes in the graph.
-type RouteEdges struct {
+// MenuEdges holds the relations/edges for other nodes in the graph.
+type MenuEdges struct {
 	// Parent holds the value of the parent edge.
-	Parent *Route `json:"parent,omitempty"`
+	Parent *Menu `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
-	Children []*Route `json:"children,omitempty"`
+	Children []*Menu `json:"children,omitempty"`
 	// Roles holds the value of the roles edge.
 	Roles []*Role `json:"roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -64,24 +64,24 @@ type RouteEdges struct {
 	// totalCount holds the count of the edges above.
 	totalCount [3]map[string]int
 
-	namedChildren map[string][]*Route
+	namedChildren map[string][]*Menu
 	namedRoles    map[string][]*Role
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e RouteEdges) ParentOrErr() (*Route, error) {
+func (e MenuEdges) ParentOrErr() (*Menu, error) {
 	if e.Parent != nil {
 		return e.Parent, nil
 	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: route.Label}
+		return nil, &NotFoundError{label: menu.Label}
 	}
 	return nil, &NotLoadedError{edge: "parent"}
 }
 
 // ChildrenOrErr returns the Children value or an error if the edge
 // was not loaded in eager-loading.
-func (e RouteEdges) ChildrenOrErr() ([]*Route, error) {
+func (e MenuEdges) ChildrenOrErr() ([]*Menu, error) {
 	if e.loadedTypes[1] {
 		return e.Children, nil
 	}
@@ -90,7 +90,7 @@ func (e RouteEdges) ChildrenOrErr() ([]*Route, error) {
 
 // RolesOrErr returns the Roles value or an error if the edge
 // was not loaded in eager-loading.
-func (e RouteEdges) RolesOrErr() ([]*Role, error) {
+func (e MenuEdges) RolesOrErr() ([]*Role, error) {
 	if e.loadedTypes[2] {
 		return e.Roles, nil
 	}
@@ -98,23 +98,23 @@ func (e RouteEdges) RolesOrErr() ([]*Role, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Route) scanValues(columns []string) ([]any, error) {
+func (*Menu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case route.FieldParentID:
+		case menu.FieldParentID:
 			values[i] = &sql.NullScanner{S: new(xid.ID)}
-		case route.FieldMeta:
+		case menu.FieldMeta:
 			values[i] = new([]byte)
-		case route.FieldIsEnable:
+		case menu.FieldIsEnable:
 			values[i] = new(sql.NullBool)
-		case route.FieldDeletedAt, route.FieldOrder:
+		case menu.FieldDeletedAt, menu.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case route.FieldPath, route.FieldComponent, route.FieldRedirect, route.FieldName, route.FieldType:
+		case menu.FieldPath, menu.FieldComponent, menu.FieldRedirect, menu.FieldName, menu.FieldType:
 			values[i] = new(sql.NullString)
-		case route.FieldCreatedAt, route.FieldUpdatedAt:
+		case menu.FieldCreatedAt, menu.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case route.FieldID:
+		case menu.FieldID:
 			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -124,236 +124,236 @@ func (*Route) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Route fields.
-func (r *Route) assignValues(columns []string, values []any) error {
+// to the Menu fields.
+func (m *Menu) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case route.FieldID:
+		case menu.FieldID:
 			if value, ok := values[i].(*xid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				r.ID = *value
+				m.ID = *value
 			}
-		case route.FieldCreatedAt:
+		case menu.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				r.CreatedAt = value.Time
+				m.CreatedAt = value.Time
 			}
-		case route.FieldUpdatedAt:
+		case menu.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				r.UpdatedAt = value.Time
+				m.UpdatedAt = value.Time
 			}
-		case route.FieldIsEnable:
+		case menu.FieldIsEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_enable", values[i])
 			} else if value.Valid {
-				r.IsEnable = value.Bool
+				m.IsEnable = value.Bool
 			}
-		case route.FieldDeletedAt:
+		case menu.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				r.DeletedAt = int(value.Int64)
+				m.DeletedAt = int(value.Int64)
 			}
-		case route.FieldParentID:
+		case menu.FieldParentID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				r.ParentID = new(xid.ID)
-				*r.ParentID = *value.S.(*xid.ID)
+				m.ParentID = new(xid.ID)
+				*m.ParentID = *value.S.(*xid.ID)
 			}
-		case route.FieldPath:
+		case menu.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
-				r.Path = value.String
+				m.Path = value.String
 			}
-		case route.FieldComponent:
+		case menu.FieldComponent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field component", values[i])
 			} else if value.Valid {
-				r.Component = value.String
+				m.Component = value.String
 			}
-		case route.FieldRedirect:
+		case menu.FieldRedirect:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field redirect", values[i])
 			} else if value.Valid {
-				r.Redirect = new(string)
-				*r.Redirect = value.String
+				m.Redirect = new(string)
+				*m.Redirect = value.String
 			}
-		case route.FieldName:
+		case menu.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				r.Name = value.String
+				m.Name = value.String
 			}
-		case route.FieldOrder:
+		case menu.FieldOrder:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field order", values[i])
 			} else if value.Valid {
-				r.Order = int(value.Int64)
+				m.Order = int(value.Int64)
 			}
-		case route.FieldType:
+		case menu.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				r.Type = route.Type(value.String)
+				m.Type = menu.Type(value.String)
 			}
-		case route.FieldMeta:
+		case menu.FieldMeta:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field meta", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &r.Meta); err != nil {
+				if err := json.Unmarshal(*value, &m.Meta); err != nil {
 					return fmt.Errorf("unmarshal field meta: %w", err)
 				}
 			}
 		default:
-			r.selectValues.Set(columns[i], values[i])
+			m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Route.
+// Value returns the ent.Value that was dynamically selected and assigned to the Menu.
 // This includes values selected through modifiers, order, etc.
-func (r *Route) Value(name string) (ent.Value, error) {
-	return r.selectValues.Get(name)
+func (m *Menu) Value(name string) (ent.Value, error) {
+	return m.selectValues.Get(name)
 }
 
-// QueryParent queries the "parent" edge of the Route entity.
-func (r *Route) QueryParent() *RouteQuery {
-	return NewRouteClient(r.config).QueryParent(r)
+// QueryParent queries the "parent" edge of the Menu entity.
+func (m *Menu) QueryParent() *MenuQuery {
+	return NewMenuClient(m.config).QueryParent(m)
 }
 
-// QueryChildren queries the "children" edge of the Route entity.
-func (r *Route) QueryChildren() *RouteQuery {
-	return NewRouteClient(r.config).QueryChildren(r)
+// QueryChildren queries the "children" edge of the Menu entity.
+func (m *Menu) QueryChildren() *MenuQuery {
+	return NewMenuClient(m.config).QueryChildren(m)
 }
 
-// QueryRoles queries the "roles" edge of the Route entity.
-func (r *Route) QueryRoles() *RoleQuery {
-	return NewRouteClient(r.config).QueryRoles(r)
+// QueryRoles queries the "roles" edge of the Menu entity.
+func (m *Menu) QueryRoles() *RoleQuery {
+	return NewMenuClient(m.config).QueryRoles(m)
 }
 
-// Update returns a builder for updating this Route.
-// Note that you need to call Route.Unwrap() before calling this method if this Route
+// Update returns a builder for updating this Menu.
+// Note that you need to call Menu.Unwrap() before calling this method if this Menu
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (r *Route) Update() *RouteUpdateOne {
-	return NewRouteClient(r.config).UpdateOne(r)
+func (m *Menu) Update() *MenuUpdateOne {
+	return NewMenuClient(m.config).UpdateOne(m)
 }
 
-// Unwrap unwraps the Route entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Menu entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (r *Route) Unwrap() *Route {
-	_tx, ok := r.config.driver.(*txDriver)
+func (m *Menu) Unwrap() *Menu {
+	_tx, ok := m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Route is not a transactional entity")
+		panic("ent: Menu is not a transactional entity")
 	}
-	r.config.driver = _tx.drv
-	return r
+	m.config.driver = _tx.drv
+	return m
 }
 
 // String implements the fmt.Stringer.
-func (r *Route) String() string {
+func (m *Menu) String() string {
 	var builder strings.Builder
-	builder.WriteString("Route(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
+	builder.WriteString("Menu(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(r.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("is_enable=")
-	builder.WriteString(fmt.Sprintf("%v", r.IsEnable))
+	builder.WriteString(fmt.Sprintf("%v", m.IsEnable))
 	builder.WriteString(", ")
 	builder.WriteString("deleted_at=")
-	builder.WriteString(fmt.Sprintf("%v", r.DeletedAt))
+	builder.WriteString(fmt.Sprintf("%v", m.DeletedAt))
 	builder.WriteString(", ")
-	if v := r.ParentID; v != nil {
+	if v := m.ParentID; v != nil {
 		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("path=")
-	builder.WriteString(r.Path)
+	builder.WriteString(m.Path)
 	builder.WriteString(", ")
 	builder.WriteString("component=")
-	builder.WriteString(r.Component)
+	builder.WriteString(m.Component)
 	builder.WriteString(", ")
-	if v := r.Redirect; v != nil {
+	if v := m.Redirect; v != nil {
 		builder.WriteString("redirect=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")
-	builder.WriteString(r.Name)
+	builder.WriteString(m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("order=")
-	builder.WriteString(fmt.Sprintf("%v", r.Order))
+	builder.WriteString(fmt.Sprintf("%v", m.Order))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
-	builder.WriteString(fmt.Sprintf("%v", r.Type))
+	builder.WriteString(fmt.Sprintf("%v", m.Type))
 	builder.WriteString(", ")
 	builder.WriteString("meta=")
-	builder.WriteString(fmt.Sprintf("%v", r.Meta))
+	builder.WriteString(fmt.Sprintf("%v", m.Meta))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
 // NamedChildren returns the Children named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (r *Route) NamedChildren(name string) ([]*Route, error) {
-	if r.Edges.namedChildren == nil {
+func (m *Menu) NamedChildren(name string) ([]*Menu, error) {
+	if m.Edges.namedChildren == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := r.Edges.namedChildren[name]
+	nodes, ok := m.Edges.namedChildren[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (r *Route) appendNamedChildren(name string, edges ...*Route) {
-	if r.Edges.namedChildren == nil {
-		r.Edges.namedChildren = make(map[string][]*Route)
+func (m *Menu) appendNamedChildren(name string, edges ...*Menu) {
+	if m.Edges.namedChildren == nil {
+		m.Edges.namedChildren = make(map[string][]*Menu)
 	}
 	if len(edges) == 0 {
-		r.Edges.namedChildren[name] = []*Route{}
+		m.Edges.namedChildren[name] = []*Menu{}
 	} else {
-		r.Edges.namedChildren[name] = append(r.Edges.namedChildren[name], edges...)
+		m.Edges.namedChildren[name] = append(m.Edges.namedChildren[name], edges...)
 	}
 }
 
 // NamedRoles returns the Roles named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (r *Route) NamedRoles(name string) ([]*Role, error) {
-	if r.Edges.namedRoles == nil {
+func (m *Menu) NamedRoles(name string) ([]*Role, error) {
+	if m.Edges.namedRoles == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := r.Edges.namedRoles[name]
+	nodes, ok := m.Edges.namedRoles[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (r *Route) appendNamedRoles(name string, edges ...*Role) {
-	if r.Edges.namedRoles == nil {
-		r.Edges.namedRoles = make(map[string][]*Role)
+func (m *Menu) appendNamedRoles(name string, edges ...*Role) {
+	if m.Edges.namedRoles == nil {
+		m.Edges.namedRoles = make(map[string][]*Role)
 	}
 	if len(edges) == 0 {
-		r.Edges.namedRoles[name] = []*Role{}
+		m.Edges.namedRoles[name] = []*Role{}
 	} else {
-		r.Edges.namedRoles[name] = append(r.Edges.namedRoles[name], edges...)
+		m.Edges.namedRoles[name] = append(m.Edges.namedRoles[name], edges...)
 	}
 }
 
-// Routes is a parsable slice of Route.
-type Routes []*Route
+// Menus is a parsable slice of Menu.
+type Menus []*Menu

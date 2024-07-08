@@ -9,37 +9,39 @@ import (
 )
 
 const (
-	AdminRoleGroup = "ADMIN_ROLE"
-
-	AdminRoleSuper  PermissionKey = "ADMIN_ROLE.SUPER"
-	AdminRoleView   PermissionKey = "ADMIN_ROLE.VIEW"
-	AdminRoleModify PermissionKey = "ADMIN_ROLE.MODIFY"
-	AdminRoleDelete PermissionKey = "ADMIN_ROLE.DELETE"
+	AdminRoleGroup PermissionGroup = "ADMIN_ROLE"
 )
 
-func init() {
-	groups = append(groups, AdminRoleGroup)
-	keys = append(keys, AdminRoleSuper, AdminRoleView, AdminRoleModify, AdminRoleDelete)
+var (
+	AdminRoleSuper  = newKey(AdminGroup, ActionSuper)
+	AdminRoleView   = newKey(AdminGroup, ActionSuper)
+	AdminRoleModify = newKey(AdminGroup, ActionSuper)
+	AdminRoleDelete = newKey(AdminGroup, ActionSuper)
+)
+
+type AdminRoleSeeder struct {
+	group PermissionGroup
+	keys  []PermissionKey
 }
 
-var _ database.Seeder = (*AdminRolePermissionSeeder)(nil)
-
-type AdminRolePermissionSeeder struct {
+func NewAdminRoleSeeder() database.Seeder {
+	return &AdminRoleSeeder{
+		group: AdminRoleGroup,
+		keys: []PermissionKey{
+			AdminRoleSuper,
+			AdminRoleView,
+			AdminRoleModify,
+			AdminRoleDelete,
+		},
+	}
 }
 
-func (AdminRolePermissionSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
-	group := AdminRoleGroup
-
+func (seeder AdminRoleSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
+	group := string(seeder.group)
 	return conn.Permission.Query().Where(permission.GroupEQ(group)).Count(ctx)
 }
 
-func (AdminRolePermissionSeeder) Seed(ctx context.Context, conn *ent.Client) error {
-	perms := createBulkPermissionDto(conn, AdminRoleGroup,
-		AdminRoleSuper,
-		AdminRoleView,
-		AdminRoleModify,
-		AdminRoleDelete,
-	)
-
+func (seeder AdminRoleSeeder) Seed(ctx context.Context, conn *ent.Client) error {
+	perms := createBulkPermissionDto(conn, seeder.keys...)
 	return conn.Permission.CreateBulk(perms...).Exec(ctx)
 }

@@ -12,6 +12,9 @@ type Admin func(*sql.Selector)
 // Department is the predicate function for department builders.
 type Department func(*sql.Selector)
 
+// Menu is the predicate function for menu builders.
+type Menu func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 
@@ -20,6 +23,3 @@ type Region func(*sql.Selector)
 
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
-
-// Route is the predicate function for route builders.
-type Route func(*sql.Selector)

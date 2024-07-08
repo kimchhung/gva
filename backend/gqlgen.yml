@@ -88,6 +88,6 @@ models:
       - github.com/gva/internal/ent.Noder
   RouteMeta:
     model:
-      - github.com/gva/app/database/schema/types.RouteMeta   
+      - github.com/gva/app/database/schema/types.MenuMeta   
 
 

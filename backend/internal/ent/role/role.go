@@ -52,9 +52,9 @@ const (
 	PermissionsInverseTable = "permissions"
 	// RoutesTable is the table that holds the routes relation/edge. The primary key declared below.
 	RoutesTable = "role_routes"
-	// RoutesInverseTable is the table name for the Route entity.
-	// It exists in this package in order to avoid circular dependency with the "route" package.
-	RoutesInverseTable = "routes"
+	// RoutesInverseTable is the table name for the Menu entity.
+	// It exists in this package in order to avoid circular dependency with the "menu" package.
+	RoutesInverseTable = "menus"
 )
 
 // Columns holds all SQL columns for role fields.
@@ -79,7 +79,7 @@ var (
 	PermissionsPrimaryKey = []string{"role_id", "permission_id"}
 	// RoutesPrimaryKey and RoutesColumn2 are the table columns denoting the
 	// primary key for the routes relation (M2M).
-	RoutesPrimaryKey = []string{"role_id", "route_id"}
+	RoutesPrimaryKey = []string{"role_id", "menu_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

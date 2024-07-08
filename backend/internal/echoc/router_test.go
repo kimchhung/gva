@@ -24,7 +24,7 @@ func (MyController) Init(r *echo.Group) *echo.Group {
 	return r
 }
 
-func (con *MyController) Hello(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *MyController) Hello(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/hello").Do(func(c echo.Context) error {
 		return c.String(200, "hello")
 	})
@@ -48,7 +48,7 @@ func BenchmarkHandleRequestCtr(b *testing.B) {
 	con := &MyController{}
 	echoc.Register(app, con)
 
-	helloHandlers := con.Hello(&echoc.RouteMeta{})
+	helloHandlers := con.Hello(&echoc.MenuMeta{})
 	handler := func(cc echo.Context) (err error) {
 		for _, h := range helloHandlers() {
 			if err = h(cc); err == nil {

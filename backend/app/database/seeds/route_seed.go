@@ -16,11 +16,11 @@ type RouterSeeder struct {
 }
 
 func (RouterSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {
-	return db.Route.Query().Count(ctx)
+	return db.Menu.Query().Count(ctx)
 }
 
-func getRouteData() (routes []*ent.Route) {
-	bytes, err := json.ReadJsonFile("./app/database/data/routes_data.json")
+func getRouteData() (routes []*ent.Menu) {
+	bytes, err := json.ReadJsonFile("./app/database/data/menu_data.json")
 	if err != nil {
 		log.Panicf("can't raed seed data %v", err)
 	}
@@ -47,9 +47,9 @@ func (s RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
 }
 
 // seedRouteRecursively seeds a single route and its children recursively
-func (s RouterSeeder) seedRouteRecursively(ctx context.Context, tx *ent.Tx, routes ...*ent.Route) (createdRoutes []*ent.Route, err error) {
+func (s RouterSeeder) seedRouteRecursively(ctx context.Context, tx *ent.Tx, routes ...*ent.Menu) (createdRoutes []*ent.Menu, err error) {
 	for i, r := range routes {
-		createRoute := tx.Route.Create().
+		createRoute := tx.Menu.Create().
 			SetComponent(r.Component).
 			SetPath(r.Path).
 			SetIsEnable(true).
@@ -60,7 +60,7 @@ func (s RouterSeeder) seedRouteRecursively(ctx context.Context, tx *ent.Tx, rout
 			SetType(r.Type).
 			SetOrder(len(r.Edges.Children)) // Assuming order is determined by the number of children
 
-		var createdChildren []*ent.Route
+		var createdChildren []*ent.Menu
 		if len(r.Edges.Children) > 0 {
 			createdChildren, err = s.seedRouteRecursively(ctx, tx, r.Edges.Children...)
 			if err != nil {

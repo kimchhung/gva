@@ -33,7 +33,7 @@ var seedCmd = &cobra.Command{
 		ctx = context.WithValue(ctx, service.PasswordService{}, service.NewPasswordService(cfg))
 
 		db.SeedModels(ctx,
-			seeds.RouterSeeder{},
+			seeds.MenurSeeder{},
 			seeds.SuperAdminSeeder{},
 			seeds.DepartmentSeeder{},
 			seeds.RegionSeeder{},

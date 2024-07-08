@@ -16,12 +16,12 @@ func NewRouteRepository(database *database.Database) *RouteRepository {
 	}
 }
 
-func (r *RouteRepository) C() *ent.RouteClient {
-	return r.db.Route
+func (r *RouteRepository) C() *ent.MenuClient {
+	return r.db.Menu
 }
 
 // For query
-func (r *RouteRepository) Q(opts ...pagi.InterceptorOption) *ent.RouteQuery {
+func (r *RouteRepository) Q(opts ...pagi.InterceptorOption) *ent.MenuQuery {
 	if len(opts) == 0 {
 		return r.C().Query()
 	}

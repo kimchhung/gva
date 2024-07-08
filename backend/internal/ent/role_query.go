@@ -14,10 +14,10 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 
 	"github.com/gva/internal/ent/internal"
 )
@@ -31,12 +31,12 @@ type RoleQuery struct {
 	predicates           []predicate.Role
 	withAdmins           *AdminQuery
 	withPermissions      *PermissionQuery
-	withRoutes           *RouteQuery
+	withRoutes           *MenuQuery
 	loadTotal            []func(context.Context, []*Role) error
 	modifiers            []func(*sql.Selector)
 	withNamedAdmins      map[string]*AdminQuery
 	withNamedPermissions map[string]*PermissionQuery
-	withNamedRoutes      map[string]*RouteQuery
+	withNamedRoutes      map[string]*MenuQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -124,8 +124,8 @@ func (rq *RoleQuery) QueryPermissions() *PermissionQuery {
 }
 
 // QueryRoutes chains the current query on the "routes" edge.
-func (rq *RoleQuery) QueryRoutes() *RouteQuery {
-	query := (&RouteClient{config: rq.config}).Query()
+func (rq *RoleQuery) QueryRoutes() *MenuQuery {
+	query := (&MenuClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -136,11 +136,11 @@ func (rq *RoleQuery) QueryRoutes() *RouteQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, selector),
-			sqlgraph.To(route.Table, route.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.MenusTable, role.MenusPrimaryKey...),
 		)
 		schemaConfig := rq.schemaConfig
-		step.To.Schema = schemaConfig.Route
+		step.To.Schema = schemaConfig.Menu
 		step.Edge.Schema = schemaConfig.RoleRoutes
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -373,8 +373,8 @@ func (rq *RoleQuery) WithPermissions(opts ...func(*PermissionQuery)) *RoleQuery 
 
 // WithRoutes tells the query-builder to eager-load the nodes that are connected to
 // the "routes" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RoleQuery) WithRoutes(opts ...func(*RouteQuery)) *RoleQuery {
-	query := (&RouteClient{config: rq.config}).Query()
+func (rq *RoleQuery) WithRoutes(opts ...func(*MenuQuery)) *RoleQuery {
+	query := (&MenuClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -505,8 +505,8 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	}
 	if query := rq.withRoutes; query != nil {
 		if err := rq.loadRoutes(ctx, query, nodes,
-			func(n *Role) { n.Edges.Routes = []*Route{} },
-			func(n *Role, e *Route) { n.Edges.Routes = append(n.Edges.Routes, e) }); err != nil {
+			func(n *Role) { n.Edges.Menus = []*Menu{} },
+			func(n *Role, e *Menu) { n.Edges.Menus = append(n.Edges.Menus, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -527,7 +527,7 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	for name, query := range rq.withNamedRoutes {
 		if err := rq.loadRoutes(ctx, query, nodes,
 			func(n *Role) { n.appendNamedRoutes(name) },
-			func(n *Role, e *Route) { n.appendNamedRoutes(name, e) }); err != nil {
+			func(n *Role, e *Menu) { n.appendNamedRoutes(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -663,7 +663,7 @@ func (rq *RoleQuery) loadPermissions(ctx context.Context, query *PermissionQuery
 	}
 	return nil
 }
-func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []*Role, init func(*Role), assign func(*Role, *Route)) error {
+func (rq *RoleQuery) loadRoutes(ctx context.Context, query *MenuQuery, nodes []*Role, init func(*Role), assign func(*Role, *Menu)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[xid.ID]*Role)
 	nids := make(map[xid.ID]map[*Role]struct{})
@@ -675,12 +675,12 @@ func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.RoutesTable)
+		joinT := sql.Table(role.MenusTable)
 		joinT.Schema(rq.schemaConfig.RoleRoutes)
-		s.Join(joinT).On(s.C(route.FieldID), joinT.C(role.RoutesPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(role.RoutesPrimaryKey[0]), edgeIDs...))
+		s.Join(joinT).On(s.C(menu.FieldID), joinT.C(role.MenusPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(role.MenusPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.RoutesPrimaryKey[0]))
+		s.Select(joinT.C(role.MenusPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -710,7 +710,7 @@ func (rq *RoleQuery) loadRoutes(ctx context.Context, query *RouteQuery, nodes []
 			}
 		})
 	})
-	neighbors, err := withInterceptors[[]*Route](ctx, query, qr, query.inters)
+	neighbors, err := withInterceptors[[]*Menu](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
@@ -880,13 +880,13 @@ func (rq *RoleQuery) WithNamedPermissions(name string, opts ...func(*PermissionQ
 
 // WithNamedRoutes tells the query-builder to eager-load the nodes that are connected to the "routes"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (rq *RoleQuery) WithNamedRoutes(name string, opts ...func(*RouteQuery)) *RoleQuery {
-	query := (&RouteClient{config: rq.config}).Query()
+func (rq *RoleQuery) WithNamedRoutes(name string, opts ...func(*MenuQuery)) *RoleQuery {
+	query := (&MenuClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
 	if rq.withNamedRoutes == nil {
-		rq.withNamedRoutes = make(map[string]*RouteQuery)
+		rq.withNamedRoutes = make(map[string]*MenuQuery)
 	}
 	rq.withNamedRoutes[name] = query
 	return rq

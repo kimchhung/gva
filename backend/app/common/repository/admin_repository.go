@@ -27,5 +27,5 @@ func (r *AdminRepository) Q(opts ...pagi.InterceptorOption) *ent.AdminQuery {
 		return r.C().Query()
 	}
 
-	return r.C().Query()
+	return pagi.WithInterceptor(r.C().Query(), opts...)
 }

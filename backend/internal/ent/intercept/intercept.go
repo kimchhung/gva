@@ -10,11 +10,11 @@ import (
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 )
 
 // The Query interface represents an operation that queries a graph.
@@ -127,6 +127,33 @@ func (f TraverseDepartment) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.DepartmentQuery", q)
 }
 
+// The MenuFunc type is an adapter to allow the use of ordinary function as a Querier.
+type MenuFunc func(context.Context, *ent.MenuQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f MenuFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.MenuQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.MenuQuery", q)
+}
+
+// The TraverseMenu type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseMenu func(context.Context, *ent.MenuQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseMenu) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseMenu) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MenuQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.MenuQuery", q)
+}
+
 // The PermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
 type PermissionFunc func(context.Context, *ent.PermissionQuery) (ent.Value, error)
 
@@ -208,33 +235,6 @@ func (f TraverseRole) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.RoleQuery", q)
 }
 
-// The RouteFunc type is an adapter to allow the use of ordinary function as a Querier.
-type RouteFunc func(context.Context, *ent.RouteQuery) (ent.Value, error)
-
-// Query calls f(ctx, q).
-func (f RouteFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.RouteQuery); ok {
-		return f(ctx, q)
-	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.RouteQuery", q)
-}
-
-// The TraverseRoute type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseRoute func(context.Context, *ent.RouteQuery) error
-
-// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseRoute) Intercept(next ent.Querier) ent.Querier {
-	return next
-}
-
-// Traverse calls f(ctx, q).
-func (f TraverseRoute) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.RouteQuery); ok {
-		return f(ctx, q)
-	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.RouteQuery", q)
-}
-
 // NewQuery returns the generic Query interface for the given typed query.
 func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
@@ -242,14 +242,14 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.AdminQuery, predicate.Admin, admin.OrderOption]{typ: ent.TypeAdmin, tq: q}, nil
 	case *ent.DepartmentQuery:
 		return &query[*ent.DepartmentQuery, predicate.Department, department.OrderOption]{typ: ent.TypeDepartment, tq: q}, nil
+	case *ent.MenuQuery:
+		return &query[*ent.MenuQuery, predicate.Menu, menu.OrderOption]{typ: ent.TypeMenu, tq: q}, nil
 	case *ent.PermissionQuery:
 		return &query[*ent.PermissionQuery, predicate.Permission, permission.OrderOption]{typ: ent.TypePermission, tq: q}, nil
 	case *ent.RegionQuery:
 		return &query[*ent.RegionQuery, predicate.Region, region.OrderOption]{typ: ent.TypeRegion, tq: q}, nil
 	case *ent.RoleQuery:
 		return &query[*ent.RoleQuery, predicate.Role, role.OrderOption]{typ: ent.TypeRole, tq: q}, nil
-	case *ent.RouteQuery:
-		return &query[*ent.RouteQuery, predicate.Route, route.OrderOption]{typ: ent.TypeRoute, tq: q}, nil
 	default:
 		return nil, fmt.Errorf("unknown query type %T", q)
 	}

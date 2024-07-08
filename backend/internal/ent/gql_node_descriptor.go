@@ -9,10 +9,10 @@ import (
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 )
 
 // Node in the graph.
@@ -232,6 +232,144 @@ func (d *Department) Node(ctx context.Context) (node *Node, err error) {
 	}
 	err = d.QueryMembers().
 		Select(admin.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+// Node implements Noder interface
+func (m *Menu) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     m.ID,
+		Type:   "Menu",
+		Fields: make([]*Field, 12),
+		Edges:  make([]*Edge, 3),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(m.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.IsEnable); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "bool",
+		Name:  "is_enable",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "int",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.ParentID); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "xid.ID",
+		Name:  "parent_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Path); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "string",
+		Name:  "path",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Component); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "string",
+		Name:  "component",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Redirect); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "string",
+		Name:  "redirect",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[8] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Order); err != nil {
+		return nil, err
+	}
+	node.Fields[9] = &Field{
+		Type:  "int",
+		Name:  "order",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Type); err != nil {
+		return nil, err
+	}
+	node.Fields[10] = &Field{
+		Type:  "menu.Type",
+		Name:  "type",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Meta); err != nil {
+		return nil, err
+	}
+	node.Fields[11] = &Field{
+		Type:  "types.MenuMeta",
+		Name:  "meta",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Menu",
+		Name: "parent",
+	}
+	err = m.QueryParent().
+		Select(menu.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Menu",
+		Name: "children",
+	}
+	err = m.QueryChildren().
+		Select(menu.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Role",
+		Name: "roles",
+	}
+	err = m.QueryRoles().
+		Select(role.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
@@ -499,149 +637,11 @@ func (r *Role) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[2] = &Edge{
-		Type: "Route",
+		Type: "Menu",
 		Name: "routes",
 	}
 	err = r.QueryRoutes().
-		Select(route.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
-	if err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
-// Node implements Noder interface
-func (r *Route) Node(ctx context.Context) (node *Node, err error) {
-	node = &Node{
-		ID:     r.ID,
-		Type:   "Route",
-		Fields: make([]*Field, 12),
-		Edges:  make([]*Edge, 3),
-	}
-	var buf []byte
-	if buf, err = json.Marshal(r.CreatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "time.Time",
-		Name:  "created_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.UpdatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "time.Time",
-		Name:  "updated_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.IsEnable); err != nil {
-		return nil, err
-	}
-	node.Fields[2] = &Field{
-		Type:  "bool",
-		Name:  "is_enable",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.DeletedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "int",
-		Name:  "deleted_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.ParentID); err != nil {
-		return nil, err
-	}
-	node.Fields[4] = &Field{
-		Type:  "xid.ID",
-		Name:  "parent_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Path); err != nil {
-		return nil, err
-	}
-	node.Fields[5] = &Field{
-		Type:  "string",
-		Name:  "path",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Component); err != nil {
-		return nil, err
-	}
-	node.Fields[6] = &Field{
-		Type:  "string",
-		Name:  "component",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Redirect); err != nil {
-		return nil, err
-	}
-	node.Fields[7] = &Field{
-		Type:  "string",
-		Name:  "redirect",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Name); err != nil {
-		return nil, err
-	}
-	node.Fields[8] = &Field{
-		Type:  "string",
-		Name:  "name",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Order); err != nil {
-		return nil, err
-	}
-	node.Fields[9] = &Field{
-		Type:  "int",
-		Name:  "order",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Type); err != nil {
-		return nil, err
-	}
-	node.Fields[10] = &Field{
-		Type:  "route.Type",
-		Name:  "type",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(r.Meta); err != nil {
-		return nil, err
-	}
-	node.Fields[11] = &Field{
-		Type:  "types.RouteMeta",
-		Name:  "meta",
-		Value: string(buf),
-	}
-	node.Edges[0] = &Edge{
-		Type: "Route",
-		Name: "parent",
-	}
-	err = r.QueryParent().
-		Select(route.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[1] = &Edge{
-		Type: "Route",
-		Name: "children",
-	}
-	err = r.QueryChildren().
-		Select(route.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[2] = &Edge{
-		Type: "Role",
-		Name: "roles",
-	}
-	err = r.QueryRoles().
-		Select(role.FieldID).
+		Select(menu.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err

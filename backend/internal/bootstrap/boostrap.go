@@ -19,7 +19,7 @@ import (
 type Bootstrap struct {
 	lc          fx.Lifecycle
 	cfg         *env.Config
-	routers     *router.Router
+	routers     *router.Menur
 	app         *echo.Echo
 	middlewares *middleware.Middleware
 	db          *database.Database
@@ -32,7 +32,7 @@ type Bootstrap struct {
 func NewBootstrap(
 	lc fx.Lifecycle,
 	cfg *env.Config,
-	routers *router.Router,
+	routers *router.Menur,
 	app *echo.Echo,
 	middlewares *middleware.Middleware,
 	db *database.Database,
@@ -89,7 +89,7 @@ func (b *Bootstrap) start(ctx context.Context) {
 
 	// Register middlewares & routes
 	b.middlewares.Register()
-	b.routers.Register(b.app, b.cfg)
+	b.Menurs.Register(b.app, b.cfg)
 
 	b.app.Server.RegisterOnShutdown(func() {
 		log.Info().Msg("1- Shutdown the database")
@@ -99,7 +99,7 @@ func (b *Bootstrap) start(ctx context.Context) {
 	})
 
 	if b.cfg.App.PrintRoutes {
-		printRoutes(b.app.Routes())
+		printRoutes(b.app.Menus())
 	}
 
 	printStartupMessage(b.cfg)

@@ -32,10 +32,8 @@ var seedPermissionCmd = &cobra.Command{
 		ctx = context.WithValue(ctx, env.Config{}, cfg)
 		ctx = context.WithValue(ctx, service.PasswordService{}, service.NewPasswordService(cfg))
 
-		db.SeedModels(ctx,
-			permission.AdminPermissionSeeder{},
-			permission.AdminRolePermissionSeeder{},
-		)
+		// seeds all permission
+		db.SeedModels(ctx, permission.AllSeeders()...)
 	},
 }
 

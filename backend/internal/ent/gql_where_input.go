@@ -10,11 +10,11 @@ import (
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 )
 
 // AdminWhereInput represents a where input for filtering Admin queries.
@@ -1001,6 +1001,654 @@ func (i *DepartmentWhereInput) P() (predicate.Department, error) {
 	}
 }
 
+// MenuWhereInput represents a where input for filtering Menu queries.
+type MenuWhereInput struct {
+	Predicates []predicate.Menu  `json:"-"`
+	Not        *MenuWhereInput   `json:"not,omitempty"`
+	Or         []*MenuWhereInput `json:"or,omitempty"`
+	And        []*MenuWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *xid.ID  `json:"id,omitempty"`
+	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []xid.ID `json:"idIn,omitempty"`
+	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
+	IDGT    *xid.ID  `json:"idGT,omitempty"`
+	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
+	IDLT    *xid.ID  `json:"idLT,omitempty"`
+	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "is_enable" field predicates.
+	IsEnable    *bool `json:"isEnable,omitempty"`
+	IsEnableNEQ *bool `json:"isEnableNEQ,omitempty"`
+
+	// "deleted_at" field predicates.
+	DeletedAt      *int  `json:"deletedAt,omitempty"`
+	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
+	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
+	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
+	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
+	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
+	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
+	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
+
+	// "parent_id" field predicates.
+	ParentID             *xid.ID  `json:"parentID,omitempty"`
+	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
+	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
+	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
+	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
+	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
+	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
+	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
+	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
+	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
+	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
+	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
+	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
+	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
+	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
+
+	// "path" field predicates.
+	Path             *string  `json:"path,omitempty"`
+	PathNEQ          *string  `json:"pathNEQ,omitempty"`
+	PathIn           []string `json:"pathIn,omitempty"`
+	PathNotIn        []string `json:"pathNotIn,omitempty"`
+	PathGT           *string  `json:"pathGT,omitempty"`
+	PathGTE          *string  `json:"pathGTE,omitempty"`
+	PathLT           *string  `json:"pathLT,omitempty"`
+	PathLTE          *string  `json:"pathLTE,omitempty"`
+	PathContains     *string  `json:"pathContains,omitempty"`
+	PathHasPrefix    *string  `json:"pathHasPrefix,omitempty"`
+	PathHasSuffix    *string  `json:"pathHasSuffix,omitempty"`
+	PathEqualFold    *string  `json:"pathEqualFold,omitempty"`
+	PathContainsFold *string  `json:"pathContainsFold,omitempty"`
+
+	// "component" field predicates.
+	Component             *string  `json:"component,omitempty"`
+	ComponentNEQ          *string  `json:"componentNEQ,omitempty"`
+	ComponentIn           []string `json:"componentIn,omitempty"`
+	ComponentNotIn        []string `json:"componentNotIn,omitempty"`
+	ComponentGT           *string  `json:"componentGT,omitempty"`
+	ComponentGTE          *string  `json:"componentGTE,omitempty"`
+	ComponentLT           *string  `json:"componentLT,omitempty"`
+	ComponentLTE          *string  `json:"componentLTE,omitempty"`
+	ComponentContains     *string  `json:"componentContains,omitempty"`
+	ComponentHasPrefix    *string  `json:"componentHasPrefix,omitempty"`
+	ComponentHasSuffix    *string  `json:"componentHasSuffix,omitempty"`
+	ComponentEqualFold    *string  `json:"componentEqualFold,omitempty"`
+	ComponentContainsFold *string  `json:"componentContainsFold,omitempty"`
+
+	// "redirect" field predicates.
+	Redirect             *string  `json:"redirect,omitempty"`
+	RedirectNEQ          *string  `json:"redirectNEQ,omitempty"`
+	RedirectIn           []string `json:"redirectIn,omitempty"`
+	RedirectNotIn        []string `json:"redirectNotIn,omitempty"`
+	RedirectGT           *string  `json:"redirectGT,omitempty"`
+	RedirectGTE          *string  `json:"redirectGTE,omitempty"`
+	RedirectLT           *string  `json:"redirectLT,omitempty"`
+	RedirectLTE          *string  `json:"redirectLTE,omitempty"`
+	RedirectContains     *string  `json:"redirectContains,omitempty"`
+	RedirectHasPrefix    *string  `json:"redirectHasPrefix,omitempty"`
+	RedirectHasSuffix    *string  `json:"redirectHasSuffix,omitempty"`
+	RedirectIsNil        bool     `json:"redirectIsNil,omitempty"`
+	RedirectNotNil       bool     `json:"redirectNotNil,omitempty"`
+	RedirectEqualFold    *string  `json:"redirectEqualFold,omitempty"`
+	RedirectContainsFold *string  `json:"redirectContainsFold,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "order" field predicates.
+	Order       *int  `json:"order,omitempty"`
+	OrderNEQ    *int  `json:"orderNEQ,omitempty"`
+	OrderIn     []int `json:"orderIn,omitempty"`
+	OrderNotIn  []int `json:"orderNotIn,omitempty"`
+	OrderGT     *int  `json:"orderGT,omitempty"`
+	OrderGTE    *int  `json:"orderGTE,omitempty"`
+	OrderLT     *int  `json:"orderLT,omitempty"`
+	OrderLTE    *int  `json:"orderLTE,omitempty"`
+	OrderIsNil  bool  `json:"orderIsNil,omitempty"`
+	OrderNotNil bool  `json:"orderNotNil,omitempty"`
+
+	// "type" field predicates.
+	Type      *menu.Type  `json:"type,omitempty"`
+	TypeNEQ   *menu.Type  `json:"typeNEQ,omitempty"`
+	TypeIn    []menu.Type `json:"typeIn,omitempty"`
+	TypeNotIn []menu.Type `json:"typeNotIn,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool             `json:"hasParent,omitempty"`
+	HasParentWith []*MenuWhereInput `json:"hasParentWith,omitempty"`
+
+	// "children" edge predicates.
+	HasChildren     *bool             `json:"hasChildren,omitempty"`
+	HasChildrenWith []*MenuWhereInput `json:"hasChildrenWith,omitempty"`
+
+	// "roles" edge predicates.
+	HasRoles     *bool             `json:"hasRoles,omitempty"`
+	HasRolesWith []*RoleWhereInput `json:"hasRolesWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *MenuWhereInput) AddPredicates(predicates ...predicate.Menu) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the MenuWhereInput filter on the MenuQuery builder.
+func (i *MenuWhereInput) Filter(q *MenuQuery) (*MenuQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyMenuWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyMenuWhereInput is returned in case the MenuWhereInput is empty.
+var ErrEmptyMenuWhereInput = errors.New("ent: empty predicate MenuWhereInput")
+
+// P returns a predicate for filtering menus.
+// An error is returned if the input is empty or invalid.
+func (i *MenuWhereInput) P() (predicate.Menu, error) {
+	var predicates []predicate.Menu
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, menu.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Menu, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, menu.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Menu, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, menu.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, menu.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, menu.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, menu.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, menu.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, menu.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, menu.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, menu.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, menu.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, menu.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, menu.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, menu.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, menu.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, menu.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, menu.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, menu.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, menu.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, menu.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, menu.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, menu.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, menu.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, menu.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, menu.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, menu.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, menu.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.IsEnable != nil {
+		predicates = append(predicates, menu.IsEnableEQ(*i.IsEnable))
+	}
+	if i.IsEnableNEQ != nil {
+		predicates = append(predicates, menu.IsEnableNEQ(*i.IsEnableNEQ))
+	}
+	if i.DeletedAt != nil {
+		predicates = append(predicates, menu.DeletedAtEQ(*i.DeletedAt))
+	}
+	if i.DeletedAtNEQ != nil {
+		predicates = append(predicates, menu.DeletedAtNEQ(*i.DeletedAtNEQ))
+	}
+	if len(i.DeletedAtIn) > 0 {
+		predicates = append(predicates, menu.DeletedAtIn(i.DeletedAtIn...))
+	}
+	if len(i.DeletedAtNotIn) > 0 {
+		predicates = append(predicates, menu.DeletedAtNotIn(i.DeletedAtNotIn...))
+	}
+	if i.DeletedAtGT != nil {
+		predicates = append(predicates, menu.DeletedAtGT(*i.DeletedAtGT))
+	}
+	if i.DeletedAtGTE != nil {
+		predicates = append(predicates, menu.DeletedAtGTE(*i.DeletedAtGTE))
+	}
+	if i.DeletedAtLT != nil {
+		predicates = append(predicates, menu.DeletedAtLT(*i.DeletedAtLT))
+	}
+	if i.DeletedAtLTE != nil {
+		predicates = append(predicates, menu.DeletedAtLTE(*i.DeletedAtLTE))
+	}
+	if i.ParentID != nil {
+		predicates = append(predicates, menu.ParentIDEQ(*i.ParentID))
+	}
+	if i.ParentIDNEQ != nil {
+		predicates = append(predicates, menu.ParentIDNEQ(*i.ParentIDNEQ))
+	}
+	if len(i.ParentIDIn) > 0 {
+		predicates = append(predicates, menu.ParentIDIn(i.ParentIDIn...))
+	}
+	if len(i.ParentIDNotIn) > 0 {
+		predicates = append(predicates, menu.ParentIDNotIn(i.ParentIDNotIn...))
+	}
+	if i.ParentIDGT != nil {
+		predicates = append(predicates, menu.ParentIDGT(*i.ParentIDGT))
+	}
+	if i.ParentIDGTE != nil {
+		predicates = append(predicates, menu.ParentIDGTE(*i.ParentIDGTE))
+	}
+	if i.ParentIDLT != nil {
+		predicates = append(predicates, menu.ParentIDLT(*i.ParentIDLT))
+	}
+	if i.ParentIDLTE != nil {
+		predicates = append(predicates, menu.ParentIDLTE(*i.ParentIDLTE))
+	}
+	if i.ParentIDContains != nil {
+		predicates = append(predicates, menu.ParentIDContains(*i.ParentIDContains))
+	}
+	if i.ParentIDHasPrefix != nil {
+		predicates = append(predicates, menu.ParentIDHasPrefix(*i.ParentIDHasPrefix))
+	}
+	if i.ParentIDHasSuffix != nil {
+		predicates = append(predicates, menu.ParentIDHasSuffix(*i.ParentIDHasSuffix))
+	}
+	if i.ParentIDIsNil {
+		predicates = append(predicates, menu.ParentIDIsNil())
+	}
+	if i.ParentIDNotNil {
+		predicates = append(predicates, menu.ParentIDNotNil())
+	}
+	if i.ParentIDEqualFold != nil {
+		predicates = append(predicates, menu.ParentIDEqualFold(*i.ParentIDEqualFold))
+	}
+	if i.ParentIDContainsFold != nil {
+		predicates = append(predicates, menu.ParentIDContainsFold(*i.ParentIDContainsFold))
+	}
+	if i.Path != nil {
+		predicates = append(predicates, menu.PathEQ(*i.Path))
+	}
+	if i.PathNEQ != nil {
+		predicates = append(predicates, menu.PathNEQ(*i.PathNEQ))
+	}
+	if len(i.PathIn) > 0 {
+		predicates = append(predicates, menu.PathIn(i.PathIn...))
+	}
+	if len(i.PathNotIn) > 0 {
+		predicates = append(predicates, menu.PathNotIn(i.PathNotIn...))
+	}
+	if i.PathGT != nil {
+		predicates = append(predicates, menu.PathGT(*i.PathGT))
+	}
+	if i.PathGTE != nil {
+		predicates = append(predicates, menu.PathGTE(*i.PathGTE))
+	}
+	if i.PathLT != nil {
+		predicates = append(predicates, menu.PathLT(*i.PathLT))
+	}
+	if i.PathLTE != nil {
+		predicates = append(predicates, menu.PathLTE(*i.PathLTE))
+	}
+	if i.PathContains != nil {
+		predicates = append(predicates, menu.PathContains(*i.PathContains))
+	}
+	if i.PathHasPrefix != nil {
+		predicates = append(predicates, menu.PathHasPrefix(*i.PathHasPrefix))
+	}
+	if i.PathHasSuffix != nil {
+		predicates = append(predicates, menu.PathHasSuffix(*i.PathHasSuffix))
+	}
+	if i.PathEqualFold != nil {
+		predicates = append(predicates, menu.PathEqualFold(*i.PathEqualFold))
+	}
+	if i.PathContainsFold != nil {
+		predicates = append(predicates, menu.PathContainsFold(*i.PathContainsFold))
+	}
+	if i.Component != nil {
+		predicates = append(predicates, menu.ComponentEQ(*i.Component))
+	}
+	if i.ComponentNEQ != nil {
+		predicates = append(predicates, menu.ComponentNEQ(*i.ComponentNEQ))
+	}
+	if len(i.ComponentIn) > 0 {
+		predicates = append(predicates, menu.ComponentIn(i.ComponentIn...))
+	}
+	if len(i.ComponentNotIn) > 0 {
+		predicates = append(predicates, menu.ComponentNotIn(i.ComponentNotIn...))
+	}
+	if i.ComponentGT != nil {
+		predicates = append(predicates, menu.ComponentGT(*i.ComponentGT))
+	}
+	if i.ComponentGTE != nil {
+		predicates = append(predicates, menu.ComponentGTE(*i.ComponentGTE))
+	}
+	if i.ComponentLT != nil {
+		predicates = append(predicates, menu.ComponentLT(*i.ComponentLT))
+	}
+	if i.ComponentLTE != nil {
+		predicates = append(predicates, menu.ComponentLTE(*i.ComponentLTE))
+	}
+	if i.ComponentContains != nil {
+		predicates = append(predicates, menu.ComponentContains(*i.ComponentContains))
+	}
+	if i.ComponentHasPrefix != nil {
+		predicates = append(predicates, menu.ComponentHasPrefix(*i.ComponentHasPrefix))
+	}
+	if i.ComponentHasSuffix != nil {
+		predicates = append(predicates, menu.ComponentHasSuffix(*i.ComponentHasSuffix))
+	}
+	if i.ComponentEqualFold != nil {
+		predicates = append(predicates, menu.ComponentEqualFold(*i.ComponentEqualFold))
+	}
+	if i.ComponentContainsFold != nil {
+		predicates = append(predicates, menu.ComponentContainsFold(*i.ComponentContainsFold))
+	}
+	if i.Redirect != nil {
+		predicates = append(predicates, menu.RedirectEQ(*i.Redirect))
+	}
+	if i.RedirectNEQ != nil {
+		predicates = append(predicates, menu.RedirectNEQ(*i.RedirectNEQ))
+	}
+	if len(i.RedirectIn) > 0 {
+		predicates = append(predicates, menu.RedirectIn(i.RedirectIn...))
+	}
+	if len(i.RedirectNotIn) > 0 {
+		predicates = append(predicates, menu.RedirectNotIn(i.RedirectNotIn...))
+	}
+	if i.RedirectGT != nil {
+		predicates = append(predicates, menu.RedirectGT(*i.RedirectGT))
+	}
+	if i.RedirectGTE != nil {
+		predicates = append(predicates, menu.RedirectGTE(*i.RedirectGTE))
+	}
+	if i.RedirectLT != nil {
+		predicates = append(predicates, menu.RedirectLT(*i.RedirectLT))
+	}
+	if i.RedirectLTE != nil {
+		predicates = append(predicates, menu.RedirectLTE(*i.RedirectLTE))
+	}
+	if i.RedirectContains != nil {
+		predicates = append(predicates, menu.RedirectContains(*i.RedirectContains))
+	}
+	if i.RedirectHasPrefix != nil {
+		predicates = append(predicates, menu.RedirectHasPrefix(*i.RedirectHasPrefix))
+	}
+	if i.RedirectHasSuffix != nil {
+		predicates = append(predicates, menu.RedirectHasSuffix(*i.RedirectHasSuffix))
+	}
+	if i.RedirectIsNil {
+		predicates = append(predicates, menu.RedirectIsNil())
+	}
+	if i.RedirectNotNil {
+		predicates = append(predicates, menu.RedirectNotNil())
+	}
+	if i.RedirectEqualFold != nil {
+		predicates = append(predicates, menu.RedirectEqualFold(*i.RedirectEqualFold))
+	}
+	if i.RedirectContainsFold != nil {
+		predicates = append(predicates, menu.RedirectContainsFold(*i.RedirectContainsFold))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, menu.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, menu.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, menu.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, menu.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, menu.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, menu.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, menu.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, menu.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, menu.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, menu.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, menu.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, menu.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, menu.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Order != nil {
+		predicates = append(predicates, menu.OrderEQ(*i.Order))
+	}
+	if i.OrderNEQ != nil {
+		predicates = append(predicates, menu.OrderNEQ(*i.OrderNEQ))
+	}
+	if len(i.OrderIn) > 0 {
+		predicates = append(predicates, menu.OrderIn(i.OrderIn...))
+	}
+	if len(i.OrderNotIn) > 0 {
+		predicates = append(predicates, menu.OrderNotIn(i.OrderNotIn...))
+	}
+	if i.OrderGT != nil {
+		predicates = append(predicates, menu.OrderGT(*i.OrderGT))
+	}
+	if i.OrderGTE != nil {
+		predicates = append(predicates, menu.OrderGTE(*i.OrderGTE))
+	}
+	if i.OrderLT != nil {
+		predicates = append(predicates, menu.OrderLT(*i.OrderLT))
+	}
+	if i.OrderLTE != nil {
+		predicates = append(predicates, menu.OrderLTE(*i.OrderLTE))
+	}
+	if i.OrderIsNil {
+		predicates = append(predicates, menu.OrderIsNil())
+	}
+	if i.OrderNotNil {
+		predicates = append(predicates, menu.OrderNotNil())
+	}
+	if i.Type != nil {
+		predicates = append(predicates, menu.TypeEQ(*i.Type))
+	}
+	if i.TypeNEQ != nil {
+		predicates = append(predicates, menu.TypeNEQ(*i.TypeNEQ))
+	}
+	if len(i.TypeIn) > 0 {
+		predicates = append(predicates, menu.TypeIn(i.TypeIn...))
+	}
+	if len(i.TypeNotIn) > 0 {
+		predicates = append(predicates, menu.TypeNotIn(i.TypeNotIn...))
+	}
+
+	if i.HasParent != nil {
+		p := menu.HasParent()
+		if !*i.HasParent {
+			p = menu.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.Menu, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, menu.HasParentWith(with...))
+	}
+	if i.HasChildren != nil {
+		p := menu.HasChildren()
+		if !*i.HasChildren {
+			p = menu.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasChildrenWith) > 0 {
+		with := make([]predicate.Menu, 0, len(i.HasChildrenWith))
+		for _, w := range i.HasChildrenWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasChildrenWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, menu.HasChildrenWith(with...))
+	}
+	if i.HasRoles != nil {
+		p := menu.HasRoles()
+		if !*i.HasRoles {
+			p = menu.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasRolesWith) > 0 {
+		with := make([]predicate.Role, 0, len(i.HasRolesWith))
+		for _, w := range i.HasRolesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasRolesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, menu.HasRolesWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyMenuWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return menu.And(predicates...), nil
+	}
+}
+
 // PermissionWhereInput represents a where input for filtering Permission queries.
 type PermissionWhereInput struct {
 	Predicates []predicate.Permission  `json:"-"`
@@ -1983,8 +2631,8 @@ type RoleWhereInput struct {
 	HasPermissionsWith []*PermissionWhereInput `json:"hasPermissionsWith,omitempty"`
 
 	// "routes" edge predicates.
-	HasRoutes     *bool              `json:"hasRoutes,omitempty"`
-	HasRoutesWith []*RouteWhereInput `json:"hasRoutesWith,omitempty"`
+	HasRoutes     *bool             `json:"hasRoutes,omitempty"`
+	HasRoutesWith []*MenuWhereInput `json:"hasRoutesWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2313,7 +2961,7 @@ func (i *RoleWhereInput) P() (predicate.Role, error) {
 		predicates = append(predicates, p)
 	}
 	if len(i.HasRoutesWith) > 0 {
-		with := make([]predicate.Route, 0, len(i.HasRoutesWith))
+		with := make([]predicate.Menu, 0, len(i.HasRoutesWith))
 		for _, w := range i.HasRoutesWith {
 			p, err := w.P()
 			if err != nil {
@@ -2330,653 +2978,5 @@ func (i *RoleWhereInput) P() (predicate.Role, error) {
 		return predicates[0], nil
 	default:
 		return role.And(predicates...), nil
-	}
-}
-
-// RouteWhereInput represents a where input for filtering Route queries.
-type RouteWhereInput struct {
-	Predicates []predicate.Route  `json:"-"`
-	Not        *RouteWhereInput   `json:"not,omitempty"`
-	Or         []*RouteWhereInput `json:"or,omitempty"`
-	And        []*RouteWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
-
-	// "is_enable" field predicates.
-	IsEnable    *bool `json:"isEnable,omitempty"`
-	IsEnableNEQ *bool `json:"isEnableNEQ,omitempty"`
-
-	// "deleted_at" field predicates.
-	DeletedAt      *int  `json:"deletedAt,omitempty"`
-	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
-	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
-	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
-	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
-	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
-	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
-	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
-
-	// "parent_id" field predicates.
-	ParentID             *xid.ID  `json:"parentID,omitempty"`
-	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
-	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
-	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
-	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
-	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
-	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
-	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
-	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
-	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
-	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
-	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
-	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
-	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
-	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
-
-	// "path" field predicates.
-	Path             *string  `json:"path,omitempty"`
-	PathNEQ          *string  `json:"pathNEQ,omitempty"`
-	PathIn           []string `json:"pathIn,omitempty"`
-	PathNotIn        []string `json:"pathNotIn,omitempty"`
-	PathGT           *string  `json:"pathGT,omitempty"`
-	PathGTE          *string  `json:"pathGTE,omitempty"`
-	PathLT           *string  `json:"pathLT,omitempty"`
-	PathLTE          *string  `json:"pathLTE,omitempty"`
-	PathContains     *string  `json:"pathContains,omitempty"`
-	PathHasPrefix    *string  `json:"pathHasPrefix,omitempty"`
-	PathHasSuffix    *string  `json:"pathHasSuffix,omitempty"`
-	PathEqualFold    *string  `json:"pathEqualFold,omitempty"`
-	PathContainsFold *string  `json:"pathContainsFold,omitempty"`
-
-	// "component" field predicates.
-	Component             *string  `json:"component,omitempty"`
-	ComponentNEQ          *string  `json:"componentNEQ,omitempty"`
-	ComponentIn           []string `json:"componentIn,omitempty"`
-	ComponentNotIn        []string `json:"componentNotIn,omitempty"`
-	ComponentGT           *string  `json:"componentGT,omitempty"`
-	ComponentGTE          *string  `json:"componentGTE,omitempty"`
-	ComponentLT           *string  `json:"componentLT,omitempty"`
-	ComponentLTE          *string  `json:"componentLTE,omitempty"`
-	ComponentContains     *string  `json:"componentContains,omitempty"`
-	ComponentHasPrefix    *string  `json:"componentHasPrefix,omitempty"`
-	ComponentHasSuffix    *string  `json:"componentHasSuffix,omitempty"`
-	ComponentEqualFold    *string  `json:"componentEqualFold,omitempty"`
-	ComponentContainsFold *string  `json:"componentContainsFold,omitempty"`
-
-	// "redirect" field predicates.
-	Redirect             *string  `json:"redirect,omitempty"`
-	RedirectNEQ          *string  `json:"redirectNEQ,omitempty"`
-	RedirectIn           []string `json:"redirectIn,omitempty"`
-	RedirectNotIn        []string `json:"redirectNotIn,omitempty"`
-	RedirectGT           *string  `json:"redirectGT,omitempty"`
-	RedirectGTE          *string  `json:"redirectGTE,omitempty"`
-	RedirectLT           *string  `json:"redirectLT,omitempty"`
-	RedirectLTE          *string  `json:"redirectLTE,omitempty"`
-	RedirectContains     *string  `json:"redirectContains,omitempty"`
-	RedirectHasPrefix    *string  `json:"redirectHasPrefix,omitempty"`
-	RedirectHasSuffix    *string  `json:"redirectHasSuffix,omitempty"`
-	RedirectIsNil        bool     `json:"redirectIsNil,omitempty"`
-	RedirectNotNil       bool     `json:"redirectNotNil,omitempty"`
-	RedirectEqualFold    *string  `json:"redirectEqualFold,omitempty"`
-	RedirectContainsFold *string  `json:"redirectContainsFold,omitempty"`
-
-	// "name" field predicates.
-	Name             *string  `json:"name,omitempty"`
-	NameNEQ          *string  `json:"nameNEQ,omitempty"`
-	NameIn           []string `json:"nameIn,omitempty"`
-	NameNotIn        []string `json:"nameNotIn,omitempty"`
-	NameGT           *string  `json:"nameGT,omitempty"`
-	NameGTE          *string  `json:"nameGTE,omitempty"`
-	NameLT           *string  `json:"nameLT,omitempty"`
-	NameLTE          *string  `json:"nameLTE,omitempty"`
-	NameContains     *string  `json:"nameContains,omitempty"`
-	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
-	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
-	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
-	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-
-	// "order" field predicates.
-	Order       *int  `json:"order,omitempty"`
-	OrderNEQ    *int  `json:"orderNEQ,omitempty"`
-	OrderIn     []int `json:"orderIn,omitempty"`
-	OrderNotIn  []int `json:"orderNotIn,omitempty"`
-	OrderGT     *int  `json:"orderGT,omitempty"`
-	OrderGTE    *int  `json:"orderGTE,omitempty"`
-	OrderLT     *int  `json:"orderLT,omitempty"`
-	OrderLTE    *int  `json:"orderLTE,omitempty"`
-	OrderIsNil  bool  `json:"orderIsNil,omitempty"`
-	OrderNotNil bool  `json:"orderNotNil,omitempty"`
-
-	// "type" field predicates.
-	Type      *route.Type  `json:"type,omitempty"`
-	TypeNEQ   *route.Type  `json:"typeNEQ,omitempty"`
-	TypeIn    []route.Type `json:"typeIn,omitempty"`
-	TypeNotIn []route.Type `json:"typeNotIn,omitempty"`
-
-	// "parent" edge predicates.
-	HasParent     *bool              `json:"hasParent,omitempty"`
-	HasParentWith []*RouteWhereInput `json:"hasParentWith,omitempty"`
-
-	// "children" edge predicates.
-	HasChildren     *bool              `json:"hasChildren,omitempty"`
-	HasChildrenWith []*RouteWhereInput `json:"hasChildrenWith,omitempty"`
-
-	// "roles" edge predicates.
-	HasRoles     *bool             `json:"hasRoles,omitempty"`
-	HasRolesWith []*RoleWhereInput `json:"hasRolesWith,omitempty"`
-}
-
-// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
-func (i *RouteWhereInput) AddPredicates(predicates ...predicate.Route) {
-	i.Predicates = append(i.Predicates, predicates...)
-}
-
-// Filter applies the RouteWhereInput filter on the RouteQuery builder.
-func (i *RouteWhereInput) Filter(q *RouteQuery) (*RouteQuery, error) {
-	if i == nil {
-		return q, nil
-	}
-	p, err := i.P()
-	if err != nil {
-		if err == ErrEmptyRouteWhereInput {
-			return q, nil
-		}
-		return nil, err
-	}
-	return q.Where(p), nil
-}
-
-// ErrEmptyRouteWhereInput is returned in case the RouteWhereInput is empty.
-var ErrEmptyRouteWhereInput = errors.New("ent: empty predicate RouteWhereInput")
-
-// P returns a predicate for filtering routes.
-// An error is returned if the input is empty or invalid.
-func (i *RouteWhereInput) P() (predicate.Route, error) {
-	var predicates []predicate.Route
-	if i.Not != nil {
-		p, err := i.Not.P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'not'", err)
-		}
-		predicates = append(predicates, route.Not(p))
-	}
-	switch n := len(i.Or); {
-	case n == 1:
-		p, err := i.Or[0].P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'or'", err)
-		}
-		predicates = append(predicates, p)
-	case n > 1:
-		or := make([]predicate.Route, 0, n)
-		for _, w := range i.Or {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'or'", err)
-			}
-			or = append(or, p)
-		}
-		predicates = append(predicates, route.Or(or...))
-	}
-	switch n := len(i.And); {
-	case n == 1:
-		p, err := i.And[0].P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'and'", err)
-		}
-		predicates = append(predicates, p)
-	case n > 1:
-		and := make([]predicate.Route, 0, n)
-		for _, w := range i.And {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'and'", err)
-			}
-			and = append(and, p)
-		}
-		predicates = append(predicates, route.And(and...))
-	}
-	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, route.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, route.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, route.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, route.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, route.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, route.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, route.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, route.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, route.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, route.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, route.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, route.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, route.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, route.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, route.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, route.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, route.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, route.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, route.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, route.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, route.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, route.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, route.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, route.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
-	if i.IsEnable != nil {
-		predicates = append(predicates, route.IsEnableEQ(*i.IsEnable))
-	}
-	if i.IsEnableNEQ != nil {
-		predicates = append(predicates, route.IsEnableNEQ(*i.IsEnableNEQ))
-	}
-	if i.DeletedAt != nil {
-		predicates = append(predicates, route.DeletedAtEQ(*i.DeletedAt))
-	}
-	if i.DeletedAtNEQ != nil {
-		predicates = append(predicates, route.DeletedAtNEQ(*i.DeletedAtNEQ))
-	}
-	if len(i.DeletedAtIn) > 0 {
-		predicates = append(predicates, route.DeletedAtIn(i.DeletedAtIn...))
-	}
-	if len(i.DeletedAtNotIn) > 0 {
-		predicates = append(predicates, route.DeletedAtNotIn(i.DeletedAtNotIn...))
-	}
-	if i.DeletedAtGT != nil {
-		predicates = append(predicates, route.DeletedAtGT(*i.DeletedAtGT))
-	}
-	if i.DeletedAtGTE != nil {
-		predicates = append(predicates, route.DeletedAtGTE(*i.DeletedAtGTE))
-	}
-	if i.DeletedAtLT != nil {
-		predicates = append(predicates, route.DeletedAtLT(*i.DeletedAtLT))
-	}
-	if i.DeletedAtLTE != nil {
-		predicates = append(predicates, route.DeletedAtLTE(*i.DeletedAtLTE))
-	}
-	if i.ParentID != nil {
-		predicates = append(predicates, route.ParentIDEQ(*i.ParentID))
-	}
-	if i.ParentIDNEQ != nil {
-		predicates = append(predicates, route.ParentIDNEQ(*i.ParentIDNEQ))
-	}
-	if len(i.ParentIDIn) > 0 {
-		predicates = append(predicates, route.ParentIDIn(i.ParentIDIn...))
-	}
-	if len(i.ParentIDNotIn) > 0 {
-		predicates = append(predicates, route.ParentIDNotIn(i.ParentIDNotIn...))
-	}
-	if i.ParentIDGT != nil {
-		predicates = append(predicates, route.ParentIDGT(*i.ParentIDGT))
-	}
-	if i.ParentIDGTE != nil {
-		predicates = append(predicates, route.ParentIDGTE(*i.ParentIDGTE))
-	}
-	if i.ParentIDLT != nil {
-		predicates = append(predicates, route.ParentIDLT(*i.ParentIDLT))
-	}
-	if i.ParentIDLTE != nil {
-		predicates = append(predicates, route.ParentIDLTE(*i.ParentIDLTE))
-	}
-	if i.ParentIDContains != nil {
-		predicates = append(predicates, route.ParentIDContains(*i.ParentIDContains))
-	}
-	if i.ParentIDHasPrefix != nil {
-		predicates = append(predicates, route.ParentIDHasPrefix(*i.ParentIDHasPrefix))
-	}
-	if i.ParentIDHasSuffix != nil {
-		predicates = append(predicates, route.ParentIDHasSuffix(*i.ParentIDHasSuffix))
-	}
-	if i.ParentIDIsNil {
-		predicates = append(predicates, route.ParentIDIsNil())
-	}
-	if i.ParentIDNotNil {
-		predicates = append(predicates, route.ParentIDNotNil())
-	}
-	if i.ParentIDEqualFold != nil {
-		predicates = append(predicates, route.ParentIDEqualFold(*i.ParentIDEqualFold))
-	}
-	if i.ParentIDContainsFold != nil {
-		predicates = append(predicates, route.ParentIDContainsFold(*i.ParentIDContainsFold))
-	}
-	if i.Path != nil {
-		predicates = append(predicates, route.PathEQ(*i.Path))
-	}
-	if i.PathNEQ != nil {
-		predicates = append(predicates, route.PathNEQ(*i.PathNEQ))
-	}
-	if len(i.PathIn) > 0 {
-		predicates = append(predicates, route.PathIn(i.PathIn...))
-	}
-	if len(i.PathNotIn) > 0 {
-		predicates = append(predicates, route.PathNotIn(i.PathNotIn...))
-	}
-	if i.PathGT != nil {
-		predicates = append(predicates, route.PathGT(*i.PathGT))
-	}
-	if i.PathGTE != nil {
-		predicates = append(predicates, route.PathGTE(*i.PathGTE))
-	}
-	if i.PathLT != nil {
-		predicates = append(predicates, route.PathLT(*i.PathLT))
-	}
-	if i.PathLTE != nil {
-		predicates = append(predicates, route.PathLTE(*i.PathLTE))
-	}
-	if i.PathContains != nil {
-		predicates = append(predicates, route.PathContains(*i.PathContains))
-	}
-	if i.PathHasPrefix != nil {
-		predicates = append(predicates, route.PathHasPrefix(*i.PathHasPrefix))
-	}
-	if i.PathHasSuffix != nil {
-		predicates = append(predicates, route.PathHasSuffix(*i.PathHasSuffix))
-	}
-	if i.PathEqualFold != nil {
-		predicates = append(predicates, route.PathEqualFold(*i.PathEqualFold))
-	}
-	if i.PathContainsFold != nil {
-		predicates = append(predicates, route.PathContainsFold(*i.PathContainsFold))
-	}
-	if i.Component != nil {
-		predicates = append(predicates, route.ComponentEQ(*i.Component))
-	}
-	if i.ComponentNEQ != nil {
-		predicates = append(predicates, route.ComponentNEQ(*i.ComponentNEQ))
-	}
-	if len(i.ComponentIn) > 0 {
-		predicates = append(predicates, route.ComponentIn(i.ComponentIn...))
-	}
-	if len(i.ComponentNotIn) > 0 {
-		predicates = append(predicates, route.ComponentNotIn(i.ComponentNotIn...))
-	}
-	if i.ComponentGT != nil {
-		predicates = append(predicates, route.ComponentGT(*i.ComponentGT))
-	}
-	if i.ComponentGTE != nil {
-		predicates = append(predicates, route.ComponentGTE(*i.ComponentGTE))
-	}
-	if i.ComponentLT != nil {
-		predicates = append(predicates, route.ComponentLT(*i.ComponentLT))
-	}
-	if i.ComponentLTE != nil {
-		predicates = append(predicates, route.ComponentLTE(*i.ComponentLTE))
-	}
-	if i.ComponentContains != nil {
-		predicates = append(predicates, route.ComponentContains(*i.ComponentContains))
-	}
-	if i.ComponentHasPrefix != nil {
-		predicates = append(predicates, route.ComponentHasPrefix(*i.ComponentHasPrefix))
-	}
-	if i.ComponentHasSuffix != nil {
-		predicates = append(predicates, route.ComponentHasSuffix(*i.ComponentHasSuffix))
-	}
-	if i.ComponentEqualFold != nil {
-		predicates = append(predicates, route.ComponentEqualFold(*i.ComponentEqualFold))
-	}
-	if i.ComponentContainsFold != nil {
-		predicates = append(predicates, route.ComponentContainsFold(*i.ComponentContainsFold))
-	}
-	if i.Redirect != nil {
-		predicates = append(predicates, route.RedirectEQ(*i.Redirect))
-	}
-	if i.RedirectNEQ != nil {
-		predicates = append(predicates, route.RedirectNEQ(*i.RedirectNEQ))
-	}
-	if len(i.RedirectIn) > 0 {
-		predicates = append(predicates, route.RedirectIn(i.RedirectIn...))
-	}
-	if len(i.RedirectNotIn) > 0 {
-		predicates = append(predicates, route.RedirectNotIn(i.RedirectNotIn...))
-	}
-	if i.RedirectGT != nil {
-		predicates = append(predicates, route.RedirectGT(*i.RedirectGT))
-	}
-	if i.RedirectGTE != nil {
-		predicates = append(predicates, route.RedirectGTE(*i.RedirectGTE))
-	}
-	if i.RedirectLT != nil {
-		predicates = append(predicates, route.RedirectLT(*i.RedirectLT))
-	}
-	if i.RedirectLTE != nil {
-		predicates = append(predicates, route.RedirectLTE(*i.RedirectLTE))
-	}
-	if i.RedirectContains != nil {
-		predicates = append(predicates, route.RedirectContains(*i.RedirectContains))
-	}
-	if i.RedirectHasPrefix != nil {
-		predicates = append(predicates, route.RedirectHasPrefix(*i.RedirectHasPrefix))
-	}
-	if i.RedirectHasSuffix != nil {
-		predicates = append(predicates, route.RedirectHasSuffix(*i.RedirectHasSuffix))
-	}
-	if i.RedirectIsNil {
-		predicates = append(predicates, route.RedirectIsNil())
-	}
-	if i.RedirectNotNil {
-		predicates = append(predicates, route.RedirectNotNil())
-	}
-	if i.RedirectEqualFold != nil {
-		predicates = append(predicates, route.RedirectEqualFold(*i.RedirectEqualFold))
-	}
-	if i.RedirectContainsFold != nil {
-		predicates = append(predicates, route.RedirectContainsFold(*i.RedirectContainsFold))
-	}
-	if i.Name != nil {
-		predicates = append(predicates, route.NameEQ(*i.Name))
-	}
-	if i.NameNEQ != nil {
-		predicates = append(predicates, route.NameNEQ(*i.NameNEQ))
-	}
-	if len(i.NameIn) > 0 {
-		predicates = append(predicates, route.NameIn(i.NameIn...))
-	}
-	if len(i.NameNotIn) > 0 {
-		predicates = append(predicates, route.NameNotIn(i.NameNotIn...))
-	}
-	if i.NameGT != nil {
-		predicates = append(predicates, route.NameGT(*i.NameGT))
-	}
-	if i.NameGTE != nil {
-		predicates = append(predicates, route.NameGTE(*i.NameGTE))
-	}
-	if i.NameLT != nil {
-		predicates = append(predicates, route.NameLT(*i.NameLT))
-	}
-	if i.NameLTE != nil {
-		predicates = append(predicates, route.NameLTE(*i.NameLTE))
-	}
-	if i.NameContains != nil {
-		predicates = append(predicates, route.NameContains(*i.NameContains))
-	}
-	if i.NameHasPrefix != nil {
-		predicates = append(predicates, route.NameHasPrefix(*i.NameHasPrefix))
-	}
-	if i.NameHasSuffix != nil {
-		predicates = append(predicates, route.NameHasSuffix(*i.NameHasSuffix))
-	}
-	if i.NameEqualFold != nil {
-		predicates = append(predicates, route.NameEqualFold(*i.NameEqualFold))
-	}
-	if i.NameContainsFold != nil {
-		predicates = append(predicates, route.NameContainsFold(*i.NameContainsFold))
-	}
-	if i.Order != nil {
-		predicates = append(predicates, route.OrderEQ(*i.Order))
-	}
-	if i.OrderNEQ != nil {
-		predicates = append(predicates, route.OrderNEQ(*i.OrderNEQ))
-	}
-	if len(i.OrderIn) > 0 {
-		predicates = append(predicates, route.OrderIn(i.OrderIn...))
-	}
-	if len(i.OrderNotIn) > 0 {
-		predicates = append(predicates, route.OrderNotIn(i.OrderNotIn...))
-	}
-	if i.OrderGT != nil {
-		predicates = append(predicates, route.OrderGT(*i.OrderGT))
-	}
-	if i.OrderGTE != nil {
-		predicates = append(predicates, route.OrderGTE(*i.OrderGTE))
-	}
-	if i.OrderLT != nil {
-		predicates = append(predicates, route.OrderLT(*i.OrderLT))
-	}
-	if i.OrderLTE != nil {
-		predicates = append(predicates, route.OrderLTE(*i.OrderLTE))
-	}
-	if i.OrderIsNil {
-		predicates = append(predicates, route.OrderIsNil())
-	}
-	if i.OrderNotNil {
-		predicates = append(predicates, route.OrderNotNil())
-	}
-	if i.Type != nil {
-		predicates = append(predicates, route.TypeEQ(*i.Type))
-	}
-	if i.TypeNEQ != nil {
-		predicates = append(predicates, route.TypeNEQ(*i.TypeNEQ))
-	}
-	if len(i.TypeIn) > 0 {
-		predicates = append(predicates, route.TypeIn(i.TypeIn...))
-	}
-	if len(i.TypeNotIn) > 0 {
-		predicates = append(predicates, route.TypeNotIn(i.TypeNotIn...))
-	}
-
-	if i.HasParent != nil {
-		p := route.HasParent()
-		if !*i.HasParent {
-			p = route.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasParentWith) > 0 {
-		with := make([]predicate.Route, 0, len(i.HasParentWith))
-		for _, w := range i.HasParentWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, route.HasParentWith(with...))
-	}
-	if i.HasChildren != nil {
-		p := route.HasChildren()
-		if !*i.HasChildren {
-			p = route.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasChildrenWith) > 0 {
-		with := make([]predicate.Route, 0, len(i.HasChildrenWith))
-		for _, w := range i.HasChildrenWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasChildrenWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, route.HasChildrenWith(with...))
-	}
-	if i.HasRoles != nil {
-		p := route.HasRoles()
-		if !*i.HasRoles {
-			p = route.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasRolesWith) > 0 {
-		with := make([]predicate.Role, 0, len(i.HasRolesWith))
-		for _, w := range i.HasRolesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasRolesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, route.HasRolesWith(with...))
-	}
-	switch len(predicates) {
-	case 0:
-		return nil, ErrEmptyRouteWhereInput
-	case 1:
-		return predicates[0], nil
-	default:
-		return route.And(predicates...), nil
 	}
 }

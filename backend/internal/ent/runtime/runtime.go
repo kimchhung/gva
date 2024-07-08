@@ -9,10 +9,10 @@ import (
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -93,6 +93,47 @@ func init() {
 	departmentDescID := departmentMixinFields0[0].Descriptor()
 	// department.DefaultID holds the default value on creation for the id field.
 	department.DefaultID = departmentDescID.Default.(func() xid.ID)
+	menuMixin := schema.Menu{}.Mixin()
+	menuMixinHooks3 := menuMixin[3].Hooks()
+	menu.Hooks[0] = menuMixinHooks3[0]
+	menuMixinInters3 := menuMixin[3].Interceptors()
+	menu.Interceptors[0] = menuMixinInters3[0]
+	menuMixinFields0 := menuMixin[0].Fields()
+	_ = menuMixinFields0
+	menuMixinFields1 := menuMixin[1].Fields()
+	_ = menuMixinFields1
+	menuMixinFields2 := menuMixin[2].Fields()
+	_ = menuMixinFields2
+	menuMixinFields3 := menuMixin[3].Fields()
+	_ = menuMixinFields3
+	menuFields := schema.Menu{}.Fields()
+	_ = menuFields
+	// menuDescCreatedAt is the schema descriptor for created_at field.
+	menuDescCreatedAt := menuMixinFields1[0].Descriptor()
+	// menu.DefaultCreatedAt holds the default value on creation for the created_at field.
+	menu.DefaultCreatedAt = menuDescCreatedAt.Default.(func() time.Time)
+	// menuDescUpdatedAt is the schema descriptor for updated_at field.
+	menuDescUpdatedAt := menuMixinFields1[1].Descriptor()
+	// menu.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	menu.DefaultUpdatedAt = menuDescUpdatedAt.Default.(func() time.Time)
+	// menu.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	menu.UpdateDefaultUpdatedAt = menuDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// menuDescIsEnable is the schema descriptor for is_enable field.
+	menuDescIsEnable := menuMixinFields2[0].Descriptor()
+	// menu.DefaultIsEnable holds the default value on creation for the is_enable field.
+	menu.DefaultIsEnable = menuDescIsEnable.Default.(bool)
+	// menuDescDeletedAt is the schema descriptor for deleted_at field.
+	menuDescDeletedAt := menuMixinFields3[0].Descriptor()
+	// menu.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	menu.DefaultDeletedAt = menuDescDeletedAt.Default.(int)
+	// menuDescOrder is the schema descriptor for order field.
+	menuDescOrder := menuFields[5].Descriptor()
+	// menu.DefaultOrder holds the default value on creation for the order field.
+	menu.DefaultOrder = menuDescOrder.Default.(int)
+	// menuDescID is the schema descriptor for id field.
+	menuDescID := menuMixinFields0[0].Descriptor()
+	// menu.DefaultID holds the default value on creation for the id field.
+	menu.DefaultID = menuDescID.Default.(func() xid.ID)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
@@ -188,47 +229,6 @@ func init() {
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
 	role.DefaultID = roleDescID.Default.(func() xid.ID)
-	routeMixin := schema.Route{}.Mixin()
-	routeMixinHooks3 := routeMixin[3].Hooks()
-	route.Hooks[0] = routeMixinHooks3[0]
-	routeMixinInters3 := routeMixin[3].Interceptors()
-	route.Interceptors[0] = routeMixinInters3[0]
-	routeMixinFields0 := routeMixin[0].Fields()
-	_ = routeMixinFields0
-	routeMixinFields1 := routeMixin[1].Fields()
-	_ = routeMixinFields1
-	routeMixinFields2 := routeMixin[2].Fields()
-	_ = routeMixinFields2
-	routeMixinFields3 := routeMixin[3].Fields()
-	_ = routeMixinFields3
-	routeFields := schema.Route{}.Fields()
-	_ = routeFields
-	// routeDescCreatedAt is the schema descriptor for created_at field.
-	routeDescCreatedAt := routeMixinFields1[0].Descriptor()
-	// route.DefaultCreatedAt holds the default value on creation for the created_at field.
-	route.DefaultCreatedAt = routeDescCreatedAt.Default.(func() time.Time)
-	// routeDescUpdatedAt is the schema descriptor for updated_at field.
-	routeDescUpdatedAt := routeMixinFields1[1].Descriptor()
-	// route.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	route.DefaultUpdatedAt = routeDescUpdatedAt.Default.(func() time.Time)
-	// route.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	route.UpdateDefaultUpdatedAt = routeDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// routeDescIsEnable is the schema descriptor for is_enable field.
-	routeDescIsEnable := routeMixinFields2[0].Descriptor()
-	// route.DefaultIsEnable holds the default value on creation for the is_enable field.
-	route.DefaultIsEnable = routeDescIsEnable.Default.(bool)
-	// routeDescDeletedAt is the schema descriptor for deleted_at field.
-	routeDescDeletedAt := routeMixinFields3[0].Descriptor()
-	// route.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	route.DefaultDeletedAt = routeDescDeletedAt.Default.(int)
-	// routeDescOrder is the schema descriptor for order field.
-	routeDescOrder := routeFields[5].Descriptor()
-	// route.DefaultOrder holds the default value on creation for the order field.
-	route.DefaultOrder = routeDescOrder.Default.(int)
-	// routeDescID is the schema descriptor for id field.
-	routeDescID := routeMixinFields0[0].Descriptor()
-	// route.DefaultID holds the default value on creation for the id field.
-	route.DefaultID = routeDescID.Default.(func() xid.ID)
 }
 
 const (

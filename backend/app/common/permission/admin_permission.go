@@ -9,38 +9,38 @@ import (
 )
 
 const (
-	AdminGroup = "ADMIN"
-
-	AdminSuper  PermissionKey = "ADMIN.SUPER"
-	AdminView   PermissionKey = "ADMIN.VIEW"
-	AdminModify PermissionKey = "ADMIN.MODIFY"
-	AdminDelete PermissionKey = "ADMIN.DELETE"
+	AdminGroup PermissionGroup = "ADMIN"
 )
 
-func init() {
-	groups = append(groups, AdminGroup)
-	keys = append(keys, AdminSuper, AdminView, AdminModify, AdminDelete)
+var (
+	AdminSuper  = newKey(AdminGroup, ActionSuper)
+	AdminView   = newKey(AdminGroup, ActionView)
+	AdminAdd    = newKey(AdminGroup, ActionAdd)
+	AdminEdit   = newKey(AdminGroup, ActionEdit)
+	AdminDelete = newKey(AdminGroup, ActionDelete)
+)
+
+type AdminSeeder struct {
+	group PermissionGroup
+	keys  []PermissionKey
 }
 
-var _ database.Seeder = (*AdminPermissionSeeder)(nil)
-
-type AdminPermissionSeeder struct {
+func NewAdminSeeder() database.Seeder {
+	return &AdminSeeder{
+		group: AdminGroup,
+		keys: []PermissionKey{
+			AdminSuper,
+			AdminView,
+			AdminAdd,
+			AdminDelete,
+		},
+	}
 }
 
-func (AdminPermissionSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
-	group := AdminGroup
-	return conn.Permission.Query().Where(permission.GroupEQ(group)).Count(ctx)
+func (seeder AdminSeeder) Count(ctx context.Context, conn *ent.Client) (int, error) {
+	return conn.Permission.Query().Where(permission.GroupEQ(string(seeder.group))).Count(ctx)
 }
 
-func (AdminPermissionSeeder) Seed(ctx context.Context, conn *ent.Client) error {
-	group := AdminGroup
-
-	perms := createBulkPermissionDto(conn, group,
-		AdminSuper,
-		AdminView,
-		AdminModify,
-		AdminDelete,
-	)
-
-	return conn.Permission.CreateBulk(perms...).Exec(ctx)
+func (seeder AdminSeeder) Seed(ctx context.Context, conn *ent.Client) error {
+	return conn.Permission.CreateBulk(createBulkPermissionDto(conn, seeder.keys...)...).Exec(ctx)
 }

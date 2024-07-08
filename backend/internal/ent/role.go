@@ -47,7 +47,7 @@ type RoleEdges struct {
 	// Permissions holds the value of the permissions edge.
 	Permissions []*Permission `json:"permissions,omitempty"`
 	// Routes holds the value of the routes edge.
-	Routes []*Route `json:"routes,omitempty"`
+	Routes []*Menu `json:"routes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -56,7 +56,7 @@ type RoleEdges struct {
 
 	namedAdmins      map[string][]*Admin
 	namedPermissions map[string][]*Permission
-	namedRoutes      map[string][]*Route
+	namedRoutes      map[string][]*Menu
 }
 
 // AdminsOrErr returns the Admins value or an error if the edge
@@ -79,9 +79,9 @@ func (e RoleEdges) PermissionsOrErr() ([]*Permission, error) {
 
 // RoutesOrErr returns the Routes value or an error if the edge
 // was not loaded in eager-loading.
-func (e RoleEdges) RoutesOrErr() ([]*Route, error) {
+func (e RoleEdges) RoutesOrErr() ([]*Menu, error) {
 	if e.loadedTypes[2] {
-		return e.Routes, nil
+		return e.Menus, nil
 	}
 	return nil, &NotLoadedError{edge: "routes"}
 }
@@ -194,7 +194,7 @@ func (r *Role) QueryPermissions() *PermissionQuery {
 }
 
 // QueryRoutes queries the "routes" edge of the Role entity.
-func (r *Role) QueryRoutes() *RouteQuery {
+func (r *Role) QueryRoutes() *MenuQuery {
 	return NewRoleClient(r.config).QueryRoutes(r)
 }
 
@@ -298,7 +298,7 @@ func (r *Role) appendNamedPermissions(name string, edges ...*Permission) {
 
 // NamedRoutes returns the Routes named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (r *Role) NamedRoutes(name string) ([]*Route, error) {
+func (r *Role) NamedRoutes(name string) ([]*Menu, error) {
 	if r.Edges.namedRoutes == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
@@ -309,12 +309,12 @@ func (r *Role) NamedRoutes(name string) ([]*Route, error) {
 	return nodes, nil
 }
 
-func (r *Role) appendNamedRoutes(name string, edges ...*Route) {
+func (r *Role) appendNamedRoutes(name string, edges ...*Menu) {
 	if r.Edges.namedRoutes == nil {
-		r.Edges.namedRoutes = make(map[string][]*Route)
+		r.Edges.namedRoutes = make(map[string][]*Menu)
 	}
 	if len(edges) == 0 {
-		r.Edges.namedRoutes[name] = []*Route{}
+		r.Edges.namedRoutes[name] = []*Menu{}
 	} else {
 		r.Edges.namedRoutes[name] = append(r.Edges.namedRoutes[name], edges...)
 	}

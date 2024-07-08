@@ -18,10 +18,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 
 	stdsql "database/sql"
 
@@ -37,14 +37,14 @@ type Client struct {
 	Admin *AdminClient
 	// Department is the client for interacting with the Department builders.
 	Department *DepartmentClient
+	// Menu is the client for interacting with the Menu builders.
+	Menu *MenuClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Region is the client for interacting with the Region builders.
 	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
-	// Route is the client for interacting with the Route builders.
-	Route *RouteClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -58,10 +58,10 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Admin = NewAdminClient(c.config)
 	c.Department = NewDepartmentClient(c.config)
+	c.Menu = NewMenuClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Region = NewRegionClient(c.config)
 	c.Role = NewRoleClient(c.config)
-	c.Route = NewRouteClient(c.config)
 }
 
 type (
@@ -158,10 +158,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:     cfg,
 		Admin:      NewAdminClient(cfg),
 		Department: NewDepartmentClient(cfg),
+		Menu:       NewMenuClient(cfg),
 		Permission: NewPermissionClient(cfg),
 		Region:     NewRegionClient(cfg),
 		Role:       NewRoleClient(cfg),
-		Route:      NewRouteClient(cfg),
 	}, nil
 }
 
@@ -183,10 +183,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:     cfg,
 		Admin:      NewAdminClient(cfg),
 		Department: NewDepartmentClient(cfg),
+		Menu:       NewMenuClient(cfg),
 		Permission: NewPermissionClient(cfg),
 		Region:     NewRegionClient(cfg),
 		Role:       NewRoleClient(cfg),
-		Route:      NewRouteClient(cfg),
 	}, nil
 }
 
@@ -216,7 +216,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Admin, c.Department, c.Permission, c.Region, c.Role, c.Route,
+		c.Admin, c.Department, c.Menu, c.Permission, c.Region, c.Role,
 	} {
 		n.Use(hooks...)
 	}
@@ -226,7 +226,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Admin, c.Department, c.Permission, c.Region, c.Role, c.Route,
+		c.Admin, c.Department, c.Menu, c.Permission, c.Region, c.Role,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -239,14 +239,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Admin.mutate(ctx, m)
 	case *DepartmentMutation:
 		return c.Department.mutate(ctx, m)
+	case *MenuMutation:
+		return c.Menu.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
 	case *RegionMutation:
 		return c.Region.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
-	case *RouteMutation:
-		return c.Route.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -614,6 +614,198 @@ func (c *DepartmentClient) mutate(ctx context.Context, m *DepartmentMutation) (V
 		return (&DepartmentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Department mutation op: %q", m.Op())
+	}
+}
+
+// MenuClient is a client for the Menu schema.
+type MenuClient struct {
+	config
+}
+
+// NewMenuClient returns a client for the Menu from the given config.
+func NewMenuClient(c config) *MenuClient {
+	return &MenuClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `menu.Hooks(f(g(h())))`.
+func (c *MenuClient) Use(hooks ...Hook) {
+	c.hooks.Menu = append(c.hooks.Menu, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `menu.Intercept(f(g(h())))`.
+func (c *MenuClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Menu = append(c.inters.Menu, interceptors...)
+}
+
+// Create returns a builder for creating a Menu entity.
+func (c *MenuClient) Create() *MenuCreate {
+	mutation := newMenuMutation(c.config, OpCreate)
+	return &MenuCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Menu entities.
+func (c *MenuClient) CreateBulk(builders ...*MenuCreate) *MenuCreateBulk {
+	return &MenuCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MenuClient) MapCreateBulk(slice any, setFunc func(*MenuCreate, int)) *MenuCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MenuCreateBulk{err: fmt.Errorf("calling to MenuClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MenuCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MenuCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Menu.
+func (c *MenuClient) Update() *MenuUpdate {
+	mutation := newMenuMutation(c.config, OpUpdate)
+	return &MenuUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MenuClient) UpdateOne(m *Menu) *MenuUpdateOne {
+	mutation := newMenuMutation(c.config, OpUpdateOne, withMenu(m))
+	return &MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MenuClient) UpdateOneID(id xid.ID) *MenuUpdateOne {
+	mutation := newMenuMutation(c.config, OpUpdateOne, withMenuID(id))
+	return &MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Menu.
+func (c *MenuClient) Delete() *MenuDelete {
+	mutation := newMenuMutation(c.config, OpDelete)
+	return &MenuDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MenuClient) DeleteOne(m *Menu) *MenuDeleteOne {
+	return c.DeleteOneID(m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MenuClient) DeleteOneID(id xid.ID) *MenuDeleteOne {
+	builder := c.Delete().Where(menu.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MenuDeleteOne{builder}
+}
+
+// Query returns a query builder for Menu.
+func (c *MenuClient) Query() *MenuQuery {
+	return &MenuQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMenu},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Menu entity by its id.
+func (c *MenuClient) Get(ctx context.Context, id xid.ID) (*Menu, error) {
+	return c.Query().Where(menu.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MenuClient) GetX(ctx context.Context, id xid.ID) *Menu {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParent queries the parent edge of a Menu.
+func (c *MenuClient) QueryParent(m *Menu) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, menu.ParentTable, menu.ParentColumn),
+		)
+		schemaConfig := m.schemaConfig
+		step.To.Schema = schemaConfig.Menu
+		step.Edge.Schema = schemaConfig.Menu
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a Menu.
+func (c *MenuClient) QueryChildren(m *Menu) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menu.ChildrenTable, menu.ChildrenColumn),
+		)
+		schemaConfig := m.schemaConfig
+		step.To.Schema = schemaConfig.Menu
+		step.Edge.Schema = schemaConfig.Menu
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRoles queries the roles edge of a Menu.
+func (c *MenuClient) QueryRoles(m *Menu) *RoleQuery {
+	query := (&RoleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(role.Table, role.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, menu.RolesTable, menu.RolesPrimaryKey...),
+		)
+		schemaConfig := m.schemaConfig
+		step.To.Schema = schemaConfig.Role
+		step.Edge.Schema = schemaConfig.RoleRoutes
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MenuClient) Hooks() []Hook {
+	hooks := c.hooks.Menu
+	return append(hooks[:len(hooks):len(hooks)], menu.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *MenuClient) Interceptors() []Interceptor {
+	inters := c.inters.Menu
+	return append(inters[:len(inters):len(inters)], menu.Interceptors[:]...)
+}
+
+func (c *MenuClient) mutate(ctx context.Context, m *MenuMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MenuCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MenuUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Menu mutation op: %q", m.Op())
 	}
 }
 
@@ -1089,17 +1281,17 @@ func (c *RoleClient) QueryPermissions(r *Role) *PermissionQuery {
 }
 
 // QueryRoutes queries the routes edge of a Role.
-func (c *RoleClient) QueryRoutes(r *Role) *RouteQuery {
-	query := (&RouteClient{config: c.config}).Query()
+func (c *RoleClient) QueryRoutes(r *Role) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, id),
-			sqlgraph.To(route.Table, route.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.MenusTable, role.MenusPrimaryKey...),
 		)
 		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Route
+		step.To.Schema = schemaConfig.Menu
 		step.Edge.Schema = schemaConfig.RoleRoutes
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -1134,205 +1326,13 @@ func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error)
 	}
 }
 
-// RouteClient is a client for the Route schema.
-type RouteClient struct {
-	config
-}
-
-// NewRouteClient returns a client for the Route from the given config.
-func NewRouteClient(c config) *RouteClient {
-	return &RouteClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `route.Hooks(f(g(h())))`.
-func (c *RouteClient) Use(hooks ...Hook) {
-	c.hooks.Route = append(c.hooks.Route, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `route.Intercept(f(g(h())))`.
-func (c *RouteClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Route = append(c.inters.Route, interceptors...)
-}
-
-// Create returns a builder for creating a Route entity.
-func (c *RouteClient) Create() *RouteCreate {
-	mutation := newRouteMutation(c.config, OpCreate)
-	return &RouteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Route entities.
-func (c *RouteClient) CreateBulk(builders ...*RouteCreate) *RouteCreateBulk {
-	return &RouteCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *RouteClient) MapCreateBulk(slice any, setFunc func(*RouteCreate, int)) *RouteCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &RouteCreateBulk{err: fmt.Errorf("calling to RouteClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*RouteCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &RouteCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Route.
-func (c *RouteClient) Update() *RouteUpdate {
-	mutation := newRouteMutation(c.config, OpUpdate)
-	return &RouteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *RouteClient) UpdateOne(r *Route) *RouteUpdateOne {
-	mutation := newRouteMutation(c.config, OpUpdateOne, withRoute(r))
-	return &RouteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *RouteClient) UpdateOneID(id xid.ID) *RouteUpdateOne {
-	mutation := newRouteMutation(c.config, OpUpdateOne, withRouteID(id))
-	return &RouteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Route.
-func (c *RouteClient) Delete() *RouteDelete {
-	mutation := newRouteMutation(c.config, OpDelete)
-	return &RouteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *RouteClient) DeleteOne(r *Route) *RouteDeleteOne {
-	return c.DeleteOneID(r.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RouteClient) DeleteOneID(id xid.ID) *RouteDeleteOne {
-	builder := c.Delete().Where(route.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &RouteDeleteOne{builder}
-}
-
-// Query returns a query builder for Route.
-func (c *RouteClient) Query() *RouteQuery {
-	return &RouteQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeRoute},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Route entity by its id.
-func (c *RouteClient) Get(ctx context.Context, id xid.ID) (*Route, error) {
-	return c.Query().Where(route.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *RouteClient) GetX(ctx context.Context, id xid.ID) *Route {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryParent queries the parent edge of a Route.
-func (c *RouteClient) QueryParent(r *Route) *RouteQuery {
-	query := (&RouteClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(route.Table, route.FieldID, id),
-			sqlgraph.To(route.Table, route.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, route.ParentTable, route.ParentColumn),
-		)
-		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Route
-		step.Edge.Schema = schemaConfig.Route
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryChildren queries the children edge of a Route.
-func (c *RouteClient) QueryChildren(r *Route) *RouteQuery {
-	query := (&RouteClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(route.Table, route.FieldID, id),
-			sqlgraph.To(route.Table, route.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, route.ChildrenTable, route.ChildrenColumn),
-		)
-		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Route
-		step.Edge.Schema = schemaConfig.Route
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryRoles queries the roles edge of a Route.
-func (c *RouteClient) QueryRoles(r *Route) *RoleQuery {
-	query := (&RoleClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(route.Table, route.FieldID, id),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, route.RolesTable, route.RolesPrimaryKey...),
-		)
-		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Role
-		step.Edge.Schema = schemaConfig.RoleRoutes
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *RouteClient) Hooks() []Hook {
-	hooks := c.hooks.Route
-	return append(hooks[:len(hooks):len(hooks)], route.Hooks[:]...)
-}
-
-// Interceptors returns the client interceptors.
-func (c *RouteClient) Interceptors() []Interceptor {
-	inters := c.inters.Route
-	return append(inters[:len(inters):len(inters)], route.Interceptors[:]...)
-}
-
-func (c *RouteClient) mutate(ctx context.Context, m *RouteMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&RouteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&RouteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&RouteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&RouteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Route mutation op: %q", m.Op())
-	}
-}
-
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Department, Permission, Region, Role, Route []ent.Hook
+		Admin, Department, Menu, Permission, Region, Role []ent.Hook
 	}
 	inters struct {
-		Admin, Department, Permission, Region, Role, Route []ent.Interceptor
+		Admin, Department, Menu, Permission, Region, Role []ent.Interceptor
 	}
 )
 

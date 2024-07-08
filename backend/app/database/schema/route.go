@@ -12,20 +12,20 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-type Route struct {
+type Menu struct {
 	ent.Schema
 }
 
-func (Route) Mixin() []ent.Mixin {
+func (Menu) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		xid.MixinWithPrefix("route"),
+		xid.MixinWithPrefix("menu"),
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},
 	}
 }
 
-func (Route) Indexes() []ent.Index {
+func (Menu) Indexes() []ent.Index {
 	return []ent.Index{
 		softdelete.Index("path", "parent_id", "type").
 			Unique().
@@ -35,7 +35,7 @@ func (Route) Indexes() []ent.Index {
 	}
 }
 
-func (Route) Fields() []ent.Field {
+func (Menu) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("parent_id").
 			GoType(xid.ID("")).
@@ -67,13 +67,13 @@ func (Route) Fields() []ent.Field {
 			Default("cata_log").
 			StructTag(`rql:"filter,sort"`),
 
-		field.JSON("meta", types.RouteMeta{}),
+		field.JSON("meta", types.MenuMeta{}),
 	}
 }
 
-func (Route) Edges() []ent.Edge {
+func (Menu) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("children", Route.Type).From("parent").Unique().Field("parent_id"),
+		edge.To("children", Menu.Type).From("parent").Unique().Field("parent_id"),
 		edge.From("roles", Role.Type).Ref("routes"),
 	}
 }

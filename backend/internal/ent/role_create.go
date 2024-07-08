@@ -14,9 +14,9 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 )
 
 // RoleCreate is the builder for creating a Role entity.
@@ -151,17 +151,17 @@ func (rc *RoleCreate) AddPermissions(p ...*Permission) *RoleCreate {
 	return rc.AddPermissionIDs(ids...)
 }
 
-// AddRouteIDs adds the "routes" edge to the Route entity by IDs.
+// AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
 func (rc *RoleCreate) AddRouteIDs(ids ...xid.ID) *RoleCreate {
 	rc.mutation.AddRouteIDs(ids...)
 	return rc
 }
 
-// AddRoutes adds the "routes" edges to the Route entity.
-func (rc *RoleCreate) AddRoutes(r ...*Route) *RoleCreate {
-	ids := make([]xid.ID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+// AddRoutes adds the "routes" edges to the Menu entity.
+func (rc *RoleCreate) AddRoutes(m ...*Menu) *RoleCreate {
+	ids := make([]xid.ID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
 	}
 	return rc.AddRouteIDs(ids...)
 }
@@ -364,15 +364,15 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.RoutesIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.MenusIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = rc.schemaConfig.RoleRoutes

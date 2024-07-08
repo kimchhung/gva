@@ -5,11 +5,11 @@ package ent
 import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -64,6 +64,31 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   menu.Table,
+			Columns: menu.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: menu.FieldID,
+			},
+		},
+		Type: "Menu",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			menu.FieldCreatedAt: {Type: field.TypeTime, Column: menu.FieldCreatedAt},
+			menu.FieldUpdatedAt: {Type: field.TypeTime, Column: menu.FieldUpdatedAt},
+			menu.FieldIsEnable:  {Type: field.TypeBool, Column: menu.FieldIsEnable},
+			menu.FieldDeletedAt: {Type: field.TypeInt, Column: menu.FieldDeletedAt},
+			menu.FieldParentID:  {Type: field.TypeString, Column: menu.FieldParentID},
+			menu.FieldPath:      {Type: field.TypeString, Column: menu.FieldPath},
+			menu.FieldComponent: {Type: field.TypeString, Column: menu.FieldComponent},
+			menu.FieldRedirect:  {Type: field.TypeString, Column: menu.FieldRedirect},
+			menu.FieldName:      {Type: field.TypeString, Column: menu.FieldName},
+			menu.FieldOrder:     {Type: field.TypeInt, Column: menu.FieldOrder},
+			menu.FieldType:      {Type: field.TypeEnum, Column: menu.FieldType},
+			menu.FieldMeta:      {Type: field.TypeJSON, Column: menu.FieldMeta},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permission.Table,
 			Columns: permission.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -81,7 +106,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldOrder:     {Type: field.TypeInt, Column: permission.FieldOrder},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   region.Table,
 			Columns: region.Columns,
@@ -102,7 +127,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			region.FieldParentID:  {Type: field.TypeString, Column: region.FieldParentID},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -121,31 +146,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldDescription:  {Type: field.TypeString, Column: role.FieldDescription},
 			role.FieldOrder:        {Type: field.TypeInt, Column: role.FieldOrder},
 			role.FieldIsChangeable: {Type: field.TypeBool, Column: role.FieldIsChangeable},
-		},
-	}
-	graph.Nodes[5] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   route.Table,
-			Columns: route.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: route.FieldID,
-			},
-		},
-		Type: "Route",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			route.FieldCreatedAt: {Type: field.TypeTime, Column: route.FieldCreatedAt},
-			route.FieldUpdatedAt: {Type: field.TypeTime, Column: route.FieldUpdatedAt},
-			route.FieldIsEnable:  {Type: field.TypeBool, Column: route.FieldIsEnable},
-			route.FieldDeletedAt: {Type: field.TypeInt, Column: route.FieldDeletedAt},
-			route.FieldParentID:  {Type: field.TypeString, Column: route.FieldParentID},
-			route.FieldPath:      {Type: field.TypeString, Column: route.FieldPath},
-			route.FieldComponent: {Type: field.TypeString, Column: route.FieldComponent},
-			route.FieldRedirect:  {Type: field.TypeString, Column: route.FieldRedirect},
-			route.FieldName:      {Type: field.TypeString, Column: route.FieldName},
-			route.FieldOrder:     {Type: field.TypeInt, Column: route.FieldOrder},
-			route.FieldType:      {Type: field.TypeEnum, Column: route.FieldType},
-			route.FieldMeta:      {Type: field.TypeJSON, Column: route.FieldMeta},
 		},
 	}
 	graph.MustAddE(
@@ -207,6 +207,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Department",
 		"Admin",
+	)
+	graph.MustAddE(
+		"parent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   menu.ParentTable,
+			Columns: []string{menu.ParentColumn},
+			Bidi:    false,
+		},
+		"Menu",
+		"Menu",
+	)
+	graph.MustAddE(
+		"children",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.ChildrenTable,
+			Columns: []string{menu.ChildrenColumn},
+			Bidi:    false,
+		},
+		"Menu",
+		"Menu",
+	)
+	graph.MustAddE(
+		"roles",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   menu.RolesTable,
+			Columns: menu.RolesPrimaryKey,
+			Bidi:    false,
+		},
+		"Menu",
+		"Role",
 	)
 	graph.MustAddE(
 		"roles",
@@ -273,48 +309,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 		},
 		"Role",
-		"Route",
-	)
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   route.ParentTable,
-			Columns: []string{route.ParentColumn},
-			Bidi:    false,
-		},
-		"Route",
-		"Route",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   route.ChildrenTable,
-			Columns: []string{route.ChildrenColumn},
-			Bidi:    false,
-		},
-		"Route",
-		"Route",
-	)
-	graph.MustAddE(
-		"roles",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   route.RolesTable,
-			Columns: route.RolesPrimaryKey,
-			Bidi:    false,
-		},
-		"Route",
-		"Role",
+		"Menu",
 	)
 	return graph
 }()
@@ -556,6 +556,148 @@ func (f *DepartmentFilter) WhereHasMembersWith(preds ...predicate.Admin) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (mq *MenuQuery) addPredicate(pred func(s *sql.Selector)) {
+	mq.predicates = append(mq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the MenuQuery builder.
+func (mq *MenuQuery) Filter() *MenuFilter {
+	return &MenuFilter{config: mq.config, predicateAdder: mq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *MenuMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the MenuMutation builder.
+func (m *MenuMutation) Filter() *MenuFilter {
+	return &MenuFilter{config: m.config, predicateAdder: m}
+}
+
+// MenuFilter provides a generic filtering capability at runtime for MenuQuery.
+type MenuFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *MenuFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *MenuFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(menu.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *MenuFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(menu.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *MenuFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(menu.FieldUpdatedAt))
+}
+
+// WhereIsEnable applies the entql bool predicate on the is_enable field.
+func (f *MenuFilter) WhereIsEnable(p entql.BoolP) {
+	f.Where(p.Field(menu.FieldIsEnable))
+}
+
+// WhereDeletedAt applies the entql int predicate on the deleted_at field.
+func (f *MenuFilter) WhereDeletedAt(p entql.IntP) {
+	f.Where(p.Field(menu.FieldDeletedAt))
+}
+
+// WhereParentID applies the entql string predicate on the parent_id field.
+func (f *MenuFilter) WhereParentID(p entql.StringP) {
+	f.Where(p.Field(menu.FieldParentID))
+}
+
+// WherePath applies the entql string predicate on the path field.
+func (f *MenuFilter) WherePath(p entql.StringP) {
+	f.Where(p.Field(menu.FieldPath))
+}
+
+// WhereComponent applies the entql string predicate on the component field.
+func (f *MenuFilter) WhereComponent(p entql.StringP) {
+	f.Where(p.Field(menu.FieldComponent))
+}
+
+// WhereRedirect applies the entql string predicate on the redirect field.
+func (f *MenuFilter) WhereRedirect(p entql.StringP) {
+	f.Where(p.Field(menu.FieldRedirect))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *MenuFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(menu.FieldName))
+}
+
+// WhereOrder applies the entql int predicate on the order field.
+func (f *MenuFilter) WhereOrder(p entql.IntP) {
+	f.Where(p.Field(menu.FieldOrder))
+}
+
+// WhereType applies the entql string predicate on the type field.
+func (f *MenuFilter) WhereType(p entql.StringP) {
+	f.Where(p.Field(menu.FieldType))
+}
+
+// WhereMeta applies the entql json.RawMessage predicate on the meta field.
+func (f *MenuFilter) WhereMeta(p entql.BytesP) {
+	f.Where(p.Field(menu.FieldMeta))
+}
+
+// WhereHasParent applies a predicate to check if query has an edge parent.
+func (f *MenuFilter) WhereHasParent() {
+	f.Where(entql.HasEdge("parent"))
+}
+
+// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
+func (f *MenuFilter) WhereHasParentWith(preds ...predicate.Menu) {
+	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasChildren applies a predicate to check if query has an edge children.
+func (f *MenuFilter) WhereHasChildren() {
+	f.Where(entql.HasEdge("children"))
+}
+
+// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
+func (f *MenuFilter) WhereHasChildrenWith(preds ...predicate.Menu) {
+	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRoles applies a predicate to check if query has an edge roles.
+func (f *MenuFilter) WhereHasRoles() {
+	f.Where(entql.HasEdge("roles"))
+}
+
+// WhereHasRolesWith applies a predicate to check if query has an edge roles with a given conditions (other predicates).
+func (f *MenuFilter) WhereHasRolesWith(preds ...predicate.Role) {
+	f.Where(entql.HasEdgeWith("roles", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (pq *PermissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
 }
@@ -584,7 +726,7 @@ type PermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -668,7 +810,7 @@ type RegionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RegionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -776,7 +918,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -861,150 +1003,8 @@ func (f *RoleFilter) WhereHasRoutes() {
 }
 
 // WhereHasRoutesWith applies a predicate to check if query has an edge routes with a given conditions (other predicates).
-func (f *RoleFilter) WhereHasRoutesWith(preds ...predicate.Route) {
+func (f *RoleFilter) WhereHasRoutesWith(preds ...predicate.Menu) {
 	f.Where(entql.HasEdgeWith("routes", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (rq *RouteQuery) addPredicate(pred func(s *sql.Selector)) {
-	rq.predicates = append(rq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the RouteQuery builder.
-func (rq *RouteQuery) Filter() *RouteFilter {
-	return &RouteFilter{config: rq.config, predicateAdder: rq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *RouteMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the RouteMutation builder.
-func (m *RouteMutation) Filter() *RouteFilter {
-	return &RouteFilter{config: m.config, predicateAdder: m}
-}
-
-// RouteFilter provides a generic filtering capability at runtime for RouteQuery.
-type RouteFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *RouteFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *RouteFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(route.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *RouteFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(route.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *RouteFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(route.FieldUpdatedAt))
-}
-
-// WhereIsEnable applies the entql bool predicate on the is_enable field.
-func (f *RouteFilter) WhereIsEnable(p entql.BoolP) {
-	f.Where(p.Field(route.FieldIsEnable))
-}
-
-// WhereDeletedAt applies the entql int predicate on the deleted_at field.
-func (f *RouteFilter) WhereDeletedAt(p entql.IntP) {
-	f.Where(p.Field(route.FieldDeletedAt))
-}
-
-// WhereParentID applies the entql string predicate on the parent_id field.
-func (f *RouteFilter) WhereParentID(p entql.StringP) {
-	f.Where(p.Field(route.FieldParentID))
-}
-
-// WherePath applies the entql string predicate on the path field.
-func (f *RouteFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(route.FieldPath))
-}
-
-// WhereComponent applies the entql string predicate on the component field.
-func (f *RouteFilter) WhereComponent(p entql.StringP) {
-	f.Where(p.Field(route.FieldComponent))
-}
-
-// WhereRedirect applies the entql string predicate on the redirect field.
-func (f *RouteFilter) WhereRedirect(p entql.StringP) {
-	f.Where(p.Field(route.FieldRedirect))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *RouteFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(route.FieldName))
-}
-
-// WhereOrder applies the entql int predicate on the order field.
-func (f *RouteFilter) WhereOrder(p entql.IntP) {
-	f.Where(p.Field(route.FieldOrder))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *RouteFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(route.FieldType))
-}
-
-// WhereMeta applies the entql json.RawMessage predicate on the meta field.
-func (f *RouteFilter) WhereMeta(p entql.BytesP) {
-	f.Where(p.Field(route.FieldMeta))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *RouteFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *RouteFilter) WhereHasParentWith(preds ...predicate.Route) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *RouteFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *RouteFilter) WhereHasChildrenWith(preds ...predicate.Route) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasRoles applies a predicate to check if query has an edge roles.
-func (f *RouteFilter) WhereHasRoles() {
-	f.Where(entql.HasEdge("roles"))
-}
-
-// WhereHasRolesWith applies a predicate to check if query has an edge roles with a given conditions (other predicates).
-func (f *RouteFilter) WhereHasRolesWith(preds ...predicate.Role) {
-	f.Where(entql.HasEdgeWith("roles", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

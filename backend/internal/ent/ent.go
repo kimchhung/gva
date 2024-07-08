@@ -14,10 +14,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -80,10 +80,10 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			admin.Table:      admin.ValidColumn,
 			department.Table: department.ValidColumn,
+			menu.Table:       menu.ValidColumn,
 			permission.Table: permission.ValidColumn,
 			region.Table:     region.ValidColumn,
 			role.Table:       role.ValidColumn,
-			route.Table:      route.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

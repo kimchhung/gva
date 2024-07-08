@@ -40,7 +40,7 @@ func NewIndexController(index_s *IndexService, log *zerolog.Logger) *IndexContro
 // @Produce     json
 // @Success     200 {object} response.Response{data=string} "format time.RFC3339"
 // @Router      /now [get]
-func (con *IndexController) Now(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *IndexController) Now(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/now").Do(func(c echo.Context) error {
 		now, err := con.index_s.Now(c.Request().Context())
 		if err != nil {
@@ -57,7 +57,7 @@ func (con *IndexController) Now(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Accept 		text/event-stream
 // @Success     200 {object} string "format time.RFC3339"
 // @Router      /sse/now [get]
-func (con *IndexController) SSENow(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *IndexController) SSENow(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/sse/now").Do(func(c echo.Context) error {
 		log.Printf("SSE client connected, ip: %v", c.RealIP())
 
@@ -94,7 +94,7 @@ var upgrader = websocket.Upgrader{}
 // @Accept 		text/event-stream
 // @Success     200 {object} string "format time.RFC3339"
 // @Router      /ws/now [get]
-func (con *IndexController) WSNow(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *IndexController) WSNow(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/ws/now").Do(func(c echo.Context) error {
 		ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 		if err != nil {

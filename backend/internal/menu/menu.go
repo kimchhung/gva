@@ -15,7 +15,7 @@ import (
 	"github.com/gva/utils/routeutil"
 )
 
-func LoadRouteFromFile(filePath string) (routes []*ent.Route) {
+func LoadRouteFromFile(filePath string) (routes []*ent.Menu) {
 	bytes, err := json.ReadJsonFile(filePath)
 	if err != nil {
 		log.Panicf("can't raed seed data %v", err)
@@ -29,7 +29,7 @@ func LoadRouteFromFile(filePath string) (routes []*ent.Route) {
 }
 
 func PullRoutes(ctx context.Context, conn *ent.Client, filePath string) {
-	flats, err := conn.Route.Query().All(ctx)
+	flats, err := conn.Menu.Query().All(ctx)
 	if err != nil {
 		log.Panicf("failed querying routes: %v", err)
 	}
@@ -51,7 +51,7 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 
 	childToParent := map[xid.ID]xid.ID{}
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
-		tx.Route.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
+		tx.Menu.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
 
 		for _, r := range flats {
 			if r.ParentID != nil {
@@ -64,7 +64,7 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 				r.Type = route.TypeMenu
 			}
 
-			_, err := tx.Route.Create().SetID(r.ID).
+			_, err := tx.Menu.Create().SetID(r.ID).
 				SetComponent(r.Component).
 				SetPath(r.Path).
 				SetIsEnable(true).
@@ -80,7 +80,7 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 		}
 
 		for cid, pid := range childToParent {
-			_, err := tx.Route.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
+			_, err := tx.Menu.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
 			if err != nil {
 				return fmt.Errorf("save routers: %w", err)
 			}

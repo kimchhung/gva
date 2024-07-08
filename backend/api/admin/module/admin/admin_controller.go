@@ -44,7 +44,7 @@ func (con *AdminController) Init(r *echo.Group) *echo.Group {
 // @Produce		json
 // @Success		200	{object}	response.Response{data=[]ent.Admin,meta=pagi.Meta}	"Successfully retrieved Admins"
 // @Router		/admins [get]
-func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) Paginate(meta *echoc.MenuMeta) echoc.MetaHandler {
 
 	// init parser once and reused
 	parser := request.MustRqlParser(rql.Config{
@@ -90,7 +90,7 @@ func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Produce		json
 // @Success		200	{object}	response.Response{}	"Successfully retrieved Admin routes"
 // @Router		/admins/routes [get]
-func (con *AdminController) AdminRoutes(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) AdminRoutes(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/routes").DoWithScope(func() []echo.HandlerFunc {
 		adminCtx := new(appctx.AdminContext)
 
@@ -120,7 +120,7 @@ func (con *AdminController) AdminRoutes(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Produce		json
 // @Success		200	{object}	response.Response{}	"Successfully retrieved Admin permissionissions"
 // @Router		/admins/permissions [get]
-func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) AdminPermission(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/permissions").DoWithScope(func() []echo.HandlerFunc {
 		admin := new(ent.Admin)
 
@@ -151,7 +151,7 @@ func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHan
 // @Param		id	path		int	true	"Admin ID"
 // @Success		200	{object}	response.Response{data=dto.AdminResponse}
 // @Router		/admins/{id} [get]
-func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) Get(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
 		param := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
@@ -189,13 +189,13 @@ func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param		Admin	body		dto.AdminRequest							true	"Admin data"
 // @Success		200		{object}	response.Response{data=dto.AdminResponse}	"Successfully created Admin"
 // @Router		/admins [post]
-func (con *AdminController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) Create(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Post("/").DoWithScope(func() []echo.HandlerFunc {
 		req := new(dto.AdminRequest)
 
 		return []echo.HandlerFunc{
 			permission.RequireAny(
-				permission.AdminModify,
+				permission.AdminAdd,
 				permission.AdminSuper,
 			),
 			request.Validate(
@@ -227,7 +227,7 @@ func (con *AdminController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param		Admin	body		dto.AdminRequest							true	"Admin data"
 // @Success		200		{object}	response.Response{data=dto.AdminResponse}	"Successfully updated Admin"
 // @Router		/admins/{id} [patch]
-func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) Update(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Patch("/:id").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.AdminRequest)
 		param := new(struct {
@@ -236,7 +236,7 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 
 		return []echo.HandlerFunc{
 			permission.RequireAny(
-				permission.AdminModify,
+				permission.AdminAdd,
 				permission.AdminSuper,
 			),
 			request.Validate(
@@ -267,7 +267,7 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param		id	path		int					true	"Admin ID"
 // @Success		200	{object}	response.Response{}	"Successfully deleted Admin"
 // @Router		/admins/{id} [delete]
-func (con *AdminController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *AdminController) Delete(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		param := new(struct {
 			ID xid.ID `param:"id" validate:"required"`

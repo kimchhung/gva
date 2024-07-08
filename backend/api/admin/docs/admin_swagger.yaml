@@ -139,14 +139,14 @@ definitions:
       token:
         type: string
     type: object
-  dto.RouteRequest:
+  dto.MenuRequest:
     properties:
       component:
         type: string
       isEnable:
         type: boolean
       meta:
-        $ref: '#/definitions/types.RouteMeta'
+        $ref: '#/definitions/types.MenuMeta'
       name:
         type: string
       parentId:
@@ -165,7 +165,7 @@ definitions:
     - path
     - type
     type: object
-  dto.RouteResponse:
+  dto.MenuResponse:
     properties:
       component:
         description: Component holds the value of the "component" field.
@@ -175,7 +175,7 @@ definitions:
         type: string
       edges:
         allOf:
-        - $ref: '#/definitions/ent.RouteEdges'
+        - $ref: '#/definitions/ent.MenuEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RouteQuery when eager-loading is set.
@@ -187,7 +187,7 @@ definitions:
         type: boolean
       meta:
         allOf:
-        - $ref: '#/definitions/types.RouteMeta'
+        - $ref: '#/definitions/types.MenuMeta'
         description: Meta holds the value of the "meta" field.
       name:
         description: Name holds the value of the "name" field.
@@ -335,10 +335,10 @@ definitions:
       routes:
         description: Routes holds the value of the routes edge.
         items:
-          $ref: '#/definitions/ent.Route'
+          $ref: '#/definitions/ent.Menu'
         type: array
     type: object
-  ent.Route:
+  ent.Menu:
     properties:
       component:
         description: Component holds the value of the "component" field.
@@ -348,7 +348,7 @@ definitions:
         type: string
       edges:
         allOf:
-        - $ref: '#/definitions/ent.RouteEdges'
+        - $ref: '#/definitions/ent.MenuEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the RouteQuery when eager-loading is set.
@@ -360,7 +360,7 @@ definitions:
         type: boolean
       meta:
         allOf:
-        - $ref: '#/definitions/types.RouteMeta'
+        - $ref: '#/definitions/types.MenuMeta'
         description: Meta holds the value of the "meta" field.
       name:
         description: Name holds the value of the "name" field.
@@ -382,16 +382,16 @@ definitions:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
     type: object
-  ent.RouteEdges:
+  ent.MenuEdges:
     properties:
       children:
         description: Children holds the value of the children edge.
         items:
-          $ref: '#/definitions/ent.Route'
+          $ref: '#/definitions/ent.Menu'
         type: array
       parent:
         allOf:
-        - $ref: '#/definitions/ent.Route'
+        - $ref: '#/definitions/ent.Menu'
         description: Parent holds the value of the parent edge.
       roles:
         description: Roles holds the value of the roles edge.
@@ -434,7 +434,7 @@ definitions:
     - TypeMenu
     - TypeButton
     - TypeExternalLink
-  types.RouteMeta:
+  types.MenuMeta:
     properties:
       activeMenu:
         type: string
@@ -799,11 +799,11 @@ paths:
                 data:
                   additionalProperties:
                     allOf:
-                    - $ref: '#/definitions/dto.RouteResponse'
+                    - $ref: '#/definitions/dto.MenuResponse'
                     - properties:
                         list:
                           items:
-                            $ref: '#/definitions/dto.RouteResponse'
+                            $ref: '#/definitions/dto.MenuResponse'
                           type: array
                       type: object
                   type: object
@@ -824,7 +824,7 @@ paths:
         name: info
         required: true
         schema:
-          $ref: '#/definitions/dto.RouteRequest'
+          $ref: '#/definitions/dto.MenuRequest'
       produces:
       - application/json
       responses:
@@ -835,7 +835,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.RouteResponse'
+                  $ref: '#/definitions/dto.MenuResponse'
               type: object
       security:
       - Bearer: []
@@ -877,7 +877,7 @@ paths:
         name: info
         required: true
         schema:
-          $ref: '#/definitions/dto.RouteRequest'
+          $ref: '#/definitions/dto.MenuRequest'
       - description: Route ID
         in: path
         name: id
@@ -893,7 +893,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.RouteResponse'
+                  $ref: '#/definitions/dto.MenuResponse'
               type: object
       security:
       - Bearer: []

@@ -103,9 +103,9 @@ func (s *AdminService) DeleteAdmin(ctx context.Context, id xid.ID) error {
 	return s.admin_r.C().DeleteOneID(id).Exec(ctx)
 }
 
-func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId xid.ID) ([]*ent.Route, error) {
+func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId xid.ID) ([]*ent.Menu, error) {
 	if appctx.MustAdminContext(ctx).IsSuperAdmin() {
-		routes, err := s.db.Route.Query().Where(route.IsEnable(true)).All(ctx)
+		routes, err := s.db.Menu.Query().Where(route.IsEnable(true)).All(ctx)
 		if err != nil {
 			return nil, err
 		}

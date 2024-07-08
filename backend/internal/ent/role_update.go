@@ -13,10 +13,10 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 
 	"github.com/gva/internal/ent/internal"
 )
@@ -183,17 +183,17 @@ func (ru *RoleUpdate) AddPermissions(p ...*Permission) *RoleUpdate {
 	return ru.AddPermissionIDs(ids...)
 }
 
-// AddRouteIDs adds the "routes" edge to the Route entity by IDs.
+// AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
 func (ru *RoleUpdate) AddRouteIDs(ids ...xid.ID) *RoleUpdate {
 	ru.mutation.AddRouteIDs(ids...)
 	return ru
 }
 
-// AddRoutes adds the "routes" edges to the Route entity.
-func (ru *RoleUpdate) AddRoutes(r ...*Route) *RoleUpdate {
-	ids := make([]xid.ID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+// AddRoutes adds the "routes" edges to the Menu entity.
+func (ru *RoleUpdate) AddRoutes(m ...*Menu) *RoleUpdate {
+	ids := make([]xid.ID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
 	}
 	return ru.AddRouteIDs(ids...)
 }
@@ -245,23 +245,23 @@ func (ru *RoleUpdate) RemovePermissions(p ...*Permission) *RoleUpdate {
 	return ru.RemovePermissionIDs(ids...)
 }
 
-// ClearRoutes clears all "routes" edges to the Route entity.
+// ClearRoutes clears all "routes" edges to the Menu entity.
 func (ru *RoleUpdate) ClearRoutes() *RoleUpdate {
 	ru.mutation.ClearRoutes()
 	return ru
 }
 
-// RemoveRouteIDs removes the "routes" edge to Route entities by IDs.
+// RemoveRouteIDs removes the "routes" edge to Menu entities by IDs.
 func (ru *RoleUpdate) RemoveRouteIDs(ids ...xid.ID) *RoleUpdate {
 	ru.mutation.RemoveRouteIDs(ids...)
 	return ru
 }
 
-// RemoveRoutes removes "routes" edges to Route entities.
-func (ru *RoleUpdate) RemoveRoutes(r ...*Route) *RoleUpdate {
-	ids := make([]xid.ID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+// RemoveRoutes removes "routes" edges to Menu entities.
+func (ru *RoleUpdate) RemoveRoutes(m ...*Menu) *RoleUpdate {
+	ids := make([]xid.ID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
 	}
 	return ru.RemoveRouteIDs(ids...)
 }
@@ -449,29 +449,29 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.RoutesCleared() {
+	if ru.mutation.MenusCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = ru.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ru.mutation.RoutesCleared() {
+	if nodes := ru.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ru.mutation.MenusCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = ru.schemaConfig.RoleRoutes
@@ -480,15 +480,15 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RoutesIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.MenusIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = ru.schemaConfig.RoleRoutes
@@ -669,17 +669,17 @@ func (ruo *RoleUpdateOne) AddPermissions(p ...*Permission) *RoleUpdateOne {
 	return ruo.AddPermissionIDs(ids...)
 }
 
-// AddRouteIDs adds the "routes" edge to the Route entity by IDs.
+// AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
 func (ruo *RoleUpdateOne) AddRouteIDs(ids ...xid.ID) *RoleUpdateOne {
 	ruo.mutation.AddRouteIDs(ids...)
 	return ruo
 }
 
-// AddRoutes adds the "routes" edges to the Route entity.
-func (ruo *RoleUpdateOne) AddRoutes(r ...*Route) *RoleUpdateOne {
-	ids := make([]xid.ID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+// AddRoutes adds the "routes" edges to the Menu entity.
+func (ruo *RoleUpdateOne) AddRoutes(m ...*Menu) *RoleUpdateOne {
+	ids := make([]xid.ID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
 	}
 	return ruo.AddRouteIDs(ids...)
 }
@@ -731,23 +731,23 @@ func (ruo *RoleUpdateOne) RemovePermissions(p ...*Permission) *RoleUpdateOne {
 	return ruo.RemovePermissionIDs(ids...)
 }
 
-// ClearRoutes clears all "routes" edges to the Route entity.
+// ClearRoutes clears all "routes" edges to the Menu entity.
 func (ruo *RoleUpdateOne) ClearRoutes() *RoleUpdateOne {
 	ruo.mutation.ClearRoutes()
 	return ruo
 }
 
-// RemoveRouteIDs removes the "routes" edge to Route entities by IDs.
+// RemoveRouteIDs removes the "routes" edge to Menu entities by IDs.
 func (ruo *RoleUpdateOne) RemoveRouteIDs(ids ...xid.ID) *RoleUpdateOne {
 	ruo.mutation.RemoveRouteIDs(ids...)
 	return ruo
 }
 
-// RemoveRoutes removes "routes" edges to Route entities.
-func (ruo *RoleUpdateOne) RemoveRoutes(r ...*Route) *RoleUpdateOne {
-	ids := make([]xid.ID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+// RemoveRoutes removes "routes" edges to Menu entities.
+func (ruo *RoleUpdateOne) RemoveRoutes(m ...*Menu) *RoleUpdateOne {
+	ids := make([]xid.ID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
 	}
 	return ruo.RemoveRouteIDs(ids...)
 }
@@ -965,29 +965,29 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.RoutesCleared() {
+	if ruo.mutation.MenusCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = ruo.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ruo.mutation.RoutesCleared() {
+	if nodes := ruo.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ruo.mutation.MenusCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = ruo.schemaConfig.RoleRoutes
@@ -996,15 +996,15 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RoutesIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.MenusIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
+			Table:   role.MenusTable,
+			Columns: role.MenusPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(route.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		edge.Schema = ruo.schemaConfig.RoleRoutes

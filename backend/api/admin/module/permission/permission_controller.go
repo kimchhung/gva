@@ -37,7 +37,7 @@ func (con *PermissionController) Init(r *echo.Group) *echo.Group {
 // @Success     200 {object} response.Response{data=[]dto.PermissionResponse} "Successfully retrieved Routes"
 // @Router      /permissions [get]
 // @Security    Bearer
-func (con *PermissionController) Permissions(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *PermissionController) Permissions(meta *echoc.MenuMeta) echoc.MetaHandler {
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
 		return []echo.HandlerFunc{
 			permissions.OnlySuperAdmin(),
