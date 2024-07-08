@@ -37,6 +37,4 @@ export const setupAPI = (app: App<Element>) => {
   var api = createApi() as API
   globalThis.api = api
   app.provide('api', api)
-
-  console.log({ api })
 }
