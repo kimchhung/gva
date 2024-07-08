@@ -4,8 +4,8 @@ import (
 	admin "github.com/gva/api/admin/module/admin"
 	auth "github.com/gva/api/admin/module/auth"
 	index "github.com/gva/api/admin/module/index"
+	menu "github.com/gva/api/admin/module/menu"
 	permission "github.com/gva/api/admin/module/permission"
-	route "github.com/gva/api/admin/module/route"
 	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/echoc"
 
@@ -15,7 +15,7 @@ import (
 var NewAdminModules = fx.Module("admin-module",
 	admin.AdminModule,
 	auth.AuthModule,
-	route.MenuModule,
+	menu.MenuModule,
 	permission.PermissionModule,
 	index.IndexModule,
 
