@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { api } from '@/api'
 import { MenuRoute } from '@/api/route/types'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'

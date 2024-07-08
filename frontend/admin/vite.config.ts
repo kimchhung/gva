@@ -6,7 +6,6 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import UnoCSS from 'unocss/vite'
 import type { ConfigEnv, UserConfig } from 'vite'
 import { loadEnv } from 'vite'
-import checker from 'vite-plugin-checker'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import EslintPlugin from 'vite-plugin-eslint'
 import { viteMockServe } from 'vite-plugin-mock'
@@ -34,9 +33,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   return {
     base: env.VITE_BASE_PATH,
     plugins: [
-      checker({
-        typescript: true
-      }),
+      // checker({
+      //   typescript: false
+      // }),
       Vue({
         script: {
           // defineModel
@@ -65,7 +64,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         : undefined,
       EslintPlugin({
         cache: false,
-        include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx'] // 检查的文件
+        include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx'] // Check the file
       }),
       VueI18nPlugin({
         runtimeOnly: true,

@@ -79,4 +79,15 @@ declare global {
     message: string
     data: T extends any ? T : T & any
   }
+
+  declare var api: API
+
+  declare interface Window {
+    api: API
+  }
+
+  declare type APIModule = {
+    name: string
+    resource: any
+  }
 }

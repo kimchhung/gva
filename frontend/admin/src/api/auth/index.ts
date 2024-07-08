@@ -2,8 +2,11 @@ import req, { useAPI } from '@/axios'
 import { Admin } from '../admin/types'
 import { AuthLoginReq, AuthLoginResp, AuthMe } from './types'
 
-export const authResource = (base = '/auth') => {
+export type Resource = ReturnType<typeof resource>
+
+export const resource = (base = '/auth') => {
   const me = ({ opt }: AuthMe) => {
+    console.log('resource,auth')
     return useAPI({
       fn: () => req.get<Admin>({ url: `${base}/login` }),
       opt
@@ -19,3 +22,10 @@ export const authResource = (base = '/auth') => {
 
   return me
 }
+
+const module: APIModule = {
+  name: 'auth',
+  resource
+}
+
+export default module

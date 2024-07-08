@@ -1,5 +1,3 @@
-import { api } from '@/api'
-
 import { Admin } from '@/api/admin/types'
 import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
@@ -61,6 +59,7 @@ export const useAdminStore = defineStore('admin', {
       this.routers = roleRouters
     },
     async fetchUserInfo() {
+      console.log('fetchUserInfo', !!api.auth)
       const [data] = await api.auth({ opt: { loading: this } })
       if (data) this.setAdminInfo(data)
     },

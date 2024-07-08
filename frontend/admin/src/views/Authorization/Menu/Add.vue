@@ -5,7 +5,6 @@ import { ref, unref } from 'vue'
 import { useRouter } from 'vue-router'
 import Write from './components/Write.vue'
 
-import { api } from '@/api'
 import { MenuRoute } from '@/api/route/types'
 import { BaseButton } from '@/components/Button'
 // import { saveTableApi } from '@/api/table'

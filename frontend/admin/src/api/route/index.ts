@@ -2,7 +2,9 @@ import req, { useAPI } from '@/axios'
 import { createQueryPayload } from '@/hooks/web/usePagi'
 import { CreateRoute, GetManyRoute, GetRoute, MenuRoute, UpdateRoute } from './types'
 
-export const routeResource = (base = '/routes') => {
+export type Resource = ReturnType<typeof resource>
+
+export const resource = (base = '/routes') => {
   const get = (id: string) => {
     return req.get<MenuRoute>({ url: `${base}/${id}` })
   }
@@ -37,3 +39,10 @@ export const routeResource = (base = '/routes') => {
 
   return get
 }
+
+const module: APIModule = {
+  name: 'route',
+  resource
+}
+
+export default module

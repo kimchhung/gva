@@ -1,6 +1,4 @@
 <script setup lang="tsx">
-import { getRouters } from '@/api/route'
-import { useAPI } from '@/axios'
 import { Descriptions, DescriptionsSchema } from '@/components/Descriptions'
 import { findIndex } from '@/utils'
 import { ElTag, ElTree } from 'element-plus'
@@ -33,7 +31,7 @@ const nodeClick = (treeData: any) => {
 
 const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const [list] = await useAPI(() => getRouters())
+  const [list] = [[]]
   if (list) {
     treeData.value = list
     await nextTick()

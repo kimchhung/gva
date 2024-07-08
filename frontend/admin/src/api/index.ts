@@ -1,22 +1,56 @@
 import req, { useAPI, UseAPIOption } from '@/axios'
-import { authResource } from './auth'
-import { nodeResource } from './node'
-import { routeResource } from './route'
+import { App } from 'vue'
+
+const modules = import.meta.glob<
+  true,
+  'string',
+  {
+    default: APIModule
+  }
+>('./**/index.ts', {
+  eager: true
+})
+
+export type CreateApi = ReturnType<typeof createApi>
 
 const getNow = ({ opt }: UseAPIOption) => {
+  console.log({ modules })
+
   return useAPI({
     fn: () => req.get<string>({ url: '/now' }),
     opt
   })
 }
 
-export const api = {
-  now: getNow,
+const createApi = async () => {
+  const api = {
+    now: getNow
+  }
 
-  /* pattern */
-  node: nodeResource(),
-  // ---------------
+  for (const key in modules) {
+    const m = modules[key].default
+    if (m?.name && m?.resource) {
+      api[m.name] = m.resource
+    }
+  }
+  const [data] = await api['auth']({})
+  console.log({ data })
+  return api
+}
 
-  auth: authResource(),
-  route: routeResource()
+/**
+ * const { node, route } = inject('api')
+ * route.getMany()
+ */
+export const setupApi = async (app: App<Element>) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  if (!globalThis.api) {
+    globalThis.api = createApi() as any
+  }
+
+  app.provide('api', globalThis.api)
+  window.api = globalThis.api
 }

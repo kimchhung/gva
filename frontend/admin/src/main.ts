@@ -34,11 +34,14 @@ import { createApp } from 'vue'
 
 import App from './App.vue'
 
+import { setupApi } from './api'
 import './permission'
 
 // Create instance
 const setupAll = async () => {
   const app = createApp(App)
+
+  await setupApi(app)
 
   await setupI18n(app)
 
