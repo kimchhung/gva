@@ -138,7 +138,8 @@ var (
 		{Name: "group", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "key", Type: field.TypeString},
-		{Name: "order", Type: field.TypeInt},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Enums: []string{"dynamic", "static"}, Default: "dynamic"},
+		{Name: "order", Type: field.TypeInt, Nullable: true, Default: 0},
 	}
 	// PermissionsTable holds the schema information for the "permissions" table.
 	PermissionsTable = &schema.Table{

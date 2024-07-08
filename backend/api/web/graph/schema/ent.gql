@@ -355,7 +355,7 @@ type Menu implements Node {
   name: String!
   order: Int
   type: MenuType!
-  meta: RouteMeta!
+  meta: MenuMeta!
   parent: Menu
   children: [Menu!]
   roles: [Role!]
@@ -617,7 +617,8 @@ type Permission implements Node {
   group: String!
   name: String!
   key: String!
-  order: Int!
+  type: PermissionType
+  order: Int
   roles: [Role!]
 }
 """
@@ -638,6 +639,13 @@ Properties by which Permission connections can be ordered.
 """
 enum PermissionOrderField {
   id
+}
+"""
+PermissionType is enum for the field type
+"""
+enum PermissionType @goModel(model: "github.com/gva/internal/ent/permission.Type") {
+  dynamic
+  static
 }
 """
 PermissionWhereInput is used for filtering Permission objects.
@@ -729,6 +737,15 @@ input PermissionWhereInput {
   keyEqualFold: String
   keyContainsFold: String
   """
+  type field predicates
+  """
+  type: PermissionType
+  typeNEQ: PermissionType
+  typeIn: [PermissionType!]
+  typeNotIn: [PermissionType!]
+  typeIsNil: Boolean
+  typeNotNil: Boolean
+  """
   order field predicates
   """
   order: Int
@@ -739,6 +756,8 @@ input PermissionWhereInput {
   orderGTE: Int
   orderLT: Int
   orderLTE: Int
+  orderIsNil: Boolean
+  orderNotNil: Boolean
   """
   roles edge predicates
   """

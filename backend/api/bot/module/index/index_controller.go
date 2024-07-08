@@ -33,7 +33,7 @@ func NewIndexController(index_s *IndexService) *IndexController {
 // @Success     200 {object} response.Response{data=string} "format time.RFC3339"
 // @Router      /now [get]
 // @Security    Bearer
-func (con *IndexController) Now(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *IndexController) Now(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/now").Do(func(c echo.Context) error {
 		now, err := con.index_s.Now(c.Request().Context())
 		if err != nil {

@@ -15,10 +15,10 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/gva/app/database/schema/types"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -44,6 +44,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Menu() MenuResolver
 	Query() QueryResolver
 }
 
@@ -124,6 +125,7 @@ type ComplexityRoot struct {
 		Name      func(childComplexity int) int
 		Order     func(childComplexity int) int
 		Roles     func(childComplexity int) int
+		Type      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 
@@ -176,6 +178,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type MenuResolver interface {
+	Meta(ctx context.Context, obj *ent.Menu) (string, error)
+}
 type QueryResolver interface {
 	Node(ctx context.Context, id xid.ID) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []xid.ID) ([]ent.Noder, error)
@@ -581,6 +586,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Permission.Roles(childComplexity), true
 
+	case "Permission.type":
+		if e.complexity.Permission.Type == nil {
+			break
+		}
+
+		return e.complexity.Permission.Type(childComplexity), true
+
 	case "Permission.updatedAt":
 		if e.complexity.Permission.UpdatedAt == nil {
 			break
@@ -825,12 +837,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Role.Permissions(childComplexity), true
 
-	case "Role.Menus":
-		if e.complexity.Role.Menus == nil {
+	case "Role.routes":
+		if e.complexity.Role.Routes == nil {
 			break
 		}
 
-		return e.complexity.Role.Menus(childComplexity), true
+		return e.complexity.Role.Routes(childComplexity), true
 
 	case "Role.updatedAt":
 		if e.complexity.Role.UpdatedAt == nil {
@@ -1298,7 +1310,7 @@ type Menu implements Node {
   name: String!
   order: Int
   type: MenuType!
-  meta: RouteMeta!
+  meta: MenuMeta!
   parent: Menu
   children: [Menu!]
   roles: [Role!]
@@ -1560,7 +1572,8 @@ type Permission implements Node {
   group: String!
   name: String!
   key: String!
-  order: Int!
+  type: PermissionType
+  order: Int
   roles: [Role!]
 }
 """
@@ -1581,6 +1594,13 @@ Properties by which Permission connections can be ordered.
 """
 enum PermissionOrderField {
   id
+}
+"""
+PermissionType is enum for the field type
+"""
+enum PermissionType @goModel(model: "github.com/gva/internal/ent/permission.Type") {
+  dynamic
+  static
 }
 """
 PermissionWhereInput is used for filtering Permission objects.
@@ -1672,6 +1692,15 @@ input PermissionWhereInput {
   keyEqualFold: String
   keyContainsFold: String
   """
+  type field predicates
+  """
+  type: PermissionType
+  typeNEQ: PermissionType
+  typeIn: [PermissionType!]
+  typeNotIn: [PermissionType!]
+  typeIsNil: Boolean
+  typeNotNil: Boolean
+  """
   order field predicates
   """
   order: Int
@@ -1682,6 +1711,8 @@ input PermissionWhereInput {
   orderGTE: Int
   orderLT: Int
   orderLTE: Int
+  orderIsNil: Boolean
+  orderNotNil: Boolean
   """
   roles edge predicates
   """
@@ -2126,7 +2157,7 @@ input RoleWhereInput {
   now: Time!
 }
 `, BuiltIn: false},
-	{Name: "../schema/scalar.gql", Input: `scalar RouteMeta
+	{Name: "../schema/scalar.gql", Input: `scalar MenuMeta
 scalar Time
 `, BuiltIn: false},
 }
@@ -4192,7 +4223,7 @@ func (ec *executionContext) _Menu_meta(ctx context.Context, field graphql.Collec
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Meta, nil
+		return ec.resolvers.Menu().Meta(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4204,19 +4235,19 @@ func (ec *executionContext) _Menu_meta(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(types.MenuMeta)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNRouteMeta2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋtypesᚐRouteMeta(ctx, field.Selections, res)
+	return ec.marshalNMenuMeta2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Menu_meta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Menu",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type RouteMeta does not have child fields")
+			return nil, errors.New("field of type MenuMeta does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4873,6 +4904,47 @@ func (ec *executionContext) fieldContext_Permission_key(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Permission_type(ctx context.Context, field graphql.CollectedField, obj *ent.Permission) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Permission_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(permission.Type)
+	fc.Result = res
+	return ec.marshalOPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Permission_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Permission",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type PermissionType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Permission_order(ctx context.Context, field graphql.CollectedField, obj *ent.Permission) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Permission_order(ctx, field)
 	if err != nil {
@@ -4894,14 +4966,11 @@ func (ec *executionContext) _Permission_order(ctx context.Context, field graphql
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Permission_order(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6676,6 +6745,8 @@ func (ec *executionContext) fieldContext_Role_permissions(_ context.Context, fie
 				return ec.fieldContext_Permission_name(ctx, field)
 			case "key":
 				return ec.fieldContext_Permission_key(ctx, field)
+			case "type":
+				return ec.fieldContext_Permission_type(ctx, field)
 			case "order":
 				return ec.fieldContext_Permission_order(ctx, field)
 			case "roles":
@@ -6701,7 +6772,7 @@ func (ec *executionContext) _Role_routes(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Menus(ctx)
+		return obj.Routes(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10812,7 +10883,7 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "group", "groupNEQ", "groupIn", "groupNotIn", "groupGT", "groupGTE", "groupLT", "groupLTE", "groupContains", "groupHasPrefix", "groupHasSuffix", "groupEqualFold", "groupContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "key", "keyNEQ", "keyIn", "keyNotIn", "keyGT", "keyGTE", "keyLT", "keyLTE", "keyContains", "keyHasPrefix", "keyHasSuffix", "keyEqualFold", "keyContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "hasRoles", "hasRolesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "group", "groupNEQ", "groupIn", "groupNotIn", "groupGT", "groupGTE", "groupLT", "groupLTE", "groupContains", "groupHasPrefix", "groupHasSuffix", "groupEqualFold", "groupContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "key", "keyNEQ", "keyIn", "keyNotIn", "keyGT", "keyGTE", "keyLT", "keyLTE", "keyContains", "keyHasPrefix", "keyHasSuffix", "keyEqualFold", "keyContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "typeIsNil", "typeNotNil", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "hasRoles", "hasRolesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -11281,6 +11352,48 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.KeyContainsFold = data
+		case "type":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			data, err := ec.unmarshalOPermissionType2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Type = data
+		case "typeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeNEQ"))
+			data, err := ec.unmarshalOPermissionType2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TypeNEQ = data
+		case "typeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeIn"))
+			data, err := ec.unmarshalOPermissionType2ᚕgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐTypeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TypeIn = data
+		case "typeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeNotIn"))
+			data, err := ec.unmarshalOPermissionType2ᚕgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐTypeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TypeNotIn = data
+		case "typeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TypeIsNil = data
+		case "typeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TypeNotNil = data
 		case "order":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -11337,6 +11450,20 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.OrderLTE = data
+		case "orderIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrderIsNil = data
+		case "orderNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrderNotNil = data
 		case "hasRoles":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasRoles"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -13134,10 +13261,41 @@ func (ec *executionContext) _Menu(ctx context.Context, sel ast.SelectionSet, obj
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "meta":
-			out.Values[i] = ec._Menu_meta(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Menu_meta(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "parent":
 			field := field
 
@@ -13349,11 +13507,10 @@ func (ec *executionContext) _Permission(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "type":
+			out.Values[i] = ec._Permission_type(ctx, field, obj)
 		case "order":
 			out.Values[i] = ec._Permission_order(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "roles":
 			field := field
 
@@ -14468,6 +14625,21 @@ func (ec *executionContext) marshalNMenu2ᚖgithubᚗcomᚋgvaᚋinternalᚋent�
 	return ec._Menu(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNMenuMeta2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMenuMeta2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNMenuOrderField2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐMenuOrderField(ctx context.Context, v interface{}) (*ent.MenuOrderField, error) {
 	var res = new(ent.MenuOrderField)
 	err := res.UnmarshalGQL(v)
@@ -14577,6 +14749,16 @@ func (ec *executionContext) marshalNPermissionOrderField2ᚖgithubᚗcomᚋgva�
 	return v
 }
 
+func (ec *executionContext) unmarshalNPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx context.Context, v interface{}) (permission.Type, error) {
+	var res permission.Type
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx context.Context, sel ast.SelectionSet, v permission.Type) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNPermissionWhereInput2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐPermissionWhereInput(ctx context.Context, v interface{}) (*ent.PermissionWhereInput, error) {
 	res, err := ec.unmarshalInputPermissionWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -14666,16 +14848,6 @@ func (ec *executionContext) marshalNRoleOrderField2ᚖgithubᚗcomᚋgvaᚋinter
 func (ec *executionContext) unmarshalNRoleWhereInput2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐRoleWhereInput(ctx context.Context, v interface{}) (*ent.RoleWhereInput, error) {
 	res, err := ec.unmarshalInputRoleWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNRouteMeta2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋtypesᚐRouteMeta(ctx context.Context, v interface{}) (types.MenuMeta, error) {
-	var res types.MenuMeta
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNRouteMeta2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋtypesᚐRouteMeta(ctx context.Context, sel ast.SelectionSet, v types.MenuMeta) graphql.Marshaler {
-	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -15604,6 +15776,99 @@ func (ec *executionContext) marshalOPermission2ᚕᚖgithubᚗcomᚋgvaᚋintern
 	}
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalOPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx context.Context, v interface{}) (permission.Type, error) {
+	var res permission.Type
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx context.Context, sel ast.SelectionSet, v permission.Type) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOPermissionType2ᚕgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐTypeᚄ(ctx context.Context, v interface{}) ([]permission.Type, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]permission.Type, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOPermissionType2ᚕgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []permission.Type) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPermissionType2githubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOPermissionType2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx context.Context, v interface{}) (*permission.Type, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(permission.Type)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOPermissionType2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx context.Context, sel ast.SelectionSet, v *permission.Type) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOPermissionWhereInput2ᚕᚖgithubᚗcomᚋgvaᚋinternalᚋentᚐPermissionWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.PermissionWhereInput, error) {

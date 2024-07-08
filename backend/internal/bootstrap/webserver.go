@@ -68,7 +68,7 @@ func printStartupMessage(cfg *env.Config) {
 	fmt.Print("\n")
 }
 
-func printRoutes(routes []*echo.Menu) {
+func printRoutes(routes []*echo.Route) {
 	table := uitable.New()
 	table.AddRow("Method", "Path", "Name")
 	for _, r := range routes {

@@ -95,6 +95,26 @@ func (pu *PermissionUpdate) SetNillableKey(s *string) *PermissionUpdate {
 	return pu
 }
 
+// SetType sets the "type" field.
+func (pu *PermissionUpdate) SetType(pe permission.Type) *PermissionUpdate {
+	pu.mutation.SetType(pe)
+	return pu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableType(pe *permission.Type) *PermissionUpdate {
+	if pe != nil {
+		pu.SetType(*pe)
+	}
+	return pu
+}
+
+// ClearType clears the value of the "type" field.
+func (pu *PermissionUpdate) ClearType() *PermissionUpdate {
+	pu.mutation.ClearType()
+	return pu
+}
+
 // SetOrder sets the "order" field.
 func (pu *PermissionUpdate) SetOrder(i int) *PermissionUpdate {
 	pu.mutation.ResetOrder()
@@ -113,6 +133,12 @@ func (pu *PermissionUpdate) SetNillableOrder(i *int) *PermissionUpdate {
 // AddOrder adds i to the "order" field.
 func (pu *PermissionUpdate) AddOrder(i int) *PermissionUpdate {
 	pu.mutation.AddOrder(i)
+	return pu
+}
+
+// ClearOrder clears the value of the "order" field.
+func (pu *PermissionUpdate) ClearOrder() *PermissionUpdate {
+	pu.mutation.ClearOrder()
 	return pu
 }
 
@@ -193,6 +219,16 @@ func (pu *PermissionUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (pu *PermissionUpdate) check() error {
+	if v, ok := pu.mutation.GetType(); ok {
+		if err := permission.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Permission.type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (pu *PermissionUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PermissionUpdate {
 	pu.modifiers = append(pu.modifiers, modifiers...)
@@ -200,6 +236,9 @@ func (pu *PermissionUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Per
 }
 
 func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := pu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -223,11 +262,20 @@ func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Key(); ok {
 		_spec.SetField(permission.FieldKey, field.TypeString, value)
 	}
+	if value, ok := pu.mutation.GetType(); ok {
+		_spec.SetField(permission.FieldType, field.TypeEnum, value)
+	}
+	if pu.mutation.TypeCleared() {
+		_spec.ClearField(permission.FieldType, field.TypeEnum)
+	}
 	if value, ok := pu.mutation.Order(); ok {
 		_spec.SetField(permission.FieldOrder, field.TypeInt, value)
 	}
 	if value, ok := pu.mutation.AddedOrder(); ok {
 		_spec.AddField(permission.FieldOrder, field.TypeInt, value)
+	}
+	if pu.mutation.OrderCleared() {
+		_spec.ClearField(permission.FieldOrder, field.TypeInt)
 	}
 	if pu.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -363,6 +411,26 @@ func (puo *PermissionUpdateOne) SetNillableKey(s *string) *PermissionUpdateOne {
 	return puo
 }
 
+// SetType sets the "type" field.
+func (puo *PermissionUpdateOne) SetType(pe permission.Type) *PermissionUpdateOne {
+	puo.mutation.SetType(pe)
+	return puo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableType(pe *permission.Type) *PermissionUpdateOne {
+	if pe != nil {
+		puo.SetType(*pe)
+	}
+	return puo
+}
+
+// ClearType clears the value of the "type" field.
+func (puo *PermissionUpdateOne) ClearType() *PermissionUpdateOne {
+	puo.mutation.ClearType()
+	return puo
+}
+
 // SetOrder sets the "order" field.
 func (puo *PermissionUpdateOne) SetOrder(i int) *PermissionUpdateOne {
 	puo.mutation.ResetOrder()
@@ -381,6 +449,12 @@ func (puo *PermissionUpdateOne) SetNillableOrder(i *int) *PermissionUpdateOne {
 // AddOrder adds i to the "order" field.
 func (puo *PermissionUpdateOne) AddOrder(i int) *PermissionUpdateOne {
 	puo.mutation.AddOrder(i)
+	return puo
+}
+
+// ClearOrder clears the value of the "order" field.
+func (puo *PermissionUpdateOne) ClearOrder() *PermissionUpdateOne {
+	puo.mutation.ClearOrder()
 	return puo
 }
 
@@ -474,6 +548,16 @@ func (puo *PermissionUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (puo *PermissionUpdateOne) check() error {
+	if v, ok := puo.mutation.GetType(); ok {
+		if err := permission.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Permission.type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (puo *PermissionUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PermissionUpdateOne {
 	puo.modifiers = append(puo.modifiers, modifiers...)
@@ -481,6 +565,9 @@ func (puo *PermissionUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission, err error) {
+	if err := puo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeString))
 	id, ok := puo.mutation.ID()
 	if !ok {
@@ -521,11 +608,20 @@ func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission,
 	if value, ok := puo.mutation.Key(); ok {
 		_spec.SetField(permission.FieldKey, field.TypeString, value)
 	}
+	if value, ok := puo.mutation.GetType(); ok {
+		_spec.SetField(permission.FieldType, field.TypeEnum, value)
+	}
+	if puo.mutation.TypeCleared() {
+		_spec.ClearField(permission.FieldType, field.TypeEnum)
+	}
 	if value, ok := puo.mutation.Order(); ok {
 		_spec.SetField(permission.FieldOrder, field.TypeInt, value)
 	}
 	if value, ok := puo.mutation.AddedOrder(); ok {
 		_spec.AddField(permission.FieldOrder, field.TypeInt, value)
+	}
+	if puo.mutation.OrderCleared() {
+		_spec.ClearField(permission.FieldOrder, field.TypeInt)
 	}
 	if puo.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{

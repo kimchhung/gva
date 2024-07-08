@@ -7,9 +7,11 @@ import (
 	"github.com/gva/internal/ent"
 )
 
-var _ interface{ database.Seeder } = (*DepartmentSeeder)(nil)
-
 type DepartmentSeeder struct {
+}
+
+func NewDepartSeeder() database.Seeder {
+	return &DepartmentSeeder{}
 }
 
 func (DepartmentSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {

@@ -152,7 +152,7 @@ func (r *Role) Routes(ctx context.Context) (result []*Menu, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = r.NamedRoutes(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = r.Edges.MenusOrErr()
+		result, err = r.Edges.RoutesOrErr()
 	}
 	if IsNotLoaded(err) {
 		result, err = r.QueryRoutes().All(ctx)

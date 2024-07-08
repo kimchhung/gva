@@ -10,40 +10,40 @@ import (
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
-	"github.com/gva/internal/ent/route"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/utils/json"
 	"github.com/gva/utils/routeutil"
 )
 
-func LoadRouteFromFile(filePath string) (routes []*ent.Menu) {
+func LoadMenuFromFile(filePath string) (menus []*ent.Menu) {
 	bytes, err := json.ReadJsonFile(filePath)
 	if err != nil {
 		log.Panicf("can't raed seed data %v", err)
 	}
 
-	if err := bytes.Out(&routes); err != nil {
+	if err := bytes.Out(&menus); err != nil {
 		log.Panicf("can't parse seed data %v", err)
 	}
 
-	return routes
+	return menus
 }
 
-func PullRoutes(ctx context.Context, conn *ent.Client, filePath string) {
+func PullMenuList(ctx context.Context, conn *ent.Client, filePath string) {
 	flats, err := conn.Menu.Query().All(ctx)
 	if err != nil {
-		log.Panicf("failed querying routes: %v", err)
+		log.Panicf("failed querying menus: %v", err)
 	}
 
 	nested := routeutil.GroupRouteToNested(flats)
 
 	if err := json.WriteJsonToFile(json.MustJSON(nested), filePath); err != nil {
-		log.Panicf("failed write routes: %v", err)
+		log.Panicf("failed write menus: %v", err)
 	}
 }
 
-func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
-	routers := LoadRouteFromFile(filePath)
-	flats := routeutil.FlattenNestedRoutes(routers)
+func PushMenuList(ctx context.Context, conn *ent.Client, filePath string) {
+	routers := LoadMenuFromFile(filePath)
+	flats := routeutil.FlattenNestedMenu(routers)
 
 	if len(routers) == 0 {
 		return
@@ -52,16 +52,15 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 	childToParent := map[xid.ID]xid.ID{}
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 		tx.Menu.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
-
 		for _, r := range flats {
 			if r.ParentID != nil {
 				childToParent[r.ID] = *r.ParentID
 			}
 
 			if strings.Contains(r.Component, "#") {
-				r.Type = route.TypeCataLog
+				r.Type = menu.TypeCataLog
 			} else {
-				r.Type = route.TypeMenu
+				r.Type = menu.TypeMenu
 			}
 
 			_, err := tx.Menu.Create().SetID(r.ID).
@@ -71,12 +70,12 @@ func PushRouters(ctx context.Context, conn *ent.Client, filePath string) {
 				SetMeta(r.Meta).
 				SetName(r.Name).
 				SetNillableRedirect(r.Redirect).
-				SetType(r.Type).Save(context.Background())
+				SetType(r.Type).
+				Save(ctx)
 
 			if err != nil {
 				return fmt.Errorf("create  routers: %w", err)
 			}
-
 		}
 
 		for cid, pid := range childToParent {

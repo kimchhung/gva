@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	_ "github.com/gva/api/web/graph/generated"
 	"github.com/gva/api/web/module/index"
 	"github.com/gva/internal/bootstrap/database"
 )

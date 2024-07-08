@@ -11,8 +11,8 @@ import (
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/admin"
+	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/route"
 	"github.com/gva/utils/pagi"
 	"github.com/gva/utils/routeutil"
 )
@@ -105,7 +105,7 @@ func (s *AdminService) DeleteAdmin(ctx context.Context, id xid.ID) error {
 
 func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId xid.ID) ([]*ent.Menu, error) {
 	if appctx.MustAdminContext(ctx).IsSuperAdmin() {
-		routes, err := s.db.Menu.Query().Where(route.IsEnable(true)).All(ctx)
+		routes, err := s.db.Menu.Query().Where(menu.IsEnable(true)).All(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -116,7 +116,7 @@ func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId xid.
 	routes, err := s.db.Role.Query().
 		Where(role.HasAdminsWith(admin.ID(adminId))).
 		QueryRoutes().
-		Where(route.IsEnable(true)).
+		Where(menu.IsEnable(true)).
 		All(ctx)
 
 	if err != nil {

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 
+	"github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
 	"github.com/gva/app/database/seeds"
 	"github.com/gva/env"
@@ -32,12 +33,8 @@ var seedCmd = &cobra.Command{
 		ctx = context.WithValue(ctx, env.Config{}, cfg)
 		ctx = context.WithValue(ctx, service.PasswordService{}, service.NewPasswordService(cfg))
 
-		db.SeedModels(ctx,
-			seeds.MenurSeeder{},
-			seeds.SuperAdminSeeder{},
-			seeds.DepartmentSeeder{},
-			seeds.RegionSeeder{},
-		)
+		seeders := append(seeds.AllSeeders(), permission.AllSeeders()...)
+		db.SeedModels(ctx, seeders...)
 	},
 }
 

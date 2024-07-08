@@ -151,6 +151,10 @@ func init() {
 	permission.DefaultUpdatedAt = permissionDescUpdatedAt.Default.(func() time.Time)
 	// permission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	permission.UpdateDefaultUpdatedAt = permissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// permissionDescOrder is the schema descriptor for order field.
+	permissionDescOrder := permissionFields[4].Descriptor()
+	// permission.DefaultOrder holds the default value on creation for the order field.
+	permission.DefaultOrder = permissionDescOrder.Default.(int)
 	// permissionDescID is the schema descriptor for id field.
 	permissionDescID := permissionMixinFields0[0].Descriptor()
 	// permission.DefaultID holds the default value on creation for the id field.

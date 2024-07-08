@@ -6,22 +6,22 @@ import (
 	"github.com/gva/utils/pagi"
 )
 
-type RouteRepository struct {
+type MenuRepository struct {
 	db *database.Database
 }
 
-func NewRouteRepository(database *database.Database) *RouteRepository {
-	return &RouteRepository{
+func NewMenuRepository(database *database.Database) *MenuRepository {
+	return &MenuRepository{
 		db: database,
 	}
 }
 
-func (r *RouteRepository) C() *ent.MenuClient {
+func (r *MenuRepository) C() *ent.MenuClient {
 	return r.db.Menu
 }
 
 // For query
-func (r *RouteRepository) Q(opts ...pagi.InterceptorOption) *ent.MenuQuery {
+func (r *MenuRepository) Q(opts ...pagi.InterceptorOption) *ent.MenuQuery {
 	if len(opts) == 0 {
 		return r.C().Query()
 	}

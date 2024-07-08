@@ -11,9 +11,11 @@ import (
 	"github.com/gva/internal/ent/admin"
 )
 
-var _ interface{ database.Seeder } = (*RouterSeeder)(nil)
-
 type SuperAdminSeeder struct {
+}
+
+func NewSuperAdminSeeder() database.Seeder {
+	return &SuperAdminSeeder{}
 }
 
 func (s SuperAdminSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {

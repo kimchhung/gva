@@ -69,7 +69,7 @@ skip_mod_tidy: true
 autobind:
   - "github.com/99designs/gqlgen/graphql/introspection"
   - "github.com/gva/internal/ent"
-  - "github.com/gva/app/database/schema/types"
+  # - "github.com/gva/app/database/schema/types"
 
 
 
@@ -86,8 +86,8 @@ models:
   Node:
     model:
       - github.com/gva/internal/ent.Noder
-  RouteMeta:
-    model:
-      - github.com/gva/app/database/schema/types.MenuMeta   
+  # MenuMeta:
+  #   model:
+  #     - github.com/gva/app/database/schema/types.MenuMeta   
 
 

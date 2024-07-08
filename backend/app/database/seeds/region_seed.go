@@ -10,9 +10,11 @@ import (
 	"github.com/gva/utils/json"
 )
 
-var _ interface{ database.Seeder } = (*RegionSeeder)(nil)
-
 type RegionSeeder struct {
+}
+
+func NewRegionSeeder() database.Seeder {
+	return &RegionSeeder{}
 }
 
 func (RegionSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {

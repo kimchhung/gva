@@ -84,7 +84,7 @@ func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
 	defer db.Log.Info().Msg("Seeding was completed!")
 
 	for _, v := range seeder {
-		name := reflect.TypeOf(v).Name()
+		name := reflect.TypeOf(v).Elem().Name()
 		count, err := v.Count(ctx, db.Client)
 		if err != nil {
 			db.Log.Panic().Err(err).Msg("v.Count(ctx, db.Client)")

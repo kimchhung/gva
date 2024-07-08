@@ -449,12 +449,12 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.MenusCleared() {
+	if ru.mutation.RoutesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
@@ -463,12 +463,12 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		edge.Schema = ru.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ru.mutation.MenusCleared() {
+	if nodes := ru.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ru.mutation.RoutesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
@@ -480,12 +480,12 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.MenusIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.RoutesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
@@ -965,12 +965,12 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.MenusCleared() {
+	if ruo.mutation.RoutesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
@@ -979,12 +979,12 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		edge.Schema = ruo.schemaConfig.RoleRoutes
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ruo.mutation.MenusCleared() {
+	if nodes := ruo.mutation.RemovedRoutesIDs(); len(nodes) > 0 && !ruo.mutation.RoutesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
@@ -996,12 +996,12 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.MenusIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.RoutesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),

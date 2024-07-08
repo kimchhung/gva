@@ -38,7 +38,7 @@ func (con *AuthController) Init(r *echo.Group) *echo.Group {
 // @Param			Auth	body		dto.LoginRequest	true	"Auth data"
 // @Success			200		{object}	response.Response{data=dto.LoginRespons}	"Successfully created Auth"
 // @Router			/auth/login [post]
-func (con *AuthController) Login(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/login").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.LoginRequest)
 
@@ -70,7 +70,7 @@ func (con *AuthController) Login(meta *echoc.MenuMeta) echoc.MetaHandler {
 // @Param			Auth	body		dto.RegisterRequest		true	"Registration data"
 // @Success			200		{object}	response.Response{data=dto.RegisterResponse}	"Successfully registered admin"
 // @Router			/auth/register [post]
-func (con *AuthController) Register(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *AuthController) Register(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/register").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.RegisterRequest)
 
@@ -102,7 +102,7 @@ func (con *AuthController) Register(meta *echoc.MenuMeta) echoc.MetaHandler {
 // @Produce		json
 // @Success		200	{object}	response.Response{data=ent.Admin}	"Successfully registered admin"
 // @Router			/auth/me [get]
-func (con *AuthController) Me(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *AuthController) Me(meta *echoc.RouteMeta) echoc.MetaHandler {
 	meta.Use(
 		con.jwt_s.RequiredAdmin(),
 	)

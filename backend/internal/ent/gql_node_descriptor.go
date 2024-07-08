@@ -382,7 +382,7 @@ func (pe *Permission) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     pe.ID,
 		Type:   "Permission",
-		Fields: make([]*Field, 6),
+		Fields: make([]*Field, 7),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
@@ -426,10 +426,18 @@ func (pe *Permission) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "key",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(pe.Order); err != nil {
+	if buf, err = json.Marshal(pe.Type); err != nil {
 		return nil, err
 	}
 	node.Fields[5] = &Field{
+		Type:  "permission.Type",
+		Name:  "type",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pe.Order); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
 		Type:  "int",
 		Name:  "order",
 		Value: string(buf),

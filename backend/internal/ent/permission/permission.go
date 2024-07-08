@@ -3,6 +3,9 @@
 package permission
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -25,6 +28,8 @@ const (
 	FieldName = "name"
 	// FieldKey holds the string denoting the key field in the database.
 	FieldKey = "key"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// FieldOrder holds the string denoting the order field in the database.
 	FieldOrder = "order"
 	// EdgeRoles holds the string denoting the roles edge name in mutations.
@@ -46,6 +51,7 @@ var Columns = []string{
 	FieldGroup,
 	FieldName,
 	FieldKey,
+	FieldType,
 	FieldOrder,
 }
 
@@ -72,9 +78,37 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultOrder holds the default value on creation for the "order" field.
+	DefaultOrder int
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() xid.ID
 )
+
+// Type defines the type for the "type" enum field.
+type Type string
+
+// TypeDynamic is the default value of the Type enum.
+const DefaultType = TypeDynamic
+
+// Type values.
+const (
+	TypeDynamic Type = "dynamic"
+	TypeStatic  Type = "static"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeDynamic, TypeStatic:
+		return nil
+	default:
+		return fmt.Errorf("permission: invalid enum value for type field: %q", _type)
+	}
+}
 
 // OrderOption defines the ordering options for the Permission queries.
 type OrderOption func(*sql.Selector)
@@ -109,6 +143,11 @@ func ByKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKey, opts...).ToFunc()
 }
 
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
 // ByOrder orders the results by the order field.
 func ByOrder(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOrder, opts...).ToFunc()
@@ -133,4 +172,22 @@ func newRolesStep() *sqlgraph.Step {
 		sqlgraph.To(RolesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, RolesTable, RolesPrimaryKey...),
 	)
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (e Type) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(e.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (e *Type) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("enum %T must be a string", val)
+	}
+	*e = Type(str)
+	if err := TypeValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Type", str)
+	}
+	return nil
 }

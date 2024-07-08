@@ -16,7 +16,7 @@ const (
 )
 
 var pushRouteCmd = &cobra.Command{
-	Use:   "push.Menu",
+	Use:   "push.menu",
 	Short: "push routes from json to database, delete and recreate base on file",
 	Long:  `This command pulls routes from the database and performs necessary operations.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -30,10 +30,30 @@ var pushRouteCmd = &cobra.Command{
 		db := database.NewDatabase(env.NewConfig(), log)
 		db.ConnectDatabase()
 
-		menu.PushRouters(ctx, db.Client, routeDataPath)
+		menu.PushMenuList(ctx, db.Client, routeDataPath)
+	},
+}
+
+var pullRouteCmd = &cobra.Command{
+	Use:   "pull.menu",
+	Short: "Pull routes from the database",
+	Long:  `This command pulls routes from the database and performs necessary operations.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+		cfg := env.NewConfig()
+		log := bootstrap.NewLogger(cfg)
+
+		log.Info().Msg("Pulling routes...")
+		defer log.Info().Msg("Pull routes is completed")
+
+		db := database.NewDatabase(env.NewConfig(), log)
+		db.ConnectDatabase()
+
+		menu.PullMenuList(ctx, db.Client, routeDataPath)
 	},
 }
 
 func init() {
+	rootCmd.AddCommand(pullRouteCmd)
 	rootCmd.AddCommand(pushRouteCmd)
 }

@@ -6,7 +6,6 @@ import (
 
 	appctx "github.com/gva/app/common/context"
 	apperror "github.com/gva/app/common/error"
-	"github.com/gva/internal/ent"
 
 	"github.com/labstack/echo/v4"
 )
@@ -41,7 +40,7 @@ func HasKey(key PermissionKey) bool {
 }
 
 func newKey(group PermissionGroup, action PermissionAction) PermissionKey {
-	key := PermissionKey(fmt.Sprintf("%s.%s", group, action))
+	key := PermissionKey(fmt.Sprintf("%s%s%s", group, PermissionSeperator, action))
 
 	validGroups[group] = struct{}{}
 	validKeys[key] = struct{}{}
@@ -49,13 +48,13 @@ func newKey(group PermissionGroup, action PermissionAction) PermissionKey {
 }
 
 type (
-	// Admin.View
+	// Admin_Role:View
 	PermissionKey string
 
-	// Admin
+	// Admin | Admin_Role
 	PermissionGroup string
 
-	// View
+	// View | Add
 	PermissionAction string
 )
 
@@ -68,7 +67,7 @@ const (
 )
 
 var (
-	PermissionSeperator = "."
+	PermissionSeperator = ":"
 )
 
 func (k PermissionKey) Value() (group PermissionGroup, action PermissionAction, err error) {
@@ -78,6 +77,12 @@ func (k PermissionKey) Value() (group PermissionGroup, action PermissionAction, 
 
 	parts := strings.SplitN(string(k), PermissionSeperator, 2)
 	return PermissionGroup(parts[0]), PermissionAction(parts[1]), nil
+}
+
+func (k PermissionKey) Name() string {
+	name := strings.ReplaceAll(string(k), "_", " ")
+	name = strings.ReplaceAll(name, PermissionSeperator, " ")
+	return name
 }
 
 func (k PermissionKey) Valid() error {
@@ -162,23 +167,4 @@ func OnlySuperAdmin() echo.HandlerFunc {
 
 		return apperror.ErrUnauthorized // None of the required permissions were found
 	}
-}
-
-func createBulkPermissionDto(conn *ent.Client, keys ...PermissionKey) []*ent.PermissionCreate {
-	bulks := make([]*ent.PermissionCreate, len(keys))
-
-	for i, key := range keys {
-		group, _, err := key.Value()
-		if err != nil {
-			panic(err)
-		}
-
-		bulks[i] = conn.Permission.Create().
-			SetGroup(string(group)).
-			SetKey(string(key)).
-			SetName(string(key)).
-			SetOrder(i)
-	}
-
-	return bulks
 }

@@ -71,9 +71,31 @@ func (pc *PermissionCreate) SetKey(s string) *PermissionCreate {
 	return pc
 }
 
+// SetType sets the "type" field.
+func (pc *PermissionCreate) SetType(pe permission.Type) *PermissionCreate {
+	pc.mutation.SetType(pe)
+	return pc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableType(pe *permission.Type) *PermissionCreate {
+	if pe != nil {
+		pc.SetType(*pe)
+	}
+	return pc
+}
+
 // SetOrder sets the "order" field.
 func (pc *PermissionCreate) SetOrder(i int) *PermissionCreate {
 	pc.mutation.SetOrder(i)
+	return pc
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (pc *PermissionCreate) SetNillableOrder(i *int) *PermissionCreate {
+	if i != nil {
+		pc.SetOrder(*i)
+	}
 	return pc
 }
 
@@ -149,6 +171,14 @@ func (pc *PermissionCreate) defaults() {
 		v := permission.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := pc.mutation.GetType(); !ok {
+		v := permission.DefaultType
+		pc.mutation.SetType(v)
+	}
+	if _, ok := pc.mutation.Order(); !ok {
+		v := permission.DefaultOrder
+		pc.mutation.SetOrder(v)
+	}
 	if _, ok := pc.mutation.ID(); !ok {
 		v := permission.DefaultID()
 		pc.mutation.SetID(v)
@@ -172,8 +202,10 @@ func (pc *PermissionCreate) check() error {
 	if _, ok := pc.mutation.Key(); !ok {
 		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Permission.key"`)}
 	}
-	if _, ok := pc.mutation.Order(); !ok {
-		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "Permission.order"`)}
+	if v, ok := pc.mutation.GetType(); ok {
+		if err := permission.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Permission.type": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -231,6 +263,10 @@ func (pc *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Key(); ok {
 		_spec.SetField(permission.FieldKey, field.TypeString, value)
 		_node.Key = value
+	}
+	if value, ok := pc.mutation.GetType(); ok {
+		_spec.SetField(permission.FieldType, field.TypeEnum, value)
+		_node.Type = value
 	}
 	if value, ok := pc.mutation.Order(); ok {
 		_spec.SetField(permission.FieldOrder, field.TypeInt, value)
@@ -365,6 +401,24 @@ func (u *PermissionUpsert) UpdateKey() *PermissionUpsert {
 	return u
 }
 
+// SetType sets the "type" field.
+func (u *PermissionUpsert) SetType(v permission.Type) *PermissionUpsert {
+	u.Set(permission.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *PermissionUpsert) UpdateType() *PermissionUpsert {
+	u.SetExcluded(permission.FieldType)
+	return u
+}
+
+// ClearType clears the value of the "type" field.
+func (u *PermissionUpsert) ClearType() *PermissionUpsert {
+	u.SetNull(permission.FieldType)
+	return u
+}
+
 // SetOrder sets the "order" field.
 func (u *PermissionUpsert) SetOrder(v int) *PermissionUpsert {
 	u.Set(permission.FieldOrder, v)
@@ -380,6 +434,12 @@ func (u *PermissionUpsert) UpdateOrder() *PermissionUpsert {
 // AddOrder adds v to the "order" field.
 func (u *PermissionUpsert) AddOrder(v int) *PermissionUpsert {
 	u.Add(permission.FieldOrder, v)
+	return u
+}
+
+// ClearOrder clears the value of the "order" field.
+func (u *PermissionUpsert) ClearOrder() *PermissionUpsert {
+	u.SetNull(permission.FieldOrder)
 	return u
 }
 
@@ -501,6 +561,27 @@ func (u *PermissionUpsertOne) UpdateKey() *PermissionUpsertOne {
 	})
 }
 
+// SetType sets the "type" field.
+func (u *PermissionUpsertOne) SetType(v permission.Type) *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *PermissionUpsertOne) UpdateType() *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *PermissionUpsertOne) ClearType() *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.ClearType()
+	})
+}
+
 // SetOrder sets the "order" field.
 func (u *PermissionUpsertOne) SetOrder(v int) *PermissionUpsertOne {
 	return u.Update(func(s *PermissionUpsert) {
@@ -519,6 +600,13 @@ func (u *PermissionUpsertOne) AddOrder(v int) *PermissionUpsertOne {
 func (u *PermissionUpsertOne) UpdateOrder() *PermissionUpsertOne {
 	return u.Update(func(s *PermissionUpsert) {
 		s.UpdateOrder()
+	})
+}
+
+// ClearOrder clears the value of the "order" field.
+func (u *PermissionUpsertOne) ClearOrder() *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.ClearOrder()
 	})
 }
 
@@ -807,6 +895,27 @@ func (u *PermissionUpsertBulk) UpdateKey() *PermissionUpsertBulk {
 	})
 }
 
+// SetType sets the "type" field.
+func (u *PermissionUpsertBulk) SetType(v permission.Type) *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *PermissionUpsertBulk) UpdateType() *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *PermissionUpsertBulk) ClearType() *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.ClearType()
+	})
+}
+
 // SetOrder sets the "order" field.
 func (u *PermissionUpsertBulk) SetOrder(v int) *PermissionUpsertBulk {
 	return u.Update(func(s *PermissionUpsert) {
@@ -825,6 +934,13 @@ func (u *PermissionUpsertBulk) AddOrder(v int) *PermissionUpsertBulk {
 func (u *PermissionUpsertBulk) UpdateOrder() *PermissionUpsertBulk {
 	return u.Update(func(s *PermissionUpsert) {
 		s.UpdateOrder()
+	})
+}
+
+// ClearOrder clears the value of the "order" field.
+func (u *PermissionUpsertBulk) ClearOrder() *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.ClearOrder()
 	})
 }
 

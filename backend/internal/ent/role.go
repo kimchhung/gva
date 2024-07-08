@@ -81,7 +81,7 @@ func (e RoleEdges) PermissionsOrErr() ([]*Permission, error) {
 // was not loaded in eager-loading.
 func (e RoleEdges) RoutesOrErr() ([]*Menu, error) {
 	if e.loadedTypes[2] {
-		return e.Menus, nil
+		return e.Routes, nil
 	}
 	return nil, &NotLoadedError{edge: "routes"}
 }

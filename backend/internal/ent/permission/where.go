@@ -363,6 +363,36 @@ func KeyContainsFold(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldContainsFold(FieldKey, v))
 }
 
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v Type) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldType, v))
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v Type) predicate.Permission {
+	return predicate.Permission(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...Type) predicate.Permission {
+	return predicate.Permission(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...Type) predicate.Permission {
+	return predicate.Permission(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.Permission {
+	return predicate.Permission(sql.FieldIsNull(FieldType))
+}
+
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.Permission {
+	return predicate.Permission(sql.FieldNotNull(FieldType))
+}
+
 // OrderEQ applies the EQ predicate on the "order" field.
 func OrderEQ(v int) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldOrder, v))
@@ -401,6 +431,16 @@ func OrderLT(v int) predicate.Permission {
 // OrderLTE applies the LTE predicate on the "order" field.
 func OrderLTE(v int) predicate.Permission {
 	return predicate.Permission(sql.FieldLTE(FieldOrder, v))
+}
+
+// OrderIsNil applies the IsNil predicate on the "order" field.
+func OrderIsNil() predicate.Permission {
+	return predicate.Permission(sql.FieldIsNull(FieldOrder))
+}
+
+// OrderNotNil applies the NotNil predicate on the "order" field.
+func OrderNotNil() predicate.Permission {
+	return predicate.Permission(sql.FieldNotNull(FieldOrder))
 }
 
 // HasRoles applies the HasEdge predicate on the "roles" edge.

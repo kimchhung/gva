@@ -137,7 +137,7 @@ func (rq *RoleQuery) QueryRoutes() *MenuQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, selector),
 			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.MenusTable, role.MenusPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
 		)
 		schemaConfig := rq.schemaConfig
 		step.To.Schema = schemaConfig.Menu
@@ -505,8 +505,8 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	}
 	if query := rq.withRoutes; query != nil {
 		if err := rq.loadRoutes(ctx, query, nodes,
-			func(n *Role) { n.Edges.Menus = []*Menu{} },
-			func(n *Role, e *Menu) { n.Edges.Menus = append(n.Edges.Menus, e) }); err != nil {
+			func(n *Role) { n.Edges.Routes = []*Menu{} },
+			func(n *Role, e *Menu) { n.Edges.Routes = append(n.Edges.Routes, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -675,12 +675,12 @@ func (rq *RoleQuery) loadRoutes(ctx context.Context, query *MenuQuery, nodes []*
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.MenusTable)
+		joinT := sql.Table(role.RoutesTable)
 		joinT.Schema(rq.schemaConfig.RoleRoutes)
-		s.Join(joinT).On(s.C(menu.FieldID), joinT.C(role.MenusPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(role.MenusPrimaryKey[0]), edgeIDs...))
+		s.Join(joinT).On(s.C(menu.FieldID), joinT.C(role.RoutesPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(role.RoutesPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.MenusPrimaryKey[0]))
+		s.Select(joinT.C(role.RoutesPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})

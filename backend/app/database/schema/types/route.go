@@ -10,9 +10,9 @@ import (
 var _ interface {
 	graphql.Marshaler
 	graphql.Unmarshaler
-} = (*RouteMeta)(nil)
+} = (*MenuMeta)(nil)
 
-type RouteMeta struct {
+type MenuMeta struct {
 	Hidden     *bool    `json:"hidden,omitempty"`
 	AlwaysShow *bool    `json:"alwaysShow,omitempty"`
 	Title      *string  `json:"title,omitempty" rql:"filter,sort"`
@@ -26,12 +26,12 @@ type RouteMeta struct {
 	Permission []string `json:"permission,omitempty"`
 }
 
-func (u *RouteMeta) UnmarshalGQL(v interface{}) error {
+func (u *MenuMeta) UnmarshalGQL(v interface{}) error {
 	return json.Unmarshal(v.([]byte), u)
 }
 
 // MarshalGQL implements the graphql.Marshaler interface
-func (u RouteMeta) MarshalGQL(w io.Writer) {
+func (u MenuMeta) MarshalGQL(w io.Writer) {
 	jsonData, _ := json.Marshal(u)
 	w.Write(jsonData)
 }

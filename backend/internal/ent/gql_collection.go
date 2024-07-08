@@ -571,6 +571,11 @@ func (pe *PermissionQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				selectedFields = append(selectedFields, permission.FieldKey)
 				fieldSeen[permission.FieldKey] = struct{}{}
 			}
+		case "type":
+			if _, ok := fieldSeen[permission.FieldType]; !ok {
+				selectedFields = append(selectedFields, permission.FieldType)
+				fieldSeen[permission.FieldType] = struct{}{}
+			}
 		case "order":
 			if _, ok := fieldSeen[permission.FieldOrder]; !ok {
 				selectedFields = append(selectedFields, permission.FieldOrder)

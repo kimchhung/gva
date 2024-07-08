@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	AdminRoleGroup PermissionGroup = "ADMIN_ROLE"
+	AdminRoleGroup PermissionGroup = "Admin_Role"
 )
 
 var (
@@ -22,6 +22,10 @@ var (
 type AdminRoleSeeder struct {
 	group PermissionGroup
 	keys  []PermissionKey
+}
+
+func init() {
+	allSeeders = append(allSeeders, NewAdminRoleSeeder())
 }
 
 func NewAdminRoleSeeder() database.Seeder {

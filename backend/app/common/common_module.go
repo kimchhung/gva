@@ -22,6 +22,6 @@ var NewCommonModule = fx.Module("CommonModule",
 
 	// Database Repository | repositores
 	fx.Provide(repository.NewAdminRepository),
-	fx.Provide(repository.NewRouteRepository),
+	fx.Provide(repository.NewMenuRepository),
 	fx.Provide(repository.NewPermissionRepository),
 )

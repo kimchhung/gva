@@ -103,6 +103,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldGroup:     {Type: field.TypeString, Column: permission.FieldGroup},
 			permission.FieldName:      {Type: field.TypeString, Column: permission.FieldName},
 			permission.FieldKey:       {Type: field.TypeString, Column: permission.FieldKey},
+			permission.FieldType:      {Type: field.TypeEnum, Column: permission.FieldType},
 			permission.FieldOrder:     {Type: field.TypeInt, Column: permission.FieldOrder},
 		},
 	}
@@ -309,8 +310,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   role.MenusTable,
-			Columns: role.MenusPrimaryKey,
+			Table:   role.RoutesTable,
+			Columns: role.RoutesPrimaryKey,
 			Bidi:    false,
 		},
 		"Role",
@@ -760,6 +761,11 @@ func (f *PermissionFilter) WhereName(p entql.StringP) {
 // WhereKey applies the entql string predicate on the key field.
 func (f *PermissionFilter) WhereKey(p entql.StringP) {
 	f.Where(p.Field(permission.FieldKey))
+}
+
+// WhereType applies the entql string predicate on the type field.
+func (f *PermissionFilter) WhereType(p entql.StringP) {
+	f.Where(p.Field(permission.FieldType))
 }
 
 // WhereOrder applies the entql int predicate on the order field.

@@ -1731,15 +1731,25 @@ type PermissionWhereInput struct {
 	KeyEqualFold    *string  `json:"keyEqualFold,omitempty"`
 	KeyContainsFold *string  `json:"keyContainsFold,omitempty"`
 
+	// "type" field predicates.
+	Type       *permission.Type  `json:"type,omitempty"`
+	TypeNEQ    *permission.Type  `json:"typeNEQ,omitempty"`
+	TypeIn     []permission.Type `json:"typeIn,omitempty"`
+	TypeNotIn  []permission.Type `json:"typeNotIn,omitempty"`
+	TypeIsNil  bool              `json:"typeIsNil,omitempty"`
+	TypeNotNil bool              `json:"typeNotNil,omitempty"`
+
 	// "order" field predicates.
-	Order      *int  `json:"order,omitempty"`
-	OrderNEQ   *int  `json:"orderNEQ,omitempty"`
-	OrderIn    []int `json:"orderIn,omitempty"`
-	OrderNotIn []int `json:"orderNotIn,omitempty"`
-	OrderGT    *int  `json:"orderGT,omitempty"`
-	OrderGTE   *int  `json:"orderGTE,omitempty"`
-	OrderLT    *int  `json:"orderLT,omitempty"`
-	OrderLTE   *int  `json:"orderLTE,omitempty"`
+	Order       *int  `json:"order,omitempty"`
+	OrderNEQ    *int  `json:"orderNEQ,omitempty"`
+	OrderIn     []int `json:"orderIn,omitempty"`
+	OrderNotIn  []int `json:"orderNotIn,omitempty"`
+	OrderGT     *int  `json:"orderGT,omitempty"`
+	OrderGTE    *int  `json:"orderGTE,omitempty"`
+	OrderLT     *int  `json:"orderLT,omitempty"`
+	OrderLTE    *int  `json:"orderLTE,omitempty"`
+	OrderIsNil  bool  `json:"orderIsNil,omitempty"`
+	OrderNotNil bool  `json:"orderNotNil,omitempty"`
 
 	// "roles" edge predicates.
 	HasRoles     *bool             `json:"hasRoles,omitempty"`
@@ -2006,6 +2016,24 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	if i.KeyContainsFold != nil {
 		predicates = append(predicates, permission.KeyContainsFold(*i.KeyContainsFold))
 	}
+	if i.Type != nil {
+		predicates = append(predicates, permission.TypeEQ(*i.Type))
+	}
+	if i.TypeNEQ != nil {
+		predicates = append(predicates, permission.TypeNEQ(*i.TypeNEQ))
+	}
+	if len(i.TypeIn) > 0 {
+		predicates = append(predicates, permission.TypeIn(i.TypeIn...))
+	}
+	if len(i.TypeNotIn) > 0 {
+		predicates = append(predicates, permission.TypeNotIn(i.TypeNotIn...))
+	}
+	if i.TypeIsNil {
+		predicates = append(predicates, permission.TypeIsNil())
+	}
+	if i.TypeNotNil {
+		predicates = append(predicates, permission.TypeNotNil())
+	}
 	if i.Order != nil {
 		predicates = append(predicates, permission.OrderEQ(*i.Order))
 	}
@@ -2029,6 +2057,12 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	}
 	if i.OrderLTE != nil {
 		predicates = append(predicates, permission.OrderLTE(*i.OrderLTE))
+	}
+	if i.OrderIsNil {
+		predicates = append(predicates, permission.OrderIsNil())
+	}
+	if i.OrderNotNil {
+		predicates = append(predicates, permission.OrderNotNil())
 	}
 
 	if i.HasRoles != nil {

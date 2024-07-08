@@ -10,16 +10,25 @@ import (
 	"github.com/gva/utils/json"
 )
 
-var _ interface{ database.Seeder } = (*RouterSeeder)(nil)
-
-type RouterSeeder struct {
+type MenuSeeder struct {
 }
 
-func (RouterSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {
+func NewMenuSeeder() database.Seeder {
+	return &MenuSeeder{}
+}
+
+func (MenuSeeder) Count(ctx context.Context, db *ent.Client) (int, error) {
 	return db.Menu.Query().Count(ctx)
 }
 
-func getRouteData() (routes []*ent.Menu) {
+func (s MenuSeeder) Seed(ctx context.Context, conn *ent.Client) error {
+	return database.WithTx(ctx, conn, func(tx *ent.Tx) error {
+		_, err := s.seedRouteRecursively(ctx, tx, s.getRouteData()...)
+		return err
+	})
+}
+
+func (s MenuSeeder) getRouteData() (routes []*ent.Menu) {
 	bytes, err := json.ReadJsonFile("./app/database/data/menu_data.json")
 	if err != nil {
 		log.Panicf("can't raed seed data %v", err)
@@ -32,22 +41,8 @@ func getRouteData() (routes []*ent.Menu) {
 	return routes
 }
 
-func (s RouterSeeder) Seed(ctx context.Context, conn *ent.Client) error {
-	routers := getRouteData()
-
-	return database.WithTx(ctx, conn, func(tx *ent.Tx) error {
-
-		_, err := s.seedRouteRecursively(ctx, tx, routers...)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
-}
-
 // seedRouteRecursively seeds a single route and its children recursively
-func (s RouterSeeder) seedRouteRecursively(ctx context.Context, tx *ent.Tx, routes ...*ent.Menu) (createdRoutes []*ent.Menu, err error) {
+func (s MenuSeeder) seedRouteRecursively(ctx context.Context, tx *ent.Tx, routes ...*ent.Menu) (createdRoutes []*ent.Menu, err error) {
 	for i, r := range routes {
 		createRoute := tx.Menu.Create().
 			SetComponent(r.Component).

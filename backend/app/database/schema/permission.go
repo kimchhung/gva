@@ -22,10 +22,25 @@ func (Permission) Mixin() []ent.Mixin {
 
 func (Permission) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("group").StructTag(`json:"group,omitempty"`),
-		field.String("name").StructTag(`json:"name,omitempty"`),
-		field.String("key").StructTag(`json:"key,omitempty"`),
-		field.Int("order").StructTag(`json:"order,omitempty"`),
+		field.String("group").
+			StructTag(`json:"group,omitempty"`),
+
+		field.String("name").
+			StructTag(`json:"name,omitempty"`),
+
+		field.String("key").
+			StructTag(`json:"key,omitempty"`),
+
+		field.Enum("type").
+			Values("dynamic", "static").
+			StructTag(`json:"key,omitempty"`).
+			Optional().
+			Default("dynamic"),
+
+		field.Int("order").
+			StructTag(`json:"order,omitempty"`).
+			Optional().
+			Default(0),
 	}
 }
 

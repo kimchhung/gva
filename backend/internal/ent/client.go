@@ -1288,7 +1288,7 @@ func (c *RoleClient) QueryRoutes(r *Role) *MenuQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, id),
 			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.MenusTable, role.MenusPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
 		)
 		schemaConfig := r.schemaConfig
 		step.To.Schema = schemaConfig.Menu

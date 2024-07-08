@@ -6,12 +6,18 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 
 	"entgo.io/contrib/entgql"
 	"github.com/gva/api/web/graph/generated"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent"
 )
+
+// Meta is the resolver for the meta field.
+func (r *menuResolver) Meta(ctx context.Context, obj *ent.Menu) (string, error) {
+	panic(fmt.Errorf("not implemented: Meta - meta"))
+}
 
 // Node is the resolver for the node field.
 func (r *queryResolver) Node(ctx context.Context, id xid.ID) (ent.Noder, error) {
@@ -33,7 +39,11 @@ func (r *queryResolver) Regions(ctx context.Context, after *entgql.Cursor[xid.ID
 	return r.db.Region.Query().Paginate(ctx, after, first, before, last, ent.WithRegionOrder(orderBy), ent.WithRegionFilter(where.Filter))
 }
 
+// Menu returns generated.MenuResolver implementation.
+func (r *Resolver) Menu() generated.MenuResolver { return &menuResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type menuResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

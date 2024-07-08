@@ -42,7 +42,7 @@ func New{{.EntityPascal}}Controller(service *service.{{.EntityPascal}}Service) *
 // @Success 200 {object} response.Response{data=map[string]dto.{{.EntityPascal}}Response{list=[]dto.{{.EntityPascal}}Response}} "Successfully retrieved {{.EntityPascal}}s"
 // @Router /{{.EntityKebab}} [get]
 // @Security Bearer
-func (con *{{.EntityPascal}}Controller) List(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/").Name("get many {{.EntityPascal}}s").Do(func(c echo.Context) error {
 		list, err := con.service.Get{{.EntityPascal}}s(c.Request().Context())
 		if err != nil {
@@ -66,7 +66,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *echoc.MenuMeta) echoc.MetaHan
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success   200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}}/{id} [get]
-func (con *{{.EntityPascal}}Controller) Get(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
 			ID int %sparam:"id" validate:"gt=0"%s
@@ -101,7 +101,7 @@ func (con *{{.EntityPascal}}Controller) Get(meta *echoc.MenuMeta) echoc.MetaHand
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
 // @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully created {{.EntityPascal}}"
 // @Router /{{.EntityKebab}} [post]
-func (con *{{.EntityPascal}}Controller) Create(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *{{.EntityPascal}}Controller) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/").Name("create one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.{{.EntityPascal}}Request)
 
@@ -137,7 +137,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *echoc.MenuMeta) echoc.MetaH
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
 // @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
 // @Router /{{.EntityKebab}}/{id} [patch]
-func (con *{{.EntityPascal}}Controller) Update(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.{{.EntityPascal}}Request)
 		param := &struct {
@@ -174,7 +174,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.MenuMeta) echoc.MetaH
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success  200 {object} response.Response{} "Successfully deleted {{.EntityPascal}}"
 // @Router /{{.EntityKebab}}/{id} [delete]
-func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.MenuMeta) echoc.MetaHandler {
+func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
 			ID int %sparam:"id" validate:"gt=0"%s

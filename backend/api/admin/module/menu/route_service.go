@@ -1,7 +1,7 @@
-package route
+package menu
 
 import (
-	"github.com/gva/api/admin/module/route/dto"
+	"github.com/gva/api/admin/module/menu/dto"
 	"github.com/gva/app/common/repository"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/utils/pagi"
@@ -10,31 +10,29 @@ import (
 	"context"
 
 	"github.com/gva/internal/ent"
-	"github.com/gva/internal/ent/route"
+	"github.com/gva/internal/ent/menu"
 )
 
-type RouteService struct {
+type MenuService struct {
 	repo *repository.MenuRepository
 }
 
-func NewRouteService(repo *repository.MenuRepository) *RouteService {
-	return &RouteService{
+func NewMenuService(repo *repository.MenuRepository) *MenuService {
+	return &MenuService{
 		repo: repo,
 	}
 }
 
-func (s *RouteService) toDto(value ...*ent.Menu) []*dto.MenuResponse {
+func (s *MenuService) toDto(value ...*ent.Menu) []*dto.MenuResponse {
 	list := make([]*dto.MenuResponse, len(value))
 	for i, v := range value {
-		list[i] = &dto.MenuResponse{
-			Route: v,
-		}
+		list[i] = &dto.MenuResponse{Menu: v}
 	}
 
 	return list
 }
 
-func (s *RouteService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest) ([]*dto.MenuResponse, *pagi.Meta, error) {
+func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest) ([]*dto.MenuResponse, *pagi.Meta, error) {
 	query := s.repo.Q(
 		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
 		pagi.WithSort(p.Sort...),
@@ -59,8 +57,8 @@ func (s *RouteService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest)
 	return s.toDto(list...), meta, nil
 }
 
-func (s *RouteService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
-	data, err := s.repo.Q().Where(route.ID(id)).First(ctx)
+func (s *MenuService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
+	data, err := s.repo.Q().Where(menu.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +66,7 @@ func (s *RouteService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.MenuRe
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dto.MenuResponse, error) {
+func (s *MenuService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	data, err := s.repo.C().Create().
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -84,7 +82,7 @@ func (s *RouteService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dt
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
+func (s *MenuService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	data, err := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -101,6 +99,6 @@ func (s *RouteService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.MenuRe
 	return s.toDto(data)[0], nil
 }
 
-func (s *RouteService) DeleteRoute(ctx context.Context, id xid.ID) error {
+func (s *MenuService) DeleteRoute(ctx context.Context, id xid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }

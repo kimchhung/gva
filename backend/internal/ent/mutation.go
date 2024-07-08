@@ -3260,6 +3260,7 @@ type PermissionMutation struct {
 	group         *string
 	name          *string
 	key           *string
+	_type         *permission.Type
 	_order        *int
 	add_order     *int
 	clearedFields map[string]struct{}
@@ -3555,6 +3556,55 @@ func (m *PermissionMutation) ResetKey() {
 	m.key = nil
 }
 
+// SetType sets the "type" field.
+func (m *PermissionMutation) SetType(pe permission.Type) {
+	m._type = &pe
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *PermissionMutation) GetType() (r permission.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Permission entity.
+// If the Permission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionMutation) OldType(ctx context.Context) (v permission.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *PermissionMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[permission.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *PermissionMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[permission.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *PermissionMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, permission.FieldType)
+}
+
 // SetOrder sets the "order" field.
 func (m *PermissionMutation) SetOrder(i int) {
 	m._order = &i
@@ -3605,10 +3655,24 @@ func (m *PermissionMutation) AddedOrder() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearOrder clears the value of the "order" field.
+func (m *PermissionMutation) ClearOrder() {
+	m._order = nil
+	m.add_order = nil
+	m.clearedFields[permission.FieldOrder] = struct{}{}
+}
+
+// OrderCleared returns if the "order" field was cleared in this mutation.
+func (m *PermissionMutation) OrderCleared() bool {
+	_, ok := m.clearedFields[permission.FieldOrder]
+	return ok
+}
+
 // ResetOrder resets all changes to the "order" field.
 func (m *PermissionMutation) ResetOrder() {
 	m._order = nil
 	m.add_order = nil
+	delete(m.clearedFields, permission.FieldOrder)
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by ids.
@@ -3699,7 +3763,7 @@ func (m *PermissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, permission.FieldCreatedAt)
 	}
@@ -3714,6 +3778,9 @@ func (m *PermissionMutation) Fields() []string {
 	}
 	if m.key != nil {
 		fields = append(fields, permission.FieldKey)
+	}
+	if m._type != nil {
+		fields = append(fields, permission.FieldType)
 	}
 	if m._order != nil {
 		fields = append(fields, permission.FieldOrder)
@@ -3736,6 +3803,8 @@ func (m *PermissionMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case permission.FieldKey:
 		return m.Key()
+	case permission.FieldType:
+		return m.GetType()
 	case permission.FieldOrder:
 		return m.Order()
 	}
@@ -3757,6 +3826,8 @@ func (m *PermissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldName(ctx)
 	case permission.FieldKey:
 		return m.OldKey(ctx)
+	case permission.FieldType:
+		return m.OldType(ctx)
 	case permission.FieldOrder:
 		return m.OldOrder(ctx)
 	}
@@ -3802,6 +3873,13 @@ func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetKey(v)
+		return nil
+	case permission.FieldType:
+		v, ok := value.(permission.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
 		return nil
 	case permission.FieldOrder:
 		v, ok := value.(int)
@@ -3854,7 +3932,14 @@ func (m *PermissionMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *PermissionMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(permission.FieldType) {
+		fields = append(fields, permission.FieldType)
+	}
+	if m.FieldCleared(permission.FieldOrder) {
+		fields = append(fields, permission.FieldOrder)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -3867,6 +3952,14 @@ func (m *PermissionMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PermissionMutation) ClearField(name string) error {
+	switch name {
+	case permission.FieldType:
+		m.ClearType()
+		return nil
+	case permission.FieldOrder:
+		m.ClearOrder()
+		return nil
+	}
 	return fmt.Errorf("unknown Permission nullable field %s", name)
 }
 
@@ -3888,6 +3981,9 @@ func (m *PermissionMutation) ResetField(name string) error {
 		return nil
 	case permission.FieldKey:
 		m.ResetKey()
+		return nil
+	case permission.FieldType:
+		m.ResetType()
 		return nil
 	case permission.FieldOrder:
 		m.ResetOrder()
@@ -5460,11 +5556,11 @@ func (m *RoleMutation) ResetPermissions() {
 
 // AddRouteIDs adds the "routes" edge to the Menu entity by ids.
 func (m *RoleMutation) AddRouteIDs(ids ...xid.ID) {
-	if m.Menus == nil {
-		m.Menus = make(map[xid.ID]struct{})
+	if m.routes == nil {
+		m.routes = make(map[xid.ID]struct{})
 	}
 	for i := range ids {
-		m.Menus[ids[i]] = struct{}{}
+		m.routes[ids[i]] = struct{}{}
 	}
 }
 
@@ -5484,7 +5580,7 @@ func (m *RoleMutation) RemoveRouteIDs(ids ...xid.ID) {
 		m.removedroutes = make(map[xid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.Menus, ids[i])
+		delete(m.routes, ids[i])
 		m.removedroutes[ids[i]] = struct{}{}
 	}
 }
@@ -5499,7 +5595,7 @@ func (m *RoleMutation) RemovedRoutesIDs() (ids []xid.ID) {
 
 // RoutesIDs returns the "routes" edge IDs in the mutation.
 func (m *RoleMutation) RoutesIDs() (ids []xid.ID) {
-	for id := range m.Menus {
+	for id := range m.routes {
 		ids = append(ids, id)
 	}
 	return
@@ -5507,7 +5603,7 @@ func (m *RoleMutation) RoutesIDs() (ids []xid.ID) {
 
 // ResetRoutes resets all changes to the "routes" edge.
 func (m *RoleMutation) ResetRoutes() {
-	m.Menus = nil
+	m.routes = nil
 	m.clearedroutes = false
 	m.removedroutes = nil
 }
@@ -5798,7 +5894,7 @@ func (m *RoleMutation) AddedEdges() []string {
 	if m.permissions != nil {
 		edges = append(edges, role.EdgePermissions)
 	}
-	if m.Menus != nil {
+	if m.routes != nil {
 		edges = append(edges, role.EdgeRoutes)
 	}
 	return edges
@@ -5821,8 +5917,8 @@ func (m *RoleMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case role.EdgeRoutes:
-		ids := make([]ent.Value, 0, len(m.Menus))
-		for id := range m.Menus {
+		ids := make([]ent.Value, 0, len(m.routes))
+		for id := range m.routes {
 			ids = append(ids, id)
 		}
 		return ids
