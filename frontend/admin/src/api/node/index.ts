@@ -2,13 +2,13 @@ import req, { useAPI } from '@/axios'
 import { createQueryPayload } from '@/hooks/web/usePagi'
 import { CreateNode, GetManyNode, GetNode, Node, UpdateNode } from './types'
 
-export class CRUD<T = Node<{}>> {
+export class ResourceAPI<T = Node<{}>> {
   name: string
   base: string
 
   constructor(name: string) {
     this.name = name
-    this.base = `/${this.name.replace('/', '')}s`
+    this.base = `/${this.name.replace('/', '')}`
   }
 
   get({ id, opt }: GetNode) {

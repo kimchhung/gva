@@ -15,7 +15,7 @@ const docTemplateadmin = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admins": {
+        "/admin": {
             "get": {
                 "security": [
                     {
@@ -60,7 +60,9 @@ const docTemplateadmin = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/admins": {
             "post": {
                 "security": [
                     {
@@ -353,25 +355,7 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "allOf": [
-                                                    {
-                                                        "$ref": "#/definitions/dto.LoginResponse"
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "list": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "$ref": "#/definitions/dto.LoginResponse"
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            }
+                                            "$ref": "#/definitions/dto.LoginResponse"
                                         }
                                     }
                                 }
@@ -469,85 +453,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/now": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Time"
-                ],
-                "summary": "Current Server Time",
-                "operationId": "now",
-                "responses": {
-                    "200": {
-                        "description": "format time.RFC3339",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/permissions": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a list of all permissions",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Permission"
-                ],
-                "summary": "List all permissions",
-                "operationId": "list-all-permissions",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved Routes",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.PermissionResponse"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/routes": {
+        "/menu": {
             "get": {
                 "security": [
                     {
@@ -609,7 +515,87 @@ const docTemplateadmin = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/now": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Time"
+                ],
+                "summary": "Current Server Time",
+                "operationId": "now",
+                "responses": {
+                    "200": {
+                        "description": "format time.RFC3339",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/permission": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "List all permissions",
+                "operationId": "list-all-permissions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PermissionResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/routes": {
             "post": {
                 "security": [
                     {
@@ -765,6 +751,10 @@ const docTemplateadmin = `{
                     "description": "CreatedAt holds the value of the \"created_at\" field.",
                     "type": "string"
                 },
+                "departmentId": {
+                    "description": "DepartmentID holds the value of the \"department_id\" field.",
+                    "type": "string"
+                },
                 "displayName": {
                     "description": "DisplayName holds the value of the \"display_name\" field.",
                     "type": "string"
@@ -779,7 +769,7 @@ const docTemplateadmin = `{
                 },
                 "id": {
                     "description": "ID of the ent.",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "isEnable": {
                     "description": "IsEnable holds the value of the \"is_enable\" field.",
@@ -809,6 +799,10 @@ const docTemplateadmin = `{
                     "description": "CreatedAt holds the value of the \"created_at\" field.",
                     "type": "string"
                 },
+                "departmentId": {
+                    "description": "DepartmentID holds the value of the \"department_id\" field.",
+                    "type": "string"
+                },
                 "displayName": {
                     "description": "DisplayName holds the value of the \"display_name\" field.",
                     "type": "string"
@@ -823,7 +817,7 @@ const docTemplateadmin = `{
                 },
                 "id": {
                     "description": "ID of the ent.",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "isEnable": {
                     "description": "IsEnable holds the value of the \"is_enable\" field.",
@@ -876,6 +870,111 @@ const docTemplateadmin = `{
                 }
             }
         },
+        "dto.MenuRequest": {
+            "type": "object",
+            "required": [
+                "component",
+                "isEnable",
+                "meta",
+                "name",
+                "path",
+                "type"
+            ],
+            "properties": {
+                "component": {
+                    "type": "string"
+                },
+                "isEnable": {
+                    "type": "boolean"
+                },
+                "meta": {
+                    "$ref": "#/definitions/types.MenuMeta"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "optionals",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "path": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/menu.Type"
+                }
+            }
+        },
+        "dto.MenuResponse": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "Component holds the value of the \"component\" field.",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MenuQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.MenuEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "meta": {
+                    "description": "Meta holds the value of the \"meta\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.MenuMeta"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "redirect": {
+                    "description": "Redirect holds the value of the \"redirect\" field.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/menu.Type"
+                        }
+                    ]
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.PermissionResponse": {
             "type": "object",
             "properties": {
@@ -897,11 +996,15 @@ const docTemplateadmin = `{
                 },
                 "id": {
                     "description": "ID of the ent.",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "key": {
-                    "description": "Key holds the value of the \"key\" field.",
-                    "type": "string"
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/permission.Type"
+                        }
+                    ]
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -951,112 +1054,15 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "dto.MenuRequest": {
-            "type": "object",
-            "required": [
-                "component",
-                "isEnable",
-                "meta",
-                "name",
-                "path",
-                "type"
-            ],
-            "properties": {
-                "component": {
-                    "type": "string"
-                },
-                "isEnable": {
-                    "type": "boolean"
-                },
-                "meta": {
-                    "$ref": "#/definitions/types.MenuMeta"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "parentId": {
-                    "description": "optionals",
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "path": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/route.Type"
-                }
-            }
-        },
-        "dto.MenuResponse": {
-            "type": "object",
-            "properties": {
-                "component": {
-                    "description": "Component holds the value of the \"component\" field.",
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "edges": {
-                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RouteQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.MenuEdges"
-                        }
-                    ]
-                },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
-                },
-                "isEnable": {
-                    "description": "IsEnable holds the value of the \"is_enable\" field.",
-                    "type": "boolean"
-                },
-                "meta": {
-                    "description": "Meta holds the value of the \"meta\" field.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/types.MenuMeta"
-                        }
-                    ]
-                },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "parentId": {
-                    "description": "ParentID holds the value of the \"parent_id\" field.",
-                    "type": "integer"
-                },
-                "path": {
-                    "description": "Path holds the value of the \"path\" field.",
-                    "type": "string"
-                },
-                "redirect": {
-                    "description": "Redirect holds the value of the \"redirect\" field.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type holds the value of the \"type\" field.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/route.Type"
-                        }
-                    ]
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
-            }
-        },
         "ent.Admin": {
             "type": "object",
             "properties": {
                 "createdAt": {
                     "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "departmentId": {
+                    "description": "DepartmentID holds the value of the \"department_id\" field.",
                     "type": "string"
                 },
                 "displayName": {
@@ -1073,7 +1079,7 @@ const docTemplateadmin = `{
                 },
                 "id": {
                     "description": "ID of the ent.",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "isEnable": {
                     "description": "IsEnable holds the value of the \"is_enable\" field.",
@@ -1099,6 +1105,178 @@ const docTemplateadmin = `{
         "ent.AdminEdges": {
             "type": "object",
             "properties": {
+                "department": {
+                    "description": "Department holds the value of the department edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.Department"
+                        }
+                    ]
+                },
+                "roles": {
+                    "description": "Roles holds the value of the roles edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Role"
+                    }
+                }
+            }
+        },
+        "ent.Department": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the DepartmentQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.DepartmentEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "nameId": {
+                    "description": "NameID holds the value of the \"name_id\" field.",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.DepartmentEdges": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "Children holds the value of the children edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Department"
+                    }
+                },
+                "members": {
+                    "description": "Members holds the value of the members edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Admin"
+                    }
+                },
+                "parent": {
+                    "description": "Parent holds the value of the parent edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.Department"
+                        }
+                    ]
+                }
+            }
+        },
+        "ent.Menu": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "Component holds the value of the \"component\" field.",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MenuQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.MenuEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "meta": {
+                    "description": "Meta holds the value of the \"meta\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.MenuMeta"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "redirect": {
+                    "description": "Redirect holds the value of the \"redirect\" field.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/menu.Type"
+                        }
+                    ]
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.MenuEdges": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "Children holds the value of the children edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Menu"
+                    }
+                },
+                "parent": {
+                    "description": "Parent holds the value of the parent edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.Menu"
+                        }
+                    ]
+                },
                 "roles": {
                     "description": "Roles holds the value of the roles edge.",
                     "type": "array",
@@ -1129,11 +1307,15 @@ const docTemplateadmin = `{
                 },
                 "id": {
                     "description": "ID of the ent.",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "key": {
-                    "description": "Key holds the value of the \"key\" field.",
-                    "type": "string"
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/permission.Type"
+                        }
+                    ]
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -1182,7 +1364,7 @@ const docTemplateadmin = `{
                 },
                 "id": {
                     "description": "ID of the ent.",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "isChangeable": {
                     "description": "IsChangeable holds the value of the \"is_changeable\" field.",
@@ -1232,97 +1414,22 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "ent.Menu": {
-            "type": "object",
-            "properties": {
-                "component": {
-                    "description": "Component holds the value of the \"component\" field.",
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "edges": {
-                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RouteQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.MenuEdges"
-                        }
-                    ]
-                },
-                "id": {
-                    "description": "ID of the ent.",
-                    "type": "integer"
-                },
-                "isEnable": {
-                    "description": "IsEnable holds the value of the \"is_enable\" field.",
-                    "type": "boolean"
-                },
-                "meta": {
-                    "description": "Meta holds the value of the \"meta\" field.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/types.MenuMeta"
-                        }
-                    ]
-                },
-                "name": {
-                    "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "parentId": {
-                    "description": "ParentID holds the value of the \"parent_id\" field.",
-                    "type": "integer"
-                },
-                "path": {
-                    "description": "Path holds the value of the \"path\" field.",
-                    "type": "string"
-                },
-                "redirect": {
-                    "description": "Redirect holds the value of the \"redirect\" field.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type holds the value of the \"type\" field.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/route.Type"
-                        }
-                    ]
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                }
-            }
-        },
-        "ent.MenuEdges": {
-            "type": "object",
-            "properties": {
-                "children": {
-                    "description": "Children holds the value of the children edge.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ent.Menu"
-                    }
-                },
-                "parent": {
-                    "description": "Parent holds the value of the parent edge.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.Menu"
-                        }
-                    ]
-                },
-                "roles": {
-                    "description": "Roles holds the value of the roles edge.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ent.Role"
-                    }
-                }
-            }
+        "menu.Type": {
+            "type": "string",
+            "enum": [
+                "cata_log",
+                "cata_log",
+                "menu",
+                "button",
+                "external_link"
+            ],
+            "x-enum-varnames": [
+                "DefaultType",
+                "TypeCataLog",
+                "TypeMenu",
+                "TypeButton",
+                "TypeExternalLink"
+            ]
         },
         "pagi.Meta": {
             "type": "object",
@@ -1337,6 +1444,19 @@ const docTemplateadmin = `{
                     "type": "integer"
                 }
             }
+        },
+        "permission.Type": {
+            "type": "string",
+            "enum": [
+                "dynamic",
+                "dynamic",
+                "static"
+            ],
+            "x-enum-varnames": [
+                "DefaultType",
+                "TypeDynamic",
+                "TypeStatic"
+            ]
         },
         "response.Response": {
             "type": "object",
@@ -1354,23 +1474,6 @@ const docTemplateadmin = `{
                     "description": "Meta provides additional information about the data, such as its type or kind.y."
                 }
             }
-        },
-        "route.Type": {
-            "type": "string",
-            "enum": [
-                "cata_log",
-                "cata_log",
-                "menu",
-                "button",
-                "external_link"
-            ],
-            "x-enum-varnames": [
-                "DefaultType",
-                "TypeCataLog",
-                "TypeMenu",
-                "TypeButton",
-                "TypeExternalLink"
-            ]
         },
         "types.MenuMeta": {
             "type": "object",

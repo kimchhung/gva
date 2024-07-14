@@ -36,7 +36,7 @@ func (con *AuthController) Init(r *echo.Group) *echo.Group {
 // @Accept			json
 // @Produce			json
 // @Param			Auth	body		dto.LoginRequest	true	"Auth data"
-// @Success			200		{object}	response.Response{data=dto.LoginRespons}	"Successfully created Auth"
+// @Success			200		{object}	response.Response{data=dto.LoginResponse}	"Successfully created Auth"
 // @Router			/auth/login [post]
 func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/login").DoWithScope(func() []echo.HandlerFunc {

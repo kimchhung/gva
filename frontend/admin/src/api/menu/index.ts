@@ -1,9 +1,9 @@
 import req, { useAPI } from '@/axios'
 import { createQueryPayload } from '@/hooks/web/usePagi'
-import { CRUD } from '../node'
+import { ResourceAPI } from '../node'
 import { GetManyRoute, MenuRoute } from './types'
 
-export class MenuAPI extends CRUD<MenuRoute> {
+export class MenuAPI extends ResourceAPI<MenuRoute> {
   constructor(name: string) {
     super(name)
   }

@@ -21,7 +21,7 @@ const createApi = () => {
     }
   }
 
-  return api
+  return api as API
 }
 
 /**

@@ -1,6 +1,6 @@
-import { CRUD } from '../node'
+import { ResourceAPI } from '../node'
 
-export class RoleAPI extends CRUD {
+export class RoleAPI extends ResourceAPI {
   constructor(name: string) {
     super(name)
   }

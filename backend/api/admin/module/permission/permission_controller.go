@@ -26,7 +26,7 @@ func NewPermissionController(service *PermissionService, jwt_s *service.JwtServi
 }
 
 func (con *PermissionController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/permissions", con.jwt_s.RequiredAdmin())
+	return r.Group("/permission", con.jwt_s.RequiredAdmin())
 }
 
 // @Tags        Permission
@@ -35,7 +35,7 @@ func (con *PermissionController) Init(r *echo.Group) *echo.Group {
 // @ID          list-all-permissions
 // @Produce     json
 // @Success     200 {object} response.Response{data=[]dto.PermissionResponse} "Successfully retrieved Routes"
-// @Router      /permissions [get]
+// @Router      /permission [get]
 // @Security    Bearer
 func (con *PermissionController) Permissions(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {

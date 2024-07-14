@@ -32,7 +32,7 @@ func NewAdminController(service *AdminService, jwt_s *service.JwtService) *Admin
 }
 
 func (con *AdminController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/admins", con.jwt_s.RequiredAdmin())
+	return r.Group("/admin", con.jwt_s.RequiredAdmin())
 }
 
 // @Tags		Admin
@@ -43,7 +43,7 @@ func (con *AdminController) Init(r *echo.Group) *echo.Group {
 // @Accept		json
 // @Produce		json
 // @Success		200	{object}	response.Response{data=[]ent.Admin,meta=pagi.Meta}	"Successfully retrieved Admins"
-// @Router		/admins [get]
+// @Router		/admin [get]
 func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
 
 	// init parser once and reused

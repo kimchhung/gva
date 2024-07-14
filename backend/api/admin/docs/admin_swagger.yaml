@@ -5,6 +5,9 @@ definitions:
       createdAt:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
+      departmentId:
+        description: DepartmentID holds the value of the "department_id" field.
+        type: string
       displayName:
         description: DisplayName holds the value of the "display_name" field.
         type: string
@@ -16,7 +19,7 @@ definitions:
           The values are being populated by the AdminQuery when eager-loading is set.
       id:
         description: ID of the ent.
-        type: integer
+        type: string
       isEnable:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
@@ -37,6 +40,9 @@ definitions:
       createdAt:
         description: CreatedAt holds the value of the "created_at" field.
         type: string
+      departmentId:
+        description: DepartmentID holds the value of the "department_id" field.
+        type: string
       displayName:
         description: DisplayName holds the value of the "display_name" field.
         type: string
@@ -48,7 +54,7 @@ definitions:
           The values are being populated by the AdminQuery when eager-loading is set.
       id:
         description: ID of the ent.
-        type: integer
+        type: string
       isEnable:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
@@ -85,6 +91,79 @@ definitions:
       token:
         type: string
     type: object
+  dto.MenuRequest:
+    properties:
+      component:
+        type: string
+      isEnable:
+        type: boolean
+      meta:
+        $ref: '#/definitions/types.MenuMeta'
+      name:
+        type: string
+      parentId:
+        description: optionals
+        minimum: 0
+        type: integer
+      path:
+        type: string
+      type:
+        $ref: '#/definitions/menu.Type'
+    required:
+    - component
+    - isEnable
+    - meta
+    - name
+    - path
+    - type
+    type: object
+  dto.MenuResponse:
+    properties:
+      component:
+        description: Component holds the value of the "component" field.
+        type: string
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.MenuEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the MenuQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      meta:
+        allOf:
+        - $ref: '#/definitions/types.MenuMeta'
+        description: Meta holds the value of the "meta" field.
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      parentId:
+        description: ParentID holds the value of the "parent_id" field.
+        type: string
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      redirect:
+        description: Redirect holds the value of the "redirect" field.
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/menu.Type'
+        description: Type holds the value of the "type" field.
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
   dto.PermissionResponse:
     properties:
       createdAt:
@@ -101,10 +180,11 @@ definitions:
         type: string
       id:
         description: ID of the ent.
-        type: integer
-      key:
-        description: Key holds the value of the "key" field.
         type: string
+      key:
+        allOf:
+        - $ref: '#/definitions/permission.Type'
+        description: Type holds the value of the "type" field.
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -139,80 +219,13 @@ definitions:
       token:
         type: string
     type: object
-  dto.MenuRequest:
-    properties:
-      component:
-        type: string
-      isEnable:
-        type: boolean
-      meta:
-        $ref: '#/definitions/types.MenuMeta'
-      name:
-        type: string
-      parentId:
-        description: optionals
-        minimum: 0
-        type: integer
-      path:
-        type: string
-      type:
-        $ref: '#/definitions/route.Type'
-    required:
-    - component
-    - isEnable
-    - meta
-    - name
-    - path
-    - type
-    type: object
-  dto.MenuResponse:
-    properties:
-      component:
-        description: Component holds the value of the "component" field.
-        type: string
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        allOf:
-        - $ref: '#/definitions/ent.MenuEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the RouteQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: integer
-      isEnable:
-        description: IsEnable holds the value of the "is_enable" field.
-        type: boolean
-      meta:
-        allOf:
-        - $ref: '#/definitions/types.MenuMeta'
-        description: Meta holds the value of the "meta" field.
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      parentId:
-        description: ParentID holds the value of the "parent_id" field.
-        type: integer
-      path:
-        description: Path holds the value of the "path" field.
-        type: string
-      redirect:
-        description: Redirect holds the value of the "redirect" field.
-        type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/route.Type'
-        description: Type holds the value of the "type" field.
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
   ent.Admin:
     properties:
       createdAt:
         description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      departmentId:
+        description: DepartmentID holds the value of the "department_id" field.
         type: string
       displayName:
         description: DisplayName holds the value of the "display_name" field.
@@ -225,7 +238,7 @@ definitions:
           The values are being populated by the AdminQuery when eager-loading is set.
       id:
         description: ID of the ent.
-        type: integer
+        type: string
       isEnable:
         description: IsEnable holds the value of the "is_enable" field.
         type: boolean
@@ -243,6 +256,121 @@ definitions:
     type: object
   ent.AdminEdges:
     properties:
+      department:
+        allOf:
+        - $ref: '#/definitions/ent.Department'
+        description: Department holds the value of the department edge.
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  ent.Department:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.DepartmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the DepartmentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      nameId:
+        description: NameID holds the value of the "name_id" field.
+        type: string
+      parentId:
+        description: ParentID holds the value of the "parent_id" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.DepartmentEdges:
+    properties:
+      children:
+        description: Children holds the value of the children edge.
+        items:
+          $ref: '#/definitions/ent.Department'
+        type: array
+      members:
+        description: Members holds the value of the members edge.
+        items:
+          $ref: '#/definitions/ent.Admin'
+        type: array
+      parent:
+        allOf:
+        - $ref: '#/definitions/ent.Department'
+        description: Parent holds the value of the parent edge.
+    type: object
+  ent.Menu:
+    properties:
+      component:
+        description: Component holds the value of the "component" field.
+        type: string
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.MenuEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the MenuQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      meta:
+        allOf:
+        - $ref: '#/definitions/types.MenuMeta'
+        description: Meta holds the value of the "meta" field.
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      parentId:
+        description: ParentID holds the value of the "parent_id" field.
+        type: string
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      redirect:
+        description: Redirect holds the value of the "redirect" field.
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/menu.Type'
+        description: Type holds the value of the "type" field.
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.MenuEdges:
+    properties:
+      children:
+        description: Children holds the value of the children edge.
+        items:
+          $ref: '#/definitions/ent.Menu'
+        type: array
+      parent:
+        allOf:
+        - $ref: '#/definitions/ent.Menu'
+        description: Parent holds the value of the parent edge.
       roles:
         description: Roles holds the value of the roles edge.
         items:
@@ -265,10 +393,11 @@ definitions:
         type: string
       id:
         description: ID of the ent.
-        type: integer
-      key:
-        description: Key holds the value of the "key" field.
         type: string
+      key:
+        allOf:
+        - $ref: '#/definitions/permission.Type'
+        description: Type holds the value of the "type" field.
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -303,7 +432,7 @@ definitions:
           The values are being populated by the RoleQuery when eager-loading is set.
       id:
         description: ID of the ent.
-        type: integer
+        type: string
       isChangeable:
         description: IsChangeable holds the value of the "is_changeable" field.
         type: boolean
@@ -338,89 +467,7 @@ definitions:
           $ref: '#/definitions/ent.Menu'
         type: array
     type: object
-  ent.Menu:
-    properties:
-      component:
-        description: Component holds the value of the "component" field.
-        type: string
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        allOf:
-        - $ref: '#/definitions/ent.MenuEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the RouteQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: integer
-      isEnable:
-        description: IsEnable holds the value of the "is_enable" field.
-        type: boolean
-      meta:
-        allOf:
-        - $ref: '#/definitions/types.MenuMeta'
-        description: Meta holds the value of the "meta" field.
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      parentId:
-        description: ParentID holds the value of the "parent_id" field.
-        type: integer
-      path:
-        description: Path holds the value of the "path" field.
-        type: string
-      redirect:
-        description: Redirect holds the value of the "redirect" field.
-        type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/route.Type'
-        description: Type holds the value of the "type" field.
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.MenuEdges:
-    properties:
-      children:
-        description: Children holds the value of the children edge.
-        items:
-          $ref: '#/definitions/ent.Menu'
-        type: array
-      parent:
-        allOf:
-        - $ref: '#/definitions/ent.Menu'
-        description: Parent holds the value of the parent edge.
-      roles:
-        description: Roles holds the value of the roles edge.
-        items:
-          $ref: '#/definitions/ent.Role'
-        type: array
-    type: object
-  pagi.Meta:
-    properties:
-      limit:
-        type: integer
-      offset:
-        type: integer
-      total:
-        type: integer
-    type: object
-  response.Response:
-    properties:
-      code:
-        type: integer
-      data:
-        description: The Data field contains the actual response data
-      message:
-        type: string
-      meta:
-        description: Meta provides additional information about the data, such as
-          its type or kind.y.
-    type: object
-  route.Type:
+  menu.Type:
     enum:
     - cata_log
     - cata_log
@@ -434,6 +481,37 @@ definitions:
     - TypeMenu
     - TypeButton
     - TypeExternalLink
+  pagi.Meta:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  permission.Type:
+    enum:
+    - dynamic
+    - dynamic
+    - static
+    type: string
+    x-enum-varnames:
+    - DefaultType
+    - TypeDynamic
+    - TypeStatic
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        description: The Data field contains the actual response data
+      message:
+        type: string
+      meta:
+        description: Meta provides additional information about the data, such as
+          its type or kind.y.
+    type: object
   types.MenuMeta:
     properties:
       activeMenu:
@@ -468,7 +546,7 @@ info:
   title: GVA admin API
   version: "1.0"
 paths:
-  /admins:
+  /admin:
     get:
       consumes:
       - application/json
@@ -495,6 +573,7 @@ paths:
       summary: List all Admins
       tags:
       - Admin
+  /admins:
     post:
       consumes:
       - application/json
@@ -670,16 +749,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  additionalProperties:
-                    allOf:
-                    - $ref: '#/definitions/dto.LoginResponse'
-                    - properties:
-                        list:
-                          items:
-                            $ref: '#/definitions/dto.LoginResponse'
-                          type: array
-                      type: object
-                  type: object
+                  $ref: '#/definitions/dto.LoginResponse'
               type: object
       summary: Authenticate a admin
       tags:
@@ -735,50 +805,7 @@ paths:
       summary: Register a new admin
       tags:
       - Auth
-  /now:
-    get:
-      operationId: now
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: format time.RFC3339
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-      security:
-      - Bearer: []
-      summary: Current Server Time
-      tags:
-      - Time
-  /permissions:
-    get:
-      description: Get a list of all permissions
-      operationId: list-all-permissions
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved Routes
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.PermissionResponse'
-                  type: array
-              type: object
-      security:
-      - Bearer: []
-      summary: List all permissions
-      tags:
-      - Permission
-  /routes:
+  /menu:
     get:
       description: Get a list of all Routes
       operationId: list-all-routes
@@ -813,6 +840,50 @@ paths:
       summary: List all Routes
       tags:
       - Route
+  /now:
+    get:
+      operationId: now
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Current Server Time
+      tags:
+      - Time
+  /permission:
+    get:
+      description: Get a list of all permissions
+      operationId: list-all-permissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Routes
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PermissionResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: List all permissions
+      tags:
+      - Permission
+  /routes:
     post:
       consumes:
       - application/json

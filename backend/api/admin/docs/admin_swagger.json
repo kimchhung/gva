@@ -1,1309 +1,1522 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "GO VUE ADMIN Boilerplate",
-    "title": "GVA admin API",
-    "contact": {},
-    "version": "1.0"
-  },
-  "host": "localhost:8080",
-  "basePath": "/admin/v1",
-  "paths": {
-    "/admins": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Get a list of all Admins",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "List all Admins",
-        "operationId": "list-all-Admins",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved Admins",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/ent.Admin"
-                      }
+    "swagger": "2.0",
+    "info": {
+        "description": "GO VUE ADMIN Boilerplate",
+        "title": "GVA admin API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/admin/v1",
+    "paths": {
+        "/admin": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all Admins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List all Admins",
+                "operationId": "list-all-Admins",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Admins",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/ent.Admin"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/pagi.Meta"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/admins": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new Admin with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create a Admin",
+                "operationId": "create-Admin",
+                "parameters": [
+                    {
+                        "description": "Admin data",
+                        "name": "Admin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AdminResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/permissions": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of permissionissions for an Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get Admin permissionissions",
+                "operationId": "get-Admin-permissionissions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Admin permissionissions",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/routes": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of routes for an Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get Admin Routes",
+                "operationId": "get-Admin-routes",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Admin routes",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admins/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
                     },
-                    "meta": {
-                      "$ref": "#/definitions/pagi.Meta"
+                    {
+                        "Bearer": []
                     }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Create a new Admin with the provided details",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Create a Admin",
-        "operationId": "create-Admin",
-        "parameters": [
-          {
-            "description": "Admin data",
-            "name": "Admin",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.AdminRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully created Admin",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.AdminResponse"
+                ],
+                "description": "Get a Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get a Admin",
+                "operationId": "get-Admin-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/admins/permissions": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Get a list of permissionissions for an Admin by ID",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Get Admin permissionissions",
-        "operationId": "get-Admin-permissionissions",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved Admin permissionissions",
-            "schema": {
-              "$ref": "#/definitions/response.Response"
-            }
-          }
-        }
-      }
-    },
-    "/admins/routes": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Get a list of routes for an Admin by ID",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Get Admin Routes",
-        "operationId": "get-Admin-routes",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved Admin routes",
-            "schema": {
-              "$ref": "#/definitions/response.Response"
-            }
-          }
-        }
-      }
-    },
-    "/admins/{id}": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          },
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Get a Admin by ID",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Get a Admin",
-        "operationId": "get-Admin-by-id",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Admin ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.AdminResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      },
-      "delete": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Delete a Admin by ID",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Delete a Admin",
-        "operationId": "delete-Admin-by-id",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Admin ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully deleted Admin",
-            "schema": {
-              "$ref": "#/definitions/response.Response"
-            }
-          }
-        }
-      },
-      "patch": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Update a Admin by ID",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Update a Admin",
-        "operationId": "update-Admin-by-id",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Admin ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Admin data",
-            "name": "Admin",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.AdminRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully updated Admin",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.AdminResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/auth/login": {
-      "post": {
-        "description": "Authenticate a admin with the provided credentials",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Auth"],
-        "summary": "Authenticate a admin",
-        "operationId": "create-Auth",
-        "parameters": [
-          {
-            "description": "Auth data",
-            "name": "Auth",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.LoginRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully created Auth",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "allOf": [
-                          {
-                            "$ref": "#/definitions/dto.LoginResponse"
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "list": {
-                                "type": "array",
-                                "items": {
-                                  "$ref": "#/definitions/dto.LoginResponse"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AdminResponse"
+                                        }
+                                    }
                                 }
-                              }
-                            }
-                          }
-                        ]
-                      }
+                            ]
+                        }
                     }
-                  }
                 }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/auth/me": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "get admin data by token",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Auth"],
-        "summary": "query your self after login",
-        "operationId": "create-Auth-me",
-        "responses": {
-          "200": {
-            "description": "Successfully registered admin",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/ent.Admin"
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
                     }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/auth/register": {
-      "post": {
-        "description": "Register a new admin with the provided credentials",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Auth"],
-        "summary": "Register a new admin",
-        "operationId": "create-Auth-register",
-        "parameters": [
-          {
-            "description": "Registration data",
-            "name": "Auth",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.RegisterRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully registered admin",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.RegisterResponse"
+                ],
+                "description": "Delete a Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Delete a Admin",
+                "operationId": "delete-Admin-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/now": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "produces": ["application/json"],
-        "tags": ["Time"],
-        "summary": "Current Server Time",
-        "operationId": "now",
-        "responses": {
-          "200": {
-            "description": "format time.RFC3339",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "string"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted Admin",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     }
-                  }
                 }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/permissions": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Get a list of all permissions",
-        "produces": ["application/json"],
-        "tags": ["Permission"],
-        "summary": "List all permissions",
-        "operationId": "list-all-permissions",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved Routes",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/dto.PermissionResponse"
-                      }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
                     }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/routes": {
-      "get": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Get a list of all Routes",
-        "produces": ["application/json"],
-        "tags": ["Route"],
-        "summary": "List all Routes",
-        "operationId": "list-all-routes",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "string default",
-            "name": "limit",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved Routes",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "allOf": [
-                          {
-                            "$ref": "#/definitions/dto.MenuResponse"
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "list": {
-                                "type": "array",
-                                "items": {
-                                  "$ref": "#/definitions/dto.MenuResponse"
+                ],
+                "description": "Update a Admin by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update a Admin",
+                "operationId": "update-Admin-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Admin data",
+                        "name": "Admin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AdminResponse"
+                                        }
+                                    }
                                 }
-                              }
-                            }
-                          }
-                        ]
-                      }
+                            ]
+                        }
                     }
-                  }
                 }
-              ]
             }
-          }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Authenticate a admin with the provided credentials",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticate a admin",
+                "operationId": "create-Auth",
+                "parameters": [
+                    {
+                        "description": "Auth data",
+                        "name": "Auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Auth",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.LoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "get admin data by token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "query your self after login",
+                "operationId": "create-Auth-me",
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/ent.Admin"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register a new admin with the provided credentials",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new admin",
+                "operationId": "create-Auth-register",
+                "parameters": [
+                    {
+                        "description": "Registration data",
+                        "name": "Auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered admin",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.RegisterResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/menu": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all Routes",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "List all Routes",
+                "operationId": "list-all-routes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "string default",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/dto.MenuResponse"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "list": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/definitions/dto.MenuResponse"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/now": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Time"
+                ],
+                "summary": "Current Server Time",
+                "operationId": "now",
+                "responses": {
+                    "200": {
+                        "description": "format time.RFC3339",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/permission": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "List all permissions",
+                "operationId": "list-all-permissions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PermissionResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/routes": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Create a Route",
+                "operationId": "create-a-route",
+                "parameters": [
+                    {
+                        "description": "Route Info",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MenuRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MenuResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/routes/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Update a Route",
+                "operationId": "Update-a-route",
+                "parameters": [
+                    {
+                        "description": "Route Info",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MenuRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Routes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MenuResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a Route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "Delete a Route",
+                "operationId": "Delete-a-route",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully Delete Routes",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
-      },
-      "post": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Create a Route",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Route"],
-        "summary": "Create a Route",
-        "operationId": "create-a-route",
-        "parameters": [
-          {
-            "description": "Route Info",
-            "name": "info",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.MenuRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully created Routes",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
+    },
+    "definitions": {
+        "dto.AdminRequest": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.MenuResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/routes/{id}": {
-      "put": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Update a Route",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Route"],
-        "summary": "Update a Route",
-        "operationId": "Update-a-route",
-        "parameters": [
-          {
-            "description": "Route Info",
-            "name": "info",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.MenuRequest"
-            }
-          },
-          {
-            "type": "integer",
-            "description": "Route ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully updated Routes",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/response.Response"
+                "departmentId": {
+                    "description": "DepartmentID holds the value of the \"department_id\" field.",
+                    "type": "string"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.MenuResponse"
+                "displayName": {
+                    "description": "DisplayName holds the value of the \"display_name\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.AdminEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "Username holds the value of the \"username\" field.",
+                    "type": "string"
+                },
+                "whitelistIps": {
+                    "description": "WhitelistIps holds the value of the \"whitelist_ips\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
-                  }
                 }
-              ]
             }
-          }
-        }
-      },
-      "delete": {
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Delete a Route",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Route"],
-        "summary": "Delete a Route",
-        "operationId": "Delete-a-route",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Route ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully Delete Routes",
-            "schema": {
-              "$ref": "#/definitions/response.Response"
+        },
+        "dto.AdminResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "departmentId": {
+                    "description": "DepartmentID holds the value of the \"department_id\" field.",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "DisplayName holds the value of the \"display_name\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.AdminEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "Username holds the value of the \"username\" field.",
+                    "type": "string"
+                },
+                "whitelistIps": {
+                    "description": "WhitelistIps holds the value of the \"whitelist_ips\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
             }
-          }
+        },
+        "dto.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 5
+                }
+            }
+        },
+        "dto.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "$ref": "#/definitions/ent.Admin"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.MenuRequest": {
+            "type": "object",
+            "required": [
+                "component",
+                "isEnable",
+                "meta",
+                "name",
+                "path",
+                "type"
+            ],
+            "properties": {
+                "component": {
+                    "type": "string"
+                },
+                "isEnable": {
+                    "type": "boolean"
+                },
+                "meta": {
+                    "$ref": "#/definitions/types.MenuMeta"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "optionals",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "path": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/menu.Type"
+                }
+            }
+        },
+        "dto.MenuResponse": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "Component holds the value of the \"component\" field.",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MenuQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.MenuEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "meta": {
+                    "description": "Meta holds the value of the \"meta\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.MenuMeta"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "redirect": {
+                    "description": "Redirect holds the value of the \"redirect\" field.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/menu.Type"
+                        }
+                    ]
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PermissionResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.PermissionEdges"
+                        }
+                    ]
+                },
+                "group": {
+                    "description": "Group holds the value of the \"group\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/permission.Type"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "displayName",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 5
+                }
+            }
+        },
+        "dto.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "$ref": "#/definitions/ent.Admin"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "ent.Admin": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "departmentId": {
+                    "description": "DepartmentID holds the value of the \"department_id\" field.",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "DisplayName holds the value of the \"display_name\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.AdminEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "Username holds the value of the \"username\" field.",
+                    "type": "string"
+                },
+                "whitelistIps": {
+                    "description": "WhitelistIps holds the value of the \"whitelist_ips\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "ent.AdminEdges": {
+            "type": "object",
+            "properties": {
+                "department": {
+                    "description": "Department holds the value of the department edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.Department"
+                        }
+                    ]
+                },
+                "roles": {
+                    "description": "Roles holds the value of the roles edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Role"
+                    }
+                }
+            }
+        },
+        "ent.Department": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the DepartmentQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.DepartmentEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "nameId": {
+                    "description": "NameID holds the value of the \"name_id\" field.",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.DepartmentEdges": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "Children holds the value of the children edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Department"
+                    }
+                },
+                "members": {
+                    "description": "Members holds the value of the members edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Admin"
+                    }
+                },
+                "parent": {
+                    "description": "Parent holds the value of the parent edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.Department"
+                        }
+                    ]
+                }
+            }
+        },
+        "ent.Menu": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "Component holds the value of the \"component\" field.",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MenuQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.MenuEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "meta": {
+                    "description": "Meta holds the value of the \"meta\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.MenuMeta"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "redirect": {
+                    "description": "Redirect holds the value of the \"redirect\" field.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/menu.Type"
+                        }
+                    ]
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.MenuEdges": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "Children holds the value of the children edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Menu"
+                    }
+                },
+                "parent": {
+                    "description": "Parent holds the value of the parent edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.Menu"
+                        }
+                    ]
+                },
+                "roles": {
+                    "description": "Roles holds the value of the roles edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Role"
+                    }
+                }
+            }
+        },
+        "ent.Permission": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.PermissionEdges"
+                        }
+                    ]
+                },
+                "group": {
+                    "description": "Group holds the value of the \"group\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/permission.Type"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.PermissionEdges": {
+            "type": "object",
+            "properties": {
+                "roles": {
+                    "description": "Roles holds the value of the roles edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Role"
+                    }
+                }
+            }
+        },
+        "ent.Role": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description holds the value of the \"description\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.RoleEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isChangeable": {
+                    "description": "IsChangeable holds the value of the \"is_changeable\" field.",
+                    "type": "boolean"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "order": {
+                    "description": "Order holds the value of the \"order\" field.",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.RoleEdges": {
+            "type": "object",
+            "properties": {
+                "admins": {
+                    "description": "Admins holds the value of the admins edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Admin"
+                    }
+                },
+                "permissions": {
+                    "description": "Permissions holds the value of the permissions edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Permission"
+                    }
+                },
+                "routes": {
+                    "description": "Routes holds the value of the routes edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Menu"
+                    }
+                }
+            }
+        },
+        "menu.Type": {
+            "type": "string",
+            "enum": [
+                "cata_log",
+                "cata_log",
+                "menu",
+                "button",
+                "external_link"
+            ],
+            "x-enum-varnames": [
+                "DefaultType",
+                "TypeCataLog",
+                "TypeMenu",
+                "TypeButton",
+                "TypeExternalLink"
+            ]
+        },
+        "pagi.Meta": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "permission.Type": {
+            "type": "string",
+            "enum": [
+                "dynamic",
+                "dynamic",
+                "static"
+            ],
+            "x-enum-varnames": [
+                "DefaultType",
+                "TypeDynamic",
+                "TypeStatic"
+            ]
+        },
+        "response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "The Data field contains the actual response data"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "description": "Meta provides additional information about the data, such as its type or kind.y."
+                }
+            }
+        },
+        "types.MenuMeta": {
+            "type": "object",
+            "properties": {
+                "activeMenu": {
+                    "type": "string"
+                },
+                "affix": {
+                    "type": "boolean"
+                },
+                "alwaysShow": {
+                    "type": "boolean"
+                },
+                "breadcrumb": {
+                    "type": "boolean"
+                },
+                "canTo": {
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "noCache": {
+                    "type": "boolean"
+                },
+                "noTagsView": {
+                    "type": "boolean"
+                },
+                "permission": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
         }
-      }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
-  },
-  "definitions": {
-    "dto.AdminRequest": {
-      "type": "object",
-      "properties": {
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "DisplayName holds the value of the \"display_name\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.AdminEdges"
-            }
-          ]
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "isEnable": {
-          "description": "IsEnable holds the value of the \"is_enable\" field.",
-          "type": "boolean"
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        },
-        "username": {
-          "description": "Username holds the value of the \"username\" field.",
-          "type": "string"
-        },
-        "whitelistIps": {
-          "description": "WhitelistIps holds the value of the \"whitelist_ips\" field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "dto.AdminResponse": {
-      "type": "object",
-      "properties": {
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "DisplayName holds the value of the \"display_name\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.AdminEdges"
-            }
-          ]
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "isEnable": {
-          "description": "IsEnable holds the value of the \"is_enable\" field.",
-          "type": "boolean"
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        },
-        "username": {
-          "description": "Username holds the value of the \"username\" field.",
-          "type": "string"
-        },
-        "whitelistIps": {
-          "description": "WhitelistIps holds the value of the \"whitelist_ips\" field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "dto.LoginRequest": {
-      "type": "object",
-      "required": ["password", "username"],
-      "properties": {
-        "password": {
-          "type": "string",
-          "maxLength": 30,
-          "minLength": 6
-        },
-        "username": {
-          "type": "string",
-          "maxLength": 30,
-          "minLength": 5
-        }
-      }
-    },
-    "dto.LoginResponse": {
-      "type": "object",
-      "properties": {
-        "admin": {
-          "$ref": "#/definitions/ent.Admin"
-        },
-        "token": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.PermissionResponse": {
-      "type": "object",
-      "properties": {
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.PermissionEdges"
-            }
-          ]
-        },
-        "group": {
-          "description": "Group holds the value of the \"group\" field.",
-          "type": "string"
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "key": {
-          "description": "Key holds the value of the \"key\" field.",
-          "type": "string"
-        },
-        "name": {
-          "description": "Name holds the value of the \"name\" field.",
-          "type": "string"
-        },
-        "order": {
-          "description": "Order holds the value of the \"order\" field.",
-          "type": "integer"
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        }
-      }
-    },
-    "dto.RegisterRequest": {
-      "type": "object",
-      "required": ["displayName", "password", "username"],
-      "properties": {
-        "displayName": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string",
-          "maxLength": 30,
-          "minLength": 6
-        },
-        "username": {
-          "type": "string",
-          "maxLength": 30,
-          "minLength": 5
-        }
-      }
-    },
-    "dto.RegisterResponse": {
-      "type": "object",
-      "properties": {
-        "admin": {
-          "$ref": "#/definitions/ent.Admin"
-        },
-        "token": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.MenuRequest": {
-      "type": "object",
-      "required": ["component", "isEnable", "meta", "name", "path", "type"],
-      "properties": {
-        "component": {
-          "type": "string"
-        },
-        "isEnable": {
-          "type": "boolean"
-        },
-        "meta": {
-          "$ref": "#/definitions/types.MenuMeta"
-        },
-        "name": {
-          "type": "string"
-        },
-        "parentId": {
-          "description": "optionals",
-          "type": "integer",
-          "minimum": 0
-        },
-        "path": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/definitions/route.Type"
-        }
-      }
-    },
-    "dto.MenuResponse": {
-      "type": "object",
-      "properties": {
-        "component": {
-          "description": "Component holds the value of the \"component\" field.",
-          "type": "string"
-        },
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RouteQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.MenuEdges"
-            }
-          ]
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "isEnable": {
-          "description": "IsEnable holds the value of the \"is_enable\" field.",
-          "type": "boolean"
-        },
-        "meta": {
-          "description": "Meta holds the value of the \"meta\" field.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/types.MenuMeta"
-            }
-          ]
-        },
-        "name": {
-          "description": "Name holds the value of the \"name\" field.",
-          "type": "string"
-        },
-        "parentId": {
-          "description": "ParentID holds the value of the \"parent_id\" field.",
-          "type": "integer"
-        },
-        "path": {
-          "description": "Path holds the value of the \"path\" field.",
-          "type": "string"
-        },
-        "redirect": {
-          "description": "Redirect holds the value of the \"redirect\" field.",
-          "type": "string"
-        },
-        "type": {
-          "description": "Type holds the value of the \"type\" field.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/route.Type"
-            }
-          ]
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        }
-      }
-    },
-    "ent.Admin": {
-      "type": "object",
-      "properties": {
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "DisplayName holds the value of the \"display_name\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AdminQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.AdminEdges"
-            }
-          ]
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "isEnable": {
-          "description": "IsEnable holds the value of the \"is_enable\" field.",
-          "type": "boolean"
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        },
-        "username": {
-          "description": "Username holds the value of the \"username\" field.",
-          "type": "string"
-        },
-        "whitelistIps": {
-          "description": "WhitelistIps holds the value of the \"whitelist_ips\" field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ent.AdminEdges": {
-      "type": "object",
-      "properties": {
-        "roles": {
-          "description": "Roles holds the value of the roles edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Role"
-          }
-        }
-      }
-    },
-    "ent.Permission": {
-      "type": "object",
-      "properties": {
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.PermissionEdges"
-            }
-          ]
-        },
-        "group": {
-          "description": "Group holds the value of the \"group\" field.",
-          "type": "string"
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "key": {
-          "description": "Key holds the value of the \"key\" field.",
-          "type": "string"
-        },
-        "name": {
-          "description": "Name holds the value of the \"name\" field.",
-          "type": "string"
-        },
-        "order": {
-          "description": "Order holds the value of the \"order\" field.",
-          "type": "integer"
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        }
-      }
-    },
-    "ent.PermissionEdges": {
-      "type": "object",
-      "properties": {
-        "roles": {
-          "description": "Roles holds the value of the roles edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Role"
-          }
-        }
-      }
-    },
-    "ent.Role": {
-      "type": "object",
-      "properties": {
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Description holds the value of the \"description\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoleQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.RoleEdges"
-            }
-          ]
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "isChangeable": {
-          "description": "IsChangeable holds the value of the \"is_changeable\" field.",
-          "type": "boolean"
-        },
-        "isEnable": {
-          "description": "IsEnable holds the value of the \"is_enable\" field.",
-          "type": "boolean"
-        },
-        "name": {
-          "description": "Name holds the value of the \"name\" field.",
-          "type": "string"
-        },
-        "order": {
-          "description": "Order holds the value of the \"order\" field.",
-          "type": "integer"
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        }
-      }
-    },
-    "ent.RoleEdges": {
-      "type": "object",
-      "properties": {
-        "admins": {
-          "description": "Admins holds the value of the admins edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Admin"
-          }
-        },
-        "permissions": {
-          "description": "Permissions holds the value of the permissions edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Permission"
-          }
-        },
-        "routes": {
-          "description": "Routes holds the value of the routes edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Menu"
-          }
-        }
-      }
-    },
-    "ent.Menu": {
-      "type": "object",
-      "properties": {
-        "component": {
-          "description": "Component holds the value of the \"component\" field.",
-          "type": "string"
-        },
-        "createdAt": {
-          "description": "CreatedAt holds the value of the \"created_at\" field.",
-          "type": "string"
-        },
-        "edges": {
-          "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RouteQuery when eager-loading is set.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.MenuEdges"
-            }
-          ]
-        },
-        "id": {
-          "description": "ID of the ent.",
-          "type": "integer"
-        },
-        "isEnable": {
-          "description": "IsEnable holds the value of the \"is_enable\" field.",
-          "type": "boolean"
-        },
-        "meta": {
-          "description": "Meta holds the value of the \"meta\" field.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/types.MenuMeta"
-            }
-          ]
-        },
-        "name": {
-          "description": "Name holds the value of the \"name\" field.",
-          "type": "string"
-        },
-        "parentId": {
-          "description": "ParentID holds the value of the \"parent_id\" field.",
-          "type": "integer"
-        },
-        "path": {
-          "description": "Path holds the value of the \"path\" field.",
-          "type": "string"
-        },
-        "redirect": {
-          "description": "Redirect holds the value of the \"redirect\" field.",
-          "type": "string"
-        },
-        "type": {
-          "description": "Type holds the value of the \"type\" field.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/route.Type"
-            }
-          ]
-        },
-        "updatedAt": {
-          "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-          "type": "string"
-        }
-      }
-    },
-    "ent.MenuEdges": {
-      "type": "object",
-      "properties": {
-        "children": {
-          "description": "Children holds the value of the children edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Menu"
-          }
-        },
-        "parent": {
-          "description": "Parent holds the value of the parent edge.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ent.Menu"
-            }
-          ]
-        },
-        "roles": {
-          "description": "Roles holds the value of the roles edge.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ent.Role"
-          }
-        }
-      }
-    },
-    "pagi.Meta": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "offset": {
-          "type": "integer"
-        },
-        "total": {
-          "type": "integer"
-        }
-      }
-    },
-    "response.Response": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "integer"
-        },
-        "data": {
-          "description": "The Data field contains the actual response data"
-        },
-        "message": {
-          "type": "string"
-        },
-        "meta": {
-          "description": "Meta provides additional information about the data, such as its type or kind.y."
-        }
-      }
-    },
-    "route.Type": {
-      "type": "string",
-      "enum": ["cata_log", "cata_log", "menu", "button", "external_link"],
-      "x-enum-varnames": [
-        "DefaultType",
-        "TypeCataLog",
-        "TypeMenu",
-        "TypeButton",
-        "TypeExternalLink"
-      ]
-    },
-    "types.MenuMeta": {
-      "type": "object",
-      "properties": {
-        "activeMenu": {
-          "type": "string"
-        },
-        "affix": {
-          "type": "boolean"
-        },
-        "alwaysShow": {
-          "type": "boolean"
-        },
-        "breadcrumb": {
-          "type": "boolean"
-        },
-        "canTo": {
-          "type": "boolean"
-        },
-        "hidden": {
-          "type": "boolean"
-        },
-        "icon": {
-          "type": "string"
-        },
-        "noCache": {
-          "type": "boolean"
-        },
-        "noTagsView": {
-          "type": "boolean"
-        },
-        "permission": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "title": {
-          "type": "string"
-        }
-      }
-    }
-  },
-  "securityDefinitions": {
-    "Bearer": {
-      "description": "Type \"Bearer\" followed by a space and JWT token.",
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header"
-    }
-  }
 }

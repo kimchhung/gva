@@ -8,7 +8,7 @@ export class AuthAPI {
 
   constructor(name: string) {
     this.name = name
-    this.base = `/${this.name.replace('/', '')}s`
+    this.base = `/${this.name.replace('/', '')}`
   }
 
   me({ opt }: AuthMe) {

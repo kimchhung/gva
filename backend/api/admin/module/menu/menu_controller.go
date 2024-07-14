@@ -38,7 +38,7 @@ func NewMenuController(
 }
 
 func (con *RouteController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/menus", con.jwt_s.RequiredAdmin())
+	return r.Group("/menu", con.jwt_s.RequiredAdmin())
 }
 
 // @Tags        Route
@@ -47,7 +47,7 @@ func (con *RouteController) Init(r *echo.Group) *echo.Group {
 // @ID          list-all-routes
 // @Produce     json
 // @Success     200 {object} response.Response{data=map[string]dto.MenuResponse{list=[]dto.MenuResponse}} "Successfully retrieved Routes"
-// @Router      /routes [get]
+// @Router      /menu [get]
 // @Security    Bearer
 // @Param   	limit     query     int     false  "string default"     default(A)
 func (con *RouteController) Routes(m *echoc.RouteMeta) echoc.MetaHandler {
