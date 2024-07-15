@@ -4,12 +4,6 @@ import inquirer from 'inquirer'
 import path from 'path'
 import pkg from '../package.json'
 
-type Icon = {
-  name: string
-  prefix: string
-  icons: string[]
-}
-
 async function generateIcon() {
   const dir = path.resolve(process.cwd(), 'node_modules/@iconify/json')
 
@@ -58,7 +52,7 @@ async function generateIcon() {
             path.join('src/components/IconPicker/src/data', `icons.${prefix}.ts`),
             `export default ${JSON.stringify({ name: info.name, prefix, icons })}`
           )
-          // ↓分类处理完成，push类型名称
+          // ↓ Classified processing is complete, push type name
           prefixSet.push(prefix)
         }
       }

@@ -15,27 +15,19 @@ const axiosInstance: AxiosInstance = axios.create({
   baseURL: PATH_URL
 })
 
-axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
-  const controller = new AbortController()
-  const url = res.url || ''
-  res.signal = controller.signal
-  abortControllerMap.set(
-    import.meta.env.VITE_USE_MOCK === 'true' ? url.replace('/mock', '') : url,
-    controller
-  )
-
-  return res
-})
-
-axiosInstance.interceptors.response.use(
-  (res: AxiosResponse) => {
-    const url = res.config.url || ''
-    abortControllerMap.delete(url)
-    // Can't do any processing here, otherwise the interceptors in the back will not get a complete context
-
+const interceptor = {
+  request: (res: InternalAxiosRequestConfig) => {
+    const controller = new AbortController()
+    res.signal = controller.signal
+    abortControllerMap.set(String(res.url), controller)
     return res
   },
-  (error: AxiosError) => {
+  response: (res: AxiosResponse) => {
+    const url = String(res.config.url)
+    abortControllerMap.delete(url)
+    return res
+  },
+  responseError: (error: AxiosError) => {
     const apiData = error.response?.data as {
       code: number
       data: any
@@ -53,7 +45,10 @@ axiosInstance.interceptors.response.use(
 
     return Promise.reject(error)
   }
-)
+}
+
+axiosInstance.interceptors.request.use(interceptor.request)
+axiosInstance.interceptors.response.use(interceptor.response, interceptor.responseError)
 
 axiosInstance.interceptors.request.use(defaultRequestInterceptors)
 axiosInstance.interceptors.response.use(defaultResponseInterceptors)
@@ -71,11 +66,10 @@ const service = {
         .catch((err: any) => reject(err))
     })
   },
-  cancelRequest: (url: string | string[]) => {
-    const urlList = Array.isArray(url) ? url : [url]
-    for (const _url of urlList) {
-      abortControllerMap.get(_url)?.abort()
-      abortControllerMap.delete(_url)
+  cancelRequest: (...urls: string[]) => {
+    for (const url of urls) {
+      abortControllerMap.get(url)?.abort()
+      abortControllerMap.delete(url)
     }
   },
   cancelAllRequest() {

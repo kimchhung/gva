@@ -10,26 +10,26 @@ export const SUCCESS_CODE: SucessCodeType = 0
 export const CONTENT_TYPE: AxiosContentType = 'application/json'
 
 /**
- * 请求超时时间
+ * Request timeout time
  */
 export const REQUEST_TIMEOUT = 60000
 
 /**
- * 不重定向白名单
+ * Don’t reconstruct the whitelist
  */
 export const NO_REDIRECT_WHITE_LIST = ['/login']
 
 /**
- * 不重置路由白名单
+ * Do not reset the route of routes
  */
 export const NO_RESET_WHITE_LIST = ['Redirect', 'Login', 'NoFind', 'Root']
 
 /**
- * 表格默认过滤列设置字段
+ * Form default filter setting field
  */
 export const DEFAULT_FILTER_COLUMN = ['expand', 'selection']
 
 /**
- * 是否根据headers->content-type自动转换数据格式
+ * Whether to automatically convey the data format according to Headers-> Content-Type
  */
 export const TRANSFORM_REQUEST_DATA = true

@@ -96,8 +96,8 @@ const req = {
   patch: <T = any>(option: AxiosConfig) => {
     return request({ method: 'patch', ...option }) as Promise<IResponse<T>>
   },
-  cancelRequest: (url: string | string[]) => {
-    return service.cancelRequest(url)
+  cancelRequest: (...urls: string[]) => {
+    return service.cancelRequest(...urls)
   },
   cancelAllRequest: () => {
     return service.cancelAllRequest()

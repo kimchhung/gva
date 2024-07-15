@@ -46,14 +46,16 @@ const defaultResponseInterceptors = (response: AxiosResponse) => {
   if (response?.config?.responseType === 'blob') {
     // If it is a file flow, pass it directly
     return response
-  } else if (response.data.code === SUCCESS_CODE) {
+  }
+
+  if (response.data.code === SUCCESS_CODE) {
     return response.data
-  } else {
-    ElMessage.error(response?.data?.message)
-    if ([401, 402, 403].includes(response.status)) {
-      const userStore = useAdminStoreWithOut()
-      userStore.logout()
-    }
+  }
+
+  ElMessage.error(response?.data?.message)
+  if ([401, 402, 403].includes(response.status)) {
+    const userStore = useAdminStoreWithOut()
+    userStore.logout()
   }
 }
 
