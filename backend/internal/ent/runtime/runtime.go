@@ -10,8 +10,6 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
-	"github.com/gva/internal/ent/mytodo"
-	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
@@ -136,68 +134,6 @@ func init() {
 	menuDescID := menuMixinFields0[0].Descriptor()
 	// menu.DefaultID holds the default value on creation for the id field.
 	menu.DefaultID = menuDescID.Default.(func() xid.ID)
-	mytodoMixin := schema.MyTodo{}.Mixin()
-	mytodoMixinHooks2 := mytodoMixin[2].Hooks()
-	mytodo.Hooks[0] = mytodoMixinHooks2[0]
-	mytodoMixinInters2 := mytodoMixin[2].Interceptors()
-	mytodo.Interceptors[0] = mytodoMixinInters2[0]
-	mytodoMixinFields0 := mytodoMixin[0].Fields()
-	_ = mytodoMixinFields0
-	mytodoMixinFields1 := mytodoMixin[1].Fields()
-	_ = mytodoMixinFields1
-	mytodoMixinFields2 := mytodoMixin[2].Fields()
-	_ = mytodoMixinFields2
-	mytodoFields := schema.MyTodo{}.Fields()
-	_ = mytodoFields
-	// mytodoDescCreatedAt is the schema descriptor for created_at field.
-	mytodoDescCreatedAt := mytodoMixinFields1[0].Descriptor()
-	// mytodo.DefaultCreatedAt holds the default value on creation for the created_at field.
-	mytodo.DefaultCreatedAt = mytodoDescCreatedAt.Default.(func() time.Time)
-	// mytodoDescUpdatedAt is the schema descriptor for updated_at field.
-	mytodoDescUpdatedAt := mytodoMixinFields1[1].Descriptor()
-	// mytodo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	mytodo.DefaultUpdatedAt = mytodoDescUpdatedAt.Default.(func() time.Time)
-	// mytodo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	mytodo.UpdateDefaultUpdatedAt = mytodoDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// mytodoDescDeletedAt is the schema descriptor for deleted_at field.
-	mytodoDescDeletedAt := mytodoMixinFields2[0].Descriptor()
-	// mytodo.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	mytodo.DefaultDeletedAt = mytodoDescDeletedAt.Default.(int)
-	// mytodoDescID is the schema descriptor for id field.
-	mytodoDescID := mytodoMixinFields0[0].Descriptor()
-	// mytodo.DefaultID holds the default value on creation for the id field.
-	mytodo.DefaultID = mytodoDescID.Default.(func() xid.ID)
-	mytodo1Mixin := schema.MyTodo1{}.Mixin()
-	mytodo1MixinHooks2 := mytodo1Mixin[2].Hooks()
-	mytodo1.Hooks[0] = mytodo1MixinHooks2[0]
-	mytodo1MixinInters2 := mytodo1Mixin[2].Interceptors()
-	mytodo1.Interceptors[0] = mytodo1MixinInters2[0]
-	mytodo1MixinFields0 := mytodo1Mixin[0].Fields()
-	_ = mytodo1MixinFields0
-	mytodo1MixinFields1 := mytodo1Mixin[1].Fields()
-	_ = mytodo1MixinFields1
-	mytodo1MixinFields2 := mytodo1Mixin[2].Fields()
-	_ = mytodo1MixinFields2
-	mytodo1Fields := schema.MyTodo1{}.Fields()
-	_ = mytodo1Fields
-	// mytodo1DescCreatedAt is the schema descriptor for created_at field.
-	mytodo1DescCreatedAt := mytodo1MixinFields1[0].Descriptor()
-	// mytodo1.DefaultCreatedAt holds the default value on creation for the created_at field.
-	mytodo1.DefaultCreatedAt = mytodo1DescCreatedAt.Default.(func() time.Time)
-	// mytodo1DescUpdatedAt is the schema descriptor for updated_at field.
-	mytodo1DescUpdatedAt := mytodo1MixinFields1[1].Descriptor()
-	// mytodo1.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	mytodo1.DefaultUpdatedAt = mytodo1DescUpdatedAt.Default.(func() time.Time)
-	// mytodo1.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	mytodo1.UpdateDefaultUpdatedAt = mytodo1DescUpdatedAt.UpdateDefault.(func() time.Time)
-	// mytodo1DescDeletedAt is the schema descriptor for deleted_at field.
-	mytodo1DescDeletedAt := mytodo1MixinFields2[0].Descriptor()
-	// mytodo1.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	mytodo1.DefaultDeletedAt = mytodo1DescDeletedAt.Default.(int)
-	// mytodo1DescID is the schema descriptor for id field.
-	mytodo1DescID := mytodo1MixinFields0[0].Descriptor()
-	// mytodo1.DefaultID holds the default value on creation for the id field.
-	mytodo1.DefaultID = mytodo1DescID.Default.(func() xid.ID)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0

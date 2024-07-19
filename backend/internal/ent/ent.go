@@ -15,8 +15,6 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
-	"github.com/gva/internal/ent/mytodo"
-	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
@@ -83,8 +81,6 @@ func checkColumn(table, column string) error {
 			admin.Table:      admin.ValidColumn,
 			department.Table: department.ValidColumn,
 			menu.Table:       menu.ValidColumn,
-			mytodo.Table:     mytodo.ValidColumn,
-			mytodo1.Table:    mytodo1.ValidColumn,
 			permission.Table: permission.ValidColumn,
 			region.Table:     region.ValidColumn,
 			role.Table:       role.ValidColumn,

@@ -15,12 +15,6 @@ type Department func(*sql.Selector)
 // Menu is the predicate function for menu builders.
 type Menu func(*sql.Selector)
 
-// MyTodo is the predicate function for mytodo builders.
-type MyTodo func(*sql.Selector)
-
-// MyTodo1 is the predicate function for mytodo1 builders.
-type MyTodo1 func(*sql.Selector)
-
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 

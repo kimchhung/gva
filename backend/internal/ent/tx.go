@@ -20,10 +20,6 @@ type Tx struct {
 	Department *DepartmentClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
-	// MyTodo is the client for interacting with the MyTodo builders.
-	MyTodo *MyTodoClient
-	// MyTodo1 is the client for interacting with the MyTodo1 builders.
-	MyTodo1 *MyTodo1Client
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Region is the client for interacting with the Region builders.
@@ -164,8 +160,6 @@ func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
 	tx.Department = NewDepartmentClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
-	tx.MyTodo = NewMyTodoClient(tx.config)
-	tx.MyTodo1 = NewMyTodo1Client(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
