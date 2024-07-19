@@ -1,15 +1,18 @@
 package module
 
 import (
-	admin "github.com/gva/api/admin/module/admin"
-	auth "github.com/gva/api/admin/module/auth"
-	index "github.com/gva/api/admin/module/index"
-	menu "github.com/gva/api/admin/module/menu"
-	permission "github.com/gva/api/admin/module/permission"
+	"github.com/gva/api/admin/module/admin"
+	"github.com/gva/api/admin/module/auth"
+	"github.com/gva/api/admin/module/index"
+	"github.com/gva/api/admin/module/menu"
+	"github.com/gva/api/admin/module/permission"
+
 	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/echoc"
 
+	"github.com/gva/api/admin/module/mytodo"
 	"go.uber.org/fx"
+	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )
 
 var NewAdminModules = fx.Module("admin-module",
@@ -19,6 +22,7 @@ var NewAdminModules = fx.Module("admin-module",
 	permission.PermissionModule,
 	index.IndexModule,
 
+	mytodo.NewMyTodoModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(

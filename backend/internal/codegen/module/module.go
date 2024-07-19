@@ -1,16 +1,13 @@
 package module_template
 
 var special = "`"
-var Module = `package {{.EntitySnake}}
+var Module = `package {{.EntityAllLower}}
 
 import (
-"github.com/gva/api/admin/module/{{.EntitySnake}}/controller"
-"github.com/gva/api/admin/module/{{.EntitySnake}}/repository"
-"github.com/gva/api/admin/module/{{.EntitySnake}}/service"
-"github.com/gva/internal/rctrl"
-"github.com/gva/app/common/controller"
+	"github.com/gva/internal/echoc"
+	"github.com/gva/app/common/controller"
 
-"go.uber.org/fx"
+	"go.uber.org/fx"
 )
 
 // Register bulkly

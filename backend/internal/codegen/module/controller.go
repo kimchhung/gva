@@ -4,15 +4,14 @@ import (
 	"strings"
 )
 
-var Controller = strings.ReplaceAll(`package controller
+var Controller = strings.ReplaceAll(`package {{.EntityAllLower}}
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/gva/api/admin/module/{{.EntitySnake}}/dto"
-	"github.com/gva/api/admin/module/{{.EntitySnake}}/service"
-	"github.com/gva/internal/rctrl"
+	"github.com/gva/internal/echoc"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
+
+	"github.com/labstack/echo/v4"
 )
 
 // don't remove for runtime type checking

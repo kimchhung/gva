@@ -10,7 +10,7 @@ gen:
 
 
 crud:
-	go run cmd/code_gen/generate.go $(name)
+	go run cmd/codegen/generate.go $(name)
 
 # Run application inside Docker
 docker:

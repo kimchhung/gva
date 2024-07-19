@@ -20,20 +20,20 @@ type CodeGenParams struct {
 }
 
 func GenerateCodes(params CodeGenParams) {
-	// GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
+	GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
 	GenerateModule(params, "module", "api/admin/module", module_template.Module)
+	GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)
 	GenerateModuleChild(params, "dto", "api/admin/module", "request", module_template.DtoRequest)
 	GenerateModuleChild(params, "dto", "api/admin/module", "response", module_template.DtoResponse)
-	GenerateModuleChild(params, "repository", "api/admin/module", "repository", module_template.Repository)
-	GenerateModuleChild(params, "service", "api/admin/module", "service", module_template.Service)
-	GenerateModuleChild(params, "controller", "api/admin/module", "controller", module_template.Controller)
-	// Appends(params)
+	GenerateModuleChild(params, "", "api/admin/module", "service", module_template.Service)
+	GenerateModuleChild(params, "", "api/admin/module", "controller", module_template.Controller)
+	Appends(params)
 }
 
 func Appends(params CodeGenParams) {
-	InjectCodeToPos("main.go", map[string]string{
-		"// #inject:module ":      fmt.Sprintf("%v.New%vModule,\n", params.EntitySnake, params.EntityPascal),
-		"// #inject:moduleImport": fmt.Sprintf(`"github.com/gva/api/admin/module/%v"`+"\n", params.EntitySnake),
+	InjectCodeToPos("api/admin/module/module.go", map[string]string{
+		"// #inject:module":       fmt.Sprintf("%v.New%vModule,\n", params.EntityAllLower, params.EntityPascal),
+		"// #inject:moduleImport": fmt.Sprintf(`"github.com/gva/api/admin/module/%v"`+"\n", params.EntityAllLower),
 	}, true)
 }
 
@@ -43,7 +43,7 @@ func GenerateCodeByTemplate(params CodeGenParams, templateName string, directory
 		panic(err)
 	}
 
-	fullPath := directory + "/" + params.EntitySnake + ".go"
+	fullPath := directory + "/" + params.EntityAllLower + ".go"
 
 	file := createFullPathFile(fullPath)
 	defer file.Close()
@@ -62,7 +62,26 @@ func GenerateModule(params CodeGenParams, templateName string, directory string,
 		panic(err)
 	}
 
-	fullPath := directory + "/" + params.EntitySnake + "/" + params.EntitySnake + "_module.go"
+	fullPath := directory + "/" + params.EntityAllLower + "/" + params.EntityAllLower + "_module.go"
+
+	file := createFullPathFile(fullPath)
+	defer file.Close()
+
+	err = tmpl.Execute(file, params)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Generated " + fullPath)
+}
+
+func GenerateModuleChildNoFolder(params CodeGenParams, templateName, directory, suffix, templateContent string) {
+	tmpl, err := template.New(templateName).Parse(templateContent)
+	if err != nil {
+		panic(err)
+	}
+
+	fullPath := directory + "/" + templateName + "/" + params.EntityAllLower + "_" + suffix + ".go"
 
 	file := createFullPathFile(fullPath)
 	defer file.Close()
@@ -81,7 +100,7 @@ func GenerateModuleChild(params CodeGenParams, templateName, directory, suffix, 
 		panic(err)
 	}
 
-	fullPath := directory + "/" + params.EntitySnake + "/" + templateName + "/" + params.EntitySnake + "_" + suffix + ".go"
+	fullPath := directory + "/" + params.EntityAllLower + "/" + templateName + "/" + params.EntityAllLower + "_" + suffix + ".go"
 
 	file := createFullPathFile(fullPath)
 	defer file.Close()

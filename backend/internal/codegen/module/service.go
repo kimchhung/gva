@@ -1,10 +1,10 @@
 package module_template
 
-var Service = `package service
+var Service = `package {{.EntityAllLower}}
 
 import (
-	"github.com/gva/api/admin/module/{{.EntitySnake}}/repository"
-	"github.com/gva/api/admin/module/{{.EntitySnake}}/dto"
+	"github.com/gva/app/common/repository"
+	"github.com/gva/api/admin/module/{{.EntityAllLower}}/dto"
 
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/{{.EntityAllLower}}"

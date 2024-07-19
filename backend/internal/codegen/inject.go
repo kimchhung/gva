@@ -17,6 +17,10 @@ func InjectCodeToPos(filePath string, pos map[string]string, format bool) {
 	strContent := string(content)
 	// Find the location to insert the new line
 	for key, value := range pos {
+		if strings.Contains(strContent, value) {
+			continue
+		}
+
 		insertStruct := strings.LastIndex(strContent, key)
 		strContent = strContent[:insertStruct] + value + strContent[insertStruct:]
 	}
