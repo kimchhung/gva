@@ -1,12 +1,12 @@
 <script lang="tsx">
-import { ElCollapseTransition, ElTooltip, ElRow, ElCol } from 'element-plus'
-import { useDesign } from '@/hooks/web/useDesign'
-import { propTypes } from '@/utils/propTypes'
-import { ref, unref, PropType, computed, defineComponent } from 'vue'
-import { useAppStore } from '@/store/modules/app'
-import { DescriptionsSchema } from './types'
 import { Icon } from '@/components/Icon'
+import { useDesign } from '@/hooks/web/useDesign'
+import { useAppStore } from '@/store/modules/app'
+import { propTypes } from '@/utils/propTypes'
+import { ElCol, ElCollapseTransition, ElRow, ElTooltip } from 'element-plus'
 import { get } from 'lodash-es'
+import { PropType, computed, defineComponent, ref, unref } from 'vue'
+import { DescriptionsSchema } from './types'
 
 const appStore = useAppStore()
 
@@ -131,7 +131,7 @@ export default defineComponent({
                           <div class="flex-1 px-8px py-11px bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] text-size-14px">
                             {item.slots?.default
                               ? item.slots?.default(props.data)
-                              : get(props.data, item.field) ?? defaultData}
+                              : (get(props.data, item.field) ?? defaultData)}
                           </div>
                         </div>
                       ) : (
@@ -145,7 +145,7 @@ export default defineComponent({
                           <div class="flex-1 px-8px py-11px bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] text-size-14px">
                             {item.slots?.default
                               ? item.slots?.default(props.data)
-                              : get(props.data, item.field) ?? defaultData}
+                              : (get(props.data, item.field) ?? defaultData)}
                           </div>
                         </div>
                       )}

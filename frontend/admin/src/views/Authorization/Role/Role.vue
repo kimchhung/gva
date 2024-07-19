@@ -1,5 +1,4 @@
 <script setup lang="tsx">
-import { getRoleListApi } from '@/api/role'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
 import { Dialog } from '@/components/Dialog'
@@ -17,16 +16,15 @@ const { t } = useI18n()
 
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
-    const res = await getRoleListApi()
     return {
-      list: res.data.list || [],
+      list: [],
       // total: Recordables.data.total
       total: 0
     }
   }
 })
 
-const { dataList, loading, total } = tableState
+const { dataList, isLoading, total } = tableState
 const { getList } = tableMethods
 
 const tableColumns = reactive<TableColumn[]>([
@@ -147,7 +145,7 @@ const save = async () => {
       default-expand-all
       node-key="id"
       :data="dataList"
-      :loading="loading"
+      :loading="isLoading"
       :pagination="{
         total
       }"

@@ -2,6 +2,6 @@ import { AdminAPI } from '.'
 
 declare global {
   interface API {
-    menu: AdminAPI
+    admin: AdminAPI
   }
 }

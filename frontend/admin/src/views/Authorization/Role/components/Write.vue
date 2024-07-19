@@ -1,6 +1,4 @@
 <script setup lang="tsx">
-import { getRouters } from '@/api/menu'
-import { useAPI } from '@/axios'
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -110,7 +108,13 @@ const { setValues, getFormData, getElFormExpose } = formMethods
 
 const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const [list] = await useAPI(() => getRouters())
+  const [list] = await api.menu.getMany({
+    query: {
+      limit: 100,
+      page: 1
+    }
+  })
+
   if (!list) {
     return
   }
