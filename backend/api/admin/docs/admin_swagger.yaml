@@ -164,6 +164,18 @@ definitions:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
     type: object
+  dto.MyTodoRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  dto.MyTodoResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.PermissionResponse:
     properties:
       createdAt:
@@ -840,6 +852,153 @@ paths:
       summary: List all Routes
       tags:
       - Route
+  /my-todo:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all MyTodos
+      operationId: list-all-MyTodos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved MyTodos
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.MyTodoResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.MyTodoResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all MyTodos
+      tags:
+      - MyTodo
+    post:
+      consumes:
+      - application/json
+      description: Create a new MyTodo with the provided details
+      operationId: create-MyTodo
+      parameters:
+      - description: MyTodo data
+        in: body
+        name: MyTodo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MyTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created MyTodo
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MyTodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a MyTodo
+      tags:
+      - MyTodo
+  /my-todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a MyTodo by ID
+      operationId: delete-MyTodo-by-id
+      parameters:
+      - description: MyTodo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted MyTodo
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a MyTodo
+      tags:
+      - MyTodo
+    get:
+      consumes:
+      - application/json
+      description: Get a MyTodo by ID
+      operationId: get-MyTodo-by-id
+      parameters:
+      - description: MyTodo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MyTodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a MyTodo
+      tags:
+      - MyTodo
+    patch:
+      consumes:
+      - application/json
+      description: Update a MyTodo by ID
+      operationId: update-MyTodo-by-id
+      parameters:
+      - description: MyTodo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: MyTodo data
+        in: body
+        name: MyTodo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MyTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated MyTodo
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MyTodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a MyTodo
+      tags:
+      - MyTodo
   /now:
     get:
       operationId: now

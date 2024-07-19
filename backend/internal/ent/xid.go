@@ -13,6 +13,7 @@ import (
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/todo"
 )
 
 // prefixMap maps XID prefixes to table names.
@@ -23,6 +24,7 @@ var prefixMap = map[string]string{
 	"perm":  permission.Table,
 	"regi":  region.Table,
 	"role":  role.Table,
+	"todo":  todo.Table,
 }
 
 // IDToType maps a xid.ID to the underlying table.

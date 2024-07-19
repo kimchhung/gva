@@ -23,3 +23,6 @@ type Region func(*sql.Selector)
 
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
+
+// Todo is the predicate function for todo builders.
+type Todo func(*sql.Selector)

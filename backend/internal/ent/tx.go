@@ -26,6 +26,8 @@ type Tx struct {
 	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
+	// Todo is the client for interacting with the Todo builders.
+	Todo *TodoClient
 
 	// lazily loaded.
 	client     *Client
@@ -163,6 +165,7 @@ func (tx *Tx) init() {
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
+	tx.Todo = NewTodoClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

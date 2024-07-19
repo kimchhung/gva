@@ -16,6 +16,7 @@ type SchemaConfig struct {
 	Role            string // Role table.
 	RolePermissions string // Role-permissions->Permission table.
 	RoleRoutes      string // Role-routes->Menu table.
+	Todo            string // Todo table.
 }
 
 type schemaCtxKey struct{}

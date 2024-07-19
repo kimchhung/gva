@@ -13,6 +13,7 @@ import (
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/todo"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -233,6 +234,37 @@ func init() {
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
 	role.DefaultID = roleDescID.Default.(func() xid.ID)
+	todoMixin := schema.Todo{}.Mixin()
+	todoMixinHooks2 := todoMixin[2].Hooks()
+	todo.Hooks[0] = todoMixinHooks2[0]
+	todoMixinInters2 := todoMixin[2].Interceptors()
+	todo.Interceptors[0] = todoMixinInters2[0]
+	todoMixinFields0 := todoMixin[0].Fields()
+	_ = todoMixinFields0
+	todoMixinFields1 := todoMixin[1].Fields()
+	_ = todoMixinFields1
+	todoMixinFields2 := todoMixin[2].Fields()
+	_ = todoMixinFields2
+	todoFields := schema.Todo{}.Fields()
+	_ = todoFields
+	// todoDescCreatedAt is the schema descriptor for created_at field.
+	todoDescCreatedAt := todoMixinFields1[0].Descriptor()
+	// todo.DefaultCreatedAt holds the default value on creation for the created_at field.
+	todo.DefaultCreatedAt = todoDescCreatedAt.Default.(func() time.Time)
+	// todoDescUpdatedAt is the schema descriptor for updated_at field.
+	todoDescUpdatedAt := todoMixinFields1[1].Descriptor()
+	// todo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	todo.DefaultUpdatedAt = todoDescUpdatedAt.Default.(func() time.Time)
+	// todo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	todo.UpdateDefaultUpdatedAt = todoDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// todoDescDeletedAt is the schema descriptor for deleted_at field.
+	todoDescDeletedAt := todoMixinFields2[0].Descriptor()
+	// todo.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	todo.DefaultDeletedAt = todoDescDeletedAt.Default.(int)
+	// todoDescID is the schema descriptor for id field.
+	todoDescID := todoMixinFields0[0].Descriptor()
+	// todo.DefaultID holds the default value on creation for the id field.
+	todo.DefaultID = todoDescID.Default.(func() xid.ID)
 }
 
 const (

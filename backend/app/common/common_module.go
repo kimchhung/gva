@@ -25,5 +25,5 @@ var NewCommonModule = fx.Module("CommonModule",
 	fx.Provide(repository.NewMenuRepository),
 	fx.Provide(repository.NewPermissionRepository),
 
-	// #inject:repository (do not remove this comment, it is used by the code generator)
+	fx.Provide(repository.NewTodoRepository), // #inject:repository (do not remove this comment, it is used by the code generator)
 )

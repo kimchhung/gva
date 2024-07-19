@@ -255,6 +255,30 @@ func (f RoleMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RoleMutation", m)
 }
 
+// The TodoQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type TodoQueryRuleFunc func(context.Context, *ent.TodoQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f TodoQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.TodoQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.TodoQuery", q)
+}
+
+// The TodoMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type TodoMutationRuleFunc func(context.Context, *ent.TodoMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f TodoMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.TodoMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.TodoMutation", m)
+}
+
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -302,6 +326,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.RoleQuery:
 		return q.Filter(), nil
+	case *ent.TodoQuery:
+		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
 	}
@@ -320,6 +346,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.RegionMutation:
 		return m.Filter(), nil
 	case *ent.RoleMutation:
+		return m.Filter(), nil
+	case *ent.TodoMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)

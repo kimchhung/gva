@@ -13,6 +13,7 @@ import (
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/todo"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -955,6 +956,110 @@ func newRolePaginateArgs(rv map[string]any) *rolePaginateArgs {
 	}
 	if v, ok := rv[whereField].(*RoleWhereInput); ok {
 		args.opts = append(args.opts, WithRoleFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (t *TodoQuery) CollectFields(ctx context.Context, satisfies ...string) (*TodoQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return t, nil
+	}
+	if err := t.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
+func (t *TodoQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(todo.Columns))
+		selectedFields = []string{todo.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+		case "createdAt":
+			if _, ok := fieldSeen[todo.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, todo.FieldCreatedAt)
+				fieldSeen[todo.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[todo.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, todo.FieldUpdatedAt)
+				fieldSeen[todo.FieldUpdatedAt] = struct{}{}
+			}
+		case "deletedAt":
+			if _, ok := fieldSeen[todo.FieldDeletedAt]; !ok {
+				selectedFields = append(selectedFields, todo.FieldDeletedAt)
+				fieldSeen[todo.FieldDeletedAt] = struct{}{}
+			}
+		case "name":
+			if _, ok := fieldSeen[todo.FieldName]; !ok {
+				selectedFields = append(selectedFields, todo.FieldName)
+				fieldSeen[todo.FieldName] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		t.Select(selectedFields...)
+	}
+	return nil
+}
+
+type todoPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []TodoPaginateOption
+}
+
+func newTodoPaginateArgs(rv map[string]any) *todoPaginateArgs {
+	args := &todoPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &TodoOrder{Field: &TodoOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithTodoOrder(order))
+			}
+		case *TodoOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithTodoOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*TodoWhereInput); ok {
+		args.opts = append(args.opts, WithTodoFilter(v.Filter))
 	}
 	return args
 }

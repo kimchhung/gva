@@ -10,6 +10,7 @@ import (
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
+	"github.com/gva/internal/ent/todo"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -19,7 +20,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 6)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 7)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   admin.Table,
@@ -147,6 +148,23 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldDescription:  {Type: field.TypeString, Column: role.FieldDescription},
 			role.FieldOrder:        {Type: field.TypeInt, Column: role.FieldOrder},
 			role.FieldIsChangeable: {Type: field.TypeBool, Column: role.FieldIsChangeable},
+		},
+	}
+	graph.Nodes[6] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   todo.Table,
+			Columns: todo.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: todo.FieldID,
+			},
+		},
+		Type: "Todo",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			todo.FieldCreatedAt: {Type: field.TypeTime, Column: todo.FieldCreatedAt},
+			todo.FieldUpdatedAt: {Type: field.TypeTime, Column: todo.FieldUpdatedAt},
+			todo.FieldDeletedAt: {Type: field.TypeInt, Column: todo.FieldDeletedAt},
+			todo.FieldName:      {Type: field.TypeString, Column: todo.FieldName},
 		},
 	}
 	graph.MustAddE(
@@ -1015,4 +1033,64 @@ func (f *RoleFilter) WhereHasRoutesWith(preds ...predicate.Menu) {
 			p(s)
 		}
 	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (tq *TodoQuery) addPredicate(pred func(s *sql.Selector)) {
+	tq.predicates = append(tq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the TodoQuery builder.
+func (tq *TodoQuery) Filter() *TodoFilter {
+	return &TodoFilter{config: tq.config, predicateAdder: tq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *TodoMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the TodoMutation builder.
+func (m *TodoMutation) Filter() *TodoFilter {
+	return &TodoFilter{config: m.config, predicateAdder: m}
+}
+
+// TodoFilter provides a generic filtering capability at runtime for TodoQuery.
+type TodoFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *TodoFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *TodoFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(todo.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *TodoFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(todo.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *TodoFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(todo.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql int predicate on the deleted_at field.
+func (f *TodoFilter) WhereDeletedAt(p entql.IntP) {
+	f.Where(p.Field(todo.FieldDeletedAt))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *TodoFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(todo.FieldName))
 }
