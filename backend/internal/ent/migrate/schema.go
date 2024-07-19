@@ -130,6 +130,48 @@ var (
 			},
 		},
 	}
+	// MyTodosColumns holds the columns for the "my_todos" table.
+	MyTodosColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
+		{Name: "name", Type: field.TypeString},
+	}
+	// MyTodosTable holds the schema information for the "my_todos" table.
+	MyTodosTable = &schema.Table{
+		Name:       "my_todos",
+		Columns:    MyTodosColumns,
+		PrimaryKey: []*schema.Column{MyTodosColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "mytodo_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{MyTodosColumns[3]},
+			},
+		},
+	}
+	// MyTodo1sColumns holds the columns for the "my_todo1s" table.
+	MyTodo1sColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
+		{Name: "name", Type: field.TypeString},
+	}
+	// MyTodo1sTable holds the schema information for the "my_todo1s" table.
+	MyTodo1sTable = &schema.Table{
+		Name:       "my_todo1s",
+		Columns:    MyTodo1sColumns,
+		PrimaryKey: []*schema.Column{MyTodo1sColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "mytodo1_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{MyTodo1sColumns[3]},
+			},
+		},
+	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -290,6 +332,8 @@ var (
 		AdminsTable,
 		DepartmentsTable,
 		MenusTable,
+		MyTodosTable,
+		MyTodo1sTable,
 		PermissionsTable,
 		RegionsTable,
 		RolesTable,

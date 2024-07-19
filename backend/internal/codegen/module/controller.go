@@ -7,10 +7,11 @@ import (
 var Controller = strings.ReplaceAll(`package {{.EntityAllLower}}
 
 import (
+	"github.com/gva/api/admin/module/{{.EntityAllLower}}/dto"
 	"github.com/gva/internal/echoc"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
-
+	"github.com/gva/app/database/schema/xid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,14 +20,14 @@ var _ interface{ echoc.Controller } = (*{{.EntityPascal}}Controller)(nil)
 
 
 type {{.EntityPascal}}Controller struct {
-	service *service.{{.EntityPascal}}Service
+	service *{{.EntityPascal}}Service
 }
 
 func (con *{{.EntityPascal}}Controller) Init(r *echo.Group) *echo.Group{
-	return r.Group("{{.EntityKebab}}")
+	return r.Group("/{{.EntityKebab}}")
 }
 
-func New{{.EntityPascal}}Controller(service *service.{{.EntityPascal}}Service) *{{.EntityPascal}}Controller {
+func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service) *{{.EntityPascal}}Controller {
 	return &{{.EntityPascal}}Controller{
 		service: service,
 	}
@@ -68,7 +69,7 @@ func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHa
 func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
-			ID int %sparam:"id" validate:"gt=0"%s
+			ID xid.ID %sparam:"id" validate:"required"%s
 		}{}
 
 		return []echo.HandlerFunc{
@@ -140,7 +141,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.{{.EntityPascal}}Request)
 		param := &struct {
-			ID int %sparam:"id" validate:"gt=0"%s
+			ID xid.ID %sparam:"id" validate:"required"%s
 		}{}
 
 		return []echo.HandlerFunc{
@@ -176,7 +177,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
-			ID int %sparam:"id" validate:"gt=0"%s
+			ID xid.ID %sparam:"id" validate:"required"%s
 		}{}
 
 		return []echo.HandlerFunc{

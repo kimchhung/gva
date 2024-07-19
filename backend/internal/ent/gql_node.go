@@ -12,6 +12,8 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/mytodo"
+	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
@@ -38,6 +40,16 @@ var menuImplementors = []string{"Menu", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Menu) IsNode() {}
+
+var mytodoImplementors = []string{"MyTodo", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*MyTodo) IsNode() {}
+
+var mytodo1Implementors = []string{"MyTodo1", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*MyTodo1) IsNode() {}
 
 var permissionImplementors = []string{"Permission", "Node"}
 
@@ -147,6 +159,32 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 			Where(menu.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, menuImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case mytodo.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.MyTodo.Query().
+			Where(mytodo.ID(uid))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, mytodoImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case mytodo1.Table:
+		var uid xid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.MyTodo1.Query().
+			Where(mytodo1.ID(uid))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, mytodo1Implementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -299,6 +337,38 @@ func (c *Client) noders(ctx context.Context, table string, ids []xid.ID) ([]Node
 		query := c.Menu.Query().
 			Where(menu.IDIn(ids...))
 		query, err := query.CollectFields(ctx, menuImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case mytodo.Table:
+		query := c.MyTodo.Query().
+			Where(mytodo.IDIn(ids...))
+		query, err := query.CollectFields(ctx, mytodoImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case mytodo1.Table:
+		query := c.MyTodo1.Query().
+			Where(mytodo1.IDIn(ids...))
+		query, err := query.CollectFields(ctx, mytodo1Implementors...)
 		if err != nil {
 			return nil, err
 		}

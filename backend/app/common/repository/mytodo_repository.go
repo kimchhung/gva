@@ -22,3 +22,4 @@ func (r *MyTodoRepository) C() *ent.MyTodoClient {
 func (r *MyTodoRepository) DB() *database.Database {
 	return r.db
 }
+

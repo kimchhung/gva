@@ -10,6 +10,8 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/mytodo"
+	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
@@ -17,12 +19,14 @@ import (
 
 // prefixMap maps XID prefixes to table names.
 var prefixMap = map[string]string{
-	"admin": admin.Table,
-	"dpm":   department.Table,
-	"menu":  menu.Table,
-	"perm":  permission.Table,
-	"regi":  region.Table,
-	"role":  role.Table,
+	"admin":   admin.Table,
+	"dpm":     department.Table,
+	"menu":    menu.Table,
+	"mytodo":  mytodo.Table,
+	"mytodo1": mytodo1.Table,
+	"perm":    permission.Table,
+	"regi":    region.Table,
+	"role":    role.Table,
 }
 
 // IDToType maps a xid.ID to the underlying table.

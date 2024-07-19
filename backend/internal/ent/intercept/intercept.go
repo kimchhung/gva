@@ -11,6 +11,8 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/mytodo"
+	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
@@ -154,6 +156,60 @@ func (f TraverseMenu) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.MenuQuery", q)
 }
 
+// The MyTodoFunc type is an adapter to allow the use of ordinary function as a Querier.
+type MyTodoFunc func(context.Context, *ent.MyTodoQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f MyTodoFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.MyTodoQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.MyTodoQuery", q)
+}
+
+// The TraverseMyTodo type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseMyTodo func(context.Context, *ent.MyTodoQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseMyTodo) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseMyTodo) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MyTodoQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.MyTodoQuery", q)
+}
+
+// The MyTodo1Func type is an adapter to allow the use of ordinary function as a Querier.
+type MyTodo1Func func(context.Context, *ent.MyTodo1Query) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f MyTodo1Func) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.MyTodo1Query); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.MyTodo1Query", q)
+}
+
+// The TraverseMyTodo1 type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseMyTodo1 func(context.Context, *ent.MyTodo1Query) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseMyTodo1) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseMyTodo1) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MyTodo1Query); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.MyTodo1Query", q)
+}
+
 // The PermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
 type PermissionFunc func(context.Context, *ent.PermissionQuery) (ent.Value, error)
 
@@ -244,6 +300,10 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.DepartmentQuery, predicate.Department, department.OrderOption]{typ: ent.TypeDepartment, tq: q}, nil
 	case *ent.MenuQuery:
 		return &query[*ent.MenuQuery, predicate.Menu, menu.OrderOption]{typ: ent.TypeMenu, tq: q}, nil
+	case *ent.MyTodoQuery:
+		return &query[*ent.MyTodoQuery, predicate.MyTodo, mytodo.OrderOption]{typ: ent.TypeMyTodo, tq: q}, nil
+	case *ent.MyTodo1Query:
+		return &query[*ent.MyTodo1Query, predicate.MyTodo1, mytodo1.OrderOption]{typ: ent.TypeMyTodo1, tq: q}, nil
 	case *ent.PermissionQuery:
 		return &query[*ent.PermissionQuery, predicate.Permission, permission.OrderOption]{typ: ent.TypePermission, tq: q}, nil
 	case *ent.RegionQuery:

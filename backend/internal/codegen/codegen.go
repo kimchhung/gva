@@ -32,8 +32,13 @@ func GenerateCodes(params CodeGenParams) {
 
 func Appends(params CodeGenParams) {
 	InjectCodeToPos("api/admin/module/module.go", map[string]string{
-		"// #inject:module":       fmt.Sprintf("%v.New%vModule,\n", params.EntityAllLower, params.EntityPascal),
+		"// #inject:module":       fmt.Sprintf("%v.%vModule,\n", params.EntityAllLower, params.EntityPascal),
 		"// #inject:moduleImport": fmt.Sprintf(`"github.com/gva/api/admin/module/%v"`+"\n", params.EntityAllLower),
+	}, true)
+
+	// repo
+	InjectCodeToPos("app/common/common_module.go", map[string]string{
+		"// #inject:repository": fmt.Sprintf(`fx.Provide(repository.New%vRepository),`, params.EntityPascal),
 	}, true)
 }
 

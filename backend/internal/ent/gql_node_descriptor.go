@@ -378,6 +378,94 @@ func (m *Menu) Node(ctx context.Context) (node *Node, err error) {
 }
 
 // Node implements Noder interface
+func (mt *MyTodo) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     mt.ID,
+		Type:   "MyTodo",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(mt.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mt.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mt.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "int",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mt.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	return node, nil
+}
+
+// Node implements Noder interface
+func (mt *MyTodo1) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     mt.ID,
+		Type:   "MyTodo1",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(mt.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mt.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mt.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "int",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mt.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	return node, nil
+}
+
+// Node implements Noder interface
 func (pe *Permission) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     pe.ID,

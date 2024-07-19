@@ -11,6 +11,8 @@ type SchemaConfig struct {
 	AdminRoles      string // Admin-roles->Role table.
 	Department      string // Department table.
 	Menu            string // Menu table.
+	MyTodo          string // MyTodo table.
+	MyTodo1         string // MyTodo1 table.
 	Permission      string // Permission table.
 	Region          string // Region table.
 	Role            string // Role table.

@@ -18,6 +18,8 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/mytodo"
+	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
@@ -989,6 +991,598 @@ func (m *Menu) ToEdge(order *MenuOrder) *MenuEdge {
 	return &MenuEdge{
 		Node:   m,
 		Cursor: order.Field.toCursor(m),
+	}
+}
+
+// MyTodoEdge is the edge representation of MyTodo.
+type MyTodoEdge struct {
+	Node   *MyTodo `json:"node"`
+	Cursor Cursor  `json:"cursor"`
+}
+
+// MyTodoConnection is the connection containing edges to MyTodo.
+type MyTodoConnection struct {
+	Edges      []*MyTodoEdge `json:"edges"`
+	PageInfo   PageInfo      `json:"pageInfo"`
+	TotalCount int           `json:"totalCount"`
+}
+
+func (c *MyTodoConnection) build(nodes []*MyTodo, pager *mytodoPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *MyTodo
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *MyTodo {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *MyTodo {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*MyTodoEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &MyTodoEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// MyTodoPaginateOption enables pagination customization.
+type MyTodoPaginateOption func(*mytodoPager) error
+
+// WithMyTodoOrder configures pagination ordering.
+func WithMyTodoOrder(order *MyTodoOrder) MyTodoPaginateOption {
+	if order == nil {
+		order = DefaultMyTodoOrder
+	}
+	o := *order
+	return func(pager *mytodoPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMyTodoOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMyTodoFilter configures pagination filter.
+func WithMyTodoFilter(filter func(*MyTodoQuery) (*MyTodoQuery, error)) MyTodoPaginateOption {
+	return func(pager *mytodoPager) error {
+		if filter == nil {
+			return errors.New("MyTodoQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type mytodoPager struct {
+	reverse bool
+	order   *MyTodoOrder
+	filter  func(*MyTodoQuery) (*MyTodoQuery, error)
+}
+
+func newMyTodoPager(opts []MyTodoPaginateOption, reverse bool) (*mytodoPager, error) {
+	pager := &mytodoPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMyTodoOrder
+	}
+	return pager, nil
+}
+
+func (p *mytodoPager) applyFilter(query *MyTodoQuery) (*MyTodoQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *mytodoPager) toCursor(mt *MyTodo) Cursor {
+	return p.order.Field.toCursor(mt)
+}
+
+func (p *mytodoPager) applyCursors(query *MyTodoQuery, after, before *Cursor) (*MyTodoQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMyTodoOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *mytodoPager) applyOrder(query *MyTodoQuery) *MyTodoQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultMyTodoOrder.Field {
+		query = query.Order(DefaultMyTodoOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *mytodoPager) orderExpr(query *MyTodoQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultMyTodoOrder.Field {
+			b.Comma().Ident(DefaultMyTodoOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to MyTodo.
+func (mt *MyTodoQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MyTodoPaginateOption,
+) (*MyTodoConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMyTodoPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if mt, err = pager.applyFilter(mt); err != nil {
+		return nil, err
+	}
+	conn := &MyTodoConnection{Edges: []*MyTodoEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := mt.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if mt, err = pager.applyCursors(mt, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		mt.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := mt.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	mt = pager.applyOrder(mt)
+	nodes, err := mt.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// MyTodoOrderFieldID orders MyTodo by id.
+	MyTodoOrderFieldID = &MyTodoOrderField{
+		Value: func(mt *MyTodo) (ent.Value, error) {
+			return mt.ID, nil
+		},
+		column: mytodo.FieldID,
+		toTerm: mytodo.ByID,
+		toCursor: func(mt *MyTodo) Cursor {
+			return Cursor{
+				ID:    mt.ID,
+				Value: mt.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f MyTodoOrderField) String() string {
+	var str string
+	switch f.column {
+	case MyTodoOrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f MyTodoOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *MyTodoOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("MyTodoOrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *MyTodoOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid MyTodoOrderField", str)
+	}
+	return nil
+}
+
+// MyTodoOrderField defines the ordering field of MyTodo.
+type MyTodoOrderField struct {
+	// Value extracts the ordering value from the given MyTodo.
+	Value    func(*MyTodo) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) mytodo.OrderOption
+	toCursor func(*MyTodo) Cursor
+}
+
+// MyTodoOrder defines the ordering of MyTodo.
+type MyTodoOrder struct {
+	Direction OrderDirection    `json:"direction"`
+	Field     *MyTodoOrderField `json:"field"`
+}
+
+// DefaultMyTodoOrder is the default ordering of MyTodo.
+var DefaultMyTodoOrder = &MyTodoOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &MyTodoOrderField{
+		Value: func(mt *MyTodo) (ent.Value, error) {
+			return mt.ID, nil
+		},
+		column: mytodo.FieldID,
+		toTerm: mytodo.ByID,
+		toCursor: func(mt *MyTodo) Cursor {
+			return Cursor{ID: mt.ID}
+		},
+	},
+}
+
+// ToEdge converts MyTodo into MyTodoEdge.
+func (mt *MyTodo) ToEdge(order *MyTodoOrder) *MyTodoEdge {
+	if order == nil {
+		order = DefaultMyTodoOrder
+	}
+	return &MyTodoEdge{
+		Node:   mt,
+		Cursor: order.Field.toCursor(mt),
+	}
+}
+
+// MyTodo1Edge is the edge representation of MyTodo1.
+type MyTodo1Edge struct {
+	Node   *MyTodo1 `json:"node"`
+	Cursor Cursor   `json:"cursor"`
+}
+
+// MyTodo1Connection is the connection containing edges to MyTodo1.
+type MyTodo1Connection struct {
+	Edges      []*MyTodo1Edge `json:"edges"`
+	PageInfo   PageInfo       `json:"pageInfo"`
+	TotalCount int            `json:"totalCount"`
+}
+
+func (c *MyTodo1Connection) build(nodes []*MyTodo1, pager *mytodo1Pager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *MyTodo1
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *MyTodo1 {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *MyTodo1 {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*MyTodo1Edge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &MyTodo1Edge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// MyTodo1PaginateOption enables pagination customization.
+type MyTodo1PaginateOption func(*mytodo1Pager) error
+
+// WithMyTodo1Order configures pagination ordering.
+func WithMyTodo1Order(order *MyTodo1Order) MyTodo1PaginateOption {
+	if order == nil {
+		order = DefaultMyTodo1Order
+	}
+	o := *order
+	return func(pager *mytodo1Pager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMyTodo1Order.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMyTodo1Filter configures pagination filter.
+func WithMyTodo1Filter(filter func(*MyTodo1Query) (*MyTodo1Query, error)) MyTodo1PaginateOption {
+	return func(pager *mytodo1Pager) error {
+		if filter == nil {
+			return errors.New("MyTodo1Query filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type mytodo1Pager struct {
+	reverse bool
+	order   *MyTodo1Order
+	filter  func(*MyTodo1Query) (*MyTodo1Query, error)
+}
+
+func newMyTodo1Pager(opts []MyTodo1PaginateOption, reverse bool) (*mytodo1Pager, error) {
+	pager := &mytodo1Pager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMyTodo1Order
+	}
+	return pager, nil
+}
+
+func (p *mytodo1Pager) applyFilter(query *MyTodo1Query) (*MyTodo1Query, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *mytodo1Pager) toCursor(mt *MyTodo1) Cursor {
+	return p.order.Field.toCursor(mt)
+}
+
+func (p *mytodo1Pager) applyCursors(query *MyTodo1Query, after, before *Cursor) (*MyTodo1Query, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMyTodo1Order.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *mytodo1Pager) applyOrder(query *MyTodo1Query) *MyTodo1Query {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultMyTodo1Order.Field {
+		query = query.Order(DefaultMyTodo1Order.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *mytodo1Pager) orderExpr(query *MyTodo1Query) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultMyTodo1Order.Field {
+			b.Comma().Ident(DefaultMyTodo1Order.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to MyTodo1.
+func (mt *MyTodo1Query) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MyTodo1PaginateOption,
+) (*MyTodo1Connection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMyTodo1Pager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if mt, err = pager.applyFilter(mt); err != nil {
+		return nil, err
+	}
+	conn := &MyTodo1Connection{Edges: []*MyTodo1Edge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := mt.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if mt, err = pager.applyCursors(mt, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		mt.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := mt.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	mt = pager.applyOrder(mt)
+	nodes, err := mt.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// MyTodo1OrderFieldID orders MyTodo1 by id.
+	MyTodo1OrderFieldID = &MyTodo1OrderField{
+		Value: func(mt *MyTodo1) (ent.Value, error) {
+			return mt.ID, nil
+		},
+		column: mytodo1.FieldID,
+		toTerm: mytodo1.ByID,
+		toCursor: func(mt *MyTodo1) Cursor {
+			return Cursor{
+				ID:    mt.ID,
+				Value: mt.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f MyTodo1OrderField) String() string {
+	var str string
+	switch f.column {
+	case MyTodo1OrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f MyTodo1OrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *MyTodo1OrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("MyTodo1OrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *MyTodo1OrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid MyTodo1OrderField", str)
+	}
+	return nil
+}
+
+// MyTodo1OrderField defines the ordering field of MyTodo1.
+type MyTodo1OrderField struct {
+	// Value extracts the ordering value from the given MyTodo1.
+	Value    func(*MyTodo1) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) mytodo1.OrderOption
+	toCursor func(*MyTodo1) Cursor
+}
+
+// MyTodo1Order defines the ordering of MyTodo1.
+type MyTodo1Order struct {
+	Direction OrderDirection     `json:"direction"`
+	Field     *MyTodo1OrderField `json:"field"`
+}
+
+// DefaultMyTodo1Order is the default ordering of MyTodo1.
+var DefaultMyTodo1Order = &MyTodo1Order{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &MyTodo1OrderField{
+		Value: func(mt *MyTodo1) (ent.Value, error) {
+			return mt.ID, nil
+		},
+		column: mytodo1.FieldID,
+		toTerm: mytodo1.ByID,
+		toCursor: func(mt *MyTodo1) Cursor {
+			return Cursor{ID: mt.ID}
+		},
+	},
+}
+
+// ToEdge converts MyTodo1 into MyTodo1Edge.
+func (mt *MyTodo1) ToEdge(order *MyTodo1Order) *MyTodo1Edge {
+	if order == nil {
+		order = DefaultMyTodo1Order
+	}
+	return &MyTodo1Edge{
+		Node:   mt,
+		Cursor: order.Field.toCursor(mt),
 	}
 }
 

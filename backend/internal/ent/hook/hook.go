@@ -45,6 +45,30 @@ func (f MenuFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuMutation", m)
 }
 
+// The MyTodoFunc type is an adapter to allow the use of ordinary
+// function as MyTodo mutator.
+type MyTodoFunc func(context.Context, *ent.MyTodoMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MyTodoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MyTodoMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MyTodoMutation", m)
+}
+
+// The MyTodo1Func type is an adapter to allow the use of ordinary
+// function as MyTodo1 mutator.
+type MyTodo1Func func(context.Context, *ent.MyTodo1Mutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MyTodo1Func) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MyTodo1Mutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MyTodo1Mutation", m)
+}
+
 // The PermissionFunc type is an adapter to allow the use of ordinary
 // function as Permission mutator.
 type PermissionFunc func(context.Context, *ent.PermissionMutation) (ent.Value, error)

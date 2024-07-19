@@ -6,6 +6,8 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/mytodo"
+	"github.com/gva/internal/ent/mytodo1"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
@@ -19,7 +21,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 6)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 8)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   admin.Table,
@@ -89,6 +91,40 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   mytodo.Table,
+			Columns: mytodo.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: mytodo.FieldID,
+			},
+		},
+		Type: "MyTodo",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			mytodo.FieldCreatedAt: {Type: field.TypeTime, Column: mytodo.FieldCreatedAt},
+			mytodo.FieldUpdatedAt: {Type: field.TypeTime, Column: mytodo.FieldUpdatedAt},
+			mytodo.FieldDeletedAt: {Type: field.TypeInt, Column: mytodo.FieldDeletedAt},
+			mytodo.FieldName:      {Type: field.TypeString, Column: mytodo.FieldName},
+		},
+	}
+	graph.Nodes[4] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   mytodo1.Table,
+			Columns: mytodo1.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: mytodo1.FieldID,
+			},
+		},
+		Type: "MyTodo1",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			mytodo1.FieldCreatedAt: {Type: field.TypeTime, Column: mytodo1.FieldCreatedAt},
+			mytodo1.FieldUpdatedAt: {Type: field.TypeTime, Column: mytodo1.FieldUpdatedAt},
+			mytodo1.FieldDeletedAt: {Type: field.TypeInt, Column: mytodo1.FieldDeletedAt},
+			mytodo1.FieldName:      {Type: field.TypeString, Column: mytodo1.FieldName},
+		},
+	}
+	graph.Nodes[5] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permission.Table,
 			Columns: permission.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -107,7 +143,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldOrder:     {Type: field.TypeInt, Column: permission.FieldOrder},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   region.Table,
 			Columns: region.Columns,
@@ -128,7 +164,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			region.FieldParentID:  {Type: field.TypeString, Column: region.FieldParentID},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -699,6 +735,126 @@ func (f *MenuFilter) WhereHasRolesWith(preds ...predicate.Role) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (mtq *MyTodoQuery) addPredicate(pred func(s *sql.Selector)) {
+	mtq.predicates = append(mtq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the MyTodoQuery builder.
+func (mtq *MyTodoQuery) Filter() *MyTodoFilter {
+	return &MyTodoFilter{config: mtq.config, predicateAdder: mtq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *MyTodoMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the MyTodoMutation builder.
+func (m *MyTodoMutation) Filter() *MyTodoFilter {
+	return &MyTodoFilter{config: m.config, predicateAdder: m}
+}
+
+// MyTodoFilter provides a generic filtering capability at runtime for MyTodoQuery.
+type MyTodoFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *MyTodoFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *MyTodoFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(mytodo.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *MyTodoFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(mytodo.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *MyTodoFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(mytodo.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql int predicate on the deleted_at field.
+func (f *MyTodoFilter) WhereDeletedAt(p entql.IntP) {
+	f.Where(p.Field(mytodo.FieldDeletedAt))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *MyTodoFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(mytodo.FieldName))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (mt *MyTodo1Query) addPredicate(pred func(s *sql.Selector)) {
+	mt.predicates = append(mt.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the MyTodo1Query builder.
+func (mt *MyTodo1Query) Filter() *MyTodo1Filter {
+	return &MyTodo1Filter{config: mt.config, predicateAdder: mt}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *MyTodo1Mutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the MyTodo1Mutation builder.
+func (m *MyTodo1Mutation) Filter() *MyTodo1Filter {
+	return &MyTodo1Filter{config: m.config, predicateAdder: m}
+}
+
+// MyTodo1Filter provides a generic filtering capability at runtime for MyTodo1Query.
+type MyTodo1Filter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *MyTodo1Filter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *MyTodo1Filter) WhereID(p entql.StringP) {
+	f.Where(p.Field(mytodo1.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *MyTodo1Filter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(mytodo1.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *MyTodo1Filter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(mytodo1.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql int predicate on the deleted_at field.
+func (f *MyTodo1Filter) WhereDeletedAt(p entql.IntP) {
+	f.Where(p.Field(mytodo1.FieldDeletedAt))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *MyTodo1Filter) WhereName(p entql.StringP) {
+	f.Where(p.Field(mytodo1.FieldName))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (pq *PermissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
 }
@@ -727,7 +883,7 @@ type PermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -816,7 +972,7 @@ type RegionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RegionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -924,7 +1080,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
