@@ -8,6 +8,10 @@ include cmd/swag_cmd.mk
 gen:
 	go generate cmd/ent/generate.go
 
+# Generate EntGql
+gen.gql:
+	go generate cmd/ent/generategql.go
+
 
 crud:
 	go run cmd/codegen/generate.go $(name)
