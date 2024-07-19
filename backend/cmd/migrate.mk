@@ -33,6 +33,9 @@ migrate.apply:
 migrate.schema.apply:
 	atlas schema  apply --url ${url} --to ${dir} --dev-url ${devUrl} --exclude "atlas_schema_revisions"
 
+migrate.down:
+	migrate down --url ${url} --dir ${dir} --dev-url ${devUrl}
+
 migrate.status:
 	atlas migrate status --url ${url} --dir ${dir}
 
