@@ -1,12 +1,14 @@
 [
   {
-    "createdAt": "2024-06-16T06:06:04Z",
-    "updatedAt": "2024-06-16T06:06:04Z",
+    "id": "menu_cqedv8g98oia3a0bqk50",
+    "createdAt": "2024-07-21T10:14:58Z",
+    "updatedAt": "2024-07-21T10:14:58Z",
     "isEnable": true,
     "path": "/dashboard",
     "component": "#",
     "redirect": "/dashboard/welcome",
     "name": "dashboard",
+    "order": 2,
     "type": "cata_log",
     "meta": {
       "alwaysShow": true,
@@ -16,9 +18,11 @@
     "edges": {
       "children": [
         {
-          "createdAt": "2024-06-16T06:06:04Z",
-          "updatedAt": "2024-06-16T06:06:04Z",
+          "id": "menu_cqedv8g98oia3a0bqk30",
+          "createdAt": "2024-07-21T10:14:58Z",
+          "updatedAt": "2024-07-21T10:14:58Z",
           "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqk50",
           "path": "welcome",
           "component": "views/Dashboard/Welcome",
           "name": "Welcome",
@@ -27,9 +31,11 @@
           "edges": {}
         },
         {
-          "createdAt": "2024-06-16T06:10:24Z",
-          "updatedAt": "2024-06-16T06:10:24Z",
+          "id": "menu_cqedv8g98oia3a0bqk40",
+          "createdAt": "2024-07-21T10:14:58Z",
+          "updatedAt": "2024-07-21T10:14:58Z",
           "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqk50",
           "path": "icon",
           "component": "views/Dashboard/Icon",
           "name": "Icon",
@@ -46,13 +52,15 @@
     }
   },
   {
-    "createdAt": "2024-06-16T06:06:04Z",
-    "updatedAt": "2024-06-16T06:06:04Z",
+    "id": "menu_cqedv8g98oia3a0bqkc0",
+    "createdAt": "2024-07-21T10:14:58Z",
+    "updatedAt": "2024-07-21T10:14:58Z",
     "isEnable": true,
     "path": "/authorization",
     "component": "#",
     "redirect": "/authorization/admin",
     "name": "Authorization",
+    "order": 3,
     "type": "cata_log",
     "meta": {
       "alwaysShow": true,
@@ -62,79 +70,194 @@
     "edges": {
       "children": [
         {
-          "createdAt": "2024-06-16T06:06:04Z",
-          "updatedAt": "2024-06-16T06:06:04Z",
+          "id": "menu_cqedv8g98oia3a0bqk60",
+          "createdAt": "2024-07-21T10:14:58Z",
+          "updatedAt": "2024-07-21T10:21:01Z",
           "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
           "path": "admin",
           "component": "views/Authorization/Admin/Admin",
           "name": "User",
           "type": "menu",
-          "meta": { "title": "router.admin" },
+          "meta": {
+            "title": "router.admin",
+            "icon": "ep:avatar",
+            "canTo": true
+          },
           "edges": {}
         },
         {
-          "createdAt": "2024-06-16T06:06:04Z",
-          "updatedAt": "2024-06-16T06:06:04Z",
+          "id": "menu_cqedv8g98oia3a0bqka0",
+          "createdAt": "2024-07-21T10:14:58Z",
+          "updatedAt": "2024-07-21T10:20:18Z",
           "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
           "path": "menu",
           "component": "views/Authorization/Menu/Menu",
           "name": "Menu",
+          "order": 3,
           "type": "menu",
-          "meta": { "title": "router.menuManagement" },
+          "meta": {
+            "title": "router.menu",
+            "icon": "ant-design:cluster-outlined"
+          },
           "edges": {
             "children": [
               {
+                "id": "menu_cqedv8g98oia3a0bqk70",
+                "createdAt": "2024-07-21T10:14:58Z",
+                "updatedAt": "2024-07-21T10:14:58Z",
+                "isEnable": true,
+                "pid": "menu_cqedv8g98oia3a0bqka0",
                 "path": "add",
+                "component": "views/Authorization/Menu/Add",
                 "name": "Menu add",
                 "type": "button",
-                "component": "views/Authorization/Menu/Add",
                 "meta": {
-                  "title": "button.add",
-                  "noTagsView": true,
-                  "noCache": true,
                   "hidden": true,
+                  "title": "button.add",
+                  "noCache": true,
+                  "noTagsView": true,
                   "canTo": true
-                }
+                },
+                "edges": {}
               },
               {
+                "id": "menu_cqedv8g98oia3a0bqk80",
+                "createdAt": "2024-07-21T10:14:58Z",
+                "updatedAt": "2024-07-21T10:14:58Z",
+                "isEnable": true,
+                "pid": "menu_cqedv8g98oia3a0bqka0",
                 "path": "edit",
+                "component": "views/Authorization/Menu/Edit",
                 "name": "Menu edit",
                 "type": "button",
-                "component": "views/Authorization/Menu/Edit",
                 "meta": {
-                  "title": "button.edit",
-                  "noTagsView": true,
-                  "noCache": true,
                   "hidden": true,
+                  "title": "button.edit",
+                  "noCache": true,
+                  "noTagsView": true,
                   "canTo": true
-                }
+                },
+                "edges": {}
               },
               {
+                "id": "menu_cqedv8g98oia3a0bqk90",
+                "createdAt": "2024-07-21T10:14:58Z",
+                "updatedAt": "2024-07-21T10:14:58Z",
+                "isEnable": true,
+                "pid": "menu_cqedv8g98oia3a0bqka0",
                 "path": "detail",
+                "component": "views/Authorization/Menu/Detail",
                 "name": "Menu detail",
                 "type": "button",
-                "component": "views/Authorization/Menu/Detail",
                 "meta": {
-                  "title": "button.detail",
-                  "noTagsView": true,
-                  "noCache": true,
                   "hidden": true,
+                  "title": "button.detail",
+                  "noCache": true,
+                  "noTagsView": true,
                   "canTo": true
-                }
+                },
+                "edges": {}
               }
             ]
           }
         },
         {
-          "createdAt": "2024-06-16T06:06:04Z",
-          "updatedAt": "2024-06-16T06:06:04Z",
+          "id": "menu_cqedv8g98oia3a0bqkb0",
+          "createdAt": "2024-07-21T10:14:58Z",
+          "updatedAt": "2024-07-21T10:20:44Z",
           "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
           "path": "role",
           "component": "views/Authorization/Role/Role",
           "name": "Role",
           "type": "menu",
-          "meta": { "title": "router.role" },
+          "meta": {
+            "title": "router.role",
+            "icon": "ep:briefcase",
+            "canTo": true
+          },
           "edges": {}
+        },
+        {
+          "id": "menu_cqee4b898oianu1tv270",
+          "createdAt": "2024-07-21T10:25:49Z",
+          "updatedAt": "2024-07-21T10:26:45Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
+          "path": "department",
+          "component": "views/Authorization/Department/Department",
+          "name": "Department",
+          "type": "menu",
+          "meta": {
+            "title": "router.department",
+            "icon": "tdesign:usergroup",
+            "breadcrumb": true,
+            "canTo": true
+          },
+          "edges": {
+            "children": [
+              {
+                "id": "menu_cqee65o98oianu1tv280",
+                "createdAt": "2024-07-21T10:29:43Z",
+                "updatedAt": "2024-07-21T10:32:06Z",
+                "isEnable": true,
+                "pid": "menu_cqee4b898oianu1tv270",
+                "path": "add",
+                "component": "views/Authorization/Department/Add",
+                "name": "Add",
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "router.add",
+                  "icon": "tdesign:usergroup",
+                  "breadcrumb": true,
+                  "noTagsView": true,
+                  "canTo": true
+                },
+                "edges": {}
+              },
+              {
+                "id": "menu_cqee6m898oianu1tv290",
+                "createdAt": "2024-07-21T10:30:49Z",
+                "updatedAt": "2024-07-21T10:30:49Z",
+                "isEnable": true,
+                "pid": "menu_cqee4b898oianu1tv270",
+                "path": "edit",
+                "component": "views/Authorization/Department/Edit",
+                "name": "Edit",
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "router.edit",
+                  "breadcrumb": true,
+                  "noTagsView": true,
+                  "canTo": true
+                },
+                "edges": {}
+              },
+              {
+                "id": "menu_cqee73098oianu1tv2a0",
+                "createdAt": "2024-07-21T10:31:40Z",
+                "updatedAt": "2024-07-21T10:31:40Z",
+                "isEnable": true,
+                "pid": "menu_cqee4b898oianu1tv270",
+                "path": "detail",
+                "component": "views/Authorization/Department/Detail",
+                "name": "Detail",
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "router.detail",
+                  "breadcrumb": true,
+                  "noTagsView": true,
+                  "canTo": true
+                },
+                "edges": {}
+              }
+            ]
+          }
         }
       ]
     }
