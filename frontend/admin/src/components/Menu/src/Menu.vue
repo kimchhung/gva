@@ -1,12 +1,12 @@
 <script lang="tsx">
-import { computed, defineComponent, unref, PropType } from 'vue'
-import { ElMenu, ElScrollbar } from 'element-plus'
+import { useDesign } from '@/hooks/web/useDesign'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
-import { useRenderMenuItem } from './components/useRenderMenuItem'
-import { useRouter } from 'vue-router'
 import { isUrl } from '@/utils/is'
-import { useDesign } from '@/hooks/web/useDesign'
+import { ElMenu, ElScrollbar } from 'element-plus'
+import { computed, defineComponent, PropType, unref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useRenderMenuItem } from './components/useRenderMenuItem'
 
 const { getPrefixCls } = useDesign()
 

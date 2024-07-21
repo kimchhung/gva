@@ -41,16 +41,16 @@ func (con *RouteController) Init(r *echo.Group) *echo.Group {
 	return r.Group("/menu", con.jwt_s.RequiredAdmin())
 }
 
-// @Tags        Route
-// @Summary     List all Routes
-// @Description Get a list of all Routes
-// @ID          list-all-routes
+// @Tags        Menu
+// @Summary     List all Menus
+// @Description Get a list of all Menus
+// @ID          list-all-Menus
 // @Produce     json
-// @Success     200 {object} response.Response{data=map[string]dto.MenuResponse{list=[]dto.MenuResponse}} "Successfully retrieved Routes"
+// @Success     200 {object} response.Response{data=map[string]dto.MenuResponse{list=[]dto.MenuResponse}}
 // @Router      /menu [get]
 // @Security    Bearer
 // @Param   	limit     query     int     false  "string default"     default(A)
-func (con *RouteController) Routes(m *echoc.RouteMeta) echoc.MetaHandler {
+func (con *RouteController) GetMenus(m *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
 		// Table:        route.Table,
 		Model:        ent.Menu{},
@@ -82,50 +82,19 @@ func (con *RouteController) Routes(m *echoc.RouteMeta) echoc.MetaHandler {
 	})
 }
 
-// @Tags        Route
-// @Summary     Create a Route
-// @Description Create a Route
-// @ID          create-a-route
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} response.Response{data=dto.MenuResponse} "Successfully created Routes"
-// @Router      /routes [post]
-// @Security    Bearer
-// @Param 		info body dto.MenuRequest true "Route Info"
-func (con *RouteController) CreateRoute(m *echoc.RouteMeta) echoc.MetaHandler {
-	return m.Post("/").DoWithScope(func() []echo.HandlerFunc {
-		body := new(dto.MenuRequest)
-
-		return []echo.HandlerFunc{
-			permissions.OnlySuperAdmin(),
-			request.Validate(request.BodyParser(body)),
-			func(c echo.Context) error {
-				data, err := con.menu_s.CreateRoute(c.Request().Context(), body)
-				if err != nil {
-					return err
-				}
-
-				return request.Response(c,
-					response.Data(data),
-				)
-			},
-		}
-	})
-}
-
-// @Tags        Route
+// @Tags        Menu
 // @Summary     Get a Route
 // @Description Get a Route
 // @ID          Get-a-route
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.Response{data=dto.MenuResponse} "Successfully Getd Routes"
-// @Router      /routes/{id} [put]
+// @Router      /menu/{id} [put]
 // @Security    Bearer
 // @Param 		info body dto.MenuRequest true "Route Info"
 // @Param 		id path int true "Route ID"
-func (con *RouteController) GetRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *RouteController) GetMenu(meta *echoc.RouteMeta) echoc.MetaHandler {
+	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
 		})
@@ -136,7 +105,7 @@ func (con *RouteController) GetRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
 				request.ParamsParser(params),
 			),
 			func(c echo.Context) error {
-				data, err := con.menu_s.GetRouteByID(c.Request().Context(), params.ID)
+				data, err := con.menu_s.GetMenuByID(c.Request().Context(), params.ID)
 				if err != nil {
 					return err
 				}
@@ -149,18 +118,49 @@ func (con *RouteController) GetRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
 	})
 }
 
-// @Tags        Route
-// @Summary     Update a Route
-// @Description Update a Route
-// @ID          Update-a-route
+// @Tags        Menu
+// @Summary     Create a Menu
+// @Description Create a Menu
+// @ID          create-a-menu
 // @Accept      json
 // @Produce     json
-// @Success     200 {object} response.Response{data=dto.MenuResponse} "Successfully updated Routes"
-// @Router      /routes/{id} [put]
+// @Success     200 {object} response.Response{data=dto.MenuResponse}
+// @Router      /menu [post]
+// @Security    Bearer
+// @Param 		info body dto.MenuRequest true "Route Info"
+func (con *RouteController) CreateMenu(m *echoc.RouteMeta) echoc.MetaHandler {
+	return m.Post("/").DoWithScope(func() []echo.HandlerFunc {
+		body := new(dto.MenuRequest)
+
+		return []echo.HandlerFunc{
+			permissions.OnlySuperAdmin(),
+			request.Validate(request.BodyParser(body)),
+			func(c echo.Context) error {
+				data, err := con.menu_s.CreateMenu(c.Request().Context(), body)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(data),
+				)
+			},
+		}
+	})
+}
+
+// @Tags        Menu
+// @Summary     Update a Menu
+// @Description Update a Menu
+// @ID          Update-a-Menu
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.Response{data=dto.MenuResponse}
+// @Router      /menu/{id} [put]
 // @Security    Bearer
 // @Param 		info body dto.MenuRequest true "Route Info"
 // @Param 		id path int true "Route ID"
-func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *RouteController) UpdateMenu(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
 		body := new(dto.MenuRequest)
 		params := new(struct {
@@ -174,7 +174,7 @@ func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 				request.ParamsParser(params),
 			),
 			func(c echo.Context) error {
-				data, err := con.menu_s.UpdateRoute(c.Request().Context(), params.ID, body)
+				data, err := con.menu_s.UpdateMenu(c.Request().Context(), params.ID, body)
 				if err != nil {
 					return err
 				}
@@ -187,17 +187,17 @@ func (con *RouteController) UpdateRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 	})
 }
 
-// @Tags        Route
-// @Summary     Delete a Route
-// @Description Delete a Route
-// @ID          Delete-a-route
+// @Tags        Menu
+// @Summary     Delete a Menu
+// @Description Delete a Menu
+// @ID          Delete-a-Menu
 // @Accept      json
 // @Produce     json
-// @Success     200 {object} response.Response{} "Successfully Delete Routes"
-// @Router      /routes/{id} [delete]
+// @Success     200 {object} response.Response{}
+// @Router      /menu/{id} [delete]
 // @Security    Bearer
 // @Param 		id path int true "Route ID"
-func (con *RouteController) DeleteRoute(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *RouteController) DeleteMenu(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
 		params := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
@@ -209,7 +209,7 @@ func (con *RouteController) DeleteRoute(meta *echoc.RouteMeta) echoc.MetaHandler
 				request.ParamsParser(params),
 			),
 			func(c echo.Context) error {
-				err := con.menu_s.DeleteRoute(c.Request().Context(), params.ID)
+				err := con.menu_s.DeleteMenu(c.Request().Context(), params.ID)
 				if err != nil {
 					return err
 				}

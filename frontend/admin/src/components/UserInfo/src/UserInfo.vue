@@ -42,7 +42,7 @@ const dialogVisible = ref<boolean>(false)
     </template>
   </ElDropdown>
 
-  <LockDialog v-if="dialogVisible" v-model="dialogVisible" />
+  <!-- <LockDialog v-if="dialogVisible" v-model="dialogVisible" /> -->
   <teleport to="body">
     <transition name="fade-bottom" mode="out-in" />
   </teleport>

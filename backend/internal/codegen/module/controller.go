@@ -13,6 +13,8 @@ import (
 	"github.com/gva/internal/response"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/labstack/echo/v4"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/rql"
 )
 
 // don't remove for runtime type checking
@@ -39,20 +41,36 @@ func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service) *{{.Entit
 // @ID list-all-{{.EntityPascal}}s
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} response.Response{data=map[string]dto.{{.EntityPascal}}Response{list=[]dto.{{.EntityPascal}}Response}} "Successfully retrieved {{.EntityPascal}}s"
+// @Success 200 {object} response.Response{data=map[string]dto.{{.EntityPascal}}Response{list=[]dto.{{.EntityPascal}}Response}}"
 // @Router /{{.EntityKebab}} [get]
 // @Security Bearer
 func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/").Name("get many {{.EntityPascal}}s").Do(func(c echo.Context) error {
-		list, err := con.service.Get{{.EntityPascal}}s(c.Request().Context())
-		if err != nil {
-			return err
-		}
+	parser := request.MustRqlParser(rql.Config{
+		Model:        ent.{{.EntityPascal}}{},
+		DefaultLimit: 25,
+		DefaultSort:  []string{"-id"},
+		FieldSep:     ".",
+	})
 
-		return request.Response(c,
-			response.Data(list),
-			response.Message("{{.EntityPascal}} list retreived successfully!"),
-		)
+	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
+		params := new(dto.{{.EntityPascal}}PagedRequest)
+		return []echo.HandlerFunc{
+			request.Parse(
+				request.RqlQueryParser(&params.Params, parser),
+				request.QueryParser(params),
+			),
+			func(c echo.Context) error {
+				list, meta, err := con.service.Get{{.EntityPascal}}s(c.Request().Context(), params)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(list),
+					response.Meta(meta),
+				)
+			},
+		}
 	})
 }
 
@@ -84,7 +102,6 @@ func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHan
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}
@@ -99,7 +116,7 @@ func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHan
 // @Accept  json
 // @Produce  json
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
-// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully created {{.EntityPascal}}"
+// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}} [post]
 func (con *{{.EntityPascal}}Controller) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/").Name("create one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
@@ -118,7 +135,6 @@ func (con *{{.EntityPascal}}Controller) Create(meta *echoc.RouteMeta) echoc.Meta
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}
@@ -135,7 +151,7 @@ func (con *{{.EntityPascal}}Controller) Create(meta *echoc.RouteMeta) echoc.Meta
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
-// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response} "Successfully updated {{.EntityPascal}}"
+// @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}}/{id} [patch]
 func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
@@ -157,7 +173,6 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
 				)
 			},
 		}
@@ -172,7 +187,7 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 // @Accept  json
 // @Produce  json
 // @Param id path int true "{{.EntityPascal}} ID"
-// @Success  200 {object} response.Response{} "Successfully deleted {{.EntityPascal}}"
+// @Success  200 {object} response.Response{} "The {{.EntityAllLower}} deleted successfully!"
 // @Router /{{.EntityKebab}}/{id} [delete]
 func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
@@ -190,7 +205,7 @@ func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.RouteMeta) echoc.Met
 				}
 
 				return request.Response(c,
-					response.Message("The {{.EntityAllLower}} retrieved successfully!"),
+					response.Message("The {{.EntityAllLower}} deleted successfully!"),
 				)
 			},
 		}

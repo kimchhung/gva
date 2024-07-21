@@ -34,7 +34,7 @@ func main() {
 		}
 		fmt.Println(string(output))
 
-		output, err = exec.Command("swag", "init").CombinedOutput()
+		output, err = exec.Command("make", "swag").CombinedOutput()
 		if err != nil {
 			fmt.Printf("Failed to run command: %v\n", err)
 			return

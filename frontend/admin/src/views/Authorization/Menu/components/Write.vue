@@ -35,7 +35,7 @@ const formSchema = reactive<FormSchema[]>([
     field: 'type',
     label: t('meta.type'),
     component: 'RadioButton',
-    value: 0,
+    value: MenuTypeEnum.CATALOG,
     colProps: {
       span: 24
     },
@@ -46,8 +46,16 @@ const formSchema = reactive<FormSchema[]>([
           value: MenuTypeEnum.CATALOG
         },
         {
-          label: 'menu',
+          label: 'MENU',
           value: MenuTypeEnum.MENU
+        },
+        {
+          label: 'BUTTON',
+          value: MenuTypeEnum.BUTTON
+        },
+        {
+          label: 'LINK',
+          value: MenuTypeEnum.LINK
         }
       ],
       on: {
@@ -224,6 +232,7 @@ const formSchema = reactive<FormSchema[]>([
 ])
 
 const rules = reactive({
+  type: [required()],
   component: [required()],
   path: [required()],
   'meta.title': [required()]

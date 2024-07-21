@@ -1,17 +1,29 @@
 package module_template
 
-var DtoRequest = `package dto
+import "strings"
+
+var DtoRequest = strings.ReplaceAll(`package dto
+import "github.com/gva/internal/rql"
 
 // Requests Data Transfer Object
 type {{.EntityPascal}}Request struct {
-	Name string
+	Name string $json:"name"$
 }
-`
 
-var DtoResponse = `package dto
+type {{.EntityPascal}}PagedRequest struct {
+	rql.Params
+	Selects string $query:"selects"$
+}
+`,
+	"$",
+	"`",
+)
+
+var DtoResponse = strings.ReplaceAll(`package dto
+import 	"github.com/gva/internal/ent"
 
 // Responses Data Transfer Object
 type {{.EntityPascal}}Response struct {
-	Name string
+	*ent.{{.EntityPascal}}
 }
-`
+`, "$", "`")

@@ -3,7 +3,6 @@ package permission
 import (
 	"github.com/labstack/echo/v4"
 
-	permissions "github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
 	"github.com/gva/internal/echoc"
 	"github.com/gva/internal/request"
@@ -26,7 +25,7 @@ func NewPermissionController(service *PermissionService, jwt_s *service.JwtServi
 }
 
 func (con *PermissionController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/permission", con.jwt_s.RequiredAdmin())
+	return r.Group("/permission")
 }
 
 // @Tags        Permission
@@ -40,7 +39,6 @@ func (con *PermissionController) Init(r *echo.Group) *echo.Group {
 func (con *PermissionController) Permissions(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
 		return []echo.HandlerFunc{
-			permissions.OnlySuperAdmin(),
 			func(c echo.Context) error {
 				list, err := con.service.AllPermissions(c.Request().Context())
 				if err != nil {

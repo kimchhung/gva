@@ -2,6 +2,7 @@ package dto
 
 import (
 	"github.com/gva/app/database/schema/types"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/rql"
 )
@@ -16,7 +17,7 @@ type MenuRequest struct {
 	Meta      types.MenuMeta `json:"meta,omitempty" validate:"required"`
 
 	// optionals
-	ParentID *int `json:"parentId,omitempty"  validate:"min=0,omitempty"`
+	ParentID *xid.ID `json:"parentId,omitempty"`
 }
 
 type MenuPaginateRequest struct {

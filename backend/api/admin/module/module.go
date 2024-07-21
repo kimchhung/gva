@@ -10,6 +10,7 @@ import (
 	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/echoc"
 
+	"github.com/gva/api/admin/module/department"
 	"github.com/gva/api/admin/module/todo"
 	"go.uber.org/fx"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
@@ -23,6 +24,7 @@ var NewAdminModules = fx.Module("admin-module",
 	index.IndexModule,
 
 	todo.TodoModule,
+	department.DepartmentModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(

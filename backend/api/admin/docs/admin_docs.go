@@ -60,9 +60,7 @@ const docTemplateadmin = `{
                         }
                     }
                 }
-            }
-        },
-        "/admins": {
+            },
             "post": {
                 "security": [
                     {
@@ -114,7 +112,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admins/permissions": {
+        "/admin/permission": {
             "get": {
                 "security": [
                     {
@@ -143,7 +141,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admins/routes": {
+        "/admin/route": {
             "get": {
                 "security": [
                     {
@@ -172,7 +170,7 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/admins/{id}": {
+        "/admin/{id}": {
             "get": {
                 "security": [
                     {
@@ -453,6 +451,258 @@ const docTemplateadmin = `{
                 }
             }
         },
+        "/department": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of all Departments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "List all Departments",
+                "operationId": "list-all-Departments",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Departments",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/dto.DepartmentResponse"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "list": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/definitions/dto.DepartmentResponse"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new Department with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Create a Department",
+                "operationId": "create-Department",
+                "parameters": [
+                    {
+                        "description": "Department data",
+                        "name": "Department",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DepartmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created Department",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DepartmentResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/department/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a Department by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get a Department",
+                "operationId": "get-Department-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DepartmentResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a Department by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Delete a Department",
+                "operationId": "delete-Department-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted Department",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a Department by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Update a Department",
+                "operationId": "update-Department-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Department ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Department data",
+                        "name": "Department",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DepartmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated Department",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DepartmentResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/menu": {
             "get": {
                 "security": [
@@ -460,15 +710,15 @@ const docTemplateadmin = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get a list of all Routes",
+                "description": "Get a list of all Menus",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Route"
+                    "Menu"
                 ],
-                "summary": "List all Routes",
-                "operationId": "list-all-routes",
+                "summary": "List all Menus",
+                "operationId": "list-all-Menus",
                 "parameters": [
                     {
                         "type": "integer",
@@ -479,7 +729,7 @@ const docTemplateadmin = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully retrieved Routes",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -515,65 +765,6 @@ const docTemplateadmin = `{
                         }
                     }
                 }
-            }
-        },
-        "/my-todo": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a list of all MyTodos",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MyTodo"
-                ],
-                "summary": "List all MyTodos",
-                "operationId": "list-all-MyTodos",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved MyTodos",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "allOf": [
-                                                    {
-                                                        "$ref": "#/definitions/dto.MyTodoResponse"
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "list": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "$ref": "#/definitions/dto.MyTodoResponse"
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
             },
             "post": {
                 "security": [
@@ -581,7 +772,7 @@ const docTemplateadmin = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Create a new MyTodo with the provided details",
+                "description": "Create a Menu",
                 "consumes": [
                     "application/json"
                 ],
@@ -589,24 +780,24 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "MyTodo"
+                    "Menu"
                 ],
-                "summary": "Create a MyTodo",
-                "operationId": "create-MyTodo",
+                "summary": "Create a Menu",
+                "operationId": "create-a-menu",
                 "parameters": [
                     {
-                        "description": "MyTodo data",
-                        "name": "MyTodo",
+                        "description": "Route Info",
+                        "name": "info",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.MyTodoRequest"
+                            "$ref": "#/definitions/dto.MenuRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully created MyTodo",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -616,7 +807,7 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.MyTodoResponse"
+                                            "$ref": "#/definitions/dto.MenuResponse"
                                         }
                                     }
                                 }
@@ -626,14 +817,14 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/my-todo/{id}": {
-            "get": {
+        "/menu/{id}": {
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get a MyTodo by ID",
+                "description": "Update a Menu",
                 "consumes": [
                     "application/json"
                 ],
@@ -641,14 +832,23 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "MyTodo"
+                    "Menu"
                 ],
-                "summary": "Get a MyTodo",
-                "operationId": "get-MyTodo-by-id",
+                "summary": "Update a Menu",
+                "operationId": "Update-a-Menu",
                 "parameters": [
                     {
+                        "description": "Route Info",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MenuRequest"
+                        }
+                    },
+                    {
                         "type": "integer",
-                        "description": "MyTodo ID",
+                        "description": "Route ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -666,7 +866,7 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.MyTodoResponse"
+                                            "$ref": "#/definitions/dto.MenuResponse"
                                         }
                                     }
                                 }
@@ -681,7 +881,7 @@ const docTemplateadmin = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a MyTodo by ID",
+                "description": "Delete a Menu",
                 "consumes": [
                     "application/json"
                 ],
@@ -689,14 +889,14 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "MyTodo"
+                    "Menu"
                 ],
-                "summary": "Delete a MyTodo",
-                "operationId": "delete-MyTodo-by-id",
+                "summary": "Delete a Menu",
+                "operationId": "Delete-a-Menu",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "MyTodo ID",
+                        "description": "Route ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -704,66 +904,9 @@ const docTemplateadmin = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully deleted MyTodo",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a MyTodo by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MyTodo"
-                ],
-                "summary": "Update a MyTodo",
-                "operationId": "update-MyTodo-by-id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "MyTodo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "MyTodo data",
-                        "name": "MyTodo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.MyTodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully updated MyTodo",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.MyTodoResponse"
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     }
                 }
@@ -847,14 +990,14 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/routes": {
-            "post": {
+        "/todo": {
+            "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Create a Route",
+                "description": "Get a list of all Todos",
                 "consumes": [
                     "application/json"
                 ],
@@ -862,24 +1005,13 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Route"
+                    "Todo"
                 ],
-                "summary": "Create a Route",
-                "operationId": "create-a-route",
-                "parameters": [
-                    {
-                        "description": "Route Info",
-                        "name": "info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.MenuRequest"
-                        }
-                    }
-                ],
+                "summary": "List all Todos",
+                "operationId": "list-all-Todos",
                 "responses": {
                     "200": {
-                        "description": "Successfully created Routes",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -889,7 +1021,75 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.MenuResponse"
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/dto.TodoResponse"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "list": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/definitions/dto.TodoResponse"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new Todo with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Create a Todo",
+                "operationId": "create-Todo",
+                "parameters": [
+                    {
+                        "description": "Todo data",
+                        "name": "Todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TodoResponse"
                                         }
                                     }
                                 }
@@ -899,14 +1099,14 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "/routes/{id}": {
-            "put": {
+        "/todo/{id}": {
+            "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Update a Route",
+                "description": "Get a Todo by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -914,23 +1114,14 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Route"
+                    "Todo"
                 ],
-                "summary": "Update a Route",
-                "operationId": "Update-a-route",
+                "summary": "Get a Todo",
+                "operationId": "get-Todo-by-id",
                 "parameters": [
                     {
-                        "description": "Route Info",
-                        "name": "info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.MenuRequest"
-                        }
-                    },
-                    {
                         "type": "integer",
-                        "description": "Route ID",
+                        "description": "Todo ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -938,7 +1129,7 @@ const docTemplateadmin = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully updated Routes",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -948,7 +1139,7 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.MenuResponse"
+                                            "$ref": "#/definitions/dto.TodoResponse"
                                         }
                                     }
                                 }
@@ -963,7 +1154,7 @@ const docTemplateadmin = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete a Route",
+                "description": "Delete a Todo by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -971,14 +1162,14 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Route"
+                    "Todo"
                 ],
-                "summary": "Delete a Route",
-                "operationId": "Delete-a-route",
+                "summary": "Delete a Todo",
+                "operationId": "delete-Todo-by-id",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Route ID",
+                        "description": "Todo ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -986,9 +1177,66 @@ const docTemplateadmin = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully Delete Routes",
+                        "description": "The todo deleted successfully!",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a Todo by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Update a Todo",
+                "operationId": "update-Todo-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Todo ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Todo data",
+                        "name": "Todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TodoResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1092,6 +1340,68 @@ const docTemplateadmin = `{
                 }
             }
         },
+        "dto.DepartmentRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "nameId"
+            ],
+            "properties": {
+                "isEnable": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nameId": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DepartmentResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the DepartmentQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.DepartmentEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "isEnable": {
+                    "description": "IsEnable holds the value of the \"is_enable\" field.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "nameId": {
+                    "description": "NameID holds the value of the \"name_id\" field.",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.LoginRequest": {
             "type": "object",
             "required": [
@@ -1147,8 +1457,7 @@ const docTemplateadmin = `{
                 },
                 "parentId": {
                     "description": "optionals",
-                    "type": "integer",
-                    "minimum": 0
+                    "type": "string"
                 },
                 "path": {
                     "type": "string"
@@ -1227,67 +1536,23 @@ const docTemplateadmin = `{
                 }
             }
         },
-        "dto.MyTodoRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.MyTodoResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.PermissionResponse": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "edges": {
-                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
-                },
                 "group": {
-                    "description": "Group holds the value of the \"group\" field.",
                     "type": "string"
                 },
                 "id": {
-                    "description": "ID of the ent.",
                     "type": "string"
                 },
                 "key": {
-                    "description": "Type holds the value of the \"type\" field.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/permission.Type"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "name": {
-                    "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
                 },
                 "order": {
-                    "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
                 }
             }
         },
@@ -1321,6 +1586,35 @@ const docTemplateadmin = `{
                     "$ref": "#/definitions/ent.Admin"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TodoRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TodoResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
                     "type": "string"
                 }
             }

@@ -7,6 +7,8 @@ import (
 	"github.com/gva/internal/response"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/labstack/echo/v4"
+	"github.com/gva/internal/ent"
+	"github.com/gva/internal/rql"
 )
 
 // don't remove for runtime type checking
@@ -33,20 +35,36 @@ func NewTodoController(service *TodoService) *TodoController {
 // @ID list-all-Todos
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} response.Response{data=map[string]dto.TodoResponse{list=[]dto.TodoResponse}} "Successfully retrieved Todos"
+// @Success 200 {object} response.Response{data=map[string]dto.TodoResponse{list=[]dto.TodoResponse}}"
 // @Router /todo [get]
 // @Security Bearer
 func (con *TodoController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/").Name("get many Todos").Do(func(c echo.Context) error {
-		list, err := con.service.GetTodos(c.Request().Context())
-		if err != nil {
-			return err
-		}
+	parser := request.MustRqlParser(rql.Config{
+		Model:        ent.Todo{},
+		DefaultLimit: 25,
+		DefaultSort:  []string{"-id"},
+		FieldSep:     ".",
+	})
 
-		return request.Response(c,
-			response.Data(list),
-			response.Message("Todo list retreived successfully!"),
-		)
+	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
+		params := new(dto.TodoPagedRequest)
+		return []echo.HandlerFunc{
+			request.Parse(
+				request.RqlQueryParser(&params.Params, parser),
+				request.QueryParser(params),
+			),
+			func(c echo.Context) error {
+				list, meta, err := con.service.GetTodos(c.Request().Context(), params)
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(list),
+					response.Meta(meta),
+				)
+			},
+		}
 	})
 }
 
@@ -78,7 +96,6 @@ func (con *TodoController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
@@ -93,7 +110,7 @@ func (con *TodoController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param Todo body dto.TodoRequest true "Todo data"
-// @Success  200 {object} response.Response{data=dto.TodoResponse} "Successfully created Todo"
+// @Success  200 {object} response.Response{data=dto.TodoResponse}
 // @Router /todo [post]
 func (con *TodoController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Post("/").Name("create one Todo").DoWithScope(func() []echo.HandlerFunc {
@@ -112,7 +129,6 @@ func (con *TodoController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
@@ -129,7 +145,7 @@ func (con *TodoController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Produce  json
 // @Param id path int true "Todo ID"
 // @Param Todo body dto.TodoRequest true "Todo data"
-// @Success  200 {object} response.Response{data=dto.TodoResponse} "Successfully updated Todo"
+// @Success  200 {object} response.Response{data=dto.TodoResponse}
 // @Router /todo/{id} [patch]
 func (con *TodoController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Patch("/:id").Name("update one Todo").DoWithScope(func() []echo.HandlerFunc {
@@ -151,7 +167,6 @@ func (con *TodoController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 
 				return request.Response(c,
 					response.Data(data),
-					response.Message("The todo retrieved successfully!"),
 				)
 			},
 		}
@@ -166,7 +181,7 @@ func (con *TodoController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Todo ID"
-// @Success  200 {object} response.Response{} "Successfully deleted Todo"
+// @Success  200 {object} response.Response{} "The todo deleted successfully!"
 // @Router /todo/{id} [delete]
 func (con  *TodoController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Todo").DoWithScope(func() []echo.HandlerFunc {
@@ -184,7 +199,7 @@ func (con  *TodoController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 				}
 
 				return request.Response(c,
-					response.Message("The todo retrieved successfully!"),
+					response.Message("The todo deleted successfully!"),
 				)
 			},
 		}

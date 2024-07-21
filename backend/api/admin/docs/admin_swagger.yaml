@@ -70,6 +70,50 @@ definitions:
           type: string
         type: array
     type: object
+  dto.DepartmentRequest:
+    properties:
+      isEnable:
+        type: boolean
+      name:
+        type: string
+      nameId:
+        type: string
+      parentId:
+        type: string
+    required:
+    - name
+    - nameId
+    type: object
+  dto.DepartmentResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.DepartmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the DepartmentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      nameId:
+        description: NameID holds the value of the "name_id" field.
+        type: string
+      parentId:
+        description: ParentID holds the value of the "parent_id" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
   dto.LoginRequest:
     properties:
       password:
@@ -103,8 +147,7 @@ definitions:
         type: string
       parentId:
         description: optionals
-        minimum: 0
-        type: integer
+        type: string
       path:
         type: string
       type:
@@ -164,48 +207,18 @@ definitions:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
     type: object
-  dto.MyTodoRequest:
-    properties:
-      name:
-        type: string
-    type: object
-  dto.MyTodoResponse:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-    type: object
   dto.PermissionResponse:
     properties:
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        allOf:
-        - $ref: '#/definitions/ent.PermissionEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the PermissionQuery when eager-loading is set.
       group:
-        description: Group holds the value of the "group" field.
         type: string
       id:
-        description: ID of the ent.
         type: string
       key:
-        allOf:
-        - $ref: '#/definitions/permission.Type'
-        description: Type holds the value of the "type" field.
+        type: string
       name:
-        description: Name holds the value of the "name" field.
         type: string
       order:
-        description: Order holds the value of the "order" field.
         type: integer
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
     type: object
   dto.RegisterRequest:
     properties:
@@ -229,6 +242,26 @@ definitions:
       admin:
         $ref: '#/definitions/ent.Admin'
       token:
+        type: string
+    type: object
+  dto.TodoRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  dto.TodoResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
         type: string
     type: object
   ent.Admin:
@@ -585,7 +618,6 @@ paths:
       summary: List all Admins
       tags:
       - Admin
-  /admins:
     post:
       consumes:
       - application/json
@@ -615,7 +647,7 @@ paths:
       summary: Create a Admin
       tags:
       - Admin
-  /admins/{id}:
+  /admin/{id}:
     delete:
       consumes:
       - application/json
@@ -702,7 +734,7 @@ paths:
       summary: Update a Admin
       tags:
       - Admin
-  /admins/permissions:
+  /admin/permission:
     get:
       consumes:
       - application/json
@@ -720,7 +752,7 @@ paths:
       summary: Get Admin permissionissions
       tags:
       - Admin
-  /admins/routes:
+  /admin/route:
     get:
       consumes:
       - application/json
@@ -817,10 +849,157 @@ paths:
       summary: Register a new admin
       tags:
       - Auth
+  /department:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Departments
+      operationId: list-all-Departments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Departments
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.DepartmentResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.DepartmentResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Departments
+      tags:
+      - Department
+    post:
+      consumes:
+      - application/json
+      description: Create a new Department with the provided details
+      operationId: create-Department
+      parameters:
+      - description: Department data
+        in: body
+        name: Department
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Department
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DepartmentResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Department
+      tags:
+      - Department
+  /department/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Department by ID
+      operationId: delete-Department-by-id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Department
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Department
+      tags:
+      - Department
+    get:
+      consumes:
+      - application/json
+      description: Get a Department by ID
+      operationId: get-Department-by-id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DepartmentResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Department
+      tags:
+      - Department
+    patch:
+      consumes:
+      - application/json
+      description: Update a Department by ID
+      operationId: update-Department-by-id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Department data
+        in: body
+        name: Department
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Department
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DepartmentResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Department
+      tags:
+      - Department
   /menu:
     get:
-      description: Get a list of all Routes
-      operationId: list-all-routes
+      description: Get a list of all Menus
+      operationId: list-all-Menus
       parameters:
       - description: string default
         in: query
@@ -830,7 +1009,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved Routes
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -849,78 +1028,46 @@ paths:
               type: object
       security:
       - Bearer: []
-      summary: List all Routes
+      summary: List all Menus
       tags:
-      - Route
-  /my-todo:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all MyTodos
-      operationId: list-all-MyTodos
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved MyTodos
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  additionalProperties:
-                    allOf:
-                    - $ref: '#/definitions/dto.MyTodoResponse'
-                    - properties:
-                        list:
-                          items:
-                            $ref: '#/definitions/dto.MyTodoResponse'
-                          type: array
-                      type: object
-                  type: object
-              type: object
-      security:
-      - Bearer: []
-      summary: List all MyTodos
-      tags:
-      - MyTodo
+      - Menu
     post:
       consumes:
       - application/json
-      description: Create a new MyTodo with the provided details
-      operationId: create-MyTodo
+      description: Create a Menu
+      operationId: create-a-menu
       parameters:
-      - description: MyTodo data
+      - description: Route Info
         in: body
-        name: MyTodo
+        name: info
         required: true
         schema:
-          $ref: '#/definitions/dto.MyTodoRequest'
+          $ref: '#/definitions/dto.MenuRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully created MyTodo
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.MyTodoResponse'
+                  $ref: '#/definitions/dto.MenuResponse'
               type: object
       security:
       - Bearer: []
-      summary: Create a MyTodo
+      summary: Create a Menu
       tags:
-      - MyTodo
-  /my-todo/{id}:
+      - Menu
+  /menu/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete a MyTodo by ID
-      operationId: delete-MyTodo-by-id
+      description: Delete a Menu
+      operationId: Delete-a-Menu
       parameters:
-      - description: MyTodo ID
+      - description: Route ID
         in: path
         name: id
         required: true
@@ -929,21 +1076,27 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully deleted MyTodo
+          description: OK
           schema:
             $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: Delete a MyTodo
+      summary: Delete a Menu
       tags:
-      - MyTodo
-    get:
+      - Menu
+    put:
       consumes:
       - application/json
-      description: Get a MyTodo by ID
-      operationId: get-MyTodo-by-id
+      description: Update a Menu
+      operationId: Update-a-Menu
       parameters:
-      - description: MyTodo ID
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MenuRequest'
+      - description: Route ID
         in: path
         name: id
         required: true
@@ -958,47 +1111,13 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.MyTodoResponse'
+                  $ref: '#/definitions/dto.MenuResponse'
               type: object
       security:
       - Bearer: []
-      summary: Get a MyTodo
+      summary: Update a Menu
       tags:
-      - MyTodo
-    patch:
-      consumes:
-      - application/json
-      description: Update a MyTodo by ID
-      operationId: update-MyTodo-by-id
-      parameters:
-      - description: MyTodo ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: MyTodo data
-        in: body
-        name: MyTodo
-        required: true
-        schema:
-          $ref: '#/definitions/dto.MyTodoRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully updated MyTodo
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.MyTodoResponse'
-              type: object
-      security:
-      - Bearer: []
-      summary: Update a MyTodo
-      tags:
-      - MyTodo
+      - Menu
   /now:
     get:
       operationId: now
@@ -1042,44 +1161,75 @@ paths:
       summary: List all permissions
       tags:
       - Permission
-  /routes:
-    post:
+  /todo:
+    get:
       consumes:
       - application/json
-      description: Create a Route
-      operationId: create-a-route
-      parameters:
-      - description: Route Info
-        in: body
-        name: info
-        required: true
-        schema:
-          $ref: '#/definitions/dto.MenuRequest'
+      description: Get a list of all Todos
+      operationId: list-all-Todos
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully created Routes
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.MenuResponse'
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.TodoResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.TodoResponse'
+                          type: array
+                      type: object
+                  type: object
               type: object
       security:
       - Bearer: []
-      summary: Create a Route
+      summary: List all Todos
       tags:
-      - Route
-  /routes/{id}:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create a new Todo with the provided details
+      operationId: create-Todo
+      parameters:
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Todo
+      tags:
+      - Todo
+  /todo/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete a Route
-      operationId: Delete-a-route
+      description: Delete a Todo by ID
+      operationId: delete-Todo-by-id
       parameters:
-      - description: Route ID
+      - description: Todo ID
         in: path
         name: id
         required: true
@@ -1088,27 +1238,21 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully Delete Routes
+          description: The todo deleted successfully!
           schema:
             $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: Delete a Route
+      summary: Delete a Todo
       tags:
-      - Route
-    put:
+      - Todo
+    get:
       consumes:
       - application/json
-      description: Update a Route
-      operationId: Update-a-route
+      description: Get a Todo by ID
+      operationId: get-Todo-by-id
       parameters:
-      - description: Route Info
-        in: body
-        name: info
-        required: true
-        schema:
-          $ref: '#/definitions/dto.MenuRequest'
-      - description: Route ID
+      - description: Todo ID
         in: path
         name: id
         required: true
@@ -1117,19 +1261,53 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully updated Routes
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.MenuResponse'
+                  $ref: '#/definitions/dto.TodoResponse'
               type: object
       security:
       - Bearer: []
-      summary: Update a Route
+      summary: Get a Todo
       tags:
-      - Route
+      - Todo
+    patch:
+      consumes:
+      - application/json
+      description: Update a Todo by ID
+      operationId: update-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Todo
+      tags:
+      - Todo
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

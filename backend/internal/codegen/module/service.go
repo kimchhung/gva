@@ -4,12 +4,15 @@ var Service = `package {{.EntityAllLower}}
 
 import (
 	"context"
+	"strings"
 
 	"github.com/gva/api/admin/module/{{.EntityAllLower}}/dto"
 	"github.com/gva/app/common/repository"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/{{.EntityAllLower}}"
+	"github.com/gva/utils"
+	"github.com/gva/utils/pagi"
 )
 
 type {{.EntityPascal}}Service struct {
@@ -31,12 +34,34 @@ func (s *{{.EntityPascal}}Service) toDto(value ...*ent.{{.EntityPascal}}) []*dto
 	return list
 }
 
-func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context) ([]*dto.{{.EntityPascal}}Response, error) {
-	list, err := s.repo.C().Query().Order(ent.Asc({{.EntityAllLower}}.FieldID)).All(ctx)
-	if err != nil {
-		return nil, err
+func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, p *dto.{{.EntityPascal}}PagedRequest) ([]*dto.{{.EntityPascal}}Response, *pagi.Meta, error) {
+	if p.Selects == "" {
+		p.Selects = "count,list"
 	}
-	return s.toDto(list...), nil
+	query := s.repo.Q(
+		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
+		pagi.WithSort(p.Sort...),
+		pagi.WithSelect(p.Select...),
+	)
+	countQuery := query.Clone()
+	listQuery := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset))
+	metaCh := utils.Async(func() *pagi.Meta {
+		m := &pagi.Meta{Limit: p.Limit, Offset: p.Offset}
+		if !strings.Contains(p.Selects, "count") {
+			return m
+		}
+		m.Total = countQuery.CountX(ctx)
+		return m
+	})
+	listCh := utils.Async(func() []*ent.{{.EntityPascal}} {
+		if !strings.Contains(p.Selects, "list") {
+			return nil
+		}
+		return listQuery.AllX(ctx)
+	})
+	list := <-listCh
+	meta := <-metaCh
+	return s.toDto(list...), meta, nil
 }
 
 func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context, id xid.ID) (*dto.{{.EntityPascal}}Response, error) {

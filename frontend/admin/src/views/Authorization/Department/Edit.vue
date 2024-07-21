@@ -1,15 +1,10 @@
 <script setup lang="ts">
+import { Department } from '@/api/department/types'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, unref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Write from './components/Write.vue'
-
-import { MenuRoute } from '@/api/menu/types'
-import { BaseButton } from '@/components/Button'
-// import { saveTableApi } from '@/api/table'
-
-// const { emit } = useEventBus()
 
 const { push, currentRoute } = useRouter()
 const goBack = () => {
@@ -18,6 +13,18 @@ const goBack = () => {
 }
 
 const { t } = useI18n()
+const { query } = useRoute()
+const currentRow = ref<Department>()
+
+const getTableDetail = async () => {
+  if (!query.id) return
+  const [res] = await api.department.get({ id: String(query.id) })
+  if (res) {
+    currentRow.value = res
+  }
+}
+
+getTableDetail()
 
 const writeRef = ref<ComponentRef<typeof Write>>()
 const loading = ref(false)
@@ -26,29 +33,29 @@ const save = async () => {
   const write = unref(writeRef)
   const formData = await write?.submit()
 
-  if (formData) {
-    const [res] = await api.menu.create({
-      body: formData as MenuRoute,
-      opt: { loading }
-    })
+  if (!formData) return
 
-    if (res) goBack()
-  }
+  const { id, ...body } = formData as Department
+  const [data] = await api.department.update({
+    id,
+    body,
+    opt: { loading }
+  })
+
+  if (data) goBack()
 }
-
 </script>
 
 <template>
-  <ContentDetailWrap :title="t('button.add')">
-    <Write ref="writeRef" />
+  <ContentDetailWrap :title="t('button.detail')">
+    <Write ref="writeRef" :current-row="currentRow" />
 
     <template #header>
       <BaseButton @click="goBack">
         <Icon icon="ep:back" />
-        <!-- {{ t('common.back') }} -->
       </BaseButton>
-      <BaseButton type="primary" :loading="loading" @click="save"
-        >{{ t('button.save') }}
+      <BaseButton type="primary" :loading="loading" @click="save">
+        {{ t('button.save') }}
       </BaseButton>
     </template>
   </ContentDetailWrap>

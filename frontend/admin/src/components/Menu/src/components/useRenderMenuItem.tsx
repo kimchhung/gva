@@ -11,7 +11,7 @@ export const useRenderMenuItem = () =>
   {
     const renderMenuItem = (routers: AppRouteRecordRaw[], parentPath = '/') => {
       return routers
-        .filter((v) => !v.meta?.hidden)
+        ?.filter((v) => !v.meta?.hidden)
         .map((v) => {
           const meta = v.meta ?? {}
           const { oneShowingChild, onlyOneChild } = hasOneShowingChild(v.children, v)

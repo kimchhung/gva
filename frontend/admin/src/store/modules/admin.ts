@@ -1,7 +1,8 @@
 import { Admin } from '@/api/admin/types'
 import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
-import { convertEdgeChildren } from '@/utils/routerHelper'
+
+import { convertEdgeChildren } from '@/utils/tree'
 import { ElMessageBox } from 'element-plus'
 import { defineStore } from 'pinia'
 import { store } from '../index'
@@ -67,7 +68,7 @@ export const useAdminStore = defineStore('admin', {
         query: { limit: 100, page: 1, isGroupNested: true }
       })
 
-      if (data) this.setRoleRouters(convertEdgeChildren(data))
+      if (data) this.setRoleRouters(convertEdgeChildren(data as AppCustomRouteRecordRaw[]))
       return this.routers
     },
     logoutConfirm() {

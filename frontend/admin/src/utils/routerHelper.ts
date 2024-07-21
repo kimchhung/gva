@@ -1,4 +1,3 @@
-import { MenuRoute } from '@/api/menu/types'
 import { isUrl } from '@/utils/is'
 import { cloneDeep, omit } from 'lodash-es'
 import type {
@@ -143,22 +142,4 @@ const addToChildren = (
       addToChildren(routes, child.children, routeModule)
     }
   }
-}
-
-export const convertEdgeChildren = (
-  list: MenuRoute[],
-  appRoutes: AppCustomRouteRecordRaw[] = []
-): AppCustomRouteRecordRaw[] => {
-  list.forEach((r) => {
-    const { edges, ...more } = r
-    const appRoute: AppCustomRouteRecordRaw = { ...more }
-
-    if (edges?.children?.length > 0) {
-      appRoute.children = convertEdgeChildren(edges.children) // Pass the list and result to the recursive call
-    }
-
-    appRoutes.push(appRoute)
-  })
-
-  return appRoutes
 }

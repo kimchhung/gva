@@ -205,3 +205,23 @@ export const eachTree = (treeDatas: any[], callBack: Fn, parentNode = {}) => {
     }
   })
 }
+
+export const convertEdgeChildren = <T = any, R = Omit<T, 'edges'>>(
+  list: T[],
+  mapToChilden = (t: T) => t?.['edges']?.['children'],
+  appRoutes: R[] = []
+): R[] => {
+  list.forEach((r) => {
+    const { edges, ...more } = r as any
+    const appRoute = { ...more } as any
+
+    const children = mapToChilden(r)
+    if (children && children?.length > 0) {
+      appRoute.children = convertEdgeChildren(children) // Pass the list and result to the recursive call
+    }
+
+    appRoutes.push(appRoute)
+  })
+
+  return appRoutes
+}

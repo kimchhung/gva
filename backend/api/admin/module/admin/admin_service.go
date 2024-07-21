@@ -57,7 +57,7 @@ func (s *AdminService) Paginate(ctx context.Context, p *dto.AdminPaginateRequest
 
 	if p.IsCount {
 		total := query.CountX(ctx)
-		meta.Total = &total
+		meta.Total = total
 	}
 
 	list := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset)).AllX(ctx)

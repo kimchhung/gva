@@ -35,3 +35,11 @@ func PanicIfErr(prefix string, err error) {
 	}
 	panic(fmt.Errorf("%s %v", prefix, err))
 }
+
+func Async[A any](f func() A) <-chan A {
+	ch := make(chan A, 1)
+	go func() {
+		ch <- f()
+	}()
+	return ch
+}

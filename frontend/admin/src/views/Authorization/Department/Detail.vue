@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MenuRoute } from '@/api/menu/types'
+import { Department } from '@/api/department/types'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref } from 'vue'
@@ -14,11 +14,11 @@ const goBack = () => {
 
 const { t } = useI18n()
 const { query } = useRoute()
-const currentRow = ref<MenuRoute>()
+const currentRow = ref<Department>()
 
 const getTableDetail = async () => {
   if (!query.id) return
-  const [res] = await api.menu.get({ id: String(query.id) })
+  const [res] = await api.department.get({ id: String(query.id) })
   if (res) {
     currentRow.value = res
   }

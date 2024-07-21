@@ -1,15 +1,11 @@
 <script setup lang="ts">
+import { MenuRoute } from '@/api/menu/types'
+import { BaseButton } from '@/components/Button'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, unref } from 'vue'
 import { useRouter } from 'vue-router'
 import Write from './components/Write.vue'
-
-import { MenuRoute } from '@/api/menu/types'
-import { BaseButton } from '@/components/Button'
-// import { saveTableApi } from '@/api/table'
-
-// const { emit } = useEventBus()
 
 const { push, currentRoute } = useRouter()
 const goBack = () => {
@@ -18,7 +14,6 @@ const goBack = () => {
 }
 
 const { t } = useI18n()
-
 const writeRef = ref<ComponentRef<typeof Write>>()
 const loading = ref(false)
 
@@ -27,7 +22,7 @@ const save = async () => {
   const formData = await write?.submit()
 
   if (formData) {
-    const [res] = await api.menu.create({
+    const [res] = await api.department.create({
       body: formData as MenuRoute,
       opt: { loading }
     })
@@ -35,7 +30,6 @@ const save = async () => {
     if (res) goBack()
   }
 }
-
 </script>
 
 <template>
@@ -45,7 +39,6 @@ const save = async () => {
     <template #header>
       <BaseButton @click="goBack">
         <Icon icon="ep:back" />
-        <!-- {{ t('common.back') }} -->
       </BaseButton>
       <BaseButton type="primary" :loading="loading" @click="save"
         >{{ t('button.save') }}

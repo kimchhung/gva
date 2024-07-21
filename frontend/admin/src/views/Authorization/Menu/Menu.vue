@@ -7,7 +7,8 @@ import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useTable } from '@/hooks/web/useTable'
-import { convertEdgeChildren } from '@/utils/routerHelper'
+import { convertEdgeChildren } from '@/utils/tree'
+
 import { ElMessage, ElTag } from 'element-plus'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
@@ -17,7 +18,7 @@ const { push } = useRouter()
 
 const { tableRegister, tableState } = useTable<MenuRoute>({
   fetchDataApi: async (query) => {
-    const [data] = await api.menu.getMany({ query })
+    const [data] = await api.menu.getMany({ query: { ...query, isGroupNested: true } })
     return { list: convertEdgeChildren(data || []) as MenuRoute[] }
   }
 })

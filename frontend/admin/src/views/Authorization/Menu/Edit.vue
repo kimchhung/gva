@@ -3,7 +3,7 @@ import { MenuRoute } from '@/api/menu/types'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, unref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Write from './components/Write.vue'
 
 // const { emit } = useEventBus()
@@ -15,14 +15,15 @@ const goBack = () => {
 }
 
 const { t } = useI18n()
-
+const { query } = useRoute()
 const currentRow = ref<MenuRoute>()
 
 const getTableDetail = async () => {
-  // const res = await getTableDetApi(query.id as string)
-  // if (res) {
-  //   currentRow.value = res.data
-  // }
+  if (!query.id) return
+  const [res] = await api.menu.get({ id: String(query.id) })
+  if (res) {
+    currentRow.value = res
+  }
 }
 
 getTableDetail()
@@ -53,7 +54,7 @@ const save = async () => {
 
     <template #header>
       <BaseButton @click="goBack">
-        {{ t('common.back') }}
+        <Icon icon="ep:back" />
       </BaseButton>
       <BaseButton type="primary" :loading="loading" @click="save">
         {{ t('button.save') }}

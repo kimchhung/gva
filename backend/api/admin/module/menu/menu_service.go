@@ -46,7 +46,7 @@ func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest) 
 
 	if p.IsCount {
 		total := query.CountX(ctx)
-		meta.Total = &total
+		meta.Total = total
 	}
 
 	list := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset)).AllX(ctx)
@@ -57,7 +57,7 @@ func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest) 
 	return s.toDto(list...), meta, nil
 }
 
-func (s *MenuService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
+func (s *MenuService) GetMenuByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
 	data, err := s.repo.Q().Where(menu.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (s *MenuService) GetRouteByID(ctx context.Context, id xid.ID) (*dto.MenuRes
 	return s.toDto(data)[0], nil
 }
 
-func (s *MenuService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dto.MenuResponse, error) {
+func (s *MenuService) CreateMenu(ctx context.Context, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	data, err := s.repo.C().Create().
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -74,6 +74,7 @@ func (s *MenuService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dto
 		SetMeta(r.Meta).
 		SetName(r.Name).
 		SetType(r.Type).
+		SetNillableParentID(r.ParentID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -82,16 +83,22 @@ func (s *MenuService) CreateRoute(ctx context.Context, r *dto.MenuRequest) (*dto
 	return s.toDto(data)[0], nil
 }
 
-func (s *MenuService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
-	data, err := s.repo.C().UpdateOneID(id).
+func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
+	update := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
 		SetIsEnable(r.IsEnable).
 		SetMeta(r.Meta).
 		SetName(r.Name).
-		SetType(r.Type).
-		Save(ctx)
+		SetType(r.Type)
 
+	if r.ParentID != nil {
+		update.SetParentID(*r.ParentID)
+	} else {
+		update.ClearParentID()
+	}
+
+	data, err := update.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +106,6 @@ func (s *MenuService) UpdateRoute(ctx context.Context, id xid.ID, r *dto.MenuReq
 	return s.toDto(data)[0], nil
 }
 
-func (s *MenuService) DeleteRoute(ctx context.Context, id xid.ID) error {
+func (s *MenuService) DeleteMenu(ctx context.Context, id xid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }
