@@ -81,7 +81,7 @@ const formSchema = reactive<FormSchema[]>([
               }
             ])
 
-            if (formData.parentId === void 0) {
+            if (formData.pid === void 0) {
               setValues({
                 component: '#'
               })
@@ -96,7 +96,7 @@ const formSchema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'parentId',
+    field: 'pid',
     label: 'Parent menu',
     component: 'TreeSelect',
     componentProps: {
@@ -259,9 +259,10 @@ watch(
   (value) => {
     if (!value) return
     const currentRow = cloneDeep(value)
+    console.log({ currentRow })
 
     cacheComponent.value = currentRow.type === MenuTypeEnum.MENU ? currentRow.component : ''
-    if (!currentRow.parentId) {
+    if (!currentRow.pid) {
       setSchema([
         {
           field: 'component',

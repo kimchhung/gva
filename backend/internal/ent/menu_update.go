@@ -89,23 +89,23 @@ func (mu *MenuUpdate) AddDeletedAt(i int) *MenuUpdate {
 	return mu
 }
 
-// SetParentID sets the "parent_id" field.
-func (mu *MenuUpdate) SetParentID(x xid.ID) *MenuUpdate {
-	mu.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (mu *MenuUpdate) SetPid(x xid.ID) *MenuUpdate {
+	mu.mutation.SetPid(x)
 	return mu
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillableParentID(x *xid.ID) *MenuUpdate {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillablePid(x *xid.ID) *MenuUpdate {
 	if x != nil {
-		mu.SetParentID(*x)
+		mu.SetPid(*x)
 	}
 	return mu
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (mu *MenuUpdate) ClearParentID() *MenuUpdate {
-	mu.mutation.ClearParentID()
+// ClearPid clears the value of the "pid" field.
+func (mu *MenuUpdate) ClearPid() *MenuUpdate {
+	mu.mutation.ClearPid()
 	return mu
 }
 
@@ -222,6 +222,20 @@ func (mu *MenuUpdate) SetMeta(tm types.MenuMeta) *MenuUpdate {
 func (mu *MenuUpdate) SetNillableMeta(tm *types.MenuMeta) *MenuUpdate {
 	if tm != nil {
 		mu.SetMeta(*tm)
+	}
+	return mu
+}
+
+// SetParentID sets the "parent" edge to the Menu entity by ID.
+func (mu *MenuUpdate) SetParentID(id xid.ID) *MenuUpdate {
+	mu.mutation.SetParentID(id)
+	return mu
+}
+
+// SetNillableParentID sets the "parent" edge to the Menu entity by ID if the given value is not nil.
+func (mu *MenuUpdate) SetNillableParentID(id *xid.ID) *MenuUpdate {
+	if id != nil {
+		mu = mu.SetParentID(*id)
 	}
 	return mu
 }
@@ -635,23 +649,23 @@ func (muo *MenuUpdateOne) AddDeletedAt(i int) *MenuUpdateOne {
 	return muo
 }
 
-// SetParentID sets the "parent_id" field.
-func (muo *MenuUpdateOne) SetParentID(x xid.ID) *MenuUpdateOne {
-	muo.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (muo *MenuUpdateOne) SetPid(x xid.ID) *MenuUpdateOne {
+	muo.mutation.SetPid(x)
 	return muo
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillableParentID(x *xid.ID) *MenuUpdateOne {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillablePid(x *xid.ID) *MenuUpdateOne {
 	if x != nil {
-		muo.SetParentID(*x)
+		muo.SetPid(*x)
 	}
 	return muo
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (muo *MenuUpdateOne) ClearParentID() *MenuUpdateOne {
-	muo.mutation.ClearParentID()
+// ClearPid clears the value of the "pid" field.
+func (muo *MenuUpdateOne) ClearPid() *MenuUpdateOne {
+	muo.mutation.ClearPid()
 	return muo
 }
 
@@ -768,6 +782,20 @@ func (muo *MenuUpdateOne) SetMeta(tm types.MenuMeta) *MenuUpdateOne {
 func (muo *MenuUpdateOne) SetNillableMeta(tm *types.MenuMeta) *MenuUpdateOne {
 	if tm != nil {
 		muo.SetMeta(*tm)
+	}
+	return muo
+}
+
+// SetParentID sets the "parent" edge to the Menu entity by ID.
+func (muo *MenuUpdateOne) SetParentID(id xid.ID) *MenuUpdateOne {
+	muo.mutation.SetParentID(id)
+	return muo
+}
+
+// SetNillableParentID sets the "parent" edge to the Menu entity by ID if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableParentID(id *xid.ID) *MenuUpdateOne {
+	if id != nil {
+		muo = muo.SetParentID(*id)
 	}
 	return muo
 }

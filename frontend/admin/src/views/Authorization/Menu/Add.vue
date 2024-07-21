@@ -7,9 +7,6 @@ import Write from './components/Write.vue'
 
 import { MenuRoute } from '@/api/menu/types'
 import { BaseButton } from '@/components/Button'
-// import { saveTableApi } from '@/api/table'
-
-// const { emit } = useEventBus()
 
 const { push, currentRoute } = useRouter()
 const goBack = () => {
@@ -18,7 +15,6 @@ const goBack = () => {
 }
 
 const { t } = useI18n()
-
 const writeRef = ref<ComponentRef<typeof Write>>()
 const loading = ref(false)
 
@@ -35,7 +31,6 @@ const save = async () => {
     if (res) goBack()
   }
 }
-
 </script>
 
 <template>
@@ -45,7 +40,6 @@ const save = async () => {
     <template #header>
       <BaseButton @click="goBack">
         <Icon icon="ep:back" />
-        <!-- {{ t('common.back') }} -->
       </BaseButton>
       <BaseButton type="primary" :loading="loading" @click="save"
         >{{ t('button.save') }}

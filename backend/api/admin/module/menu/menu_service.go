@@ -1,11 +1,13 @@
 package menu
 
 import (
+	"strings"
+
 	"github.com/gva/api/admin/module/menu/dto"
 	"github.com/gva/app/common/repository"
 	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/utils"
 	"github.com/gva/utils/pagi"
-	"github.com/gva/utils/routeutil"
 
 	"context"
 
@@ -32,33 +34,38 @@ func (s *MenuService) toDto(value ...*ent.Menu) []*dto.MenuResponse {
 	return list
 }
 
-func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPaginateRequest) ([]*dto.MenuResponse, *pagi.Meta, error) {
+func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPagedRequest) ([]*dto.MenuResponse, *pagi.Meta, error) {
+	if p.Selects == "" {
+		p.Selects = "count,list"
+	}
 	query := s.repo.Q(
 		pagi.WithFilter(p.FilterExp.String(), p.FilterArgs),
 		pagi.WithSort(p.Sort...),
 		pagi.WithSelect(p.Select...),
 	)
-
-	meta := &pagi.Meta{
-		Limit:  p.Limit,
-		Offset: p.Offset,
-	}
-
-	if p.IsCount {
-		total := query.CountX(ctx)
-		meta.Total = total
-	}
-
-	list := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset)).AllX(ctx)
-	if p.IsGroupNested {
-		list = routeutil.GroupRouteToNested(list)
-	}
-
+	countQuery := query.Clone()
+	listQuery := query.Modify(pagi.WithLimitOffset(p.Limit, p.Offset))
+	metaCh := utils.Async(func() *pagi.Meta {
+		m := &pagi.Meta{Limit: p.Limit, Offset: p.Offset}
+		if !strings.Contains(p.Selects, "count") {
+			return m
+		}
+		m.Total = countQuery.CountX(ctx)
+		return m
+	})
+	listCh := utils.Async(func() []*ent.Menu {
+		if !strings.Contains(p.Selects, "list") {
+			return nil
+		}
+		return listQuery.AllX(ctx)
+	})
+	list := <-listCh
+	meta := <-metaCh
 	return s.toDto(list...), meta, nil
 }
 
 func (s *MenuService) GetMenuByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
-	data, err := s.repo.Q().Where(menu.ID(id)).First(ctx)
+	data, err := s.repo.Q().Where(menu.ID(id)).WithParent().First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +81,7 @@ func (s *MenuService) CreateMenu(ctx context.Context, r *dto.MenuRequest) (*dto.
 		SetMeta(r.Meta).
 		SetName(r.Name).
 		SetType(r.Type).
-		SetNillableParentID(r.ParentID).
+		SetNillableParentID(r.Pid).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -92,10 +99,10 @@ func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequ
 		SetName(r.Name).
 		SetType(r.Type)
 
-	if r.ParentID != nil {
-		update.SetParentID(*r.ParentID)
+	if r.Pid != nil {
+		update.SetParentID(*r.Pid)
 	} else {
-		update.ClearParentID()
+		update.ClearPid()
 	}
 
 	data, err := update.Save(ctx)

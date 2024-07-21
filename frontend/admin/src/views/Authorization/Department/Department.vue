@@ -6,6 +6,7 @@ import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useTable } from '@/hooks/web/useTable'
+import { edgelistToTree } from '@/utils/edgeTree'
 import { ElMessage, ElTag } from 'element-plus'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
@@ -15,8 +16,10 @@ const { push } = useRouter()
 
 const { tableRegister, tableState } = useTable<Department>({
   fetchDataApi: async (query) => {
-    const [data] = await api.department.getMany({ query })
-    return { list: data || [] }
+    const [res, err] = await api.department.getMany({ query })
+    if (err) return null
+    res.data = edgelistToTree(res.data)
+    return res
   }
 })
 
@@ -110,9 +113,9 @@ const tableColumns = reactive<TableColumn<Department>[]>([
       v-model:pageSize="tableState.pageSize"
       v-model:currentPage="tableState.page"
       :columns="tableColumns"
-      :data="tableState.dataList"
+      :data="tableState.data"
       :loading="tableState.isLoading"
-      :pagination="{ total: tableState.total }"
+      :pagination="{ total: tableState.meta?.total }"
       @register="tableRegister"
     />
   </ContentWrap>

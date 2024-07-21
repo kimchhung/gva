@@ -16,15 +16,15 @@ func GroupRouteToNested(flatMenuList []*ent.Menu) (parentRoutes []*ent.Menu) {
 	parentMapRoute := make(map[xid.ID][]*ent.Menu)
 
 	for _, route := range flatMenuList {
-		if route.ParentID != nil {
-			parentMapRoute[*route.ParentID] = append(parentMapRoute[*route.ParentID], route)
+		if route.Pid != nil {
+			parentMapRoute[*route.Pid] = append(parentMapRoute[*route.Pid], route)
 		}
 	}
 
 	for _, menu := range flatMenuList {
 		menu.Edges.Children = AppendRouteChildrens(menu.ID, parentMapRoute)
 
-		if menu.ParentID == nil {
+		if menu.Pid == nil {
 			parentRoutes = append(parentRoutes, menu)
 		}
 	}
@@ -48,8 +48,8 @@ func FlattenNestedMenu(parentRoutes []*ent.Menu) (flatRoutes []*ent.Menu) {
 	return flatRoutes
 }
 
-func AppendRouteChildrens(parentID xid.ID, parentMapRoute map[xid.ID][]*ent.Menu) (children []*ent.Menu) {
-	children, ok := parentMapRoute[parentID]
+func AppendRouteChildrens(Pid xid.ID, parentMapRoute map[xid.ID][]*ent.Menu) (children []*ent.Menu) {
+	children, ok := parentMapRoute[Pid]
 	if !ok {
 		return nil
 	}

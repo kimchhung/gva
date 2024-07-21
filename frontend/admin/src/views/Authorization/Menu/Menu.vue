@@ -1,4 +1,5 @@
 <script setup lang="tsx">
+import { menuToNested } from '@/api/menu/tranform'
 import { MenuRoute } from '@/api/menu/types'
 import { BaseButton } from '@/components/Button'
 import { ContentWrap } from '@/components/ContentWrap'
@@ -7,7 +8,6 @@ import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useTable } from '@/hooks/web/useTable'
-import { convertEdgeChildren } from '@/utils/tree'
 
 import { ElMessage, ElTag } from 'element-plus'
 import { reactive } from 'vue'
@@ -16,10 +16,12 @@ import { useRouter } from 'vue-router'
 const { t } = useI18n()
 const { push } = useRouter()
 
-const { tableRegister, tableState } = useTable<MenuRoute>({
+const { tableRegister, tableState } = useTable({
   fetchDataApi: async (query) => {
-    const [data] = await api.menu.getMany({ query: { ...query, isGroupNested: true } })
-    return { list: convertEdgeChildren(data || []) as MenuRoute[] }
+    const [res, err] = await api.menu.getMany({ query })
+    if (err) return null
+    res.data = menuToNested(res.data)
+    return res
   }
 })
 
@@ -164,9 +166,9 @@ const action = async (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete
       v-model:pageSize="tableState.pageSize"
       v-model:currentPage="tableState.page"
       :columns="tableColumns"
-      :data="tableState.dataList"
+      :data="tableState.data"
       :loading="tableState.isLoading"
-      :pagination="{ total: tableState.total }"
+      :pagination="{ total: tableState.meta?.total }"
       @register="tableRegister"
     />
   </ContentWrap>

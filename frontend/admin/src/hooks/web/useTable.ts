@@ -12,49 +12,58 @@ type UseTableConfig<T = any> = {
    */
   immediate?: boolean
   fetchDataApi: (props: QueryPagi) => Promise<{
-    list: T[]
-    total?: number
-  }>
+    data: T[]
+    meta?: {
+      total?: number
+    }
+  } | null>
   fetchDelApi?: () => Promise<boolean>
+}
+
+const getTablePageAndSize = (v: { offset?: number; limit: number }) => {
+  return { page: Math.floor(Number(v.offset) / v.limit) + 1, pageSize: v.limit }
+}
+
+export type TableState<T> = {
+  page: number
+  pageSize: number
+  isLoading: boolean
+  total: number
+
+  data: T[]
+  meta?: {
+    total?: number
+  }
 }
 
 export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
   const { immediate = true } = config
 
   const fetchProps = ref({
-    page: 1,
-    limit: 20
-  } as QueryPagi)
+    offset: 0,
+    limit: 25
+  } as QueryPagi<T>)
 
-  const tableState = reactive({
+  const { page, pageSize } = getTablePageAndSize(fetchProps.value)
+  const tableState = reactive<TableState<T>>({
+    page: page,
+    pageSize: pageSize,
     isLoading: false,
-    page: 0,
-    pageSize: 20,
     total: 0,
-    dataList: [] as any[]
+    data: [],
+    meta: {
+      total: undefined
+    }
   })
 
   watch(
-    () => fetchProps.value,
-    (v) => {
-      tableState.page = v.page
-      tableState.pageSize = v.limit
-
-      console.log(fetchProps.value)
-      // methods.getList()
-    }
-  )
-
-  watch(
-    () => fetchProps.value.page,
+    () => [fetchProps.value.offset, fetchProps.value.limit],
     () => {
-      // When the current page is not 1, after the number of modification pages, it will cause multiple times to call the getlist method
-      if (unref(fetchProps.value.page) === 1) {
-        methods.getList()
-      } else {
-        fetchProps.value.page = 1
-        // methods.getList()
-      }
+      const { page, pageSize } = getTablePageAndSize(fetchProps.value)
+      tableState.page = page
+      tableState.pageSize = pageSize
+
+      methods.getList()
     }
   )
 
@@ -91,13 +100,13 @@ export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
     getList: async () => {
       tableState.isLoading = true
       try {
-        const res = await config?.fetchDataApi(unref(fetchProps.value))
+        const res = await config?.fetchDataApi(unref(fetchProps.value as any))
         if (res) {
-          tableState.dataList = res.list
-          tableState.total = res.total || 0
+          tableState.data = (res.data as any) ?? []
+          tableState.meta = res.meta as any
         }
       } catch (err) {
-        console.log('fetchDataApi error')
+        console.error('fetchDataApi error', err)
       } finally {
         tableState.isLoading = false
       }
@@ -159,7 +168,7 @@ export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
     //   dataList.value.splice(newIndex, 0, dataList.value.splice(oldIndex, 1)[0])
     //   // to do something
     // }
-    // 删除数据
+    // delete data
     delList: async (idsLength: number) => {
       const { fetchDelApi } = config
       if (!fetchDelApi) {
@@ -175,16 +184,16 @@ export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
         if (res) {
           ElMessage.success(t('common.delSuccess'))
 
-          // 计算出临界点
+          // Calculate the critical point
           const current =
             unref(tableState.total) % unref(fetchProps.value.limit) === idsLength ||
             unref(fetchProps.value.limit) === 1
-              ? unref(fetchProps.value.page) > 1
-                ? unref(fetchProps.value.page) - 1
-                : unref(fetchProps.value.page)
-              : unref(fetchProps.value.page)
+              ? Number(unref(fetchProps.value.offset)) > 1
+                ? Number(unref(fetchProps.value.offset)) - 1
+                : Number(unref(fetchProps.value.offset))
+              : Number(unref(fetchProps.value.offset))
 
-          fetchProps.value.page = current
+          fetchProps.value.offset = current
           methods.getList()
         }
       })

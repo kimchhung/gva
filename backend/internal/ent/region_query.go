@@ -487,10 +487,10 @@ func (rq *RegionQuery) loadParent(ctx context.Context, query *RegionQuery, nodes
 	ids := make([]xid.ID, 0, len(nodes))
 	nodeids := make(map[xid.ID][]*Region)
 	for i := range nodes {
-		if nodes[i].ParentID == nil {
+		if nodes[i].Pid == nil {
 			continue
 		}
-		fk := *nodes[i].ParentID
+		fk := *nodes[i].Pid
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -507,7 +507,7 @@ func (rq *RegionQuery) loadParent(ctx context.Context, query *RegionQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "pid" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -526,7 +526,7 @@ func (rq *RegionQuery) loadChildren(ctx context.Context, query *RegionQuery, nod
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(region.FieldParentID)
+		query.ctx.AppendFieldOnce(region.FieldPid)
 	}
 	query.Where(predicate.Region(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(region.ChildrenColumn), fks...))
@@ -536,13 +536,13 @@ func (rq *RegionQuery) loadChildren(ctx context.Context, query *RegionQuery, nod
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ParentID
+		fk := n.Pid
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "pid" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "pid" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -580,7 +580,7 @@ func (rq *RegionQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 		if rq.withParent != nil {
-			_spec.Node.AddColumnOnce(region.FieldParentID)
+			_spec.Node.AddColumnOnce(region.FieldPid)
 		}
 	}
 	if ps := rq.predicates; len(ps) > 0 {

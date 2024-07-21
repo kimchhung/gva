@@ -2,7 +2,7 @@ import { Admin } from '@/api/admin/types'
 import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
 
-import { convertEdgeChildren } from '@/utils/tree'
+import { menuToRoute } from '@/api/menu/tranform'
 import { ElMessageBox } from 'element-plus'
 import { defineStore } from 'pinia'
 import { store } from '../index'
@@ -60,15 +60,21 @@ export const useAdminStore = defineStore('admin', {
       this.routers = roleRouters
     },
     async fetchUserInfo() {
-      const [data] = await api.auth.me({ opt: { loading: this } })
-      if (data) this.setAdminInfo(data)
-    },
-    async fetchAdminRouters() {
-      const [data] = await api.menu.getMany({
-        query: { limit: 100, page: 1, isGroupNested: true }
-      })
+      const [res, err] = await api.auth.me({ opt: { loading: this } })
+      if (err) return
 
-      if (data) this.setRoleRouters(convertEdgeChildren(data as AppCustomRouteRecordRaw[]))
+      this.setAdminInfo(res.data)
+    },
+
+    async fetchAdminRouters() {
+      const [res, err] = await api.menu.getMany({
+        query: { limit: 100, offset: 0 }
+      })
+      if (err) return this.routers
+
+      const routes = menuToRoute(res.data)
+      this.setRoleRouters(routes)
+
       return this.routers
     },
     logoutConfirm() {

@@ -53,8 +53,8 @@ func PushMenuList(ctx context.Context, conn *ent.Client, filePath string) {
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 		tx.Menu.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
 		for _, r := range flats {
-			if r.ParentID != nil {
-				childToParent[r.ID] = *r.ParentID
+			if r.Pid != nil {
+				childToParent[r.ID] = *r.Pid
 			}
 
 			if strings.Contains(r.Component, "#") {
@@ -79,7 +79,7 @@ func PushMenuList(ctx context.Context, conn *ent.Client, filePath string) {
 		}
 
 		for cid, pid := range childToParent {
-			_, err := tx.Menu.UpdateOneID(cid).SetParentID(pid).Save(context.Background())
+			_, err := tx.Menu.UpdateOneID(cid).SetPid(pid).Save(context.Background())
 			if err != nil {
 				return fmt.Errorf("save routers: %w", err)
 			}

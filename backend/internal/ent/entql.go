@@ -60,7 +60,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			department.FieldIsEnable:  {Type: field.TypeBool, Column: department.FieldIsEnable},
 			department.FieldNameID:    {Type: field.TypeString, Column: department.FieldNameID},
 			department.FieldName:      {Type: field.TypeString, Column: department.FieldName},
-			department.FieldParentID:  {Type: field.TypeString, Column: department.FieldParentID},
+			department.FieldPid:       {Type: field.TypeString, Column: department.FieldPid},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -78,7 +78,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			menu.FieldUpdatedAt: {Type: field.TypeTime, Column: menu.FieldUpdatedAt},
 			menu.FieldIsEnable:  {Type: field.TypeBool, Column: menu.FieldIsEnable},
 			menu.FieldDeletedAt: {Type: field.TypeInt, Column: menu.FieldDeletedAt},
-			menu.FieldParentID:  {Type: field.TypeString, Column: menu.FieldParentID},
+			menu.FieldPid:       {Type: field.TypeString, Column: menu.FieldPid},
 			menu.FieldPath:      {Type: field.TypeString, Column: menu.FieldPath},
 			menu.FieldComponent: {Type: field.TypeString, Column: menu.FieldComponent},
 			menu.FieldRedirect:  {Type: field.TypeString, Column: menu.FieldRedirect},
@@ -126,7 +126,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			region.FieldNameID:    {Type: field.TypeString, Column: region.FieldNameID},
 			region.FieldName:      {Type: field.TypeString, Column: region.FieldName},
 			region.FieldType:      {Type: field.TypeEnum, Column: region.FieldType},
-			region.FieldParentID:  {Type: field.TypeString, Column: region.FieldParentID},
+			region.FieldPid:       {Type: field.TypeString, Column: region.FieldPid},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -527,9 +527,9 @@ func (f *DepartmentFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(department.FieldName))
 }
 
-// WhereParentID applies the entql string predicate on the parent_id field.
-func (f *DepartmentFilter) WhereParentID(p entql.StringP) {
-	f.Where(p.Field(department.FieldParentID))
+// WherePid applies the entql string predicate on the pid field.
+func (f *DepartmentFilter) WherePid(p entql.StringP) {
+	f.Where(p.Field(department.FieldPid))
 }
 
 // WhereHasParent applies a predicate to check if query has an edge parent.
@@ -634,9 +634,9 @@ func (f *MenuFilter) WhereDeletedAt(p entql.IntP) {
 	f.Where(p.Field(menu.FieldDeletedAt))
 }
 
-// WhereParentID applies the entql string predicate on the parent_id field.
-func (f *MenuFilter) WhereParentID(p entql.StringP) {
-	f.Where(p.Field(menu.FieldParentID))
+// WherePid applies the entql string predicate on the pid field.
+func (f *MenuFilter) WherePid(p entql.StringP) {
+	f.Where(p.Field(menu.FieldPid))
 }
 
 // WherePath applies the entql string predicate on the path field.
@@ -880,9 +880,9 @@ func (f *RegionFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(region.FieldType))
 }
 
-// WhereParentID applies the entql string predicate on the parent_id field.
-func (f *RegionFilter) WhereParentID(p entql.StringP) {
-	f.Where(p.Field(region.FieldParentID))
+// WherePid applies the entql string predicate on the pid field.
+func (f *RegionFilter) WherePid(p entql.StringP) {
+	f.Where(p.Field(region.FieldPid))
 }
 
 // WhereHasParent applies a predicate to check if query has an edge parent.

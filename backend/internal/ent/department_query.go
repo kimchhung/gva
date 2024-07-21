@@ -552,10 +552,10 @@ func (dq *DepartmentQuery) loadParent(ctx context.Context, query *DepartmentQuer
 	ids := make([]xid.ID, 0, len(nodes))
 	nodeids := make(map[xid.ID][]*Department)
 	for i := range nodes {
-		if nodes[i].ParentID == nil {
+		if nodes[i].Pid == nil {
 			continue
 		}
-		fk := *nodes[i].ParentID
+		fk := *nodes[i].Pid
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -572,7 +572,7 @@ func (dq *DepartmentQuery) loadParent(ctx context.Context, query *DepartmentQuer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "pid" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -591,7 +591,7 @@ func (dq *DepartmentQuery) loadChildren(ctx context.Context, query *DepartmentQu
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(department.FieldParentID)
+		query.ctx.AppendFieldOnce(department.FieldPid)
 	}
 	query.Where(predicate.Department(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(department.ChildrenColumn), fks...))
@@ -601,13 +601,13 @@ func (dq *DepartmentQuery) loadChildren(ctx context.Context, query *DepartmentQu
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ParentID
+		fk := n.Pid
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "pid" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "pid" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -678,7 +678,7 @@ func (dq *DepartmentQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 		if dq.withParent != nil {
-			_spec.Node.AddColumnOnce(department.FieldParentID)
+			_spec.Node.AddColumnOnce(department.FieldPid)
 		}
 	}
 	if ps := dq.predicates; len(ps) > 0 {

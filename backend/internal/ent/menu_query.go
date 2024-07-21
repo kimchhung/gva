@@ -542,10 +542,10 @@ func (mq *MenuQuery) loadParent(ctx context.Context, query *MenuQuery, nodes []*
 	ids := make([]xid.ID, 0, len(nodes))
 	nodeids := make(map[xid.ID][]*Menu)
 	for i := range nodes {
-		if nodes[i].ParentID == nil {
+		if nodes[i].Pid == nil {
 			continue
 		}
-		fk := *nodes[i].ParentID
+		fk := *nodes[i].Pid
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -562,7 +562,7 @@ func (mq *MenuQuery) loadParent(ctx context.Context, query *MenuQuery, nodes []*
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "pid" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -581,7 +581,7 @@ func (mq *MenuQuery) loadChildren(ctx context.Context, query *MenuQuery, nodes [
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(menu.FieldParentID)
+		query.ctx.AppendFieldOnce(menu.FieldPid)
 	}
 	query.Where(predicate.Menu(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(menu.ChildrenColumn), fks...))
@@ -591,13 +591,13 @@ func (mq *MenuQuery) loadChildren(ctx context.Context, query *MenuQuery, nodes [
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ParentID
+		fk := n.Pid
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "pid" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "pid" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -697,7 +697,7 @@ func (mq *MenuQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 		if mq.withParent != nil {
-			_spec.Node.AddColumnOnce(menu.FieldParentID)
+			_spec.Node.AddColumnOnce(menu.FieldPid)
 		}
 	}
 	if ps := mq.predicates; len(ps) > 0 {

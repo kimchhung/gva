@@ -1,17 +1,12 @@
 import { isArray } from 'lodash-es'
 
-export type QueryPagi = {
-  page: number
+export type QueryPagi<T extends Object = any> = {
+  offset?: number
   limit: number
-  filters?: Record<string, Record<OpName, PagiValue> | {}>
+  filter?: Partial<Condition<T>> | ConditionOr<T>
   sorts?: string[]
   search?: string
-}
-
-export type SingleFilter<T = Record<string, any>> = {
-  column: keyof T
-  operation: OpName
-  value: PagiValue
+  selects?: ('count' | 'list')[]
 }
 
 export type SingleSort<T = Record<string, any>> = {
@@ -32,46 +27,40 @@ export enum OpName {
 
   // custom value
   Between = 'between',
-  In = 'in'
+  In = 'in',
+
+  Or = '$or',
+  IsNull = '$isnull',
+  IsNotNull = '$isnotnull'
 }
+
+export type OpTypeMap = {
+  [OpName.IsNotNull]: boolean
+  [OpName.IsNotNull]: boolean
+  [OpName.In]: string
+  [OpName.Between]: [string, string]
+  [OpName.Eq]: string
+  [OpName.Neq]: string
+  [OpName.Gt]: string
+  [OpName.Gte]: string
+  [OpName.Lt]: string
+  [OpName.Lte]: string
+}
+
+export type ConditionOr<T extends object> = Record<OpName.Or, Partial<Condition<T>>[]>
+
+// Adjusted Condition type for clarity and correctness
+export type Condition<T extends object, K extends keyof OpTypeMap = any> = Record<
+  keyof T,
+  Record<K, OpTypeMap[K]> | string
+>
 
 export const defaultQuery = () => {
   const q: QueryPagi = {
-    page: 1,
-    limit: 20
+    offset: 1,
+    limit: 25
   }
   return q
-}
-
-/**
- * set value = null, to remove
- * */
-export const setQueryfilter = (query: QueryPagi, fs: SingleFilter[]) => {
-  if (!query.filters) {
-    query.filters = {}
-  }
-
-  fs.forEach((f) => {
-    if (!query.filters) {
-      return
-    }
-
-    if (!query.filters[f.column]) {
-      query.filters[f.column] = {}
-    }
-
-    if (f.value == null) {
-      // remove;
-      delete query.filters[f.column][f.operation]
-      if ((query.filters[f.column] = {})) {
-        delete query.filters[f.column]
-      }
-
-      return
-    }
-
-    query.filters[f.column][f.operation] = f.value
-  })
 }
 
 /**
@@ -94,62 +83,72 @@ export const setQuerySort = <T extends object>(query: QueryPagi, msort: SingleSo
       `${sort.column as any} ${sort.direction}`
     ]
   })
+
+  return query
 }
 
-export const createQueryPayload = (query: QueryPagi) => {
-  const { limit, page, ...more } = query
-  const payload = {
-    offset: (page - 1) * limit,
-    limit: limit * page,
+export const createQueryPayload = <T extends object = any>(query: QueryPagi<T>) => {
+  const { limit, offset, filter, selects, search, sorts, ...more } = query
+  const payload: Recordable = {
+    offset: offset,
+    limit: limit,
     ...more
-  } as Recordable
+  }
 
-  if (query.search) {
+  if (search) {
     payload.search = query.search
   }
 
-  if (query.filters) {
-    Object.entries(query.filters).forEach(([column, v]) => {
-      Object.entries(v).forEach(([op, value]) => {
-        if (!payload['filter']) {
-          payload['filter'] = {}
-        }
+  if (filter) {
+    Object.entries(filter)?.forEach(([column, v]) => {
+      if (typeof v == 'object') {
+        Object.entries(v).forEach(([op, value]) => {
+          if (!payload['filter']) {
+            payload['filter'] = {}
+          }
 
-        if (!payload['filter'][column]) {
-          payload['filter'][column] = {}
-        }
+          if (!payload['filter'][column]) {
+            payload['filter'][column] = {}
+          }
 
-        switch (true) {
-          case op === OpName.Between:
-            if (!isArray(value)) {
-              return
-            }
+          switch (true) {
+            case op === OpName.Between:
+              if (!isArray(value)) {
+                return
+              }
 
-            const [startDate, endDate] = value
-            payload['filter'][column][OpName.Gte] = startDate
-            payload['filter'][column][OpName.Lt] = endDate
-            break
-          case op === OpName.In:
-            if (!isArray(value)) {
-              return
-            }
+              const [startDate, endDate] = value
+              payload['filter'][column][OpName.Gte] = startDate
+              payload['filter'][column][OpName.Lt] = endDate
+              break
+            case op === OpName.In:
+              if (!isArray(value)) {
+                return
+              }
 
-            payload['filter'][column][op] = value
-            break
+              payload['filter'][column][op] = String(value)
+              break
 
-          default:
-            payload['filter'][column][op] = value
-            break
-        }
-      })
+            default:
+              payload['filter'][column][op] = String(value)
+              break
+          }
+        })
+      } else {
+        payload['filter'][column] = String(v)
+      }
     })
   }
 
-  query.sorts?.forEach((s) => {
+  sorts?.forEach((s) => {
     const [column, direction] = s.split(' ')
     const syntax = direction === 'asc' ? '+' : '-'
     payload.sort = [...payload.sort(payload.sort ?? []), `${syntax}${column}`]
   })
+
+  if (selects?.length) {
+    payload.selects = selects.join(',')
+  }
 
   return payload
 }

@@ -1,4 +1,4 @@
-import req, { useAPI, UseAPIOption } from '@/axios'
+import { req, useAPI, UseAPIOption } from '@/axios'
 import { App } from 'vue'
 
 const modules = import.meta.glob('./**/index.ts', { eager: true })
@@ -7,7 +7,7 @@ export type NowAPI = typeof now
 
 const now = ({ opt }: UseAPIOption) =>
   useAPI({
-    fn: () => req.get<string>({ url: '/now' }),
+    fn: () => req.get<APIResponse<string>>({ url: '/now' }),
     opt
   })
 

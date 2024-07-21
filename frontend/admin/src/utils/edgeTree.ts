@@ -1,22 +1,30 @@
 type TreeHelperConfig = {
   id: string
-  children: string
   pid: string
+  edges: {
+    children: string
+  }
 }
 const DEFAULT_CONFIG: TreeHelperConfig = {
   id: 'id',
-  children: 'children',
-  pid: 'pid'
+  pid: 'pid',
+  edges: {
+    children: 'children'
+  }
 }
 
 const getConfig = (config: Partial<TreeHelperConfig>) => Object.assign({}, DEFAULT_CONFIG, config)
 
 // tree from list
-export const listToTree = <T = any>(list: any[], config: Partial<TreeHelperConfig> = {}): T[] => {
+export const edgelistToTree = <T = any>(
+  list: any[],
+  config: Partial<TreeHelperConfig> = {}
+): T[] => {
   const conf = getConfig(config) as TreeHelperConfig
   const nodeMap = new Map()
   const result: T[] = []
-  const { id, children, pid } = conf
+  const { id, edges, pid } = conf
+  const { children } = edges
 
   for (const node of list) {
     node[children] = node[children] || []
@@ -26,12 +34,13 @@ export const listToTree = <T = any>(list: any[], config: Partial<TreeHelperConfi
     const parent = nodeMap.get(node[pid])
     ;(parent ? parent.children : result).push(node)
   }
-  return result
+  return result as T[]
 }
 
-export const treeToList = <T = any>(tree: any, config: Partial<TreeHelperConfig> = {}): T => {
-  config = getConfig(config)
-  const { children } = config
+export const edgeTreeToList = <T = any>(tree: any, config: Partial<TreeHelperConfig> = {}): T => {
+  const conf = getConfig(config)
+  const { edges } = conf
+  const { children } = edges
   const result: any = [...tree]
   for (let i = 0; i < result.length; i++) {
     if (!result[i][children!]) continue
@@ -40,13 +49,14 @@ export const treeToList = <T = any>(tree: any, config: Partial<TreeHelperConfig>
   return result
 }
 
-export const findNode = <T = any>(
+export const edgeFindNode = <T = any>(
   tree: any,
   func: Fn,
   config: Partial<TreeHelperConfig> = {}
 ): T | null => {
-  config = getConfig(config)
-  const { children } = config
+  const conf = getConfig(config)
+  const { edges } = conf
+  const { children } = edges
   const list = [...tree]
   for (const node of list) {
     if (func(node)) return node
@@ -55,13 +65,14 @@ export const findNode = <T = any>(
   return null
 }
 
-export const findNodeAll = <T = any>(
+export const edgeFindNodeAll = <T = any>(
   tree: any,
   func: Fn,
   config: Partial<TreeHelperConfig> = {}
 ): T[] => {
-  config = getConfig(config)
-  const { children } = config
+  const conf = getConfig(config)
+  const { edges } = conf
+  const { children } = edges
   const list = [...tree]
   const result: T[] = []
   for (const node of list) {
@@ -80,7 +91,9 @@ export const findPath = <T = any>(
   const path: T[] = []
   const list = [...tree]
   const visitedSet = new Set()
-  const { children } = config
+  const conf = getConfig(config)
+  const { edges } = conf
+  const { children } = edges
   while (list.length) {
     const node = list[0]
     if (visitedSet.has(node)) {
@@ -98,13 +111,15 @@ export const findPath = <T = any>(
   return null
 }
 
-export const findPathAll = (tree: any, func: Fn, config: Partial<TreeHelperConfig> = {}) => {
+export const edgeFindPathAll = (tree: any, func: Fn, config: Partial<TreeHelperConfig> = {}) => {
   config = getConfig(config)
   const path: any[] = []
   const list = [...tree]
   const result: any[] = []
-  const visitedSet = new Set(),
-    { children } = config
+  const visitedSet = new Set()
+  const conf = getConfig(config)
+  const { edges } = conf
+  const { children } = edges
   while (list.length) {
     const node = list[0]
     if (visitedSet.has(node)) {
@@ -120,13 +135,14 @@ export const findPathAll = (tree: any, func: Fn, config: Partial<TreeHelperConfi
   return result
 }
 
-export const filter = <T = any>(
+export const edgeFilter = <T = any>(
   tree: T[],
   func: (n: T) => boolean,
   config: Partial<TreeHelperConfig> = {}
 ): T[] => {
-  config = getConfig(config)
-  const children = config.children as string
+  const conf = getConfig(config)
+  const { edges } = conf
+  const { children } = edges
   function listFilter(list: T[]) {
     return list
       .map((node: any) => ({ ...node }))
@@ -136,74 +152,6 @@ export const filter = <T = any>(
       })
   }
   return listFilter(tree)
-}
-
-export const forEach = <T = any>(
-  tree: T[],
-  func: (n: T) => any,
-  config: Partial<TreeHelperConfig> = {}
-): void => {
-  config = getConfig(config)
-  const list: any[] = [...tree]
-  const { children } = config
-  for (let i = 0; i < list.length; i++) {
-    // func 返回true就终止遍历，避免大量节点场景下无意义循环，引起浏览器卡顿
-    if (func(list[i])) {
-      return
-    }
-    children && list[i][children] && list.splice(i + 1, 0, ...list[i][children])
-  }
-}
-
-/**
- * @description: Extract tree specified structure
- */
-export const treeMap = <T = any>(
-  treeData: T[],
-  opt: { children?: string; conversion: Fn }
-): T[] => {
-  return treeData.map((item) => treeMapEach(item, opt))
-}
-
-/**
- * @description: Extract tree specified structure
- */
-export const treeMapEach = (
-  data: any,
-  { children = 'children', conversion }: { children?: string; conversion: Fn }
-) => {
-  const haveChildren = Array.isArray(data[children]) && data[children].length > 0
-  const conversionData = conversion(data) || {}
-  if (haveChildren) {
-    return {
-      ...conversionData,
-      [children]: data[children].map((i: number) =>
-        treeMapEach(i, {
-          children,
-          conversion
-        })
-      )
-    }
-  } else {
-    return {
-      ...conversionData
-    }
-  }
-}
-
-/**
- * Recursive tree structure
- * @param treeDatas 树
- * @param callBack 回调
- * @param parentNode 父节点
- */
-export const eachTree = (treeDatas: any[], callBack: Fn, parentNode = {}) => {
-  treeDatas.forEach((element) => {
-    const newNode = callBack(element, parentNode) || element
-    if (element.children) {
-      eachTree(element.children, callBack, newNode)
-    }
-  })
 }
 
 export const convertEdgeChildren = <T = any, R = Omit<T, 'edges'>>(

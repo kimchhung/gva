@@ -1,6 +1,8 @@
 package request
 
 import (
+	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -43,34 +45,26 @@ func splitPathAndValue(v string) (path string, value string) {
 	return dotPath, parts[1]
 }
 
-func isValidKey(key string) bool {
-	for _, validKey := range []string{"limit", "offset", "filter", "select", "sort"} {
-		if strings.Contains(validKey, key) {
-			return true
-		}
-	}
-	return false
-}
-
 /*
 ParseUrlQuery
 
-	queries := "filter[money][gt]=true&limit=10"
-	expected := `{"filter":{"money":{"gt":true}},"limit":100}`
+	queries := "filter[money][$gt]=true&limit=10"
+	expected := `{"filter":{"money":{"$gt":true}},"limit":100}`
 */
-func ParseUrlQuery(v string) string {
-	values := strings.Split(v, "&")
+func ParseUrlValue(values url.Values) string {
 	jsonStr := json.NewEmptyObject()
 	var err error
 
-	for _, part := range values {
-		path, val := splitPathAndValue(part)
-		if !isValidKey(path) {
-			continue
-		}
+	for path, vals := range values {
+		path = replaceToDot(path)
+		fmt.Println("path: ", path)
+		fmt.Println("pathv: ", vals)
 
-		if strings.ContainsRune(val, ',') {
-			jsonStr, err = sjson.SetBytes(jsonStr, path, strings.Split(val, ","))
+		val := ""
+		if len(vals) == 1 {
+			val = vals[0]
+		} else {
+			jsonStr, err = sjson.SetBytes(jsonStr, path, vals)
 			utils.PanicIfErr("ParseUrlQuery", err)
 			continue
 		}
@@ -93,6 +87,8 @@ func ParseUrlQuery(v string) string {
 		jsonStr, err = sjson.SetBytes(jsonStr, path, val)
 		utils.PanicIfErr("ParseUrlQuery", err)
 	}
+
+	fmt.Println("result: ", jsonStr.String())
 
 	return jsonStr.String()
 }
@@ -125,10 +121,9 @@ func RqlQueryParser(out *rql.Params, parser *rql.Parser) Parser {
 			err   error
 		)
 
-		query := c.QueryString()
-
-		if query != "" {
-			str := ParseUrlQuery(query)
+		urlValue := c.QueryParams()
+		if urlValue.Encode() != "" {
+			str := ParseUrlValue(urlValue)
 			param, err = parser.Parse([]byte(str))
 		} else {
 			param, err = parser.ParseQuery(

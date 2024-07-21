@@ -200,9 +200,9 @@ func (d *DepartmentQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				return err
 			}
 			d.withParent = query
-			if _, ok := fieldSeen[department.FieldParentID]; !ok {
-				selectedFields = append(selectedFields, department.FieldParentID)
-				fieldSeen[department.FieldParentID] = struct{}{}
+			if _, ok := fieldSeen[department.FieldPid]; !ok {
+				selectedFields = append(selectedFields, department.FieldPid)
+				fieldSeen[department.FieldPid] = struct{}{}
 			}
 
 		case "children":
@@ -260,10 +260,10 @@ func (d *DepartmentQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				selectedFields = append(selectedFields, department.FieldName)
 				fieldSeen[department.FieldName] = struct{}{}
 			}
-		case "parentID":
-			if _, ok := fieldSeen[department.FieldParentID]; !ok {
-				selectedFields = append(selectedFields, department.FieldParentID)
-				fieldSeen[department.FieldParentID] = struct{}{}
+		case "pid":
+			if _, ok := fieldSeen[department.FieldPid]; !ok {
+				selectedFields = append(selectedFields, department.FieldPid)
+				fieldSeen[department.FieldPid] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -360,9 +360,9 @@ func (m *MenuQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				return err
 			}
 			m.withParent = query
-			if _, ok := fieldSeen[menu.FieldParentID]; !ok {
-				selectedFields = append(selectedFields, menu.FieldParentID)
-				fieldSeen[menu.FieldParentID] = struct{}{}
+			if _, ok := fieldSeen[menu.FieldPid]; !ok {
+				selectedFields = append(selectedFields, menu.FieldPid)
+				fieldSeen[menu.FieldPid] = struct{}{}
 			}
 
 		case "children":
@@ -410,10 +410,10 @@ func (m *MenuQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				selectedFields = append(selectedFields, menu.FieldDeletedAt)
 				fieldSeen[menu.FieldDeletedAt] = struct{}{}
 			}
-		case "parentID":
-			if _, ok := fieldSeen[menu.FieldParentID]; !ok {
-				selectedFields = append(selectedFields, menu.FieldParentID)
-				fieldSeen[menu.FieldParentID] = struct{}{}
+		case "pid":
+			if _, ok := fieldSeen[menu.FieldPid]; !ok {
+				selectedFields = append(selectedFields, menu.FieldPid)
+				fieldSeen[menu.FieldPid] = struct{}{}
 			}
 		case "path":
 			if _, ok := fieldSeen[menu.FieldPath]; !ok {
@@ -677,9 +677,9 @@ func (r *RegionQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 				return err
 			}
 			r.withParent = query
-			if _, ok := fieldSeen[region.FieldParentID]; !ok {
-				selectedFields = append(selectedFields, region.FieldParentID)
-				fieldSeen[region.FieldParentID] = struct{}{}
+			if _, ok := fieldSeen[region.FieldPid]; !ok {
+				selectedFields = append(selectedFields, region.FieldPid)
+				fieldSeen[region.FieldPid] = struct{}{}
 			}
 
 		case "children":
@@ -729,10 +729,10 @@ func (r *RegionQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 				selectedFields = append(selectedFields, region.FieldType)
 				fieldSeen[region.FieldType] = struct{}{}
 			}
-		case "parentID":
-			if _, ok := fieldSeen[region.FieldParentID]; !ok {
-				selectedFields = append(selectedFields, region.FieldParentID)
-				fieldSeen[region.FieldParentID] = struct{}{}
+		case "pid":
+			if _, ok := fieldSeen[region.FieldPid]; !ok {
+				selectedFields = append(selectedFields, region.FieldPid)
+				fieldSeen[region.FieldPid] = struct{}{}
 			}
 		case "id":
 		case "__typename":

@@ -9,7 +9,7 @@ import (
 type DepartmentRequest struct {
 	Name     string  `json:"name" validate:"required"`
 	NameId   string  `json:"nameId" validate:"required"`
-	ParentId *xid.ID `json:"parentId"`
+	Pid      *xid.ID `json:"pid"`
 	IsEnable *bool   `json:"isEnable"`
 }
 

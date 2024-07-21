@@ -74,10 +74,11 @@ declare global {
     topToolBorderColor?: string
   }
 
-  declare type IResponse<T = any> = {
+  declare type APIResponse<Data = any, Meta = any> = {
     code: number
     message: string
-    data: T extends any ? T : T & any
+    data: Data
+    meta?: Meta
   }
 
   declare var api: API

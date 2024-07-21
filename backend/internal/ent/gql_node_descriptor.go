@@ -198,12 +198,12 @@ func (d *Department) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "name",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(d.ParentID); err != nil {
+	if buf, err = json.Marshal(d.Pid); err != nil {
 		return nil, err
 	}
 	node.Fields[6] = &Field{
 		Type:  "xid.ID",
-		Name:  "parent_id",
+		Name:  "pid",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
@@ -280,12 +280,12 @@ func (m *Menu) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(m.ParentID); err != nil {
+	if buf, err = json.Marshal(m.Pid); err != nil {
 		return nil, err
 	}
 	node.Fields[4] = &Field{
 		Type:  "xid.ID",
-		Name:  "parent_id",
+		Name:  "pid",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(m.Path); err != nil {
@@ -520,12 +520,12 @@ func (r *Region) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "type",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(r.ParentID); err != nil {
+	if buf, err = json.Marshal(r.Pid); err != nil {
 		return nil, err
 	}
 	node.Fields[7] = &Field{
 		Type:  "xid.ID",
-		Name:  "parent_id",
+		Name:  "pid",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{

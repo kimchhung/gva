@@ -76,7 +76,7 @@ type ComplexityRoot struct {
 		Name      func(childComplexity int) int
 		NameID    func(childComplexity int) int
 		Parent    func(childComplexity int) int
-		ParentID  func(childComplexity int) int
+		Pid       func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 
@@ -102,8 +102,8 @@ type ComplexityRoot struct {
 		Name      func(childComplexity int) int
 		Order     func(childComplexity int) int
 		Parent    func(childComplexity int) int
-		ParentID  func(childComplexity int) int
 		Path      func(childComplexity int) int
+		Pid       func(childComplexity int) int
 		Redirect  func(childComplexity int) int
 		Roles     func(childComplexity int) int
 		Type      func(childComplexity int) int
@@ -146,7 +146,7 @@ type ComplexityRoot struct {
 		Name      func(childComplexity int) int
 		NameID    func(childComplexity int) int
 		Parent    func(childComplexity int) int
-		ParentID  func(childComplexity int) int
+		Pid       func(childComplexity int) int
 		Type      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
@@ -356,12 +356,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Department.Parent(childComplexity), true
 
-	case "Department.parentID":
-		if e.complexity.Department.ParentID == nil {
+	case "Department.pid":
+		if e.complexity.Department.Pid == nil {
 			break
 		}
 
-		return e.complexity.Department.ParentID(childComplexity), true
+		return e.complexity.Department.Pid(childComplexity), true
 
 	case "Department.updatedAt":
 		if e.complexity.Department.UpdatedAt == nil {
@@ -475,19 +475,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Menu.Parent(childComplexity), true
 
-	case "Menu.parentID":
-		if e.complexity.Menu.ParentID == nil {
-			break
-		}
-
-		return e.complexity.Menu.ParentID(childComplexity), true
-
 	case "Menu.path":
 		if e.complexity.Menu.Path == nil {
 			break
 		}
 
 		return e.complexity.Menu.Path(childComplexity), true
+
+	case "Menu.pid":
+		if e.complexity.Menu.Pid == nil {
+			break
+		}
+
+		return e.complexity.Menu.Pid(childComplexity), true
 
 	case "Menu.redirect":
 		if e.complexity.Menu.Redirect == nil {
@@ -719,12 +719,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Region.Parent(childComplexity), true
 
-	case "Region.parentID":
-		if e.complexity.Region.ParentID == nil {
+	case "Region.pid":
+		if e.complexity.Region.Pid == nil {
 			break
 		}
 
-		return e.complexity.Region.ParentID(childComplexity), true
+		return e.complexity.Region.Pid(childComplexity), true
 
 	case "Region.type":
 		if e.complexity.Region.Type == nil {
@@ -1165,7 +1165,7 @@ type Department implements Node {
   isEnable: Boolean!
   nameID: String!
   name: String!
-  parentID: ID
+  pid: ID
   parent: Department
   children: [Department!]
   members: [Admin!]
@@ -1309,23 +1309,23 @@ input DepartmentWhereInput {
   nameEqualFold: String
   nameContainsFold: String
   """
-  parent_id field predicates
+  pid field predicates
   """
-  parentID: ID
-  parentIDNEQ: ID
-  parentIDIn: [ID!]
-  parentIDNotIn: [ID!]
-  parentIDGT: ID
-  parentIDGTE: ID
-  parentIDLT: ID
-  parentIDLTE: ID
-  parentIDContains: ID
-  parentIDHasPrefix: ID
-  parentIDHasSuffix: ID
-  parentIDIsNil: Boolean
-  parentIDNotNil: Boolean
-  parentIDEqualFold: ID
-  parentIDContainsFold: ID
+  pid: ID
+  pidNEQ: ID
+  pidIn: [ID!]
+  pidNotIn: [ID!]
+  pidGT: ID
+  pidGTE: ID
+  pidLT: ID
+  pidLTE: ID
+  pidContains: ID
+  pidHasPrefix: ID
+  pidHasSuffix: ID
+  pidIsNil: Boolean
+  pidNotNil: Boolean
+  pidEqualFold: ID
+  pidContainsFold: ID
   """
   parent edge predicates
   """
@@ -1348,7 +1348,7 @@ type Menu implements Node {
   updatedAt: Time!
   isEnable: Boolean!
   deletedAt: Int!
-  parentID: ID
+  pid: ID
   path: String!
   component: String!
   redirect: String
@@ -1446,23 +1446,23 @@ input MenuWhereInput {
   deletedAtLT: Int
   deletedAtLTE: Int
   """
-  parent_id field predicates
+  pid field predicates
   """
-  parentID: ID
-  parentIDNEQ: ID
-  parentIDIn: [ID!]
-  parentIDNotIn: [ID!]
-  parentIDGT: ID
-  parentIDGTE: ID
-  parentIDLT: ID
-  parentIDLTE: ID
-  parentIDContains: ID
-  parentIDHasPrefix: ID
-  parentIDHasSuffix: ID
-  parentIDIsNil: Boolean
-  parentIDNotNil: Boolean
-  parentIDEqualFold: ID
-  parentIDContainsFold: ID
+  pid: ID
+  pidNEQ: ID
+  pidIn: [ID!]
+  pidNotIn: [ID!]
+  pidGT: ID
+  pidGTE: ID
+  pidLT: ID
+  pidLTE: ID
+  pidContains: ID
+  pidHasPrefix: ID
+  pidHasSuffix: ID
+  pidIsNil: Boolean
+  pidNotNil: Boolean
+  pidEqualFold: ID
+  pidContainsFold: ID
   """
   path field predicates
   """
@@ -1855,7 +1855,7 @@ type Region implements Node {
   nameID: String!
   name: String!
   type: RegionType!
-  parentID: ID
+  pid: ID
   parent: Region
   children: [Region!]
 }
@@ -2015,23 +2015,23 @@ input RegionWhereInput {
   typeIn: [RegionType!]
   typeNotIn: [RegionType!]
   """
-  parent_id field predicates
+  pid field predicates
   """
-  parentID: ID
-  parentIDNEQ: ID
-  parentIDIn: [ID!]
-  parentIDNotIn: [ID!]
-  parentIDGT: ID
-  parentIDGTE: ID
-  parentIDLT: ID
-  parentIDLTE: ID
-  parentIDContains: ID
-  parentIDHasPrefix: ID
-  parentIDHasSuffix: ID
-  parentIDIsNil: Boolean
-  parentIDNotNil: Boolean
-  parentIDEqualFold: ID
-  parentIDContainsFold: ID
+  pid: ID
+  pidNEQ: ID
+  pidIn: [ID!]
+  pidNotIn: [ID!]
+  pidGT: ID
+  pidGTE: ID
+  pidLT: ID
+  pidLTE: ID
+  pidContains: ID
+  pidHasPrefix: ID
+  pidHasSuffix: ID
+  pidIsNil: Boolean
+  pidNotNil: Boolean
+  pidEqualFold: ID
+  pidContainsFold: ID
   """
   parent edge predicates
   """
@@ -3017,8 +3017,8 @@ func (ec *executionContext) fieldContext_Admin_department(_ context.Context, fie
 				return ec.fieldContext_Department_nameID(ctx, field)
 			case "name":
 				return ec.fieldContext_Department_name(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Department_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Department_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Department_parent(ctx, field)
 			case "children":
@@ -3340,8 +3340,8 @@ func (ec *executionContext) fieldContext_Department_name(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Department_parentID(ctx context.Context, field graphql.CollectedField, obj *ent.Department) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Department_parentID(ctx, field)
+func (ec *executionContext) _Department_pid(ctx context.Context, field graphql.CollectedField, obj *ent.Department) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Department_pid(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3354,7 +3354,7 @@ func (ec *executionContext) _Department_parentID(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ParentID, nil
+		return obj.Pid, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3368,7 +3368,7 @@ func (ec *executionContext) _Department_parentID(ctx context.Context, field grap
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Department_parentID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Department_pid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Department",
 		Field:      field,
@@ -3431,8 +3431,8 @@ func (ec *executionContext) fieldContext_Department_parent(_ context.Context, fi
 				return ec.fieldContext_Department_nameID(ctx, field)
 			case "name":
 				return ec.fieldContext_Department_name(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Department_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Department_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Department_parent(ctx, field)
 			case "children":
@@ -3496,8 +3496,8 @@ func (ec *executionContext) fieldContext_Department_children(_ context.Context, 
 				return ec.fieldContext_Department_nameID(ctx, field)
 			case "name":
 				return ec.fieldContext_Department_name(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Department_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Department_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Department_parent(ctx, field)
 			case "children":
@@ -3771,8 +3771,8 @@ func (ec *executionContext) fieldContext_DepartmentEdge_node(_ context.Context, 
 				return ec.fieldContext_Department_nameID(ctx, field)
 			case "name":
 				return ec.fieldContext_Department_name(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Department_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Department_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Department_parent(ctx, field)
 			case "children":
@@ -4050,8 +4050,8 @@ func (ec *executionContext) fieldContext_Menu_deletedAt(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Menu_parentID(ctx context.Context, field graphql.CollectedField, obj *ent.Menu) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Menu_parentID(ctx, field)
+func (ec *executionContext) _Menu_pid(ctx context.Context, field graphql.CollectedField, obj *ent.Menu) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Menu_pid(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4064,7 +4064,7 @@ func (ec *executionContext) _Menu_parentID(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ParentID, nil
+		return obj.Pid, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4078,7 +4078,7 @@ func (ec *executionContext) _Menu_parentID(ctx context.Context, field graphql.Co
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Menu_parentID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Menu_pid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Menu",
 		Field:      field,
@@ -4439,8 +4439,8 @@ func (ec *executionContext) fieldContext_Menu_parent(_ context.Context, field gr
 				return ec.fieldContext_Menu_isEnable(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Menu_deletedAt(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Menu_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Menu_pid(ctx, field)
 			case "path":
 				return ec.fieldContext_Menu_path(ctx, field)
 			case "component":
@@ -4514,8 +4514,8 @@ func (ec *executionContext) fieldContext_Menu_children(_ context.Context, field 
 				return ec.fieldContext_Menu_isEnable(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Menu_deletedAt(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Menu_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Menu_pid(ctx, field)
 			case "path":
 				return ec.fieldContext_Menu_path(ctx, field)
 			case "component":
@@ -5951,8 +5951,8 @@ func (ec *executionContext) fieldContext_Region_type(_ context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Region_parentID(ctx context.Context, field graphql.CollectedField, obj *ent.Region) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Region_parentID(ctx, field)
+func (ec *executionContext) _Region_pid(ctx context.Context, field graphql.CollectedField, obj *ent.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_pid(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5965,7 +5965,7 @@ func (ec *executionContext) _Region_parentID(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ParentID, nil
+		return obj.Pid, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5979,7 +5979,7 @@ func (ec *executionContext) _Region_parentID(ctx context.Context, field graphql.
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Region_parentID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Region_pid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Region",
 		Field:      field,
@@ -6044,8 +6044,8 @@ func (ec *executionContext) fieldContext_Region_parent(_ context.Context, field 
 				return ec.fieldContext_Region_name(ctx, field)
 			case "type":
 				return ec.fieldContext_Region_type(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Region_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Region_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Region_parent(ctx, field)
 			case "children":
@@ -6109,8 +6109,8 @@ func (ec *executionContext) fieldContext_Region_children(_ context.Context, fiel
 				return ec.fieldContext_Region_name(ctx, field)
 			case "type":
 				return ec.fieldContext_Region_type(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Region_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Region_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Region_parent(ctx, field)
 			case "children":
@@ -6319,8 +6319,8 @@ func (ec *executionContext) fieldContext_RegionEdge_node(_ context.Context, fiel
 				return ec.fieldContext_Region_name(ctx, field)
 			case "type":
 				return ec.fieldContext_Region_type(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Region_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Region_pid(ctx, field)
 			case "parent":
 				return ec.fieldContext_Region_parent(ctx, field)
 			case "children":
@@ -6944,8 +6944,8 @@ func (ec *executionContext) fieldContext_Role_routes(_ context.Context, field gr
 				return ec.fieldContext_Menu_isEnable(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Menu_deletedAt(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Menu_parentID(ctx, field)
+			case "pid":
+				return ec.fieldContext_Menu_pid(ctx, field)
 			case "path":
 				return ec.fieldContext_Menu_path(ctx, field)
 			case "component":
@@ -9657,7 +9657,7 @@ func (ec *executionContext) unmarshalInputDepartmentWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "isEnable", "isEnableNEQ", "nameID", "nameIDNEQ", "nameIDIn", "nameIDNotIn", "nameIDGT", "nameIDGTE", "nameIDLT", "nameIDLTE", "nameIDContains", "nameIDHasPrefix", "nameIDHasSuffix", "nameIDEqualFold", "nameIDContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "parentID", "parentIDNEQ", "parentIDIn", "parentIDNotIn", "parentIDGT", "parentIDGTE", "parentIDLT", "parentIDLTE", "parentIDContains", "parentIDHasPrefix", "parentIDHasSuffix", "parentIDIsNil", "parentIDNotNil", "parentIDEqualFold", "parentIDContainsFold", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith", "hasMembers", "hasMembersWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "isEnable", "isEnableNEQ", "nameID", "nameIDNEQ", "nameIDIn", "nameIDNotIn", "nameIDGT", "nameIDGTE", "nameIDLT", "nameIDLTE", "nameIDContains", "nameIDHasPrefix", "nameIDHasSuffix", "nameIDEqualFold", "nameIDContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "pid", "pidNEQ", "pidIn", "pidNotIn", "pidGT", "pidGTE", "pidLT", "pidLTE", "pidContains", "pidHasPrefix", "pidHasSuffix", "pidIsNil", "pidNotNil", "pidEqualFold", "pidContainsFold", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith", "hasMembers", "hasMembersWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10105,111 +10105,111 @@ func (ec *executionContext) unmarshalInputDepartmentWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.NameContainsFold = data
-		case "parentID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
+		case "pid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentID = data
-		case "parentIDNEQ":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNEQ"))
+			it.Pid = data
+		case "pidNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNEQ"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNEQ = data
-		case "parentIDIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIn"))
+			it.PidNEQ = data
+		case "pidIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidIn"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIn = data
-		case "parentIDNotIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotIn"))
+			it.PidIn = data
+		case "pidNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNotIn"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotIn = data
-		case "parentIDGT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGT"))
+			it.PidNotIn = data
+		case "pidGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidGT"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGT = data
-		case "parentIDGTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGTE"))
+			it.PidGT = data
+		case "pidGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidGTE"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGTE = data
-		case "parentIDLT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLT"))
+			it.PidGTE = data
+		case "pidLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidLT"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLT = data
-		case "parentIDLTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLTE"))
+			it.PidLT = data
+		case "pidLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidLTE"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLTE = data
-		case "parentIDContains":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContains"))
+			it.PidLTE = data
+		case "pidContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidContains"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContains = data
-		case "parentIDHasPrefix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasPrefix"))
+			it.PidContains = data
+		case "pidHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidHasPrefix"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasPrefix = data
-		case "parentIDHasSuffix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasSuffix"))
+			it.PidHasPrefix = data
+		case "pidHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidHasSuffix"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasSuffix = data
-		case "parentIDIsNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIsNil"))
+			it.PidHasSuffix = data
+		case "pidIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIsNil = data
-		case "parentIDNotNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotNil"))
+			it.PidIsNil = data
+		case "pidNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNotNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotNil = data
-		case "parentIDEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDEqualFold"))
+			it.PidNotNil = data
+		case "pidEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidEqualFold"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDEqualFold = data
-		case "parentIDContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContainsFold"))
+			it.PidEqualFold = data
+		case "pidContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidContainsFold"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContainsFold = data
+			it.PidContainsFold = data
 		case "hasParent":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParent"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -10303,7 +10303,7 @@ func (ec *executionContext) unmarshalInputMenuWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "parentID", "parentIDNEQ", "parentIDIn", "parentIDNotIn", "parentIDGT", "parentIDGTE", "parentIDLT", "parentIDLTE", "parentIDContains", "parentIDHasPrefix", "parentIDHasSuffix", "parentIDIsNil", "parentIDNotNil", "parentIDEqualFold", "parentIDContainsFold", "path", "pathNEQ", "pathIn", "pathNotIn", "pathGT", "pathGTE", "pathLT", "pathLTE", "pathContains", "pathHasPrefix", "pathHasSuffix", "pathEqualFold", "pathContainsFold", "component", "componentNEQ", "componentIn", "componentNotIn", "componentGT", "componentGTE", "componentLT", "componentLTE", "componentContains", "componentHasPrefix", "componentHasSuffix", "componentEqualFold", "componentContainsFold", "redirect", "redirectNEQ", "redirectIn", "redirectNotIn", "redirectGT", "redirectGTE", "redirectLT", "redirectLTE", "redirectContains", "redirectHasPrefix", "redirectHasSuffix", "redirectIsNil", "redirectNotNil", "redirectEqualFold", "redirectContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "type", "typeNEQ", "typeIn", "typeNotIn", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith", "hasRoles", "hasRolesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "isEnable", "isEnableNEQ", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "pid", "pidNEQ", "pidIn", "pidNotIn", "pidGT", "pidGTE", "pidLT", "pidLTE", "pidContains", "pidHasPrefix", "pidHasSuffix", "pidIsNil", "pidNotNil", "pidEqualFold", "pidContainsFold", "path", "pathNEQ", "pathIn", "pathNotIn", "pathGT", "pathGTE", "pathLT", "pathLTE", "pathContains", "pathHasPrefix", "pathHasSuffix", "pathEqualFold", "pathContainsFold", "component", "componentNEQ", "componentIn", "componentNotIn", "componentGT", "componentGTE", "componentLT", "componentLTE", "componentContains", "componentHasPrefix", "componentHasSuffix", "componentEqualFold", "componentContainsFold", "redirect", "redirectNEQ", "redirectIn", "redirectNotIn", "redirectGT", "redirectGTE", "redirectLT", "redirectLTE", "redirectContains", "redirectHasPrefix", "redirectHasSuffix", "redirectIsNil", "redirectNotNil", "redirectEqualFold", "redirectContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "type", "typeNEQ", "typeIn", "typeNotIn", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith", "hasRoles", "hasRolesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10569,111 +10569,111 @@ func (ec *executionContext) unmarshalInputMenuWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.DeletedAtLTE = data
-		case "parentID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
+		case "pid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentID = data
-		case "parentIDNEQ":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNEQ"))
+			it.Pid = data
+		case "pidNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNEQ"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNEQ = data
-		case "parentIDIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIn"))
+			it.PidNEQ = data
+		case "pidIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidIn"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIn = data
-		case "parentIDNotIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotIn"))
+			it.PidIn = data
+		case "pidNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNotIn"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotIn = data
-		case "parentIDGT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGT"))
+			it.PidNotIn = data
+		case "pidGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidGT"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGT = data
-		case "parentIDGTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGTE"))
+			it.PidGT = data
+		case "pidGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidGTE"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGTE = data
-		case "parentIDLT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLT"))
+			it.PidGTE = data
+		case "pidLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidLT"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLT = data
-		case "parentIDLTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLTE"))
+			it.PidLT = data
+		case "pidLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidLTE"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLTE = data
-		case "parentIDContains":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContains"))
+			it.PidLTE = data
+		case "pidContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidContains"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContains = data
-		case "parentIDHasPrefix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasPrefix"))
+			it.PidContains = data
+		case "pidHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidHasPrefix"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasPrefix = data
-		case "parentIDHasSuffix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasSuffix"))
+			it.PidHasPrefix = data
+		case "pidHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidHasSuffix"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasSuffix = data
-		case "parentIDIsNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIsNil"))
+			it.PidHasSuffix = data
+		case "pidIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIsNil = data
-		case "parentIDNotNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotNil"))
+			it.PidIsNil = data
+		case "pidNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNotNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotNil = data
-		case "parentIDEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDEqualFold"))
+			it.PidNotNil = data
+		case "pidEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidEqualFold"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDEqualFold = data
-		case "parentIDContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContainsFold"))
+			it.PidEqualFold = data
+		case "pidContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidContainsFold"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContainsFold = data
+			it.PidContainsFold = data
 		case "path":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -11889,7 +11889,7 @@ func (ec *executionContext) unmarshalInputRegionWhereInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "isEnable", "isEnableNEQ", "nameID", "nameIDNEQ", "nameIDIn", "nameIDNotIn", "nameIDGT", "nameIDGTE", "nameIDLT", "nameIDLTE", "nameIDContains", "nameIDHasPrefix", "nameIDHasSuffix", "nameIDEqualFold", "nameIDContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "parentID", "parentIDNEQ", "parentIDIn", "parentIDNotIn", "parentIDGT", "parentIDGTE", "parentIDLT", "parentIDLTE", "parentIDContains", "parentIDHasPrefix", "parentIDHasSuffix", "parentIDIsNil", "parentIDNotNil", "parentIDEqualFold", "parentIDContainsFold", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "isEnable", "isEnableNEQ", "nameID", "nameIDNEQ", "nameIDIn", "nameIDNotIn", "nameIDGT", "nameIDGTE", "nameIDLT", "nameIDLTE", "nameIDContains", "nameIDHasPrefix", "nameIDHasSuffix", "nameIDEqualFold", "nameIDContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "pid", "pidNEQ", "pidIn", "pidNotIn", "pidGT", "pidGTE", "pidLT", "pidLTE", "pidContains", "pidHasPrefix", "pidHasSuffix", "pidIsNil", "pidNotNil", "pidEqualFold", "pidContainsFold", "hasParent", "hasParentWith", "hasChildren", "hasChildrenWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -12365,111 +12365,111 @@ func (ec *executionContext) unmarshalInputRegionWhereInput(ctx context.Context, 
 				return it, err
 			}
 			it.TypeNotIn = data
-		case "parentID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
+		case "pid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentID = data
-		case "parentIDNEQ":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNEQ"))
+			it.Pid = data
+		case "pidNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNEQ"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNEQ = data
-		case "parentIDIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIn"))
+			it.PidNEQ = data
+		case "pidIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidIn"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIn = data
-		case "parentIDNotIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotIn"))
+			it.PidIn = data
+		case "pidNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNotIn"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotIn = data
-		case "parentIDGT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGT"))
+			it.PidNotIn = data
+		case "pidGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidGT"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGT = data
-		case "parentIDGTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDGTE"))
+			it.PidGT = data
+		case "pidGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidGTE"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDGTE = data
-		case "parentIDLT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLT"))
+			it.PidGTE = data
+		case "pidLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidLT"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLT = data
-		case "parentIDLTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDLTE"))
+			it.PidLT = data
+		case "pidLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidLTE"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDLTE = data
-		case "parentIDContains":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContains"))
+			it.PidLTE = data
+		case "pidContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidContains"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContains = data
-		case "parentIDHasPrefix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasPrefix"))
+			it.PidContains = data
+		case "pidHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidHasPrefix"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasPrefix = data
-		case "parentIDHasSuffix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDHasSuffix"))
+			it.PidHasPrefix = data
+		case "pidHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidHasSuffix"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDHasSuffix = data
-		case "parentIDIsNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDIsNil"))
+			it.PidHasSuffix = data
+		case "pidIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDIsNil = data
-		case "parentIDNotNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDNotNil"))
+			it.PidIsNil = data
+		case "pidNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidNotNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDNotNil = data
-		case "parentIDEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDEqualFold"))
+			it.PidNotNil = data
+		case "pidEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidEqualFold"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDEqualFold = data
-		case "parentIDContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentIDContainsFold"))
+			it.PidEqualFold = data
+		case "pidContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pidContainsFold"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ParentIDContainsFold = data
+			it.PidContainsFold = data
 		case "hasParent":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParent"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -13746,8 +13746,8 @@ func (ec *executionContext) _Department(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "parentID":
-			out.Values[i] = ec._Department_parentID(ctx, field, obj)
+		case "pid":
+			out.Values[i] = ec._Department_pid(ctx, field, obj)
 		case "parent":
 			field := field
 
@@ -13993,8 +13993,8 @@ func (ec *executionContext) _Menu(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "parentID":
-			out.Values[i] = ec._Menu_parentID(ctx, field, obj)
+		case "pid":
+			out.Values[i] = ec._Menu_pid(ctx, field, obj)
 		case "path":
 			out.Values[i] = ec._Menu_path(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -14534,8 +14534,8 @@ func (ec *executionContext) _Region(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "parentID":
-			out.Values[i] = ec._Region_parentID(ctx, field, obj)
+		case "pid":
+			out.Values[i] = ec._Region_pid(ctx, field, obj)
 		case "parent":
 			field := field
 

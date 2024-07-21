@@ -28,8 +28,8 @@ type Menu struct {
 	IsEnable bool `json:"isEnable"  rql:"filter,sort"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
-	// ParentID holds the value of the "parent_id" field.
-	ParentID *xid.ID `json:"parentId,omitempty" rql:"filter,sort"`
+	// Pid holds the value of the "pid" field.
+	Pid *xid.ID `json:"pid,omitempty" rql:"filter,sort"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty" rql:"filter,sort"`
 	// Component holds the value of the "component" field.
@@ -102,7 +102,7 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case menu.FieldParentID:
+		case menu.FieldPid:
 			values[i] = &sql.NullScanner{S: new(xid.ID)}
 		case menu.FieldMeta:
 			values[i] = new([]byte)
@@ -161,12 +161,12 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.DeletedAt = int(value.Int64)
 			}
-		case menu.FieldParentID:
+		case menu.FieldPid:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+				return fmt.Errorf("unexpected type %T for field pid", values[i])
 			} else if value.Valid {
-				m.ParentID = new(xid.ID)
-				*m.ParentID = *value.S.(*xid.ID)
+				m.Pid = new(xid.ID)
+				*m.Pid = *value.S.(*xid.ID)
 			}
 		case menu.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -276,8 +276,8 @@ func (m *Menu) String() string {
 	builder.WriteString("deleted_at=")
 	builder.WriteString(fmt.Sprintf("%v", m.DeletedAt))
 	builder.WriteString(", ")
-	if v := m.ParentID; v != nil {
-		builder.WriteString("parent_id=")
+	if v := m.Pid; v != nil {
+		builder.WriteString("pid=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

@@ -1404,13 +1404,13 @@ func (m *DepartmentMutation) ResetName() {
 	m.name = nil
 }
 
-// SetParentID sets the "parent_id" field.
-func (m *DepartmentMutation) SetParentID(x xid.ID) {
+// SetPid sets the "pid" field.
+func (m *DepartmentMutation) SetPid(x xid.ID) {
 	m.parent = &x
 }
 
-// ParentID returns the value of the "parent_id" field in the mutation.
-func (m *DepartmentMutation) ParentID() (r xid.ID, exists bool) {
+// Pid returns the value of the "pid" field in the mutation.
+func (m *DepartmentMutation) Pid() (r xid.ID, exists bool) {
 	v := m.parent
 	if v == nil {
 		return
@@ -1418,50 +1418,63 @@ func (m *DepartmentMutation) ParentID() (r xid.ID, exists bool) {
 	return *v, true
 }
 
-// OldParentID returns the old "parent_id" field's value of the Department entity.
+// OldPid returns the old "pid" field's value of the Department entity.
 // If the Department object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DepartmentMutation) OldParentID(ctx context.Context) (v *xid.ID, err error) {
+func (m *DepartmentMutation) OldPid(ctx context.Context) (v *xid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+		return v, errors.New("OldPid is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldParentID requires an ID field in the mutation")
+		return v, errors.New("OldPid requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+		return v, fmt.Errorf("querying old value for OldPid: %w", err)
 	}
-	return oldValue.ParentID, nil
+	return oldValue.Pid, nil
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (m *DepartmentMutation) ClearParentID() {
+// ClearPid clears the value of the "pid" field.
+func (m *DepartmentMutation) ClearPid() {
 	m.parent = nil
-	m.clearedFields[department.FieldParentID] = struct{}{}
+	m.clearedFields[department.FieldPid] = struct{}{}
 }
 
-// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
-func (m *DepartmentMutation) ParentIDCleared() bool {
-	_, ok := m.clearedFields[department.FieldParentID]
+// PidCleared returns if the "pid" field was cleared in this mutation.
+func (m *DepartmentMutation) PidCleared() bool {
+	_, ok := m.clearedFields[department.FieldPid]
 	return ok
 }
 
-// ResetParentID resets all changes to the "parent_id" field.
-func (m *DepartmentMutation) ResetParentID() {
+// ResetPid resets all changes to the "pid" field.
+func (m *DepartmentMutation) ResetPid() {
 	m.parent = nil
-	delete(m.clearedFields, department.FieldParentID)
+	delete(m.clearedFields, department.FieldPid)
+}
+
+// SetParentID sets the "parent" edge to the Department entity by id.
+func (m *DepartmentMutation) SetParentID(id xid.ID) {
+	m.parent = &id
 }
 
 // ClearParent clears the "parent" edge to the Department entity.
 func (m *DepartmentMutation) ClearParent() {
 	m.clearedparent = true
-	m.clearedFields[department.FieldParentID] = struct{}{}
+	m.clearedFields[department.FieldPid] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the Department entity was cleared.
 func (m *DepartmentMutation) ParentCleared() bool {
-	return m.ParentIDCleared() || m.clearedparent
+	return m.PidCleared() || m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *DepartmentMutation) ParentID() (id xid.ID, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
 }
 
 // ParentIDs returns the "parent" edge IDs in the mutation.
@@ -1642,7 +1655,7 @@ func (m *DepartmentMutation) Fields() []string {
 		fields = append(fields, department.FieldName)
 	}
 	if m.parent != nil {
-		fields = append(fields, department.FieldParentID)
+		fields = append(fields, department.FieldPid)
 	}
 	return fields
 }
@@ -1664,8 +1677,8 @@ func (m *DepartmentMutation) Field(name string) (ent.Value, bool) {
 		return m.NameID()
 	case department.FieldName:
 		return m.Name()
-	case department.FieldParentID:
-		return m.ParentID()
+	case department.FieldPid:
+		return m.Pid()
 	}
 	return nil, false
 }
@@ -1687,8 +1700,8 @@ func (m *DepartmentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldNameID(ctx)
 	case department.FieldName:
 		return m.OldName(ctx)
-	case department.FieldParentID:
-		return m.OldParentID(ctx)
+	case department.FieldPid:
+		return m.OldPid(ctx)
 	}
 	return nil, fmt.Errorf("unknown Department field %s", name)
 }
@@ -1740,12 +1753,12 @@ func (m *DepartmentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case department.FieldParentID:
+	case department.FieldPid:
 		v, ok := value.(xid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetParentID(v)
+		m.SetPid(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Department field %s", name)
@@ -1792,8 +1805,8 @@ func (m *DepartmentMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *DepartmentMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(department.FieldParentID) {
-		fields = append(fields, department.FieldParentID)
+	if m.FieldCleared(department.FieldPid) {
+		fields = append(fields, department.FieldPid)
 	}
 	return fields
 }
@@ -1809,8 +1822,8 @@ func (m *DepartmentMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *DepartmentMutation) ClearField(name string) error {
 	switch name {
-	case department.FieldParentID:
-		m.ClearParentID()
+	case department.FieldPid:
+		m.ClearPid()
 		return nil
 	}
 	return fmt.Errorf("unknown Department nullable field %s", name)
@@ -1838,8 +1851,8 @@ func (m *DepartmentMutation) ResetField(name string) error {
 	case department.FieldName:
 		m.ResetName()
 		return nil
-	case department.FieldParentID:
-		m.ResetParentID()
+	case department.FieldPid:
+		m.ResetPid()
 		return nil
 	}
 	return fmt.Errorf("unknown Department field %s", name)
@@ -2274,13 +2287,13 @@ func (m *MenuMutation) ResetDeletedAt() {
 	m.adddeleted_at = nil
 }
 
-// SetParentID sets the "parent_id" field.
-func (m *MenuMutation) SetParentID(x xid.ID) {
+// SetPid sets the "pid" field.
+func (m *MenuMutation) SetPid(x xid.ID) {
 	m.parent = &x
 }
 
-// ParentID returns the value of the "parent_id" field in the mutation.
-func (m *MenuMutation) ParentID() (r xid.ID, exists bool) {
+// Pid returns the value of the "pid" field in the mutation.
+func (m *MenuMutation) Pid() (r xid.ID, exists bool) {
 	v := m.parent
 	if v == nil {
 		return
@@ -2288,39 +2301,39 @@ func (m *MenuMutation) ParentID() (r xid.ID, exists bool) {
 	return *v, true
 }
 
-// OldParentID returns the old "parent_id" field's value of the Menu entity.
+// OldPid returns the old "pid" field's value of the Menu entity.
 // If the Menu object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldParentID(ctx context.Context) (v *xid.ID, err error) {
+func (m *MenuMutation) OldPid(ctx context.Context) (v *xid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+		return v, errors.New("OldPid is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldParentID requires an ID field in the mutation")
+		return v, errors.New("OldPid requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+		return v, fmt.Errorf("querying old value for OldPid: %w", err)
 	}
-	return oldValue.ParentID, nil
+	return oldValue.Pid, nil
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (m *MenuMutation) ClearParentID() {
+// ClearPid clears the value of the "pid" field.
+func (m *MenuMutation) ClearPid() {
 	m.parent = nil
-	m.clearedFields[menu.FieldParentID] = struct{}{}
+	m.clearedFields[menu.FieldPid] = struct{}{}
 }
 
-// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
-func (m *MenuMutation) ParentIDCleared() bool {
-	_, ok := m.clearedFields[menu.FieldParentID]
+// PidCleared returns if the "pid" field was cleared in this mutation.
+func (m *MenuMutation) PidCleared() bool {
+	_, ok := m.clearedFields[menu.FieldPid]
 	return ok
 }
 
-// ResetParentID resets all changes to the "parent_id" field.
-func (m *MenuMutation) ResetParentID() {
+// ResetPid resets all changes to the "pid" field.
+func (m *MenuMutation) ResetPid() {
 	m.parent = nil
-	delete(m.clearedFields, menu.FieldParentID)
+	delete(m.clearedFields, menu.FieldPid)
 }
 
 // SetPath sets the "path" field.
@@ -2622,15 +2635,28 @@ func (m *MenuMutation) ResetMeta() {
 	m.meta = nil
 }
 
+// SetParentID sets the "parent" edge to the Menu entity by id.
+func (m *MenuMutation) SetParentID(id xid.ID) {
+	m.parent = &id
+}
+
 // ClearParent clears the "parent" edge to the Menu entity.
 func (m *MenuMutation) ClearParent() {
 	m.clearedparent = true
-	m.clearedFields[menu.FieldParentID] = struct{}{}
+	m.clearedFields[menu.FieldPid] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the Menu entity was cleared.
 func (m *MenuMutation) ParentCleared() bool {
-	return m.ParentIDCleared() || m.clearedparent
+	return m.PidCleared() || m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *MenuMutation) ParentID() (id xid.ID, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
 }
 
 // ParentIDs returns the "parent" edge IDs in the mutation.
@@ -2805,7 +2831,7 @@ func (m *MenuMutation) Fields() []string {
 		fields = append(fields, menu.FieldDeletedAt)
 	}
 	if m.parent != nil {
-		fields = append(fields, menu.FieldParentID)
+		fields = append(fields, menu.FieldPid)
 	}
 	if m._path != nil {
 		fields = append(fields, menu.FieldPath)
@@ -2844,8 +2870,8 @@ func (m *MenuMutation) Field(name string) (ent.Value, bool) {
 		return m.IsEnable()
 	case menu.FieldDeletedAt:
 		return m.DeletedAt()
-	case menu.FieldParentID:
-		return m.ParentID()
+	case menu.FieldPid:
+		return m.Pid()
 	case menu.FieldPath:
 		return m.Path()
 	case menu.FieldComponent:
@@ -2877,8 +2903,8 @@ func (m *MenuMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsEnable(ctx)
 	case menu.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case menu.FieldParentID:
-		return m.OldParentID(ctx)
+	case menu.FieldPid:
+		return m.OldPid(ctx)
 	case menu.FieldPath:
 		return m.OldPath(ctx)
 	case menu.FieldComponent:
@@ -2930,12 +2956,12 @@ func (m *MenuMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case menu.FieldParentID:
+	case menu.FieldPid:
 		v, ok := value.(xid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetParentID(v)
+		m.SetPid(v)
 		return nil
 	case menu.FieldPath:
 		v, ok := value.(string)
@@ -3043,8 +3069,8 @@ func (m *MenuMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *MenuMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(menu.FieldParentID) {
-		fields = append(fields, menu.FieldParentID)
+	if m.FieldCleared(menu.FieldPid) {
+		fields = append(fields, menu.FieldPid)
 	}
 	if m.FieldCleared(menu.FieldRedirect) {
 		fields = append(fields, menu.FieldRedirect)
@@ -3066,8 +3092,8 @@ func (m *MenuMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *MenuMutation) ClearField(name string) error {
 	switch name {
-	case menu.FieldParentID:
-		m.ClearParentID()
+	case menu.FieldPid:
+		m.ClearPid()
 		return nil
 	case menu.FieldRedirect:
 		m.ClearRedirect()
@@ -3095,8 +3121,8 @@ func (m *MenuMutation) ResetField(name string) error {
 	case menu.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case menu.FieldParentID:
-		m.ResetParentID()
+	case menu.FieldPid:
+		m.ResetPid()
 		return nil
 	case menu.FieldPath:
 		m.ResetPath()
@@ -4479,13 +4505,13 @@ func (m *RegionMutation) ResetType() {
 	m._type = nil
 }
 
-// SetParentID sets the "parent_id" field.
-func (m *RegionMutation) SetParentID(x xid.ID) {
+// SetPid sets the "pid" field.
+func (m *RegionMutation) SetPid(x xid.ID) {
 	m.parent = &x
 }
 
-// ParentID returns the value of the "parent_id" field in the mutation.
-func (m *RegionMutation) ParentID() (r xid.ID, exists bool) {
+// Pid returns the value of the "pid" field in the mutation.
+func (m *RegionMutation) Pid() (r xid.ID, exists bool) {
 	v := m.parent
 	if v == nil {
 		return
@@ -4493,50 +4519,63 @@ func (m *RegionMutation) ParentID() (r xid.ID, exists bool) {
 	return *v, true
 }
 
-// OldParentID returns the old "parent_id" field's value of the Region entity.
+// OldPid returns the old "pid" field's value of the Region entity.
 // If the Region object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldParentID(ctx context.Context) (v *xid.ID, err error) {
+func (m *RegionMutation) OldPid(ctx context.Context) (v *xid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+		return v, errors.New("OldPid is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldParentID requires an ID field in the mutation")
+		return v, errors.New("OldPid requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+		return v, fmt.Errorf("querying old value for OldPid: %w", err)
 	}
-	return oldValue.ParentID, nil
+	return oldValue.Pid, nil
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (m *RegionMutation) ClearParentID() {
+// ClearPid clears the value of the "pid" field.
+func (m *RegionMutation) ClearPid() {
 	m.parent = nil
-	m.clearedFields[region.FieldParentID] = struct{}{}
+	m.clearedFields[region.FieldPid] = struct{}{}
 }
 
-// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
-func (m *RegionMutation) ParentIDCleared() bool {
-	_, ok := m.clearedFields[region.FieldParentID]
+// PidCleared returns if the "pid" field was cleared in this mutation.
+func (m *RegionMutation) PidCleared() bool {
+	_, ok := m.clearedFields[region.FieldPid]
 	return ok
 }
 
-// ResetParentID resets all changes to the "parent_id" field.
-func (m *RegionMutation) ResetParentID() {
+// ResetPid resets all changes to the "pid" field.
+func (m *RegionMutation) ResetPid() {
 	m.parent = nil
-	delete(m.clearedFields, region.FieldParentID)
+	delete(m.clearedFields, region.FieldPid)
+}
+
+// SetParentID sets the "parent" edge to the Region entity by id.
+func (m *RegionMutation) SetParentID(id xid.ID) {
+	m.parent = &id
 }
 
 // ClearParent clears the "parent" edge to the Region entity.
 func (m *RegionMutation) ClearParent() {
 	m.clearedparent = true
-	m.clearedFields[region.FieldParentID] = struct{}{}
+	m.clearedFields[region.FieldPid] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the Region entity was cleared.
 func (m *RegionMutation) ParentCleared() bool {
-	return m.ParentIDCleared() || m.clearedparent
+	return m.PidCleared() || m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *RegionMutation) ParentID() (id xid.ID, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
 }
 
 // ParentIDs returns the "parent" edge IDs in the mutation.
@@ -4666,7 +4705,7 @@ func (m *RegionMutation) Fields() []string {
 		fields = append(fields, region.FieldType)
 	}
 	if m.parent != nil {
-		fields = append(fields, region.FieldParentID)
+		fields = append(fields, region.FieldPid)
 	}
 	return fields
 }
@@ -4690,8 +4729,8 @@ func (m *RegionMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case region.FieldType:
 		return m.GetType()
-	case region.FieldParentID:
-		return m.ParentID()
+	case region.FieldPid:
+		return m.Pid()
 	}
 	return nil, false
 }
@@ -4715,8 +4754,8 @@ func (m *RegionMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldName(ctx)
 	case region.FieldType:
 		return m.OldType(ctx)
-	case region.FieldParentID:
-		return m.OldParentID(ctx)
+	case region.FieldPid:
+		return m.OldPid(ctx)
 	}
 	return nil, fmt.Errorf("unknown Region field %s", name)
 }
@@ -4775,12 +4814,12 @@ func (m *RegionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetType(v)
 		return nil
-	case region.FieldParentID:
+	case region.FieldPid:
 		v, ok := value.(xid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetParentID(v)
+		m.SetPid(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Region field %s", name)
@@ -4827,8 +4866,8 @@ func (m *RegionMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RegionMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(region.FieldParentID) {
-		fields = append(fields, region.FieldParentID)
+	if m.FieldCleared(region.FieldPid) {
+		fields = append(fields, region.FieldPid)
 	}
 	return fields
 }
@@ -4844,8 +4883,8 @@ func (m *RegionMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RegionMutation) ClearField(name string) error {
 	switch name {
-	case region.FieldParentID:
-		m.ClearParentID()
+	case region.FieldPid:
+		m.ClearPid()
 		return nil
 	}
 	return fmt.Errorf("unknown Region nullable field %s", name)
@@ -4876,8 +4915,8 @@ func (m *RegionMutation) ResetField(name string) error {
 	case region.FieldType:
 		m.ResetType()
 		return nil
-	case region.FieldParentID:
-		m.ResetParentID()
+	case region.FieldPid:
+		m.ResetPid()
 		return nil
 	}
 	return fmt.Errorf("unknown Region field %s", name)

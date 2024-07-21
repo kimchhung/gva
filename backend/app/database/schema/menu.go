@@ -7,7 +7,6 @@ import (
 	"github.com/gva/app/database/schema/xid"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -26,22 +25,16 @@ func (Menu) Mixin() []ent.Mixin {
 }
 
 func (Menu) Indexes() []ent.Index {
-	return []ent.Index{
-		softdelete.Index("path", "parent_id", "type").
-			Unique().
-			Annotations(
-				entsql.IndexWhere("parent_id is null"),
-			),
-	}
+	return []ent.Index{}
 }
 
 func (Menu) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("parent_id").
+		field.String("pid").
 			GoType(xid.ID("")).
 			Optional().
 			Nillable().
-			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),
+			StructTag(`json:"pid,omitempty" rql:"filter,sort"`),
 
 		field.String("path").
 			StructTag(`rql:"filter,sort"`),
@@ -73,7 +66,7 @@ func (Menu) Fields() []ent.Field {
 
 func (Menu) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("children", Menu.Type).From("parent").Unique().Field("parent_id"),
+		edge.To("children", Menu.Type).From("parent").Unique().Field("pid"),
 		edge.From("roles", Role.Type).Ref("routes"),
 	}
 }

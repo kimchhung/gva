@@ -98,16 +98,16 @@ func (rc *RegionCreate) SetType(r region.Type) *RegionCreate {
 	return rc
 }
 
-// SetParentID sets the "parent_id" field.
-func (rc *RegionCreate) SetParentID(x xid.ID) *RegionCreate {
-	rc.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (rc *RegionCreate) SetPid(x xid.ID) *RegionCreate {
+	rc.mutation.SetPid(x)
 	return rc
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (rc *RegionCreate) SetNillableParentID(x *xid.ID) *RegionCreate {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (rc *RegionCreate) SetNillablePid(x *xid.ID) *RegionCreate {
 	if x != nil {
-		rc.SetParentID(*x)
+		rc.SetPid(*x)
 	}
 	return rc
 }
@@ -122,6 +122,20 @@ func (rc *RegionCreate) SetID(x xid.ID) *RegionCreate {
 func (rc *RegionCreate) SetNillableID(x *xid.ID) *RegionCreate {
 	if x != nil {
 		rc.SetID(*x)
+	}
+	return rc
+}
+
+// SetParentID sets the "parent" edge to the Region entity by ID.
+func (rc *RegionCreate) SetParentID(id xid.ID) *RegionCreate {
+	rc.mutation.SetParentID(id)
+	return rc
+}
+
+// SetNillableParentID sets the "parent" edge to the Region entity by ID if the given value is not nil.
+func (rc *RegionCreate) SetNillableParentID(id *xid.ID) *RegionCreate {
+	if id != nil {
+		rc = rc.SetParentID(*id)
 	}
 	return rc
 }
@@ -323,7 +337,7 @@ func (rc *RegionCreate) createSpec() (*Region, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ParentID = &nodes[0]
+		_node.Pid = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := rc.mutation.ChildrenIDs(); len(nodes) > 0 {
@@ -485,21 +499,21 @@ func (u *RegionUpsert) UpdateType() *RegionUpsert {
 	return u
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *RegionUpsert) SetParentID(v xid.ID) *RegionUpsert {
-	u.Set(region.FieldParentID, v)
+// SetPid sets the "pid" field.
+func (u *RegionUpsert) SetPid(v xid.ID) *RegionUpsert {
+	u.Set(region.FieldPid, v)
 	return u
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *RegionUpsert) UpdateParentID() *RegionUpsert {
-	u.SetExcluded(region.FieldParentID)
+// UpdatePid sets the "pid" field to the value that was provided on create.
+func (u *RegionUpsert) UpdatePid() *RegionUpsert {
+	u.SetExcluded(region.FieldPid)
 	return u
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (u *RegionUpsert) ClearParentID() *RegionUpsert {
-	u.SetNull(region.FieldParentID)
+// ClearPid clears the value of the "pid" field.
+func (u *RegionUpsert) ClearPid() *RegionUpsert {
+	u.SetNull(region.FieldPid)
 	return u
 }
 
@@ -656,24 +670,24 @@ func (u *RegionUpsertOne) UpdateType() *RegionUpsertOne {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *RegionUpsertOne) SetParentID(v xid.ID) *RegionUpsertOne {
+// SetPid sets the "pid" field.
+func (u *RegionUpsertOne) SetPid(v xid.ID) *RegionUpsertOne {
 	return u.Update(func(s *RegionUpsert) {
-		s.SetParentID(v)
+		s.SetPid(v)
 	})
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *RegionUpsertOne) UpdateParentID() *RegionUpsertOne {
+// UpdatePid sets the "pid" field to the value that was provided on create.
+func (u *RegionUpsertOne) UpdatePid() *RegionUpsertOne {
 	return u.Update(func(s *RegionUpsert) {
-		s.UpdateParentID()
+		s.UpdatePid()
 	})
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (u *RegionUpsertOne) ClearParentID() *RegionUpsertOne {
+// ClearPid clears the value of the "pid" field.
+func (u *RegionUpsertOne) ClearPid() *RegionUpsertOne {
 	return u.Update(func(s *RegionUpsert) {
-		s.ClearParentID()
+		s.ClearPid()
 	})
 }
 
@@ -997,24 +1011,24 @@ func (u *RegionUpsertBulk) UpdateType() *RegionUpsertBulk {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *RegionUpsertBulk) SetParentID(v xid.ID) *RegionUpsertBulk {
+// SetPid sets the "pid" field.
+func (u *RegionUpsertBulk) SetPid(v xid.ID) *RegionUpsertBulk {
 	return u.Update(func(s *RegionUpsert) {
-		s.SetParentID(v)
+		s.SetPid(v)
 	})
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *RegionUpsertBulk) UpdateParentID() *RegionUpsertBulk {
+// UpdatePid sets the "pid" field to the value that was provided on create.
+func (u *RegionUpsertBulk) UpdatePid() *RegionUpsertBulk {
 	return u.Update(func(s *RegionUpsert) {
-		s.UpdateParentID()
+		s.UpdatePid()
 	})
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (u *RegionUpsertBulk) ClearParentID() *RegionUpsertBulk {
+// ClearPid clears the value of the "pid" field.
+func (u *RegionUpsertBulk) ClearPid() *RegionUpsertBulk {
 	return u.Update(func(s *RegionUpsert) {
-		s.ClearParentID()
+		s.ClearPid()
 	})
 }
 

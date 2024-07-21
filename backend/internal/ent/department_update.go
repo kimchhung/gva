@@ -116,23 +116,37 @@ func (du *DepartmentUpdate) SetNillableName(s *string) *DepartmentUpdate {
 	return du
 }
 
-// SetParentID sets the "parent_id" field.
-func (du *DepartmentUpdate) SetParentID(x xid.ID) *DepartmentUpdate {
-	du.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (du *DepartmentUpdate) SetPid(x xid.ID) *DepartmentUpdate {
+	du.mutation.SetPid(x)
 	return du
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (du *DepartmentUpdate) SetNillableParentID(x *xid.ID) *DepartmentUpdate {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (du *DepartmentUpdate) SetNillablePid(x *xid.ID) *DepartmentUpdate {
 	if x != nil {
-		du.SetParentID(*x)
+		du.SetPid(*x)
 	}
 	return du
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (du *DepartmentUpdate) ClearParentID() *DepartmentUpdate {
-	du.mutation.ClearParentID()
+// ClearPid clears the value of the "pid" field.
+func (du *DepartmentUpdate) ClearPid() *DepartmentUpdate {
+	du.mutation.ClearPid()
+	return du
+}
+
+// SetParentID sets the "parent" edge to the Department entity by ID.
+func (du *DepartmentUpdate) SetParentID(id xid.ID) *DepartmentUpdate {
+	du.mutation.SetParentID(id)
+	return du
+}
+
+// SetNillableParentID sets the "parent" edge to the Department entity by ID if the given value is not nil.
+func (du *DepartmentUpdate) SetNillableParentID(id *xid.ID) *DepartmentUpdate {
+	if id != nil {
+		du = du.SetParentID(*id)
+	}
 	return du
 }
 
@@ -536,23 +550,37 @@ func (duo *DepartmentUpdateOne) SetNillableName(s *string) *DepartmentUpdateOne 
 	return duo
 }
 
-// SetParentID sets the "parent_id" field.
-func (duo *DepartmentUpdateOne) SetParentID(x xid.ID) *DepartmentUpdateOne {
-	duo.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (duo *DepartmentUpdateOne) SetPid(x xid.ID) *DepartmentUpdateOne {
+	duo.mutation.SetPid(x)
 	return duo
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (duo *DepartmentUpdateOne) SetNillableParentID(x *xid.ID) *DepartmentUpdateOne {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (duo *DepartmentUpdateOne) SetNillablePid(x *xid.ID) *DepartmentUpdateOne {
 	if x != nil {
-		duo.SetParentID(*x)
+		duo.SetPid(*x)
 	}
 	return duo
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (duo *DepartmentUpdateOne) ClearParentID() *DepartmentUpdateOne {
-	duo.mutation.ClearParentID()
+// ClearPid clears the value of the "pid" field.
+func (duo *DepartmentUpdateOne) ClearPid() *DepartmentUpdateOne {
+	duo.mutation.ClearPid()
+	return duo
+}
+
+// SetParentID sets the "parent" edge to the Department entity by ID.
+func (duo *DepartmentUpdateOne) SetParentID(id xid.ID) *DepartmentUpdateOne {
+	duo.mutation.SetParentID(id)
+	return duo
+}
+
+// SetNillableParentID sets the "parent" edge to the Department entity by ID if the given value is not nil.
+func (duo *DepartmentUpdateOne) SetNillableParentID(id *xid.ID) *DepartmentUpdateOne {
+	if id != nil {
+		duo = duo.SetParentID(*id)
+	}
 	return duo
 }
 

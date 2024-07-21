@@ -33,8 +33,8 @@ const (
 	FieldName = "name"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldParentID holds the string denoting the parent_id field in the database.
-	FieldParentID = "parent_id"
+	// FieldPid holds the string denoting the pid field in the database.
+	FieldPid = "pid"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
@@ -44,11 +44,11 @@ const (
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "regions"
 	// ParentColumn is the table column denoting the parent relation/edge.
-	ParentColumn = "parent_id"
+	ParentColumn = "pid"
 	// ChildrenTable is the table that holds the children relation/edge.
 	ChildrenTable = "regions"
 	// ChildrenColumn is the table column denoting the children relation/edge.
-	ChildrenColumn = "parent_id"
+	ChildrenColumn = "pid"
 )
 
 // Columns holds all SQL columns for region fields.
@@ -61,7 +61,7 @@ var Columns = []string{
 	FieldNameID,
 	FieldName,
 	FieldType,
-	FieldParentID,
+	FieldPid,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -165,9 +165,9 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
 }
 
-// ByParentID orders the results by the parent_id field.
-func ByParentID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldParentID, opts...).ToFunc()
+// ByPid orders the results by the pid field.
+func ByPid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPid, opts...).ToFunc()
 }
 
 // ByParentField orders the results by parent field.

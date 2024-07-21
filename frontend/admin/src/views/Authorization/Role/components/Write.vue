@@ -111,7 +111,7 @@ const getMenuList = async () => {
   const [list] = await api.menu.getMany({
     query: {
       limit: 100,
-      page: 1
+      offset: 1
     }
   })
 

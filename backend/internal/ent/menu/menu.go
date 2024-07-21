@@ -27,8 +27,8 @@ const (
 	FieldIsEnable = "is_enable"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldParentID holds the string denoting the parent_id field in the database.
-	FieldParentID = "parent_id"
+	// FieldPid holds the string denoting the pid field in the database.
+	FieldPid = "pid"
 	// FieldPath holds the string denoting the path field in the database.
 	FieldPath = "path"
 	// FieldComponent holds the string denoting the component field in the database.
@@ -54,11 +54,11 @@ const (
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "menus"
 	// ParentColumn is the table column denoting the parent relation/edge.
-	ParentColumn = "parent_id"
+	ParentColumn = "pid"
 	// ChildrenTable is the table that holds the children relation/edge.
 	ChildrenTable = "menus"
 	// ChildrenColumn is the table column denoting the children relation/edge.
-	ChildrenColumn = "parent_id"
+	ChildrenColumn = "pid"
 	// RolesTable is the table that holds the roles relation/edge. The primary key declared below.
 	RolesTable = "role_routes"
 	// RolesInverseTable is the table name for the Role entity.
@@ -73,7 +73,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldIsEnable,
 	FieldDeletedAt,
-	FieldParentID,
+	FieldPid,
 	FieldPath,
 	FieldComponent,
 	FieldRedirect,
@@ -179,9 +179,9 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
-// ByParentID orders the results by the parent_id field.
-func ByParentID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldParentID, opts...).ToFunc()
+// ByPid orders the results by the pid field.
+func ByPid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPid, opts...).ToFunc()
 }
 
 // ByPath orders the results by the path field.

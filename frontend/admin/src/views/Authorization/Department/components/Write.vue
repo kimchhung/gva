@@ -1,10 +1,10 @@
 <script setup lang="tsx">
 import { Department } from '@/api/department/types'
-import { Form, FormSchema } from '@/components/Form'
+import { Form, FormSchema, TreeSelectComponentProps } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useValidator } from '@/hooks/web/useValidator'
-import { convertEdgeChildren } from '@/utils/tree'
+import { convertEdgeChildren, edgelistToTree } from '@/utils/edgeTree'
 import { PropType, reactive } from 'vue'
 
 defineProps({
@@ -28,8 +28,8 @@ const formSchema = reactive<FormSchema[]>([
     component: 'Input'
   },
   {
-    field: 'parentId',
-    label: t('common.parentId'),
+    field: 'pid',
+    label: t('common.parent'),
     component: 'TreeSelect',
     componentProps: {
       nodeKey: 'id',
@@ -43,13 +43,15 @@ const formSchema = reactive<FormSchema[]>([
       checkStrictly: true,
       checkOnClickNode: true,
       clearable: true
-    },
+    } as TreeSelectComponentProps,
     optionApi: async () => {
-      const [list] = await api.department.getMany({ query: { limit: 100, page: 1 } })
-      if (list) {
-        return convertEdgeChildren(list)
+      const [res, err] = await api.department.getMany({ query: { limit: 100 } })
+      if (err) {
+        return []
       }
-      return []
+
+      const { data } = res
+      return convertEdgeChildren(edgelistToTree(data))
     }
   },
   {

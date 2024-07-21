@@ -266,7 +266,7 @@ export default defineComponent({
             const slotsMap: Recordable = {
               ...setItemComponentSlots(componentSlots)
             }
-            // // 如果是select组件，并且没有自定义模板，自动渲染options
+            // //If it is a select component and there is no custom template, automatically renders Options
             if (item.component === ComponentNameEnum.SELECT) {
               slotsMap.default = !componentSlots.default
                 ? () => renderSelectOptions(item)
@@ -277,14 +277,14 @@ export default defineComponent({
                   }
             }
 
-            // 虚拟列表
+            // Virtual list
             if (item.component === ComponentNameEnum.SELECT_V2 && componentSlots.default) {
               slotsMap.default = ({ item }) => {
                 return componentSlots.default(item)
               }
             }
 
-            // 单选框组和按钮样式
+            // Single -selected box group and button style
             if (
               item.component === ComponentNameEnum.RADIO_GROUP ||
               item.component === ComponentNameEnum.RADIO_BUTTON
@@ -298,7 +298,7 @@ export default defineComponent({
                   }
             }
 
-            // 多选框组和按钮样式
+            // Multi -choice frame group and button style
             if (
               item.component === ComponentNameEnum.CHECKBOX_GROUP ||
               item.component === ComponentNameEnum.CHECKBOX_BUTTON
@@ -313,7 +313,7 @@ export default defineComponent({
             }
 
             const Comp = () => {
-              // 如果field是多层路径，需要转换成对象
+              //If Field is a multi -layer path, you need to convert it into an object
               const itemVal = computed({
                 get: () => {
                   return get(formModel.value, item.field)

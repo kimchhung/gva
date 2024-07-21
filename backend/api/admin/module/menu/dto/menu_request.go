@@ -17,11 +17,10 @@ type MenuRequest struct {
 	Meta      types.MenuMeta `json:"meta,omitempty" validate:"required"`
 
 	// optionals
-	ParentID *xid.ID `json:"parentId,omitempty"`
+	Pid *xid.ID `json:"pid,omitempty"`
 }
 
-type MenuPaginateRequest struct {
+type MenuPagedRequest struct {
 	rql.Params
-	IsCount       bool `query:"isCount"`
-	IsGroupNested bool `query:"isGroupNested"`
+	Selects string `query:"selects"`
 }

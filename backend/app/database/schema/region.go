@@ -35,11 +35,11 @@ func (Region) Fields() []ent.Field {
 			Values("continent", "country", "city", "street", "any").
 			StructTag(`json:"type" rql:"column=name,filter,sort"`),
 
-		field.String("parent_id").
+		field.String("pid").
 			GoType(xid.ID("")).
 			Optional().
 			Nillable().
-			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),
+			StructTag(`json:"pid,omitempty" rql:"filter,sort"`),
 	}
 }
 
@@ -55,6 +55,6 @@ func (Region) Edges() []ent.Edge {
 		edge.To("children", Region.Type).
 			From("parent").
 			Unique().
-			Field("parent_id"),
+			Field("pid"),
 	}
 }

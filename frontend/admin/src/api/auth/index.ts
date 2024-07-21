@@ -1,4 +1,4 @@
-import req, { useAPI } from '@/axios'
+import { req, useAPI } from '@/axios'
 import { Admin } from '../admin/types'
 import { AuthLoginReq, AuthLoginResp, AuthMe } from './types'
 
@@ -13,14 +13,14 @@ export class AuthAPI {
 
   me({ opt }: AuthMe) {
     return useAPI({
-      fn: () => req.get<Admin>({ url: `${this.base}/me` }),
+      fn: () => req.get<APIResponse<Admin>>({ url: `${this.base}/me` }),
       opt
     })
   }
 
   login({ body, opt }: AuthLoginReq) {
     return useAPI({
-      fn: () => req.post<AuthLoginResp>({ url: `${this.base}/login`, data: body }),
+      fn: () => req.post<APIResponse<AuthLoginResp>>({ url: `${this.base}/login`, data: body }),
       opt
     })
   }

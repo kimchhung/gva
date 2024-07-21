@@ -1,6 +1,6 @@
 import { CONTENT_TYPE, SUCCESS_CODE } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
-import { AxiosError } from 'axios'
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import service from './service'
 
 type Loading = Record<string, boolean>
@@ -18,7 +18,7 @@ export type FetchOption<L extends Loading = any> = {
   onError?: (error: Error | AxiosError) => void
 }
 
-export type FetchFunc<T> = () => Promise<IResponse<T>>
+export type FetchFunc<T, M> = () => Promise<AxiosResponse<APIResponse<T, M>>>
 
 export type UseAPIOption = {
   opt?: FetchOption
@@ -29,13 +29,14 @@ export type UseAPIOption = {
  */
 export const useAPI = async <
   T = any,
-  E extends Error | AxiosError = Error,
+  M = any,
+  E extends Error | AxiosError = AxiosError,
   L extends Loading = any
 >({
   fn,
   opt
 }: {
-  fn: FetchFunc<T>
+  fn: FetchFunc<T, M>
   opt?: FetchOption<L>
 }) => {
   const setIsLoading = (bool: boolean) => {
@@ -46,28 +47,29 @@ export const useAPI = async <
 
   try {
     setIsLoading(true)
-    const resp = await fn()
-    if (resp.code !== SUCCESS_CODE) {
-      throw new Error(resp.message, {
-        cause: resp
-      })
+    const axiosResp = await fn()
+    const resp = axiosResp.data
+
+    if (resp?.code !== SUCCESS_CODE) {
+      throw new AxiosError(resp.message, axiosResp.statusText, axiosResp.config, resp)
     }
 
-    return [resp.data, null, resp] as const
+    return [resp, null, axiosResp] as const
   } catch (error) {
     opt?.onError?.(error as E)
-    return [null, error as E, null, null] as const
+
+    return [null, error as E, null] as const
   } finally {
     opt?.onFinally?.()
     setIsLoading(false)
   }
 }
 
-const request = async (option: AxiosConfig) => {
-  const { headers, responseType, ...more } = option
+const request = async <T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>) => {
+  const { headers, responseType, ...more } = config
 
   const userStore = useAdminStoreWithOut()
-  const resp = await service.request({
+  const resp = await service.request<T, R, D>({
     responseType: responseType,
     headers: {
       'Content-Type': CONTENT_TYPE,
@@ -80,21 +82,21 @@ const request = async (option: AxiosConfig) => {
   return resp
 }
 
-const req = {
-  get: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'get', ...option }) as Promise<IResponse<T>>
+export const req = {
+  get: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
+    return request<T, R, D>({ method: 'get', ...option })
   },
-  post: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'post', ...option }) as Promise<IResponse<T>>
+  post: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
+    return request<T, R, D>({ method: 'post', ...option })
   },
-  delete: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'delete', ...option }) as Promise<IResponse<T>>
+  delete: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
+    return request<T, R, D>({ method: 'delete', ...option })
   },
-  put: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'put', ...option }) as Promise<IResponse<T>>
+  put: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
+    return request<T, R, D>({ method: 'put', ...option })
   },
-  patch: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'patch', ...option }) as Promise<IResponse<T>>
+  patch: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
+    return request<T, R, D>({ method: 'patch', ...option })
   },
   cancelRequest: (...urls: string[]) => {
     return service.cancelRequest(...urls)
@@ -103,5 +105,3 @@ const req = {
     return service.cancelAllRequest()
   }
 }
-
-export default req

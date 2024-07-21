@@ -32,8 +32,8 @@ type Region struct {
 	Name string `json:"name" rql:"column=name,filter,sort"`
 	// Type holds the value of the "type" field.
 	Type region.Type `json:"type" rql:"column=name,filter,sort"`
-	// ParentID holds the value of the "parent_id" field.
-	ParentID *xid.ID `json:"parentId,omitempty" rql:"filter,sort"`
+	// Pid holds the value of the "pid" field.
+	Pid *xid.ID `json:"pid,omitempty" rql:"filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RegionQuery when eager-loading is set.
 	Edges        RegionEdges `json:"edges" rql:"-"`
@@ -80,7 +80,7 @@ func (*Region) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case region.FieldParentID:
+		case region.FieldPid:
 			values[i] = &sql.NullScanner{S: new(xid.ID)}
 		case region.FieldIsEnable:
 			values[i] = new(sql.NullBool)
@@ -155,12 +155,12 @@ func (r *Region) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.Type = region.Type(value.String)
 			}
-		case region.FieldParentID:
+		case region.FieldPid:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+				return fmt.Errorf("unexpected type %T for field pid", values[i])
 			} else if value.Valid {
-				r.ParentID = new(xid.ID)
-				*r.ParentID = *value.S.(*xid.ID)
+				r.Pid = new(xid.ID)
+				*r.Pid = *value.S.(*xid.ID)
 			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
@@ -229,8 +229,8 @@ func (r *Region) String() string {
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", r.Type))
 	builder.WriteString(", ")
-	if v := r.ParentID; v != nil {
-		builder.WriteString("parent_id=")
+	if v := r.Pid; v != nil {
+		builder.WriteString("pid=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

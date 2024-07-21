@@ -78,7 +78,7 @@ func (s *DepartmentService) CreateDepartment(ctx context.Context, payload *dto.D
 		SetName(payload.Name).
 		SetNameID(payload.NameId).
 		SetNillableIsEnable(payload.IsEnable).
-		SetParentID(*payload.ParentId)
+		SetPid(*payload.Pid)
 
 	created, err := create.Save(ctx)
 	if err != nil {
@@ -89,7 +89,12 @@ func (s *DepartmentService) CreateDepartment(ctx context.Context, payload *dto.D
 
 func (s *DepartmentService) UpdateDepartment(ctx context.Context, id xid.ID, payload *dto.DepartmentRequest) (*dto.DepartmentResponse, error) {
 	update := s.repo.C().UpdateOneID(id)
-	update.SetName(payload.Name)
+	update.SetName(payload.Name).
+		SetName(payload.Name).
+		SetNameID(payload.NameId).
+		SetNillableIsEnable(payload.IsEnable).
+		SetPid(*payload.Pid)
+
 	updated, err := update.Save(ctx)
 	if err != nil {
 		return nil, err

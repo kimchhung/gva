@@ -1,9 +1,8 @@
-import { SUCCESS_CODE, TRANSFORM_REQUEST_DATA } from '@/constants'
+import { TRANSFORM_REQUEST_DATA } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { objToFormData } from '@/utils'
-import { ElMessage } from 'element-plus'
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import qs from 'qs'
-import { AxiosResponse, InternalAxiosRequestConfig } from './types'
 
 const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
   if (
@@ -20,21 +19,10 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
   }
 
   if (config.method === 'get' && config.params) {
-    // let url = config.url as string
-    // url += '?'
-    // const keys = Object.keys(config.params)
-    // for (const key of keys) {
-    //   if (config.params[key] !== void 0 && config.params[key] !== null) {
-    //     url += `${key}=${encodeURIComponent(config.params[key])}&`
-    //   }
-    // }
-    // url = url.substring(0, url.length - 1)
-    // config.params = {}
-    // config.url = url
-
     let url = config.url as string
     url += '?'
     url += qs.stringify(config.params)
+
     config.params = {}
     config.url = url
   }
@@ -48,15 +36,12 @@ const defaultResponseInterceptors = (response: AxiosResponse) => {
     return response
   }
 
-  if (response.data.code === SUCCESS_CODE) {
-    return response.data
-  }
-
-  ElMessage.error(response?.data?.message)
   if ([401, 402, 403].includes(response.status)) {
     const userStore = useAdminStoreWithOut()
     userStore.logout()
   }
+
+  return response
 }
 
 export { defaultRequestInterceptors, defaultResponseInterceptors }

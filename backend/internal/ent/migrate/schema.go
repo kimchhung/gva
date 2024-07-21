@@ -3,7 +3,6 @@
 package migrate
 
 import (
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
@@ -57,7 +56,7 @@ var (
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
 		{Name: "name_id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
-		{Name: "parent_id", Type: field.TypeString, Nullable: true},
+		{Name: "pid", Type: field.TypeString, Nullable: true},
 	}
 	// DepartmentsTable holds the schema information for the "departments" table.
 	DepartmentsTable = &schema.Table{
@@ -99,7 +98,7 @@ var (
 		{Name: "order", Type: field.TypeInt, Nullable: true, Default: 0},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
 		{Name: "meta", Type: field.TypeJSON},
-		{Name: "parent_id", Type: field.TypeString, Nullable: true},
+		{Name: "pid", Type: field.TypeString, Nullable: true},
 	}
 	// MenusTable holds the schema information for the "menus" table.
 	MenusTable = &schema.Table{
@@ -119,14 +118,6 @@ var (
 				Name:    "menu_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{MenusColumns[4]},
-			},
-			{
-				Name:    "menu_path_parent_id_type_deleted_at",
-				Unique:  true,
-				Columns: []*schema.Column{MenusColumns[5], MenusColumns[12], MenusColumns[10], MenusColumns[4]},
-				Annotation: &entsql.IndexAnnotation{
-					Where: "parent_id is null",
-				},
 			},
 		},
 	}
@@ -157,7 +148,7 @@ var (
 		{Name: "name_id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"continent", "country", "city", "street", "any"}},
-		{Name: "parent_id", Type: field.TypeString, Nullable: true},
+		{Name: "pid", Type: field.TypeString, Nullable: true},
 	}
 	// RegionsTable holds the schema information for the "regions" table.
 	RegionsTable = &schema.Table{

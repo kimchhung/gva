@@ -611,22 +611,22 @@ type DepartmentWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "parent_id" field predicates.
-	ParentID             *xid.ID  `json:"parentID,omitempty"`
-	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
-	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
-	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
-	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
-	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
-	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
-	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
-	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
-	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
-	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
-	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
-	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
-	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
-	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
+	// "pid" field predicates.
+	Pid             *xid.ID  `json:"pid,omitempty"`
+	PidNEQ          *xid.ID  `json:"pidNEQ,omitempty"`
+	PidIn           []xid.ID `json:"pidIn,omitempty"`
+	PidNotIn        []xid.ID `json:"pidNotIn,omitempty"`
+	PidGT           *xid.ID  `json:"pidGT,omitempty"`
+	PidGTE          *xid.ID  `json:"pidGTE,omitempty"`
+	PidLT           *xid.ID  `json:"pidLT,omitempty"`
+	PidLTE          *xid.ID  `json:"pidLTE,omitempty"`
+	PidContains     *xid.ID  `json:"pidContains,omitempty"`
+	PidHasPrefix    *xid.ID  `json:"pidHasPrefix,omitempty"`
+	PidHasSuffix    *xid.ID  `json:"pidHasSuffix,omitempty"`
+	PidIsNil        bool     `json:"pidIsNil,omitempty"`
+	PidNotNil       bool     `json:"pidNotNil,omitempty"`
+	PidEqualFold    *xid.ID  `json:"pidEqualFold,omitempty"`
+	PidContainsFold *xid.ID  `json:"pidContainsFold,omitempty"`
 
 	// "parent" edge predicates.
 	HasParent     *bool                   `json:"hasParent,omitempty"`
@@ -892,50 +892,50 @@ func (i *DepartmentWhereInput) P() (predicate.Department, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, department.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.ParentID != nil {
-		predicates = append(predicates, department.ParentIDEQ(*i.ParentID))
+	if i.Pid != nil {
+		predicates = append(predicates, department.PidEQ(*i.Pid))
 	}
-	if i.ParentIDNEQ != nil {
-		predicates = append(predicates, department.ParentIDNEQ(*i.ParentIDNEQ))
+	if i.PidNEQ != nil {
+		predicates = append(predicates, department.PidNEQ(*i.PidNEQ))
 	}
-	if len(i.ParentIDIn) > 0 {
-		predicates = append(predicates, department.ParentIDIn(i.ParentIDIn...))
+	if len(i.PidIn) > 0 {
+		predicates = append(predicates, department.PidIn(i.PidIn...))
 	}
-	if len(i.ParentIDNotIn) > 0 {
-		predicates = append(predicates, department.ParentIDNotIn(i.ParentIDNotIn...))
+	if len(i.PidNotIn) > 0 {
+		predicates = append(predicates, department.PidNotIn(i.PidNotIn...))
 	}
-	if i.ParentIDGT != nil {
-		predicates = append(predicates, department.ParentIDGT(*i.ParentIDGT))
+	if i.PidGT != nil {
+		predicates = append(predicates, department.PidGT(*i.PidGT))
 	}
-	if i.ParentIDGTE != nil {
-		predicates = append(predicates, department.ParentIDGTE(*i.ParentIDGTE))
+	if i.PidGTE != nil {
+		predicates = append(predicates, department.PidGTE(*i.PidGTE))
 	}
-	if i.ParentIDLT != nil {
-		predicates = append(predicates, department.ParentIDLT(*i.ParentIDLT))
+	if i.PidLT != nil {
+		predicates = append(predicates, department.PidLT(*i.PidLT))
 	}
-	if i.ParentIDLTE != nil {
-		predicates = append(predicates, department.ParentIDLTE(*i.ParentIDLTE))
+	if i.PidLTE != nil {
+		predicates = append(predicates, department.PidLTE(*i.PidLTE))
 	}
-	if i.ParentIDContains != nil {
-		predicates = append(predicates, department.ParentIDContains(*i.ParentIDContains))
+	if i.PidContains != nil {
+		predicates = append(predicates, department.PidContains(*i.PidContains))
 	}
-	if i.ParentIDHasPrefix != nil {
-		predicates = append(predicates, department.ParentIDHasPrefix(*i.ParentIDHasPrefix))
+	if i.PidHasPrefix != nil {
+		predicates = append(predicates, department.PidHasPrefix(*i.PidHasPrefix))
 	}
-	if i.ParentIDHasSuffix != nil {
-		predicates = append(predicates, department.ParentIDHasSuffix(*i.ParentIDHasSuffix))
+	if i.PidHasSuffix != nil {
+		predicates = append(predicates, department.PidHasSuffix(*i.PidHasSuffix))
 	}
-	if i.ParentIDIsNil {
-		predicates = append(predicates, department.ParentIDIsNil())
+	if i.PidIsNil {
+		predicates = append(predicates, department.PidIsNil())
 	}
-	if i.ParentIDNotNil {
-		predicates = append(predicates, department.ParentIDNotNil())
+	if i.PidNotNil {
+		predicates = append(predicates, department.PidNotNil())
 	}
-	if i.ParentIDEqualFold != nil {
-		predicates = append(predicates, department.ParentIDEqualFold(*i.ParentIDEqualFold))
+	if i.PidEqualFold != nil {
+		predicates = append(predicates, department.PidEqualFold(*i.PidEqualFold))
 	}
-	if i.ParentIDContainsFold != nil {
-		predicates = append(predicates, department.ParentIDContainsFold(*i.ParentIDContainsFold))
+	if i.PidContainsFold != nil {
+		predicates = append(predicates, department.PidContainsFold(*i.PidContainsFold))
 	}
 
 	if i.HasParent != nil {
@@ -1053,22 +1053,22 @@ type MenuWhereInput struct {
 	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
 	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
 
-	// "parent_id" field predicates.
-	ParentID             *xid.ID  `json:"parentID,omitempty"`
-	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
-	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
-	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
-	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
-	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
-	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
-	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
-	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
-	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
-	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
-	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
-	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
-	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
-	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
+	// "pid" field predicates.
+	Pid             *xid.ID  `json:"pid,omitempty"`
+	PidNEQ          *xid.ID  `json:"pidNEQ,omitempty"`
+	PidIn           []xid.ID `json:"pidIn,omitempty"`
+	PidNotIn        []xid.ID `json:"pidNotIn,omitempty"`
+	PidGT           *xid.ID  `json:"pidGT,omitempty"`
+	PidGTE          *xid.ID  `json:"pidGTE,omitempty"`
+	PidLT           *xid.ID  `json:"pidLT,omitempty"`
+	PidLTE          *xid.ID  `json:"pidLTE,omitempty"`
+	PidContains     *xid.ID  `json:"pidContains,omitempty"`
+	PidHasPrefix    *xid.ID  `json:"pidHasPrefix,omitempty"`
+	PidHasSuffix    *xid.ID  `json:"pidHasSuffix,omitempty"`
+	PidIsNil        bool     `json:"pidIsNil,omitempty"`
+	PidNotNil       bool     `json:"pidNotNil,omitempty"`
+	PidEqualFold    *xid.ID  `json:"pidEqualFold,omitempty"`
+	PidContainsFold *xid.ID  `json:"pidContainsFold,omitempty"`
 
 	// "path" field predicates.
 	Path             *string  `json:"path,omitempty"`
@@ -1336,50 +1336,50 @@ func (i *MenuWhereInput) P() (predicate.Menu, error) {
 	if i.DeletedAtLTE != nil {
 		predicates = append(predicates, menu.DeletedAtLTE(*i.DeletedAtLTE))
 	}
-	if i.ParentID != nil {
-		predicates = append(predicates, menu.ParentIDEQ(*i.ParentID))
+	if i.Pid != nil {
+		predicates = append(predicates, menu.PidEQ(*i.Pid))
 	}
-	if i.ParentIDNEQ != nil {
-		predicates = append(predicates, menu.ParentIDNEQ(*i.ParentIDNEQ))
+	if i.PidNEQ != nil {
+		predicates = append(predicates, menu.PidNEQ(*i.PidNEQ))
 	}
-	if len(i.ParentIDIn) > 0 {
-		predicates = append(predicates, menu.ParentIDIn(i.ParentIDIn...))
+	if len(i.PidIn) > 0 {
+		predicates = append(predicates, menu.PidIn(i.PidIn...))
 	}
-	if len(i.ParentIDNotIn) > 0 {
-		predicates = append(predicates, menu.ParentIDNotIn(i.ParentIDNotIn...))
+	if len(i.PidNotIn) > 0 {
+		predicates = append(predicates, menu.PidNotIn(i.PidNotIn...))
 	}
-	if i.ParentIDGT != nil {
-		predicates = append(predicates, menu.ParentIDGT(*i.ParentIDGT))
+	if i.PidGT != nil {
+		predicates = append(predicates, menu.PidGT(*i.PidGT))
 	}
-	if i.ParentIDGTE != nil {
-		predicates = append(predicates, menu.ParentIDGTE(*i.ParentIDGTE))
+	if i.PidGTE != nil {
+		predicates = append(predicates, menu.PidGTE(*i.PidGTE))
 	}
-	if i.ParentIDLT != nil {
-		predicates = append(predicates, menu.ParentIDLT(*i.ParentIDLT))
+	if i.PidLT != nil {
+		predicates = append(predicates, menu.PidLT(*i.PidLT))
 	}
-	if i.ParentIDLTE != nil {
-		predicates = append(predicates, menu.ParentIDLTE(*i.ParentIDLTE))
+	if i.PidLTE != nil {
+		predicates = append(predicates, menu.PidLTE(*i.PidLTE))
 	}
-	if i.ParentIDContains != nil {
-		predicates = append(predicates, menu.ParentIDContains(*i.ParentIDContains))
+	if i.PidContains != nil {
+		predicates = append(predicates, menu.PidContains(*i.PidContains))
 	}
-	if i.ParentIDHasPrefix != nil {
-		predicates = append(predicates, menu.ParentIDHasPrefix(*i.ParentIDHasPrefix))
+	if i.PidHasPrefix != nil {
+		predicates = append(predicates, menu.PidHasPrefix(*i.PidHasPrefix))
 	}
-	if i.ParentIDHasSuffix != nil {
-		predicates = append(predicates, menu.ParentIDHasSuffix(*i.ParentIDHasSuffix))
+	if i.PidHasSuffix != nil {
+		predicates = append(predicates, menu.PidHasSuffix(*i.PidHasSuffix))
 	}
-	if i.ParentIDIsNil {
-		predicates = append(predicates, menu.ParentIDIsNil())
+	if i.PidIsNil {
+		predicates = append(predicates, menu.PidIsNil())
 	}
-	if i.ParentIDNotNil {
-		predicates = append(predicates, menu.ParentIDNotNil())
+	if i.PidNotNil {
+		predicates = append(predicates, menu.PidNotNil())
 	}
-	if i.ParentIDEqualFold != nil {
-		predicates = append(predicates, menu.ParentIDEqualFold(*i.ParentIDEqualFold))
+	if i.PidEqualFold != nil {
+		predicates = append(predicates, menu.PidEqualFold(*i.PidEqualFold))
 	}
-	if i.ParentIDContainsFold != nil {
-		predicates = append(predicates, menu.ParentIDContainsFold(*i.ParentIDContainsFold))
+	if i.PidContainsFold != nil {
+		predicates = append(predicates, menu.PidContainsFold(*i.PidContainsFold))
 	}
 	if i.Path != nil {
 		predicates = append(predicates, menu.PathEQ(*i.Path))
@@ -2181,22 +2181,22 @@ type RegionWhereInput struct {
 	TypeIn    []region.Type `json:"typeIn,omitempty"`
 	TypeNotIn []region.Type `json:"typeNotIn,omitempty"`
 
-	// "parent_id" field predicates.
-	ParentID             *xid.ID  `json:"parentID,omitempty"`
-	ParentIDNEQ          *xid.ID  `json:"parentIDNEQ,omitempty"`
-	ParentIDIn           []xid.ID `json:"parentIDIn,omitempty"`
-	ParentIDNotIn        []xid.ID `json:"parentIDNotIn,omitempty"`
-	ParentIDGT           *xid.ID  `json:"parentIDGT,omitempty"`
-	ParentIDGTE          *xid.ID  `json:"parentIDGTE,omitempty"`
-	ParentIDLT           *xid.ID  `json:"parentIDLT,omitempty"`
-	ParentIDLTE          *xid.ID  `json:"parentIDLTE,omitempty"`
-	ParentIDContains     *xid.ID  `json:"parentIDContains,omitempty"`
-	ParentIDHasPrefix    *xid.ID  `json:"parentIDHasPrefix,omitempty"`
-	ParentIDHasSuffix    *xid.ID  `json:"parentIDHasSuffix,omitempty"`
-	ParentIDIsNil        bool     `json:"parentIDIsNil,omitempty"`
-	ParentIDNotNil       bool     `json:"parentIDNotNil,omitempty"`
-	ParentIDEqualFold    *xid.ID  `json:"parentIDEqualFold,omitempty"`
-	ParentIDContainsFold *xid.ID  `json:"parentIDContainsFold,omitempty"`
+	// "pid" field predicates.
+	Pid             *xid.ID  `json:"pid,omitempty"`
+	PidNEQ          *xid.ID  `json:"pidNEQ,omitempty"`
+	PidIn           []xid.ID `json:"pidIn,omitempty"`
+	PidNotIn        []xid.ID `json:"pidNotIn,omitempty"`
+	PidGT           *xid.ID  `json:"pidGT,omitempty"`
+	PidGTE          *xid.ID  `json:"pidGTE,omitempty"`
+	PidLT           *xid.ID  `json:"pidLT,omitempty"`
+	PidLTE          *xid.ID  `json:"pidLTE,omitempty"`
+	PidContains     *xid.ID  `json:"pidContains,omitempty"`
+	PidHasPrefix    *xid.ID  `json:"pidHasPrefix,omitempty"`
+	PidHasSuffix    *xid.ID  `json:"pidHasSuffix,omitempty"`
+	PidIsNil        bool     `json:"pidIsNil,omitempty"`
+	PidNotNil       bool     `json:"pidNotNil,omitempty"`
+	PidEqualFold    *xid.ID  `json:"pidEqualFold,omitempty"`
+	PidContainsFold *xid.ID  `json:"pidContainsFold,omitempty"`
 
 	// "parent" edge predicates.
 	HasParent     *bool               `json:"hasParent,omitempty"`
@@ -2470,50 +2470,50 @@ func (i *RegionWhereInput) P() (predicate.Region, error) {
 	if len(i.TypeNotIn) > 0 {
 		predicates = append(predicates, region.TypeNotIn(i.TypeNotIn...))
 	}
-	if i.ParentID != nil {
-		predicates = append(predicates, region.ParentIDEQ(*i.ParentID))
+	if i.Pid != nil {
+		predicates = append(predicates, region.PidEQ(*i.Pid))
 	}
-	if i.ParentIDNEQ != nil {
-		predicates = append(predicates, region.ParentIDNEQ(*i.ParentIDNEQ))
+	if i.PidNEQ != nil {
+		predicates = append(predicates, region.PidNEQ(*i.PidNEQ))
 	}
-	if len(i.ParentIDIn) > 0 {
-		predicates = append(predicates, region.ParentIDIn(i.ParentIDIn...))
+	if len(i.PidIn) > 0 {
+		predicates = append(predicates, region.PidIn(i.PidIn...))
 	}
-	if len(i.ParentIDNotIn) > 0 {
-		predicates = append(predicates, region.ParentIDNotIn(i.ParentIDNotIn...))
+	if len(i.PidNotIn) > 0 {
+		predicates = append(predicates, region.PidNotIn(i.PidNotIn...))
 	}
-	if i.ParentIDGT != nil {
-		predicates = append(predicates, region.ParentIDGT(*i.ParentIDGT))
+	if i.PidGT != nil {
+		predicates = append(predicates, region.PidGT(*i.PidGT))
 	}
-	if i.ParentIDGTE != nil {
-		predicates = append(predicates, region.ParentIDGTE(*i.ParentIDGTE))
+	if i.PidGTE != nil {
+		predicates = append(predicates, region.PidGTE(*i.PidGTE))
 	}
-	if i.ParentIDLT != nil {
-		predicates = append(predicates, region.ParentIDLT(*i.ParentIDLT))
+	if i.PidLT != nil {
+		predicates = append(predicates, region.PidLT(*i.PidLT))
 	}
-	if i.ParentIDLTE != nil {
-		predicates = append(predicates, region.ParentIDLTE(*i.ParentIDLTE))
+	if i.PidLTE != nil {
+		predicates = append(predicates, region.PidLTE(*i.PidLTE))
 	}
-	if i.ParentIDContains != nil {
-		predicates = append(predicates, region.ParentIDContains(*i.ParentIDContains))
+	if i.PidContains != nil {
+		predicates = append(predicates, region.PidContains(*i.PidContains))
 	}
-	if i.ParentIDHasPrefix != nil {
-		predicates = append(predicates, region.ParentIDHasPrefix(*i.ParentIDHasPrefix))
+	if i.PidHasPrefix != nil {
+		predicates = append(predicates, region.PidHasPrefix(*i.PidHasPrefix))
 	}
-	if i.ParentIDHasSuffix != nil {
-		predicates = append(predicates, region.ParentIDHasSuffix(*i.ParentIDHasSuffix))
+	if i.PidHasSuffix != nil {
+		predicates = append(predicates, region.PidHasSuffix(*i.PidHasSuffix))
 	}
-	if i.ParentIDIsNil {
-		predicates = append(predicates, region.ParentIDIsNil())
+	if i.PidIsNil {
+		predicates = append(predicates, region.PidIsNil())
 	}
-	if i.ParentIDNotNil {
-		predicates = append(predicates, region.ParentIDNotNil())
+	if i.PidNotNil {
+		predicates = append(predicates, region.PidNotNil())
 	}
-	if i.ParentIDEqualFold != nil {
-		predicates = append(predicates, region.ParentIDEqualFold(*i.ParentIDEqualFold))
+	if i.PidEqualFold != nil {
+		predicates = append(predicates, region.PidEqualFold(*i.PidEqualFold))
 	}
-	if i.ParentIDContainsFold != nil {
-		predicates = append(predicates, region.ParentIDContainsFold(*i.ParentIDContainsFold))
+	if i.PidContainsFold != nil {
+		predicates = append(predicates, region.PidContainsFold(*i.PidContainsFold))
 	}
 
 	if i.HasParent != nil {

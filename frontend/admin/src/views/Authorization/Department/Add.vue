@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { MenuRoute } from '@/api/menu/types'
 import { BaseButton } from '@/components/Button'
 import { ContentDetailWrap } from '@/components/ContentDetailWrap'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -23,7 +22,7 @@ const save = async () => {
 
   if (formData) {
     const [res] = await api.department.create({
-      body: formData as MenuRoute,
+      body: formData,
       opt: { loading }
     })
 

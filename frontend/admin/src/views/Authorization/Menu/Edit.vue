@@ -20,9 +20,10 @@ const currentRow = ref<MenuRoute>()
 
 const getTableDetail = async () => {
   if (!query.id) return
-  const [res] = await api.menu.get({ id: String(query.id) })
+  const [res, err] = await api.menu.get({ id: String(query.id) })
+  if (err) return
   if (res) {
-    currentRow.value = res
+    currentRow.value = res.data
   }
 }
 

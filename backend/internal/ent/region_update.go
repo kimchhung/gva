@@ -129,23 +129,37 @@ func (ru *RegionUpdate) SetNillableType(r *region.Type) *RegionUpdate {
 	return ru
 }
 
-// SetParentID sets the "parent_id" field.
-func (ru *RegionUpdate) SetParentID(x xid.ID) *RegionUpdate {
-	ru.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (ru *RegionUpdate) SetPid(x xid.ID) *RegionUpdate {
+	ru.mutation.SetPid(x)
 	return ru
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (ru *RegionUpdate) SetNillableParentID(x *xid.ID) *RegionUpdate {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (ru *RegionUpdate) SetNillablePid(x *xid.ID) *RegionUpdate {
 	if x != nil {
-		ru.SetParentID(*x)
+		ru.SetPid(*x)
 	}
 	return ru
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (ru *RegionUpdate) ClearParentID() *RegionUpdate {
-	ru.mutation.ClearParentID()
+// ClearPid clears the value of the "pid" field.
+func (ru *RegionUpdate) ClearPid() *RegionUpdate {
+	ru.mutation.ClearPid()
+	return ru
+}
+
+// SetParentID sets the "parent" edge to the Region entity by ID.
+func (ru *RegionUpdate) SetParentID(id xid.ID) *RegionUpdate {
+	ru.mutation.SetParentID(id)
+	return ru
+}
+
+// SetNillableParentID sets the "parent" edge to the Region entity by ID if the given value is not nil.
+func (ru *RegionUpdate) SetNillableParentID(id *xid.ID) *RegionUpdate {
+	if id != nil {
+		ru = ru.SetParentID(*id)
+	}
 	return ru
 }
 
@@ -495,23 +509,37 @@ func (ruo *RegionUpdateOne) SetNillableType(r *region.Type) *RegionUpdateOne {
 	return ruo
 }
 
-// SetParentID sets the "parent_id" field.
-func (ruo *RegionUpdateOne) SetParentID(x xid.ID) *RegionUpdateOne {
-	ruo.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (ruo *RegionUpdateOne) SetPid(x xid.ID) *RegionUpdateOne {
+	ruo.mutation.SetPid(x)
 	return ruo
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (ruo *RegionUpdateOne) SetNillableParentID(x *xid.ID) *RegionUpdateOne {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (ruo *RegionUpdateOne) SetNillablePid(x *xid.ID) *RegionUpdateOne {
 	if x != nil {
-		ruo.SetParentID(*x)
+		ruo.SetPid(*x)
 	}
 	return ruo
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (ruo *RegionUpdateOne) ClearParentID() *RegionUpdateOne {
-	ruo.mutation.ClearParentID()
+// ClearPid clears the value of the "pid" field.
+func (ruo *RegionUpdateOne) ClearPid() *RegionUpdateOne {
+	ruo.mutation.ClearPid()
+	return ruo
+}
+
+// SetParentID sets the "parent" edge to the Region entity by ID.
+func (ruo *RegionUpdateOne) SetParentID(id xid.ID) *RegionUpdateOne {
+	ruo.mutation.SetParentID(id)
+	return ruo
+}
+
+// SetNillableParentID sets the "parent" edge to the Region entity by ID if the given value is not nil.
+func (ruo *RegionUpdateOne) SetNillableParentID(id *xid.ID) *RegionUpdateOne {
+	if id != nil {
+		ruo = ruo.SetParentID(*id)
+	}
 	return ruo
 }
 

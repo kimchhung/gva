@@ -1,12 +1,8 @@
-export type Department = {
+import { WithEdgeTree } from '@/types/edges'
+
+export type Department = WithEdgeTree<{
   id: string
   name: string
   nameId: string
   isEnable: boolean
-
-  //relation
-  edge: {
-    children?: Department[]
-  }
-  parentId: string
-}
+}>

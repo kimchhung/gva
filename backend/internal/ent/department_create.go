@@ -93,16 +93,16 @@ func (dc *DepartmentCreate) SetName(s string) *DepartmentCreate {
 	return dc
 }
 
-// SetParentID sets the "parent_id" field.
-func (dc *DepartmentCreate) SetParentID(x xid.ID) *DepartmentCreate {
-	dc.mutation.SetParentID(x)
+// SetPid sets the "pid" field.
+func (dc *DepartmentCreate) SetPid(x xid.ID) *DepartmentCreate {
+	dc.mutation.SetPid(x)
 	return dc
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (dc *DepartmentCreate) SetNillableParentID(x *xid.ID) *DepartmentCreate {
+// SetNillablePid sets the "pid" field if the given value is not nil.
+func (dc *DepartmentCreate) SetNillablePid(x *xid.ID) *DepartmentCreate {
 	if x != nil {
-		dc.SetParentID(*x)
+		dc.SetPid(*x)
 	}
 	return dc
 }
@@ -117,6 +117,20 @@ func (dc *DepartmentCreate) SetID(x xid.ID) *DepartmentCreate {
 func (dc *DepartmentCreate) SetNillableID(x *xid.ID) *DepartmentCreate {
 	if x != nil {
 		dc.SetID(*x)
+	}
+	return dc
+}
+
+// SetParentID sets the "parent" edge to the Department entity by ID.
+func (dc *DepartmentCreate) SetParentID(id xid.ID) *DepartmentCreate {
+	dc.mutation.SetParentID(id)
+	return dc
+}
+
+// SetNillableParentID sets the "parent" edge to the Department entity by ID if the given value is not nil.
+func (dc *DepartmentCreate) SetNillableParentID(id *xid.ID) *DepartmentCreate {
+	if id != nil {
+		dc = dc.SetParentID(*id)
 	}
 	return dc
 }
@@ -321,7 +335,7 @@ func (dc *DepartmentCreate) createSpec() (*Department, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ParentID = &nodes[0]
+		_node.Pid = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := dc.mutation.ChildrenIDs(); len(nodes) > 0 {
@@ -488,21 +502,21 @@ func (u *DepartmentUpsert) UpdateName() *DepartmentUpsert {
 	return u
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *DepartmentUpsert) SetParentID(v xid.ID) *DepartmentUpsert {
-	u.Set(department.FieldParentID, v)
+// SetPid sets the "pid" field.
+func (u *DepartmentUpsert) SetPid(v xid.ID) *DepartmentUpsert {
+	u.Set(department.FieldPid, v)
 	return u
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *DepartmentUpsert) UpdateParentID() *DepartmentUpsert {
-	u.SetExcluded(department.FieldParentID)
+// UpdatePid sets the "pid" field to the value that was provided on create.
+func (u *DepartmentUpsert) UpdatePid() *DepartmentUpsert {
+	u.SetExcluded(department.FieldPid)
 	return u
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (u *DepartmentUpsert) ClearParentID() *DepartmentUpsert {
-	u.SetNull(department.FieldParentID)
+// ClearPid clears the value of the "pid" field.
+func (u *DepartmentUpsert) ClearPid() *DepartmentUpsert {
+	u.SetNull(department.FieldPid)
 	return u
 }
 
@@ -645,24 +659,24 @@ func (u *DepartmentUpsertOne) UpdateName() *DepartmentUpsertOne {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *DepartmentUpsertOne) SetParentID(v xid.ID) *DepartmentUpsertOne {
+// SetPid sets the "pid" field.
+func (u *DepartmentUpsertOne) SetPid(v xid.ID) *DepartmentUpsertOne {
 	return u.Update(func(s *DepartmentUpsert) {
-		s.SetParentID(v)
+		s.SetPid(v)
 	})
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *DepartmentUpsertOne) UpdateParentID() *DepartmentUpsertOne {
+// UpdatePid sets the "pid" field to the value that was provided on create.
+func (u *DepartmentUpsertOne) UpdatePid() *DepartmentUpsertOne {
 	return u.Update(func(s *DepartmentUpsert) {
-		s.UpdateParentID()
+		s.UpdatePid()
 	})
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (u *DepartmentUpsertOne) ClearParentID() *DepartmentUpsertOne {
+// ClearPid clears the value of the "pid" field.
+func (u *DepartmentUpsertOne) ClearPid() *DepartmentUpsertOne {
 	return u.Update(func(s *DepartmentUpsert) {
-		s.ClearParentID()
+		s.ClearPid()
 	})
 }
 
@@ -972,24 +986,24 @@ func (u *DepartmentUpsertBulk) UpdateName() *DepartmentUpsertBulk {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *DepartmentUpsertBulk) SetParentID(v xid.ID) *DepartmentUpsertBulk {
+// SetPid sets the "pid" field.
+func (u *DepartmentUpsertBulk) SetPid(v xid.ID) *DepartmentUpsertBulk {
 	return u.Update(func(s *DepartmentUpsert) {
-		s.SetParentID(v)
+		s.SetPid(v)
 	})
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *DepartmentUpsertBulk) UpdateParentID() *DepartmentUpsertBulk {
+// UpdatePid sets the "pid" field to the value that was provided on create.
+func (u *DepartmentUpsertBulk) UpdatePid() *DepartmentUpsertBulk {
 	return u.Update(func(s *DepartmentUpsert) {
-		s.UpdateParentID()
+		s.UpdatePid()
 	})
 }
 
-// ClearParentID clears the value of the "parent_id" field.
-func (u *DepartmentUpsertBulk) ClearParentID() *DepartmentUpsertBulk {
+// ClearPid clears the value of the "pid" field.
+func (u *DepartmentUpsertBulk) ClearPid() *DepartmentUpsertBulk {
 	return u.Update(func(s *DepartmentUpsert) {
-		s.ClearParentID()
+		s.ClearPid()
 	})
 }
 

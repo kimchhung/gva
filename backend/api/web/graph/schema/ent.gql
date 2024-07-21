@@ -165,7 +165,7 @@ type Department implements Node {
   isEnable: Boolean!
   nameID: String!
   name: String!
-  parentID: ID
+  pid: ID
   parent: Department
   children: [Department!]
   members: [Admin!]
@@ -309,23 +309,23 @@ input DepartmentWhereInput {
   nameEqualFold: String
   nameContainsFold: String
   """
-  parent_id field predicates
+  pid field predicates
   """
-  parentID: ID
-  parentIDNEQ: ID
-  parentIDIn: [ID!]
-  parentIDNotIn: [ID!]
-  parentIDGT: ID
-  parentIDGTE: ID
-  parentIDLT: ID
-  parentIDLTE: ID
-  parentIDContains: ID
-  parentIDHasPrefix: ID
-  parentIDHasSuffix: ID
-  parentIDIsNil: Boolean
-  parentIDNotNil: Boolean
-  parentIDEqualFold: ID
-  parentIDContainsFold: ID
+  pid: ID
+  pidNEQ: ID
+  pidIn: [ID!]
+  pidNotIn: [ID!]
+  pidGT: ID
+  pidGTE: ID
+  pidLT: ID
+  pidLTE: ID
+  pidContains: ID
+  pidHasPrefix: ID
+  pidHasSuffix: ID
+  pidIsNil: Boolean
+  pidNotNil: Boolean
+  pidEqualFold: ID
+  pidContainsFold: ID
   """
   parent edge predicates
   """
@@ -348,7 +348,7 @@ type Menu implements Node {
   updatedAt: Time!
   isEnable: Boolean!
   deletedAt: Int!
-  parentID: ID
+  pid: ID
   path: String!
   component: String!
   redirect: String
@@ -446,23 +446,23 @@ input MenuWhereInput {
   deletedAtLT: Int
   deletedAtLTE: Int
   """
-  parent_id field predicates
+  pid field predicates
   """
-  parentID: ID
-  parentIDNEQ: ID
-  parentIDIn: [ID!]
-  parentIDNotIn: [ID!]
-  parentIDGT: ID
-  parentIDGTE: ID
-  parentIDLT: ID
-  parentIDLTE: ID
-  parentIDContains: ID
-  parentIDHasPrefix: ID
-  parentIDHasSuffix: ID
-  parentIDIsNil: Boolean
-  parentIDNotNil: Boolean
-  parentIDEqualFold: ID
-  parentIDContainsFold: ID
+  pid: ID
+  pidNEQ: ID
+  pidIn: [ID!]
+  pidNotIn: [ID!]
+  pidGT: ID
+  pidGTE: ID
+  pidLT: ID
+  pidLTE: ID
+  pidContains: ID
+  pidHasPrefix: ID
+  pidHasSuffix: ID
+  pidIsNil: Boolean
+  pidNotNil: Boolean
+  pidEqualFold: ID
+  pidContainsFold: ID
   """
   path field predicates
   """
@@ -855,7 +855,7 @@ type Region implements Node {
   nameID: String!
   name: String!
   type: RegionType!
-  parentID: ID
+  pid: ID
   parent: Region
   children: [Region!]
 }
@@ -1015,23 +1015,23 @@ input RegionWhereInput {
   typeIn: [RegionType!]
   typeNotIn: [RegionType!]
   """
-  parent_id field predicates
+  pid field predicates
   """
-  parentID: ID
-  parentIDNEQ: ID
-  parentIDIn: [ID!]
-  parentIDNotIn: [ID!]
-  parentIDGT: ID
-  parentIDGTE: ID
-  parentIDLT: ID
-  parentIDLTE: ID
-  parentIDContains: ID
-  parentIDHasPrefix: ID
-  parentIDHasSuffix: ID
-  parentIDIsNil: Boolean
-  parentIDNotNil: Boolean
-  parentIDEqualFold: ID
-  parentIDContainsFold: ID
+  pid: ID
+  pidNEQ: ID
+  pidIn: [ID!]
+  pidNotIn: [ID!]
+  pidGT: ID
+  pidGTE: ID
+  pidLT: ID
+  pidLTE: ID
+  pidContains: ID
+  pidHasPrefix: ID
+  pidHasSuffix: ID
+  pidIsNil: Boolean
+  pidNotNil: Boolean
+  pidEqualFold: ID
+  pidContainsFold: ID
   """
   parent edge predicates
   """

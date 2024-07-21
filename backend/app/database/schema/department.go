@@ -32,11 +32,11 @@ func (Department) Fields() []ent.Field {
 		field.String("name").
 			StructTag(`json:"name" rql:"column=name,filter,sort"`),
 
-		field.String("parent_id").
+		field.String("pid").
 			GoType(xid.ID("")).
 			Optional().
 			Nillable().
-			StructTag(`json:"parentId,omitempty" rql:"filter,sort"`),
+			StructTag(`json:"pid,omitempty" rql:"filter,sort"`),
 	}
 }
 
@@ -52,7 +52,7 @@ func (Department) Edges() []ent.Edge {
 		edge.To("children", Department.Type).
 			From("parent").
 			Unique().
-			Field("parent_id"),
+			Field("pid"),
 
 		// has many members
 		edge.To("members", Admin.Type),

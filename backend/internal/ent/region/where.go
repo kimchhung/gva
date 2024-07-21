@@ -88,9 +88,9 @@ func Name(v string) predicate.Region {
 	return predicate.Region(sql.FieldEQ(FieldName, v))
 }
 
-// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldEQ(FieldParentID, v))
+// Pid applies equality check predicate on the "pid" field. It's identical to PidEQ.
+func Pid(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldEQ(FieldPid, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -373,84 +373,84 @@ func TypeNotIn(vs ...Type) predicate.Region {
 	return predicate.Region(sql.FieldNotIn(FieldType, vs...))
 }
 
-// ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldEQ(FieldParentID, v))
+// PidEQ applies the EQ predicate on the "pid" field.
+func PidEQ(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldEQ(FieldPid, v))
 }
 
-// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldNEQ(FieldParentID, v))
+// PidNEQ applies the NEQ predicate on the "pid" field.
+func PidNEQ(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldNEQ(FieldPid, v))
 }
 
-// ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldIn(FieldParentID, vs...))
+// PidIn applies the In predicate on the "pid" field.
+func PidIn(vs ...xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldIn(FieldPid, vs...))
 }
 
-// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldNotIn(FieldParentID, vs...))
+// PidNotIn applies the NotIn predicate on the "pid" field.
+func PidNotIn(vs ...xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldNotIn(FieldPid, vs...))
 }
 
-// ParentIDGT applies the GT predicate on the "parent_id" field.
-func ParentIDGT(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldGT(FieldParentID, v))
+// PidGT applies the GT predicate on the "pid" field.
+func PidGT(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldGT(FieldPid, v))
 }
 
-// ParentIDGTE applies the GTE predicate on the "parent_id" field.
-func ParentIDGTE(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldGTE(FieldParentID, v))
+// PidGTE applies the GTE predicate on the "pid" field.
+func PidGTE(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldGTE(FieldPid, v))
 }
 
-// ParentIDLT applies the LT predicate on the "parent_id" field.
-func ParentIDLT(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldLT(FieldParentID, v))
+// PidLT applies the LT predicate on the "pid" field.
+func PidLT(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldLT(FieldPid, v))
 }
 
-// ParentIDLTE applies the LTE predicate on the "parent_id" field.
-func ParentIDLTE(v xid.ID) predicate.Region {
-	return predicate.Region(sql.FieldLTE(FieldParentID, v))
+// PidLTE applies the LTE predicate on the "pid" field.
+func PidLTE(v xid.ID) predicate.Region {
+	return predicate.Region(sql.FieldLTE(FieldPid, v))
 }
 
-// ParentIDContains applies the Contains predicate on the "parent_id" field.
-func ParentIDContains(v xid.ID) predicate.Region {
+// PidContains applies the Contains predicate on the "pid" field.
+func PidContains(v xid.ID) predicate.Region {
 	vc := string(v)
-	return predicate.Region(sql.FieldContains(FieldParentID, vc))
+	return predicate.Region(sql.FieldContains(FieldPid, vc))
 }
 
-// ParentIDHasPrefix applies the HasPrefix predicate on the "parent_id" field.
-func ParentIDHasPrefix(v xid.ID) predicate.Region {
+// PidHasPrefix applies the HasPrefix predicate on the "pid" field.
+func PidHasPrefix(v xid.ID) predicate.Region {
 	vc := string(v)
-	return predicate.Region(sql.FieldHasPrefix(FieldParentID, vc))
+	return predicate.Region(sql.FieldHasPrefix(FieldPid, vc))
 }
 
-// ParentIDHasSuffix applies the HasSuffix predicate on the "parent_id" field.
-func ParentIDHasSuffix(v xid.ID) predicate.Region {
+// PidHasSuffix applies the HasSuffix predicate on the "pid" field.
+func PidHasSuffix(v xid.ID) predicate.Region {
 	vc := string(v)
-	return predicate.Region(sql.FieldHasSuffix(FieldParentID, vc))
+	return predicate.Region(sql.FieldHasSuffix(FieldPid, vc))
 }
 
-// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
-func ParentIDIsNil() predicate.Region {
-	return predicate.Region(sql.FieldIsNull(FieldParentID))
+// PidIsNil applies the IsNil predicate on the "pid" field.
+func PidIsNil() predicate.Region {
+	return predicate.Region(sql.FieldIsNull(FieldPid))
 }
 
-// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
-func ParentIDNotNil() predicate.Region {
-	return predicate.Region(sql.FieldNotNull(FieldParentID))
+// PidNotNil applies the NotNil predicate on the "pid" field.
+func PidNotNil() predicate.Region {
+	return predicate.Region(sql.FieldNotNull(FieldPid))
 }
 
-// ParentIDEqualFold applies the EqualFold predicate on the "parent_id" field.
-func ParentIDEqualFold(v xid.ID) predicate.Region {
+// PidEqualFold applies the EqualFold predicate on the "pid" field.
+func PidEqualFold(v xid.ID) predicate.Region {
 	vc := string(v)
-	return predicate.Region(sql.FieldEqualFold(FieldParentID, vc))
+	return predicate.Region(sql.FieldEqualFold(FieldPid, vc))
 }
 
-// ParentIDContainsFold applies the ContainsFold predicate on the "parent_id" field.
-func ParentIDContainsFold(v xid.ID) predicate.Region {
+// PidContainsFold applies the ContainsFold predicate on the "pid" field.
+func PidContainsFold(v xid.ID) predicate.Region {
 	vc := string(v)
-	return predicate.Region(sql.FieldContainsFold(FieldParentID, vc))
+	return predicate.Region(sql.FieldContainsFold(FieldPid, vc))
 }
 
 // HasParent applies the HasEdge predicate on the "parent" edge.
