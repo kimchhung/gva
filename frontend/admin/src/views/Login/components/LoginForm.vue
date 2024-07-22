@@ -206,20 +206,17 @@ watch(
   }
 )
 
-// 登录
+// Log in
 const signIn = async () => {
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       const formData = await getFormData<AuthLoginBody>()
-      const [data] = await api.auth.login({ body: formData })
+      const [res, err] = await api.auth.login({ body: formData })
+      if (err) return
 
-      if (!data) {
-        return
-      }
-
-      adminStore.setToken(data.token)
-      adminStore.setAdminInfo(data?.admin)
+      adminStore.setToken(res.data.token)
+      adminStore.setAdminInfo(res.data?.admin)
 
       // Whether to use dynamic routing
       if (appStore.getDynamicRouter) {

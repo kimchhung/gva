@@ -52,10 +52,9 @@ func (con *RouteController) Init(r *echo.Group) *echo.Group {
 // @Param   	limit     query     int     false  "string default"     default(A)
 func (con *RouteController) List(m *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
-		// Table:        route.Table,
 		Model:        ent.Menu{},
 		DefaultLimit: 20,
-		DefaultSort:  []string{"-id"},
+		DefaultSort:  []string{"order"},
 		FieldSep:     ".",
 	})
 
