@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { MenuRoute } from '@/api/menu/types'
-import { Form, FormSchema } from '@/components/Form'
+import { permissionToTree } from '@/api/permission/tranform'
+import { Form, FormSchema, TreeSelectComponentProps } from '@/components/Form'
 import { MenuTypeEnum } from '@/constants/menuType'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -8,7 +9,6 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { cloneDeep } from 'lodash-es'
 import { PropType, reactive, ref, unref, watch } from 'vue'
-import AddButtonPermission from './AddButtonPermission.vue'
 
 const { t } = useI18n()
 const { required } = useValidator()
@@ -20,20 +20,10 @@ const props = defineProps({
   }
 })
 
-// const handleClose = async (tag: any) => {
-//   const formData = await getFormData()
-//   // Delete the corresponding permissions
-//   setValues({
-//     permissionList: formData?.permissionList?.filter((v: any) => v.value !== tag.value)
-//   })
-// }
-
-const showDrawer = ref(false)
-
 const formSchema = reactive<FormSchema[]>([
   {
     field: 'type',
-    label: t('meta.type'),
+    label: t('menu.type'),
     component: 'RadioButton',
     value: MenuTypeEnum.CATALOG,
     colProps: {
@@ -96,6 +86,11 @@ const formSchema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'name',
+    label: t('menu.name'),
+    component: 'Input'
+  },
+  {
     field: 'pid',
     label: 'Parent menu',
     component: 'TreeSelect',
@@ -130,15 +125,15 @@ const formSchema = reactive<FormSchema[]>([
           }
         }
       }
-    },
+    } as TreeSelectComponentProps,
     optionApi: async () => {
       const list = useAdminStoreWithOut().getRoleRouters
       return list || []
     }
   },
   {
-    field: 'meta.title',
-    label: t('meta.title'),
+    field: 'path',
+    label: t('menu.path'),
     component: 'Input'
   },
   {
@@ -157,28 +152,61 @@ const formSchema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'name',
-    label: t('meta.name'),
+    field: 'redirect',
+    label: t('menu.redirect'),
     component: 'Input'
+  },
+  {
+    field: 'order',
+    label: t('common.order'),
+    component: 'InputNumber'
+  },
+  {
+    field: 'meta.title',
+    label: t('menu.title'),
+    component: 'Input'
+  },
+  {
+    field: 'meta.scopes',
+    label: t('common.scope'),
+    component: 'TreeSelect',
+    componentProps: {
+      nodeKey: 'id',
+      props: {
+        label: 'name',
+        value: 'scope',
+        children: 'children'
+      },
+      highlightCurrent: true,
+      expandOnClickNode: false,
+      checkStrictly: true,
+      checkOnClickNode: false,
+      clearable: true,
+      multiple: true,
+      filterable: true,
+      tagType: 'primary'
+    } as TreeSelectComponentProps,
+    optionApi: async () => {
+      const [res, err] = await api.permission.getMany({ query: { limit: 100 } })
+      if (err) return []
+
+      return permissionToTree(res.data)
+    }
   },
   {
     field: 'meta.icon',
-    label: t('meta.icon'),
+    label: t('menu.icon'),
     component: 'IconPicker'
   },
   {
-    field: 'path',
-    label: t('meta.path'),
-    component: 'Input'
-  },
-  {
     field: 'meta.activeMenu',
-    label: t('meta.activeMenu'),
+    label: t('menu.activeMenu'),
     component: 'Input'
   },
+
   {
     field: 'isEnable',
-    label: t('meta.isEnable'),
+    label: t('menu.isEnable'),
     component: 'Switch',
     componentProps: {
       options: [
@@ -196,42 +224,43 @@ const formSchema = reactive<FormSchema[]>([
 
   {
     field: 'meta.hidden',
-    label: t('meta.hidden'),
+    label: t('menu.hidden'),
     component: 'Switch'
   },
   {
     field: 'meta.alwaysShow',
-    label: t('meta.alwaysShow'),
+    label: t('menu.alwaysShow'),
     component: 'Switch'
   },
   {
     field: 'meta.noCache',
-    label: t('meta.noCache'),
+    label: t('menu.noCache'),
     component: 'Switch'
   },
   {
     field: 'meta.breadcrumb',
-    label: t('meta.breadcrumb'),
+    label: t('menu.breadcrumb'),
     component: 'Switch'
   },
   {
     field: 'meta.affix',
-    label: t('meta.affix'),
+    label: t('menu.affix'),
     component: 'Switch'
   },
   {
     field: 'meta.noTagsView',
-    label: t('meta.noTagsView'),
+    label: t('menu.noTagsView'),
     component: 'Switch'
   },
   {
     field: 'meta.canTo',
-    label: t('meta.canTo'),
+    label: t('menu.canTo'),
     component: 'Switch'
   }
 ])
 
 const rules = reactive({
+  name: [required()],
   type: [required()],
   component: [required()],
   path: [required()],
@@ -307,16 +336,8 @@ watch(
 defineExpose({
   submit
 })
-
-const confirm = async (data: any) => {
-  const formData = await getFormData()
-  setValues({
-    permissionList: [...(formData?.permissionList || []), data]
-  })
-}
 </script>
 
 <template>
   <Form :rules="rules" @register="formRegister" :schema="formSchema" />
-  <AddButtonPermission v-model="showDrawer" @confirm="confirm" />
 </template>

@@ -26,7 +26,7 @@ const renderTag = (enable?: boolean) => {
 const detailSchema = ref<DescriptionsSchema[]>([
   {
     field: 'type',
-    label: t('meta.type'),
+    label: t('menu.type'),
     span: 24,
     slots: {
       default: (data) => {
@@ -37,15 +37,15 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'parentName',
-    label: t('meta.parentName')
+    label: t('menu.parentName')
   },
   {
     field: 'meta.title',
-    label: t('meta.title')
+    label: t('menu.title')
   },
   {
     field: 'component',
-    label: t('meta.component'),
+    label: t('menu.component'),
     slots: {
       default: (data) => {
         const component = data.component
@@ -57,11 +57,11 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'name',
-    label: t('meta.name')
+    label: t('menu.name')
   },
   {
     field: 'meta.icon',
-    label: t('meta.icon'),
+    label: t('menu.icon'),
     slots: {
       default: (data) => {
         const icon = data.icon
@@ -79,11 +79,11 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'path',
-    label: t('meta.path')
+    label: t('menu.path')
   },
   {
     field: 'meta.activeMenu',
-    label: t('meta.activeMenu')
+    label: t('menu.activeMenu')
   },
   {
     field: 'permissionList',
@@ -105,7 +105,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'isEnable',
-    label: t('meta.isEnable'),
+    label: t('menu.isEnable'),
     slots: {
       default: (data) => {
         return renderTag(data.isEnable)
@@ -114,7 +114,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.hidden',
-    label: t('meta.hidden'),
+    label: t('menu.hidden'),
     slots: {
       default: (data) => {
         return renderTag(data.enableHidden)
@@ -123,7 +123,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.alwaysShow',
-    label: t('meta.alwaysShow'),
+    label: t('menu.alwaysShow'),
     slots: {
       default: (data) => {
         return renderTag(data.enableDisplay)
@@ -132,7 +132,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.noCache',
-    label: t('meta.noCache'),
+    label: t('menu.noCache'),
     slots: {
       default: (data) => {
         return renderTag(data.enableCleanCache)
@@ -141,7 +141,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.breadcrumb',
-    label: t('meta.breadcrumb'),
+    label: t('menu.breadcrumb'),
     slots: {
       default: (data) => {
         return renderTag(data.enableShowCrumb)
@@ -150,7 +150,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.affix',
-    label: t('meta.affix'),
+    label: t('menu.affix'),
     slots: {
       default: (data) => {
         return renderTag(data.enablePinnedTab)
@@ -159,7 +159,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.noTagsView',
-    label: t('meta.noTagsView'),
+    label: t('menu.noTagsView'),
     slots: {
       default: (data) => {
         return renderTag(data.enableHiddenTab)
@@ -168,7 +168,7 @@ const detailSchema = ref<DescriptionsSchema[]>([
   },
   {
     field: 'meta.canTo',
-    label: t('meta.canTo'),
+    label: t('menu.canTo'),
     slots: {
       default: (data) => {
         return renderTag(data.enableSkip)

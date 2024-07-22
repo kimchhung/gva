@@ -6,11 +6,10 @@ import { ContentWrap } from '@/components/ContentWrap'
 import { Icon } from '@/components/Icon'
 import { Table, TableColumn } from '@/components/Table'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useIcon } from '@/hooks/web/useIcon'
 import { useTable } from '@/hooks/web/useTable'
 
-import { ElMessage, ElTag } from 'element-plus'
-import { reactive } from 'vue'
+import { ElButton, ElMessage, ElTag } from 'element-plus'
+import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
@@ -33,7 +32,7 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   },
   {
     field: 'meta.title',
-    label: t('meta.title'),
+    label: t('menu.title'),
     slots: {
       default: ({ row }) => {
         const title = t(row.meta.title)
@@ -43,7 +42,7 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   },
   {
     field: 'meta.icon',
-    label: t('meta.icon'),
+    label: t('menu.icon'),
     width: 80,
     slots: {
       default: ({ row }) => {
@@ -63,7 +62,7 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
 
   // {
   //   field: 'meta.permission',
-  //   label: t('meta.permission'),
+  //   label: t('menu.permission'),
   //   slots: {
   //     default: (data) => {
   //       const permission = data.row.meta.permission
@@ -73,7 +72,7 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   // },
   {
     field: 'component',
-    label: t('meta.component'),
+    label: t('menu.component'),
     slots: {
       default: ({ row }) => {
         const component = row.component
@@ -87,11 +86,12 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
   },
   {
     field: 'path',
-    label: t('meta.path')
+    label: t('menu.path')
   },
+
   {
     field: 'isEnable',
-    label: t('meta.isEnable'),
+    label: t('menu.isEnable'),
     slots: {
       default: ({ row }) => {
         return (
@@ -105,29 +105,60 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     }
   },
   {
-    field: 'action',
-    label: t('common.action'),
-    width: 250,
+    field: 'meta.scopes',
+    label: t('common.scope'),
     slots: {
       default: ({ row }) => {
         return (
           <>
-            <BaseButton
-              icon={useIcon({ icon: 'ep:view' })}
+            {[...(row.meta.scopes || [])].map((scope: string) => {
+              const [, action] = scope.split(':')
+              const tagTypes = {
+                super: 'primary',
+                add: 'warning',
+                delete: 'danger',
+                edit: 'warning',
+                view: 'info'
+              }
+              const typeColor = tagTypes[action]
+              return (
+                <ElTag class="mr-1" type={typeColor}>
+                  {action}
+                </ElTag>
+              )
+            })}
+          </>
+        )
+      }
+    }
+  },
+  {
+    field: 'action',
+    label: t('common.action'),
+    width: 250,
+
+    headerAlign: 'center',
+    align: 'center',
+    slots: {
+      default: ({ row }) => {
+        return (
+          <>
+            <ElButton
               type="success"
+              size="small"
+              icon={<Icon icon="ep:view" />}
               onClick={() => action(row, 'detail')}
-            >
-              {t('button.detail')}
-            </BaseButton>
-            <BaseButton
-              icon={useIcon({ icon: 'ep:edit' })}
+            />
+            <ElButton
               type="primary"
+              size="small"
+              icon={<Icon icon="ep:edit-pen" />}
               onClick={() => action(row, 'edit')}
             />
-
             <BaseButton
-              icon={useIcon({ icon: 'ep:delete' })}
               type="danger"
+              size="small"
+              icon={<Icon icon="ant-design:delete-outlined" />}
               onClick={() => action(row, 'delete')}
             />
           </>
@@ -154,6 +185,8 @@ const action = async (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete
       break
   }
 }
+
+const expandRowKeys = computed(() => tableState?.data?.map((e) => e.id) || [])
 </script>
 
 <template>
@@ -169,6 +202,7 @@ const action = async (row: Recordable, type: 'add' | 'edit' | 'detail' | 'delete
       :data="tableState.data"
       :loading="tableState.isLoading"
       :pagination="{ total: tableState.meta?.total }"
+      :expandRowKeys="expandRowKeys"
       @register="tableRegister"
     />
   </ContentWrap>

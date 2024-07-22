@@ -1,5 +1,9 @@
 export default {
   common: {
+    permission: '允许',
+    scope: '范围',
+    key: '钥匙',
+    order: '命令',
     time: '时间',
     action: '行动',
     index: '指數',
@@ -137,7 +141,8 @@ export default {
     menu: '菜单',
     role: '角色',
     admin: '管理员',
-    icon: '图标'
+    icon: '图标',
+    home: '家'
   },
   permission: {
     hasPermission: '请设置操作权限值'
@@ -211,9 +216,10 @@ export default {
     parentName: '父级名称',
     menuName: '菜单名称',
     icon: '图标',
-    permission: '权限',
     component: '组件',
     path: '路径',
+    scope: '许可范围',
+    redirect: '重定向',
     isEnable: '启用',
     hidden: '隐藏',
     alwaysShow: '始终显示',

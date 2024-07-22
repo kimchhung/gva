@@ -2,7 +2,7 @@
 import { useDesign } from '@/hooks/web/useDesign'
 import { useAppStore } from '@/store/modules/app'
 import { ButtonType, ComponentSize, ElButton } from 'element-plus'
-import { Component, computed, PropType, unref } from 'vue'
+import { Component, PropType, computed, unref } from 'vue'
 
 const appStore = useAppStore()
 

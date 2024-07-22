@@ -1,5 +1,9 @@
 export default {
   common: {
+    permission: 'Permission',
+    scope: 'Scope',
+    key: 'Key',
+    order: 'Order',
     time: 'Time',
     action: 'Action',
     index: 'Index',
@@ -137,7 +141,8 @@ export default {
     menu: 'Menu',
     role: 'Role',
     admin: 'Admin',
-    icon: 'Icon'
+    icon: 'Icon',
+    home: 'Home'
   },
   permission: {
     hasPermission: 'Please set the operation permission value'
@@ -148,11 +153,12 @@ export default {
     jsonEditor: 'JSON Editor',
     jsonEditorDes: 'Secondary packaging based on vue-json-pretty'
   },
-  meta: {
+  menu: {
     parentName: 'Parent Name',
     menuName: 'Menu name',
+    redirect: 'Redirect',
     icon: 'Icon',
-    permission: 'Permission',
+    scope: 'Scope',
     component: 'Component',
     path: 'Path',
     isEnable: 'Enable',

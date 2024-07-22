@@ -16,3 +16,9 @@ export type WithEdgeTree<
   pid?: string
   edges: Edges
 }
+
+export type WithTree<T> = T & {
+  id: string
+  pid?: string
+  children?: WithTree<T>[]
+}

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import { ElIcon } from 'element-plus'
-import { propTypes } from '@/utils/propTypes'
 import { useDesign } from '@/hooks/web/useDesign'
+import { propTypes } from '@/utils/propTypes'
 import { Icon } from '@iconify/vue'
+import { ElIcon } from 'element-plus'
+import { computed, unref } from 'vue'
 
 const { getPrefixCls } = useDesign()
 
@@ -25,7 +25,7 @@ const symbolId = computed(() => {
   return unref(isLocal) ? `#icon-${props.icon.split('svg-icon:')[1]}` : props.icon
 })
 
-// 是否使用在线图标
+// Whether to use online icons
 const isUseOnline = computed(() => {
   return import.meta.env.VITE_USE_ONLINE_ICON === 'true'
 })

@@ -146,9 +146,7 @@ export const createQueryPayload = <T extends object = any>(query: QueryPagi<T>) 
     payload.sort = [...payload.sort(payload.sort ?? []), `${syntax}${column}`]
   })
 
-  if (selects?.length) {
-    payload.selects = selects.join(',')
-  }
+  payload.selects = selects?.join(',') ?? 'list'
 
   return payload
 }

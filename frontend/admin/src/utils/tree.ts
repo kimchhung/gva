@@ -3,6 +3,7 @@ type TreeHelperConfig = {
   children: string
   pid: string
 }
+
 const DEFAULT_CONFIG: TreeHelperConfig = {
   id: 'id',
   children: 'children',

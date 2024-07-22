@@ -28,7 +28,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
     canTo: true               Set to true to allow route jump even if hidden is true (default false).
 
-    permission: ['edit','add', 'delete'] Set the permissions for this route.
+    scopes: ['user:edit','user:add', 'user:delete'] Set the permissions for this route.
  }
 **/
 interface RouteMetaCustom extends Record<string | number | symbol, unknown> {
