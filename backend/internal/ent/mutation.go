@@ -3287,7 +3287,7 @@ type PermissionMutation struct {
 	updated_at    *time.Time
 	group         *string
 	name          *string
-	key           *string
+	scope         *string
 	_type         *permission.Type
 	_order        *int
 	add_order     *int
@@ -3548,40 +3548,40 @@ func (m *PermissionMutation) ResetName() {
 	m.name = nil
 }
 
-// SetKey sets the "key" field.
-func (m *PermissionMutation) SetKey(s string) {
-	m.key = &s
+// SetScope sets the "scope" field.
+func (m *PermissionMutation) SetScope(s string) {
+	m.scope = &s
 }
 
-// Key returns the value of the "key" field in the mutation.
-func (m *PermissionMutation) Key() (r string, exists bool) {
-	v := m.key
+// Scope returns the value of the "scope" field in the mutation.
+func (m *PermissionMutation) Scope() (r string, exists bool) {
+	v := m.scope
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldKey returns the old "key" field's value of the Permission entity.
+// OldScope returns the old "scope" field's value of the Permission entity.
 // If the Permission object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionMutation) OldKey(ctx context.Context) (v string, err error) {
+func (m *PermissionMutation) OldScope(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKey is only allowed on UpdateOne operations")
+		return v, errors.New("OldScope is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKey requires an ID field in the mutation")
+		return v, errors.New("OldScope requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKey: %w", err)
+		return v, fmt.Errorf("querying old value for OldScope: %w", err)
 	}
-	return oldValue.Key, nil
+	return oldValue.Scope, nil
 }
 
-// ResetKey resets all changes to the "key" field.
-func (m *PermissionMutation) ResetKey() {
-	m.key = nil
+// ResetScope resets all changes to the "scope" field.
+func (m *PermissionMutation) ResetScope() {
+	m.scope = nil
 }
 
 // SetType sets the "type" field.
@@ -3804,8 +3804,8 @@ func (m *PermissionMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, permission.FieldName)
 	}
-	if m.key != nil {
-		fields = append(fields, permission.FieldKey)
+	if m.scope != nil {
+		fields = append(fields, permission.FieldScope)
 	}
 	if m._type != nil {
 		fields = append(fields, permission.FieldType)
@@ -3829,8 +3829,8 @@ func (m *PermissionMutation) Field(name string) (ent.Value, bool) {
 		return m.Group()
 	case permission.FieldName:
 		return m.Name()
-	case permission.FieldKey:
-		return m.Key()
+	case permission.FieldScope:
+		return m.Scope()
 	case permission.FieldType:
 		return m.GetType()
 	case permission.FieldOrder:
@@ -3852,8 +3852,8 @@ func (m *PermissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldGroup(ctx)
 	case permission.FieldName:
 		return m.OldName(ctx)
-	case permission.FieldKey:
-		return m.OldKey(ctx)
+	case permission.FieldScope:
+		return m.OldScope(ctx)
 	case permission.FieldType:
 		return m.OldType(ctx)
 	case permission.FieldOrder:
@@ -3895,12 +3895,12 @@ func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case permission.FieldKey:
+	case permission.FieldScope:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetKey(v)
+		m.SetScope(v)
 		return nil
 	case permission.FieldType:
 		v, ok := value.(permission.Type)
@@ -4007,8 +4007,8 @@ func (m *PermissionMutation) ResetField(name string) error {
 	case permission.FieldName:
 		m.ResetName()
 		return nil
-	case permission.FieldKey:
-		m.ResetKey()
+	case permission.FieldScope:
+		m.ResetScope()
 		return nil
 	case permission.FieldType:
 		m.ResetType()

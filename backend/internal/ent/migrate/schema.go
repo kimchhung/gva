@@ -128,7 +128,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "group", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
-		{Name: "key", Type: field.TypeString},
+		{Name: "scope", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Enums: []string{"dynamic", "static"}, Default: "dynamic"},
 		{Name: "order", Type: field.TypeInt, Nullable: true, Default: 0},
 	}

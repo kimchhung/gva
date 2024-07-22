@@ -12,7 +12,7 @@ import (
 
 var (
 	validGroups = make(map[PermissionGroup]struct{})
-	validKeys   = make(map[PermissionKey]struct{})
+	validscopes = make(map[permissionScope]struct{})
 )
 
 func Groups() (groups []PermissionGroup) {
@@ -22,11 +22,11 @@ func Groups() (groups []PermissionGroup) {
 	return groups
 }
 
-func Keys() (keys []PermissionKey) {
-	for g := range validKeys {
-		keys = append(keys, g)
+func Scopes() (scopes []permissionScope) {
+	for g := range validscopes {
+		scopes = append(scopes, g)
 	}
-	return keys
+	return scopes
 }
 
 func HasGroup(group PermissionGroup) bool {
@@ -34,22 +34,22 @@ func HasGroup(group PermissionGroup) bool {
 	return has
 }
 
-func HasKey(key PermissionKey) bool {
-	_, has := validKeys[key]
+func HasKey(scope permissionScope) bool {
+	_, has := validscopes[scope]
 	return has
 }
 
-func newKey(group PermissionGroup, action PermissionAction) PermissionKey {
-	key := PermissionKey(fmt.Sprintf("%s%s%s", group, PermissionSeperator, action))
+func newKey(group PermissionGroup, action PermissionAction) permissionScope {
+	key := permissionScope(fmt.Sprintf("%s%s%s", group, PermissionSeperator, action))
 
 	validGroups[group] = struct{}{}
-	validKeys[key] = struct{}{}
+	validscopes[key] = struct{}{}
 	return key
 }
 
 type (
 	// Admin_Role:View
-	PermissionKey string
+	permissionScope string
 
 	// Admin | Admin_Role
 	PermissionGroup string
@@ -59,18 +59,18 @@ type (
 )
 
 const (
-	ActionSuper  PermissionAction = "Super"
-	ActionView   PermissionAction = "View"
-	ActionAdd    PermissionAction = "Add"
-	ActionEdit   PermissionAction = "Edit"
-	ActionDelete PermissionAction = "Delete"
+	ActionSuper  PermissionAction = "super"
+	ActionView   PermissionAction = "view"
+	ActionAdd    PermissionAction = "add"
+	ActionEdit   PermissionAction = "edit"
+	ActionDelete PermissionAction = "delete"
 )
 
 var (
 	PermissionSeperator = ":"
 )
 
-func (k PermissionKey) Value() (group PermissionGroup, action PermissionAction, err error) {
+func (k permissionScope) Value() (group PermissionGroup, action PermissionAction, err error) {
 	if err := k.Valid(); err != nil {
 		return group, action, err
 	}
@@ -79,13 +79,13 @@ func (k PermissionKey) Value() (group PermissionGroup, action PermissionAction, 
 	return PermissionGroup(parts[0]), PermissionAction(parts[1]), nil
 }
 
-func (k PermissionKey) Name() string {
+func (k permissionScope) Name() string {
 	name := strings.ReplaceAll(string(k), "_", " ")
 	name = strings.ReplaceAll(name, PermissionSeperator, " ")
 	return name
 }
 
-func (k PermissionKey) Valid() error {
+func (k permissionScope) Valid() error {
 	if HasKey(k) {
 		return nil
 	}
@@ -110,50 +110,25 @@ func (p PermissionAction) Valid() error {
 	return fmt.Errorf("invalid permission key %s", p)
 }
 
-func RequireAny(permissions ...PermissionKey) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		adminCtx := appctx.MustAdminContext(c.Request().Context())
-		if adminCtx.IsSuperAdmin() {
-			return nil
-		}
-
-		rolePermissionsSet := make(map[string]struct{})
-		for _, rolePermission := range adminCtx.PermissionKeys() {
-			rolePermissionsSet[rolePermission] = struct{}{}
-		}
-
-		for _, p := range permissions {
-			if _, exists := rolePermissionsSet[string(p)]; exists {
-				return nil // Found a matching permission, no need to check further
-			}
-		}
-
-		return apperror.ErrUnauthorized // None of the required permissions were found
+func RequireAny(permissions ...permissionScope) echo.HandlerFunc {
+	requireds := make(map[string]struct{}, len(permissions))
+	for _, p := range permissions {
+		requireds[string(p)] = struct{}{}
 	}
-}
 
-func RequireAll(permissions ...PermissionKey) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		adminCtx := appctx.MustAdminContext(c.Request().Context())
-
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}
 
-		requireds := make(map[string]struct{})
-		for _, p := range permissions {
-			requireds[string(p)] = struct{}{}
-		}
-
-		for _, adminPermssion := range adminCtx.PermissionKeys() {
-			delete(requireds, adminPermssion)
-
-			if len(requireds) == 0 {
+		for _, adminScope := range adminCtx.PermissionScopes() {
+			if _, hasScope := requireds[adminScope]; hasScope {
 				return nil
 			}
 		}
 
-		return apperror.ErrUnauthorized
+		return apperror.ErrUnauthorized // None of the required permissions were found
 	}
 }
 

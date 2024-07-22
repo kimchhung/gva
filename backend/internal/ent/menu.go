@@ -39,7 +39,7 @@ type Menu struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty" rql:"filter,sort"`
 	// Order holds the value of the "order" field.
-	Order int `json:"order,omitempty" rql:"filter,sort"`
+	Order int `json:"order" rql:"filter,sort"`
 	// Type holds the value of the "type" field.
 	Type menu.Type `json:"type,omitempty" rql:"filter,sort"`
 	// Meta holds the value of the "meta" field.

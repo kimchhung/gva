@@ -418,12 +418,12 @@ func (pe *Permission) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "name",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(pe.Key); err != nil {
+	if buf, err = json.Marshal(pe.Scope); err != nil {
 		return nil, err
 	}
 	node.Fields[4] = &Field{
 		Type:  "string",
-		Name:  "key",
+		Name:  "scope",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(pe.Type); err != nil {

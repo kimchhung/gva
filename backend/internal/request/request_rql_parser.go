@@ -52,14 +52,15 @@ ParseUrlQuery
 	expected := `{"filter":{"money":{"$gt":true}},"limit":100}`
 */
 func ParseUrlValue(values url.Values) string {
+	whiteList := make(url.Values, len(values))
+	for _, k := range []string{"limit", "offset", "select", "sort", "filter"} {
+		whiteList[k] = values[k]
+	}
+
 	jsonStr := json.NewEmptyObject()
 	var err error
 
-	for path, vals := range values {
-		path = replaceToDot(path)
-		fmt.Println("path: ", path)
-		fmt.Println("pathv: ", vals)
-
+	for path, vals := range whiteList {
 		val := ""
 		if len(vals) == 1 {
 			val = vals[0]

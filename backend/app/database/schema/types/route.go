@@ -23,7 +23,7 @@ type MenuMeta struct {
 	ActiveMenu *string  `json:"activeMenu,omitempty"`
 	NoTagsView *bool    `json:"noTagsView,omitempty"`
 	CanTo      *bool    `json:"canTo,omitempty"`
-	Permission []string `json:"permission,omitempty"`
+	Scopes     []string `json:"scopes,omitempty"`
 }
 
 func (u *MenuMeta) UnmarshalGQL(v interface{}) error {

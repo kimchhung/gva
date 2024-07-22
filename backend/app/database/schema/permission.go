@@ -28,8 +28,8 @@ func (Permission) Fields() []ent.Field {
 		field.String("name").
 			StructTag(`json:"name,omitempty"`),
 
-		field.String("key").
-			StructTag(`json:"key,omitempty"`),
+		field.String("scope").
+			StructTag(`json:"scope,omitempty"`),
 
 		field.Enum("type").
 			Values("dynamic", "static").

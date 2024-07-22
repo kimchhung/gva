@@ -8,7 +8,6 @@ import (
 // Register bulkly
 var PermissionModule = fx.Module("PermissionModule",
 	// Register Service
-
 	fx.Provide(NewPermissionService),
 
 	// Regiser Controller

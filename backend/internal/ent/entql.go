@@ -103,7 +103,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldUpdatedAt: {Type: field.TypeTime, Column: permission.FieldUpdatedAt},
 			permission.FieldGroup:     {Type: field.TypeString, Column: permission.FieldGroup},
 			permission.FieldName:      {Type: field.TypeString, Column: permission.FieldName},
-			permission.FieldKey:       {Type: field.TypeString, Column: permission.FieldKey},
+			permission.FieldScope:     {Type: field.TypeString, Column: permission.FieldScope},
 			permission.FieldType:      {Type: field.TypeEnum, Column: permission.FieldType},
 			permission.FieldOrder:     {Type: field.TypeInt, Column: permission.FieldOrder},
 		},
@@ -776,9 +776,9 @@ func (f *PermissionFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(permission.FieldName))
 }
 
-// WhereKey applies the entql string predicate on the key field.
-func (f *PermissionFilter) WhereKey(p entql.StringP) {
-	f.Where(p.Field(permission.FieldKey))
+// WhereScope applies the entql string predicate on the scope field.
+func (f *PermissionFilter) WhereScope(p entql.StringP) {
+	f.Where(p.Field(permission.FieldScope))
 }
 
 // WhereType applies the entql string predicate on the type field.

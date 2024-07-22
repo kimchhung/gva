@@ -53,7 +53,7 @@ func (Menu) Fields() []ent.Field {
 		field.Int("order").
 			Optional().
 			Default(0).
-			StructTag(`rql:"filter,sort"`),
+			StructTag(`json:"order" rql:"filter,sort"`),
 
 		field.Enum("type").
 			Values("cata_log", "menu", "button", "external_link").

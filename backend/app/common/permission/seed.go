@@ -14,7 +14,7 @@ func AllSeeders() []database.Seeder {
 	return append([]database.Seeder{}, allSeeders...)
 }
 
-func createBulkPermissionDto(conn *ent.Client, keys ...PermissionKey) []*ent.PermissionCreate {
+func createBulkPermissionDto(conn *ent.Client, keys ...permissionScope) []*ent.PermissionCreate {
 	bulks := make([]*ent.PermissionCreate, len(keys))
 
 	for i, key := range keys {
@@ -25,7 +25,7 @@ func createBulkPermissionDto(conn *ent.Client, keys ...PermissionKey) []*ent.Per
 
 		bulks[i] = conn.Permission.Create().
 			SetGroup(string(group)).
-			SetKey(string(key)).
+			SetScope(string(key)).
 			SetName(key.Name()).
 			SetOrder(i).
 			SetType(permission.TypeStatic)

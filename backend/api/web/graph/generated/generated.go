@@ -121,10 +121,10 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		Group     func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Key       func(childComplexity int) int
 		Name      func(childComplexity int) int
 		Order     func(childComplexity int) int
 		Roles     func(childComplexity int) int
+		Scope     func(childComplexity int) int
 		Type      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
@@ -566,13 +566,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Permission.ID(childComplexity), true
 
-	case "Permission.key":
-		if e.complexity.Permission.Key == nil {
-			break
-		}
-
-		return e.complexity.Permission.Key(childComplexity), true
-
 	case "Permission.name":
 		if e.complexity.Permission.Name == nil {
 			break
@@ -593,6 +586,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Permission.Roles(childComplexity), true
+
+	case "Permission.scope":
+		if e.complexity.Permission.Scope == nil {
+			break
+		}
+
+		return e.complexity.Permission.Scope(childComplexity), true
 
 	case "Permission.type":
 		if e.complexity.Permission.Type == nil {
@@ -1616,7 +1616,7 @@ type Permission implements Node {
   updatedAt: Time!
   group: String!
   name: String!
-  key: String!
+  scope: String!
   type: PermissionType
   order: Int
   roles: [Role!]
@@ -1721,21 +1721,21 @@ input PermissionWhereInput {
   nameEqualFold: String
   nameContainsFold: String
   """
-  key field predicates
+  scope field predicates
   """
-  key: String
-  keyNEQ: String
-  keyIn: [String!]
-  keyNotIn: [String!]
-  keyGT: String
-  keyGTE: String
-  keyLT: String
-  keyLTE: String
-  keyContains: String
-  keyHasPrefix: String
-  keyHasSuffix: String
-  keyEqualFold: String
-  keyContainsFold: String
+  scope: String
+  scopeNEQ: String
+  scopeIn: [String!]
+  scopeNotIn: [String!]
+  scopeGT: String
+  scopeGTE: String
+  scopeLT: String
+  scopeLTE: String
+  scopeContains: String
+  scopeHasPrefix: String
+  scopeHasSuffix: String
+  scopeEqualFold: String
+  scopeContainsFold: String
   """
   type field predicates
   """
@@ -5000,8 +5000,8 @@ func (ec *executionContext) fieldContext_Permission_name(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Permission_key(ctx context.Context, field graphql.CollectedField, obj *ent.Permission) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Permission_key(ctx, field)
+func (ec *executionContext) _Permission_scope(ctx context.Context, field graphql.CollectedField, obj *ent.Permission) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Permission_scope(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5014,7 +5014,7 @@ func (ec *executionContext) _Permission_key(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Key, nil
+		return obj.Scope, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5031,7 +5031,7 @@ func (ec *executionContext) _Permission_key(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Permission_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Permission_scope(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Permission",
 		Field:      field,
@@ -6883,8 +6883,8 @@ func (ec *executionContext) fieldContext_Role_permissions(_ context.Context, fie
 				return ec.fieldContext_Permission_group(ctx, field)
 			case "name":
 				return ec.fieldContext_Permission_name(ctx, field)
-			case "key":
-				return ec.fieldContext_Permission_key(ctx, field)
+			case "scope":
+				return ec.fieldContext_Permission_scope(ctx, field)
 			case "type":
 				return ec.fieldContext_Permission_type(ctx, field)
 			case "order":
@@ -11243,7 +11243,7 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "group", "groupNEQ", "groupIn", "groupNotIn", "groupGT", "groupGTE", "groupLT", "groupLTE", "groupContains", "groupHasPrefix", "groupHasSuffix", "groupEqualFold", "groupContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "key", "keyNEQ", "keyIn", "keyNotIn", "keyGT", "keyGTE", "keyLT", "keyLTE", "keyContains", "keyHasPrefix", "keyHasSuffix", "keyEqualFold", "keyContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "typeIsNil", "typeNotNil", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "hasRoles", "hasRolesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "group", "groupNEQ", "groupIn", "groupNotIn", "groupGT", "groupGTE", "groupLT", "groupLTE", "groupContains", "groupHasPrefix", "groupHasSuffix", "groupEqualFold", "groupContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "scope", "scopeNEQ", "scopeIn", "scopeNotIn", "scopeGT", "scopeGTE", "scopeLT", "scopeLTE", "scopeContains", "scopeHasPrefix", "scopeHasSuffix", "scopeEqualFold", "scopeContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "typeIsNil", "typeNotNil", "order", "orderNEQ", "orderIn", "orderNotIn", "orderGT", "orderGTE", "orderLT", "orderLTE", "orderIsNil", "orderNotNil", "hasRoles", "hasRolesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -11621,97 +11621,97 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.NameContainsFold = data
-		case "key":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+		case "scope":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scope"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Key = data
-		case "keyNEQ":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyNEQ"))
+			it.Scope = data
+		case "scopeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeNEQ"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyNEQ = data
-		case "keyIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyIn"))
+			it.ScopeNEQ = data
+		case "scopeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyIn = data
-		case "keyNotIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyNotIn"))
+			it.ScopeIn = data
+		case "scopeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeNotIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyNotIn = data
-		case "keyGT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyGT"))
+			it.ScopeNotIn = data
+		case "scopeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeGT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyGT = data
-		case "keyGTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyGTE"))
+			it.ScopeGT = data
+		case "scopeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyGTE = data
-		case "keyLT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyLT"))
+			it.ScopeGTE = data
+		case "scopeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyLT = data
-		case "keyLTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyLTE"))
+			it.ScopeLT = data
+		case "scopeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyLTE = data
-		case "keyContains":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyContains"))
+			it.ScopeLTE = data
+		case "scopeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyContains = data
-		case "keyHasPrefix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyHasPrefix"))
+			it.ScopeContains = data
+		case "scopeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeHasPrefix"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyHasPrefix = data
-		case "keyHasSuffix":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyHasSuffix"))
+			it.ScopeHasPrefix = data
+		case "scopeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeHasSuffix"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyHasSuffix = data
-		case "keyEqualFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyEqualFold"))
+			it.ScopeHasSuffix = data
+		case "scopeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeEqualFold"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyEqualFold = data
-		case "keyContainsFold":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyContainsFold"))
+			it.ScopeEqualFold = data
+		case "scopeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scopeContainsFold"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.KeyContainsFold = data
+			it.ScopeContainsFold = data
 		case "type":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalOPermissionType2ᚖgithubᚗcomᚋgvaᚋinternalᚋentᚋpermissionᚐType(ctx, v)
@@ -14261,8 +14261,8 @@ func (ec *executionContext) _Permission(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "key":
-			out.Values[i] = ec._Permission_key(ctx, field, obj)
+		case "scope":
+			out.Values[i] = ec._Permission_scope(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

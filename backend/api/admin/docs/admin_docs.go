@@ -956,18 +956,21 @@ const docTemplateadmin = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get a list of all permissions",
+                "description": "Get a list of all Permissions",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Permission"
                 ],
-                "summary": "List all permissions",
-                "operationId": "list-all-permissions",
+                "summary": "List all Permissions",
+                "operationId": "list-all-Permissions",
                 "responses": {
                     "200": {
-                        "description": "Successfully retrieved Routes",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -977,10 +980,218 @@ const docTemplateadmin = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.PermissionResponse"
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/dto.PermissionResponse"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "list": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/definitions/dto.PermissionResponse"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
                                             }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new Permission with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Create a Permission",
+                "operationId": "create-Permission",
+                "parameters": [
+                    {
+                        "description": "Permission data",
+                        "name": "Permission",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PermissionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PermissionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/permission/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a Permission by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Get a Permission",
+                "operationId": "get-Permission-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Permission ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PermissionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a Permission by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Delete a Permission",
+                "operationId": "delete-Permission-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Permission ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The permission deleted successfully!",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a Permission by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Update a Permission",
+                "operationId": "update-Permission-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Permission ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Permission data",
+                        "name": "Permission",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PermissionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PermissionResponse"
                                         }
                                     }
                                 }
@@ -1356,7 +1567,7 @@ const docTemplateadmin = `{
                 "nameId": {
                     "type": "string"
                 },
-                "parentId": {
+                "pid": {
                     "type": "string"
                 }
             }
@@ -1392,8 +1603,8 @@ const docTemplateadmin = `{
                     "description": "NameID holds the value of the \"name_id\" field.",
                     "type": "string"
                 },
-                "parentId": {
-                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                "pid": {
+                    "description": "Pid holds the value of the \"pid\" field.",
                     "type": "string"
                 },
                 "updatedAt": {
@@ -1455,11 +1666,11 @@ const docTemplateadmin = `{
                 "name": {
                     "type": "string"
                 },
-                "parentId": {
-                    "description": "optionals",
+                "path": {
                     "type": "string"
                 },
-                "path": {
+                "pid": {
+                    "description": "optionals",
                     "type": "string"
                 },
                 "type": {
@@ -1510,12 +1721,12 @@ const docTemplateadmin = `{
                     "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
                 },
-                "parentId": {
-                    "description": "ParentID holds the value of the \"parent_id\" field.",
-                    "type": "string"
-                },
                 "path": {
                     "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "Pid holds the value of the \"pid\" field.",
                     "type": "string"
                 },
                 "redirect": {
@@ -1536,23 +1747,56 @@ const docTemplateadmin = `{
                 }
             }
         },
+        "dto.PermissionRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.PermissionResponse": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ent.PermissionEdges"
+                        }
+                    ]
+                },
                 "group": {
+                    "description": "Group holds the value of the \"group\" field.",
                     "type": "string"
                 },
                 "id": {
+                    "description": "ID of the ent.",
                     "type": "string"
                 },
                 "key": {
-                    "type": "string"
+                    "description": "Type holds the value of the \"type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/permission.Type"
+                        }
+                    ]
                 },
                 "name": {
+                    "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
                 },
                 "order": {
+                    "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
                 }
             }
         },
@@ -1718,8 +1962,8 @@ const docTemplateadmin = `{
                     "description": "NameID holds the value of the \"name_id\" field.",
                     "type": "string"
                 },
-                "parentId": {
-                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                "pid": {
+                    "description": "Pid holds the value of the \"pid\" field.",
                     "type": "string"
                 },
                 "updatedAt": {
@@ -1798,12 +2042,12 @@ const docTemplateadmin = `{
                     "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
                 },
-                "parentId": {
-                    "description": "ParentID holds the value of the \"parent_id\" field.",
-                    "type": "string"
-                },
                 "path": {
                     "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "Pid holds the value of the \"pid\" field.",
                     "type": "string"
                 },
                 "redirect": {

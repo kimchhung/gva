@@ -17,7 +17,7 @@ type (
 		name   string
 
 		middlewares []echo.MiddlewareFunc
-		handlers    []echo.HandlerFunc
+		handlers    func() []echo.HandlerFunc
 	}
 
 	MetaHandler = func() []echo.HandlerFunc
@@ -128,15 +128,15 @@ func Register(app *echo.Group, controller Controller) {
 				path:   "/",
 			}
 
-			meta.handlers = metaHandlerFunc(meta)()
-			AddRoute(r, meta)
+			meta.handlers = metaHandlerFunc(meta)
+			addRoute(r, meta)
 		}
 	}
 }
 
-func AddRoute(r *echo.Group, meta *RouteMeta) {
+func addRoute(r *echo.Group, meta *RouteMeta) {
 	handler := func(c echo.Context) error {
-		for _, handler := range meta.handlers {
+		for _, handler := range meta.handlers() {
 			if err := handler(c); err != nil {
 				return err
 			}

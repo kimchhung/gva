@@ -78,9 +78,9 @@ func Name(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldName, v))
 }
 
-// Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
-func Key(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldKey, v))
+// Scope applies equality check predicate on the "scope" field. It's identical to ScopeEQ.
+func Scope(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldScope, v))
 }
 
 // Order applies equality check predicate on the "order" field. It's identical to OrderEQ.
@@ -298,69 +298,69 @@ func NameContainsFold(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldContainsFold(FieldName, v))
 }
 
-// KeyEQ applies the EQ predicate on the "key" field.
-func KeyEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldKey, v))
+// ScopeEQ applies the EQ predicate on the "scope" field.
+func ScopeEQ(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldScope, v))
 }
 
-// KeyNEQ applies the NEQ predicate on the "key" field.
-func KeyNEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldKey, v))
+// ScopeNEQ applies the NEQ predicate on the "scope" field.
+func ScopeNEQ(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldNEQ(FieldScope, v))
 }
 
-// KeyIn applies the In predicate on the "key" field.
-func KeyIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldKey, vs...))
+// ScopeIn applies the In predicate on the "scope" field.
+func ScopeIn(vs ...string) predicate.Permission {
+	return predicate.Permission(sql.FieldIn(FieldScope, vs...))
 }
 
-// KeyNotIn applies the NotIn predicate on the "key" field.
-func KeyNotIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldKey, vs...))
+// ScopeNotIn applies the NotIn predicate on the "scope" field.
+func ScopeNotIn(vs ...string) predicate.Permission {
+	return predicate.Permission(sql.FieldNotIn(FieldScope, vs...))
 }
 
-// KeyGT applies the GT predicate on the "key" field.
-func KeyGT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGT(FieldKey, v))
+// ScopeGT applies the GT predicate on the "scope" field.
+func ScopeGT(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldGT(FieldScope, v))
 }
 
-// KeyGTE applies the GTE predicate on the "key" field.
-func KeyGTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGTE(FieldKey, v))
+// ScopeGTE applies the GTE predicate on the "scope" field.
+func ScopeGTE(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldGTE(FieldScope, v))
 }
 
-// KeyLT applies the LT predicate on the "key" field.
-func KeyLT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLT(FieldKey, v))
+// ScopeLT applies the LT predicate on the "scope" field.
+func ScopeLT(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldLT(FieldScope, v))
 }
 
-// KeyLTE applies the LTE predicate on the "key" field.
-func KeyLTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLTE(FieldKey, v))
+// ScopeLTE applies the LTE predicate on the "scope" field.
+func ScopeLTE(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldLTE(FieldScope, v))
 }
 
-// KeyContains applies the Contains predicate on the "key" field.
-func KeyContains(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContains(FieldKey, v))
+// ScopeContains applies the Contains predicate on the "scope" field.
+func ScopeContains(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldContains(FieldScope, v))
 }
 
-// KeyHasPrefix applies the HasPrefix predicate on the "key" field.
-func KeyHasPrefix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasPrefix(FieldKey, v))
+// ScopeHasPrefix applies the HasPrefix predicate on the "scope" field.
+func ScopeHasPrefix(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldHasPrefix(FieldScope, v))
 }
 
-// KeyHasSuffix applies the HasSuffix predicate on the "key" field.
-func KeyHasSuffix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasSuffix(FieldKey, v))
+// ScopeHasSuffix applies the HasSuffix predicate on the "scope" field.
+func ScopeHasSuffix(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldHasSuffix(FieldScope, v))
 }
 
-// KeyEqualFold applies the EqualFold predicate on the "key" field.
-func KeyEqualFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEqualFold(FieldKey, v))
+// ScopeEqualFold applies the EqualFold predicate on the "scope" field.
+func ScopeEqualFold(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldEqualFold(FieldScope, v))
 }
 
-// KeyContainsFold applies the ContainsFold predicate on the "key" field.
-func KeyContainsFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContainsFold(FieldKey, v))
+// ScopeContainsFold applies the ContainsFold predicate on the "scope" field.
+func ScopeContainsFold(v string) predicate.Permission {
+	return predicate.Permission(sql.FieldContainsFold(FieldScope, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.

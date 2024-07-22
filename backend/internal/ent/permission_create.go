@@ -65,9 +65,9 @@ func (pc *PermissionCreate) SetName(s string) *PermissionCreate {
 	return pc
 }
 
-// SetKey sets the "key" field.
-func (pc *PermissionCreate) SetKey(s string) *PermissionCreate {
-	pc.mutation.SetKey(s)
+// SetScope sets the "scope" field.
+func (pc *PermissionCreate) SetScope(s string) *PermissionCreate {
+	pc.mutation.SetScope(s)
 	return pc
 }
 
@@ -199,8 +199,8 @@ func (pc *PermissionCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Permission.name"`)}
 	}
-	if _, ok := pc.mutation.Key(); !ok {
-		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Permission.key"`)}
+	if _, ok := pc.mutation.Scope(); !ok {
+		return &ValidationError{Name: "scope", err: errors.New(`ent: missing required field "Permission.scope"`)}
 	}
 	if v, ok := pc.mutation.GetType(); ok {
 		if err := permission.TypeValidator(v); err != nil {
@@ -260,9 +260,9 @@ func (pc *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := pc.mutation.Key(); ok {
-		_spec.SetField(permission.FieldKey, field.TypeString, value)
-		_node.Key = value
+	if value, ok := pc.mutation.Scope(); ok {
+		_spec.SetField(permission.FieldScope, field.TypeString, value)
+		_node.Scope = value
 	}
 	if value, ok := pc.mutation.GetType(); ok {
 		_spec.SetField(permission.FieldType, field.TypeEnum, value)
@@ -389,15 +389,15 @@ func (u *PermissionUpsert) UpdateName() *PermissionUpsert {
 	return u
 }
 
-// SetKey sets the "key" field.
-func (u *PermissionUpsert) SetKey(v string) *PermissionUpsert {
-	u.Set(permission.FieldKey, v)
+// SetScope sets the "scope" field.
+func (u *PermissionUpsert) SetScope(v string) *PermissionUpsert {
+	u.Set(permission.FieldScope, v)
 	return u
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *PermissionUpsert) UpdateKey() *PermissionUpsert {
-	u.SetExcluded(permission.FieldKey)
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *PermissionUpsert) UpdateScope() *PermissionUpsert {
+	u.SetExcluded(permission.FieldScope)
 	return u
 }
 
@@ -547,17 +547,17 @@ func (u *PermissionUpsertOne) UpdateName() *PermissionUpsertOne {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *PermissionUpsertOne) SetKey(v string) *PermissionUpsertOne {
+// SetScope sets the "scope" field.
+func (u *PermissionUpsertOne) SetScope(v string) *PermissionUpsertOne {
 	return u.Update(func(s *PermissionUpsert) {
-		s.SetKey(v)
+		s.SetScope(v)
 	})
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *PermissionUpsertOne) UpdateKey() *PermissionUpsertOne {
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *PermissionUpsertOne) UpdateScope() *PermissionUpsertOne {
 	return u.Update(func(s *PermissionUpsert) {
-		s.UpdateKey()
+		s.UpdateScope()
 	})
 }
 
@@ -881,17 +881,17 @@ func (u *PermissionUpsertBulk) UpdateName() *PermissionUpsertBulk {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *PermissionUpsertBulk) SetKey(v string) *PermissionUpsertBulk {
+// SetScope sets the "scope" field.
+func (u *PermissionUpsertBulk) SetScope(v string) *PermissionUpsertBulk {
 	return u.Update(func(s *PermissionUpsert) {
-		s.SetKey(v)
+		s.SetScope(v)
 	})
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *PermissionUpsertBulk) UpdateKey() *PermissionUpsertBulk {
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *PermissionUpsertBulk) UpdateScope() *PermissionUpsertBulk {
 	return u.Update(func(s *PermissionUpsert) {
-		s.UpdateKey()
+		s.UpdateScope()
 	})
 }
 

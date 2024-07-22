@@ -26,8 +26,8 @@ type Permission struct {
 	Group string `json:"group,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// Key holds the value of the "key" field.
-	Key string `json:"key,omitempty"`
+	// Scope holds the value of the "scope" field.
+	Scope string `json:"scope,omitempty"`
 	// Type holds the value of the "type" field.
 	Type permission.Type `json:"key,omitempty"`
 	// Order holds the value of the "order" field.
@@ -67,7 +67,7 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case permission.FieldOrder:
 			values[i] = new(sql.NullInt64)
-		case permission.FieldGroup, permission.FieldName, permission.FieldKey, permission.FieldType:
+		case permission.FieldGroup, permission.FieldName, permission.FieldScope, permission.FieldType:
 			values[i] = new(sql.NullString)
 		case permission.FieldCreatedAt, permission.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -118,11 +118,11 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pe.Name = value.String
 			}
-		case permission.FieldKey:
+		case permission.FieldScope:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field key", values[i])
+				return fmt.Errorf("unexpected type %T for field scope", values[i])
 			} else if value.Valid {
-				pe.Key = value.String
+				pe.Scope = value.String
 			}
 		case permission.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -189,8 +189,8 @@ func (pe *Permission) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(pe.Name)
 	builder.WriteString(", ")
-	builder.WriteString("key=")
-	builder.WriteString(pe.Key)
+	builder.WriteString("scope=")
+	builder.WriteString(pe.Scope)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", pe.Type))

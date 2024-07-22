@@ -14,7 +14,7 @@ const (
 )
 
 type (
-	AdminContextKey    struct{}
+	AdminContextScope  struct{}
 	AdminContextOption func(*AdminContext)
 )
 
@@ -31,7 +31,7 @@ func NewAdminContext(ctx context.Context, opts ...AdminContextOption) *AdminCont
 	adminctx := new(AdminContext)
 	adminctx.Modify(opts...)
 
-	adminctx.Context = context.WithValue(ctx, AdminContextKey{}, adminctx)
+	adminctx.Context = context.WithValue(ctx, AdminContextScope{}, adminctx)
 	return adminctx
 }
 
@@ -47,7 +47,7 @@ func GetAdminContext(ctx context.Context) (*AdminContext, error) {
 		return v, nil
 	}
 
-	v, ok = ctx.Value(AdminContextKey{}).(*AdminContext)
+	v, ok = ctx.Value(AdminContextScope{}).(*AdminContext)
 	if ok {
 		return v, nil
 	}
@@ -105,12 +105,12 @@ func (ctx *AdminContext) Permissions() []*ent.Permission {
 	return ctx.permissions
 }
 
-func (ctx *AdminContext) PermissionKeys() []string {
+func (ctx *AdminContext) PermissionScopes() []string {
 	permissions := ctx.Permissions()
 
 	keys := make([]string, len(permissions))
 	for i, p := range permissions {
-		keys[i] = p.Key
+		keys[i] = p.Scope
 	}
 
 	return keys

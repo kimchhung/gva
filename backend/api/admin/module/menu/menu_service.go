@@ -1,9 +1,11 @@
 package menu
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gva/api/admin/module/menu/dto"
+	apperror "github.com/gva/app/common/error"
 	"github.com/gva/app/common/repository"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/utils"
@@ -65,7 +67,7 @@ func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPagedRequest) ([]
 }
 
 func (s *MenuService) GetMenuByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
-	data, err := s.repo.Q().Where(menu.ID(id)).WithParent().First(ctx)
+	data, err := s.repo.Q().Where(menu.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +84,8 @@ func (s *MenuService) CreateMenu(ctx context.Context, r *dto.MenuRequest) (*dto.
 		SetName(r.Name).
 		SetType(r.Type).
 		SetNillableParentID(r.Pid).
+		SetOrder(r.Order).
+		SetNillableRedirect(r.Redirect).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -97,20 +101,34 @@ func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequ
 		SetIsEnable(r.IsEnable).
 		SetMeta(r.Meta).
 		SetName(r.Name).
-		SetType(r.Type)
+		SetType(r.Type).
+		SetOrder(r.Order).
+		SetNillableRedirect(r.Redirect)
+
+	if r.Redirect != nil {
+		update.SetNillableRedirect(r.Redirect)
+	} else {
+		update.ClearRedirect()
+	}
 
 	if r.Pid != nil {
+		fmt.Println("r---", *r.Pid)
+		isSelfParent := *r.Pid == id
+		if isSelfParent {
+			return nil, apperror.ErrBadRequest
+		}
+
 		update.SetParentID(*r.Pid)
 	} else {
 		update.ClearPid()
 	}
 
-	data, err := update.Save(ctx)
+	updated, err := update.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.toDto(data)[0], nil
+	return s.toDto(updated)[0], nil
 }
 
 func (s *MenuService) DeleteMenu(ctx context.Context, id xid.ID) error {

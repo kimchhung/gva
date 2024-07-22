@@ -78,7 +78,7 @@ definitions:
         type: string
       nameId:
         type: string
-      parentId:
+      pid:
         type: string
     required:
     - name
@@ -107,8 +107,8 @@ definitions:
       nameId:
         description: NameID holds the value of the "name_id" field.
         type: string
-      parentId:
-        description: ParentID holds the value of the "parent_id" field.
+      pid:
+        description: Pid holds the value of the "pid" field.
         type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
@@ -145,10 +145,10 @@ definitions:
         $ref: '#/definitions/types.MenuMeta'
       name:
         type: string
-      parentId:
-        description: optionals
-        type: string
       path:
+        type: string
+      pid:
+        description: optionals
         type: string
       type:
         $ref: '#/definitions/menu.Type'
@@ -190,11 +190,11 @@ definitions:
       order:
         description: Order holds the value of the "order" field.
         type: integer
-      parentId:
-        description: ParentID holds the value of the "parent_id" field.
-        type: string
       path:
         description: Path holds the value of the "path" field.
+        type: string
+      pid:
+        description: Pid holds the value of the "pid" field.
         type: string
       redirect:
         description: Redirect holds the value of the "redirect" field.
@@ -207,18 +207,41 @@ definitions:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
     type: object
-  dto.PermissionResponse:
+  dto.PermissionRequest:
     properties:
-      group:
-        type: string
-      id:
-        type: string
-      key:
-        type: string
       name:
         type: string
+    type: object
+  dto.PermissionResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PermissionQuery when eager-loading is set.
+      group:
+        description: Group holds the value of the "group" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      key:
+        allOf:
+        - $ref: '#/definitions/permission.Type'
+        description: Type holds the value of the "type" field.
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
       order:
+        description: Order holds the value of the "order" field.
         type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
     type: object
   dto.RegisterRequest:
     properties:
@@ -334,8 +357,8 @@ definitions:
       nameId:
         description: NameID holds the value of the "name_id" field.
         type: string
-      parentId:
-        description: ParentID holds the value of the "parent_id" field.
+      pid:
+        description: Pid holds the value of the "pid" field.
         type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
@@ -388,11 +411,11 @@ definitions:
       order:
         description: Order holds the value of the "order" field.
         type: integer
-      parentId:
-        description: ParentID holds the value of the "parent_id" field.
-        type: string
       path:
         description: Path holds the value of the "path" field.
+        type: string
+      pid:
+        description: Pid holds the value of the "pid" field.
         type: string
       redirect:
         description: Redirect holds the value of the "redirect" field.
@@ -1140,25 +1163,149 @@ paths:
       - Time
   /permission:
     get:
-      description: Get a list of all permissions
-      operationId: list-all-permissions
+      consumes:
+      - application/json
+      description: Get a list of all Permissions
+      operationId: list-all-Permissions
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully retrieved Routes
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/dto.PermissionResponse'
-                  type: array
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.PermissionResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.PermissionResponse'
+                          type: array
+                      type: object
+                  type: object
               type: object
       security:
       - Bearer: []
-      summary: List all permissions
+      summary: List all Permissions
+      tags:
+      - Permission
+    post:
+      consumes:
+      - application/json
+      description: Create a new Permission with the provided details
+      operationId: create-Permission
+      parameters:
+      - description: Permission data
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Permission
+      tags:
+      - Permission
+  /permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Permission by ID
+      operationId: delete-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The permission deleted successfully!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Permission
+      tags:
+      - Permission
+    get:
+      consumes:
+      - application/json
+      description: Get a Permission by ID
+      operationId: get-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Permission
+      tags:
+      - Permission
+    patch:
+      consumes:
+      - application/json
+      description: Update a Permission by ID
+      operationId: update-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission data
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Permission
       tags:
       - Permission
   /todo:

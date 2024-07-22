@@ -567,10 +567,10 @@ func (pe *PermissionQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				selectedFields = append(selectedFields, permission.FieldName)
 				fieldSeen[permission.FieldName] = struct{}{}
 			}
-		case "key":
-			if _, ok := fieldSeen[permission.FieldKey]; !ok {
-				selectedFields = append(selectedFields, permission.FieldKey)
-				fieldSeen[permission.FieldKey] = struct{}{}
+		case "scope":
+			if _, ok := fieldSeen[permission.FieldScope]; !ok {
+				selectedFields = append(selectedFields, permission.FieldScope)
+				fieldSeen[permission.FieldScope] = struct{}{}
 			}
 		case "type":
 			if _, ok := fieldSeen[permission.FieldType]; !ok {

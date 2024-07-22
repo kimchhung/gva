@@ -26,8 +26,8 @@ const (
 	FieldGroup = "group"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldKey holds the string denoting the key field in the database.
-	FieldKey = "key"
+	// FieldScope holds the string denoting the scope field in the database.
+	FieldScope = "scope"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldOrder holds the string denoting the order field in the database.
@@ -50,7 +50,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldGroup,
 	FieldName,
-	FieldKey,
+	FieldScope,
 	FieldType,
 	FieldOrder,
 }
@@ -138,9 +138,9 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
-// ByKey orders the results by the key field.
-func ByKey(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldKey, opts...).ToFunc()
+// ByScope orders the results by the scope field.
+func ByScope(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldScope, opts...).ToFunc()
 }
 
 // ByType orders the results by the type field.

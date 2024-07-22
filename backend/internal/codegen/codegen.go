@@ -20,7 +20,7 @@ type CodeGenParams struct {
 }
 
 func GenerateCodes(params CodeGenParams) {
-	GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
+	// GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
 	GenerateModule(params, "module", "api/admin/module", module_template.Module)
 	GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)
 	GenerateModuleChild(params, "dto", "api/admin/module", "request", module_template.DtoRequest)

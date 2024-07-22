@@ -616,7 +616,7 @@ type Permission implements Node {
   updatedAt: Time!
   group: String!
   name: String!
-  key: String!
+  scope: String!
   type: PermissionType
   order: Int
   roles: [Role!]
@@ -721,21 +721,21 @@ input PermissionWhereInput {
   nameEqualFold: String
   nameContainsFold: String
   """
-  key field predicates
+  scope field predicates
   """
-  key: String
-  keyNEQ: String
-  keyIn: [String!]
-  keyNotIn: [String!]
-  keyGT: String
-  keyGTE: String
-  keyLT: String
-  keyLTE: String
-  keyContains: String
-  keyHasPrefix: String
-  keyHasSuffix: String
-  keyEqualFold: String
-  keyContainsFold: String
+  scope: String
+  scopeNEQ: String
+  scopeIn: [String!]
+  scopeNotIn: [String!]
+  scopeGT: String
+  scopeGTE: String
+  scopeLT: String
+  scopeLTE: String
+  scopeContains: String
+  scopeHasPrefix: String
+  scopeHasSuffix: String
+  scopeEqualFold: String
+  scopeContainsFold: String
   """
   type field predicates
   """

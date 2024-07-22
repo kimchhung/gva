@@ -15,9 +15,11 @@ type MenuRequest struct {
 	IsEnable  bool           `json:"isEnable"  validate:"required"`
 	Type      menu.Type      `json:"type,omitempty" validate:"required"`
 	Meta      types.MenuMeta `json:"meta,omitempty" validate:"required"`
+	Order     int            `json:"order,omitempty" validate:"number"`
 
 	// optionals
-	Pid *xid.ID `json:"pid,omitempty"`
+	Redirect *string `json:"redirect,omitempty"`
+	Pid      *xid.ID `json:"pid,omitempty"`
 }
 
 type MenuPagedRequest struct {

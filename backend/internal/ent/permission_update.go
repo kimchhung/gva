@@ -81,16 +81,16 @@ func (pu *PermissionUpdate) SetNillableName(s *string) *PermissionUpdate {
 	return pu
 }
 
-// SetKey sets the "key" field.
-func (pu *PermissionUpdate) SetKey(s string) *PermissionUpdate {
-	pu.mutation.SetKey(s)
+// SetScope sets the "scope" field.
+func (pu *PermissionUpdate) SetScope(s string) *PermissionUpdate {
+	pu.mutation.SetScope(s)
 	return pu
 }
 
-// SetNillableKey sets the "key" field if the given value is not nil.
-func (pu *PermissionUpdate) SetNillableKey(s *string) *PermissionUpdate {
+// SetNillableScope sets the "scope" field if the given value is not nil.
+func (pu *PermissionUpdate) SetNillableScope(s *string) *PermissionUpdate {
 	if s != nil {
-		pu.SetKey(*s)
+		pu.SetScope(*s)
 	}
 	return pu
 }
@@ -259,8 +259,8 @@ func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
 	}
-	if value, ok := pu.mutation.Key(); ok {
-		_spec.SetField(permission.FieldKey, field.TypeString, value)
+	if value, ok := pu.mutation.Scope(); ok {
+		_spec.SetField(permission.FieldScope, field.TypeString, value)
 	}
 	if value, ok := pu.mutation.GetType(); ok {
 		_spec.SetField(permission.FieldType, field.TypeEnum, value)
@@ -397,16 +397,16 @@ func (puo *PermissionUpdateOne) SetNillableName(s *string) *PermissionUpdateOne 
 	return puo
 }
 
-// SetKey sets the "key" field.
-func (puo *PermissionUpdateOne) SetKey(s string) *PermissionUpdateOne {
-	puo.mutation.SetKey(s)
+// SetScope sets the "scope" field.
+func (puo *PermissionUpdateOne) SetScope(s string) *PermissionUpdateOne {
+	puo.mutation.SetScope(s)
 	return puo
 }
 
-// SetNillableKey sets the "key" field if the given value is not nil.
-func (puo *PermissionUpdateOne) SetNillableKey(s *string) *PermissionUpdateOne {
+// SetNillableScope sets the "scope" field if the given value is not nil.
+func (puo *PermissionUpdateOne) SetNillableScope(s *string) *PermissionUpdateOne {
 	if s != nil {
-		puo.SetKey(*s)
+		puo.SetScope(*s)
 	}
 	return puo
 }
@@ -605,8 +605,8 @@ func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission,
 	if value, ok := puo.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
 	}
-	if value, ok := puo.mutation.Key(); ok {
-		_spec.SetField(permission.FieldKey, field.TypeString, value)
+	if value, ok := puo.mutation.Scope(); ok {
+		_spec.SetField(permission.FieldScope, field.TypeString, value)
 	}
 	if value, ok := puo.mutation.GetType(); ok {
 		_spec.SetField(permission.FieldType, field.TypeEnum, value)

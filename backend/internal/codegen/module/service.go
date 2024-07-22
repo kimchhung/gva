@@ -27,9 +27,9 @@ func New{{.EntityPascal}}Service(repository *repository.{{.EntityPascal}}Reposit
 
 func (s *{{.EntityPascal}}Service) toDto(value ...*ent.{{.EntityPascal}}) []*dto.{{.EntityPascal}}Response {
 	list := make([]*dto.{{.EntityPascal}}Response, len(value))
-	for i, _ := range value {
+	for i, v := range value {
 		// todo: map value to response value here
-		list[i] = &dto.{{.EntityPascal}}Response{}
+		list[i] = &dto.{{.EntityPascal}}Response{v}
 	}
 	return list
 }
@@ -65,7 +65,7 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, p 
 }
 
 func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context, id xid.ID) (*dto.{{.EntityPascal}}Response, error) {
-	data, err := s.repo.C().Query().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
+	data, err := s.repo.Q().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}

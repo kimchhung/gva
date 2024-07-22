@@ -16,7 +16,6 @@ func NewPermissionRepository(database *database.Database) *PermissionRepository 
 	}
 }
 
-// For mutation
 func (r *PermissionRepository) C() *ent.PermissionClient {
 	return r.db.Permission
 }
@@ -29,3 +28,4 @@ func (r *PermissionRepository) Q(opts ...pagi.InterceptorOption) *ent.Permission
 
 	return pagi.WithInterceptor(r.C().Query(), opts...)
 }
+

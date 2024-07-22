@@ -1717,20 +1717,20 @@ type PermissionWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "key" field predicates.
-	Key             *string  `json:"key,omitempty"`
-	KeyNEQ          *string  `json:"keyNEQ,omitempty"`
-	KeyIn           []string `json:"keyIn,omitempty"`
-	KeyNotIn        []string `json:"keyNotIn,omitempty"`
-	KeyGT           *string  `json:"keyGT,omitempty"`
-	KeyGTE          *string  `json:"keyGTE,omitempty"`
-	KeyLT           *string  `json:"keyLT,omitempty"`
-	KeyLTE          *string  `json:"keyLTE,omitempty"`
-	KeyContains     *string  `json:"keyContains,omitempty"`
-	KeyHasPrefix    *string  `json:"keyHasPrefix,omitempty"`
-	KeyHasSuffix    *string  `json:"keyHasSuffix,omitempty"`
-	KeyEqualFold    *string  `json:"keyEqualFold,omitempty"`
-	KeyContainsFold *string  `json:"keyContainsFold,omitempty"`
+	// "scope" field predicates.
+	Scope             *string  `json:"scope,omitempty"`
+	ScopeNEQ          *string  `json:"scopeNEQ,omitempty"`
+	ScopeIn           []string `json:"scopeIn,omitempty"`
+	ScopeNotIn        []string `json:"scopeNotIn,omitempty"`
+	ScopeGT           *string  `json:"scopeGT,omitempty"`
+	ScopeGTE          *string  `json:"scopeGTE,omitempty"`
+	ScopeLT           *string  `json:"scopeLT,omitempty"`
+	ScopeLTE          *string  `json:"scopeLTE,omitempty"`
+	ScopeContains     *string  `json:"scopeContains,omitempty"`
+	ScopeHasPrefix    *string  `json:"scopeHasPrefix,omitempty"`
+	ScopeHasSuffix    *string  `json:"scopeHasSuffix,omitempty"`
+	ScopeEqualFold    *string  `json:"scopeEqualFold,omitempty"`
+	ScopeContainsFold *string  `json:"scopeContainsFold,omitempty"`
 
 	// "type" field predicates.
 	Type       *permission.Type  `json:"type,omitempty"`
@@ -1978,44 +1978,44 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, permission.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.Key != nil {
-		predicates = append(predicates, permission.KeyEQ(*i.Key))
+	if i.Scope != nil {
+		predicates = append(predicates, permission.ScopeEQ(*i.Scope))
 	}
-	if i.KeyNEQ != nil {
-		predicates = append(predicates, permission.KeyNEQ(*i.KeyNEQ))
+	if i.ScopeNEQ != nil {
+		predicates = append(predicates, permission.ScopeNEQ(*i.ScopeNEQ))
 	}
-	if len(i.KeyIn) > 0 {
-		predicates = append(predicates, permission.KeyIn(i.KeyIn...))
+	if len(i.ScopeIn) > 0 {
+		predicates = append(predicates, permission.ScopeIn(i.ScopeIn...))
 	}
-	if len(i.KeyNotIn) > 0 {
-		predicates = append(predicates, permission.KeyNotIn(i.KeyNotIn...))
+	if len(i.ScopeNotIn) > 0 {
+		predicates = append(predicates, permission.ScopeNotIn(i.ScopeNotIn...))
 	}
-	if i.KeyGT != nil {
-		predicates = append(predicates, permission.KeyGT(*i.KeyGT))
+	if i.ScopeGT != nil {
+		predicates = append(predicates, permission.ScopeGT(*i.ScopeGT))
 	}
-	if i.KeyGTE != nil {
-		predicates = append(predicates, permission.KeyGTE(*i.KeyGTE))
+	if i.ScopeGTE != nil {
+		predicates = append(predicates, permission.ScopeGTE(*i.ScopeGTE))
 	}
-	if i.KeyLT != nil {
-		predicates = append(predicates, permission.KeyLT(*i.KeyLT))
+	if i.ScopeLT != nil {
+		predicates = append(predicates, permission.ScopeLT(*i.ScopeLT))
 	}
-	if i.KeyLTE != nil {
-		predicates = append(predicates, permission.KeyLTE(*i.KeyLTE))
+	if i.ScopeLTE != nil {
+		predicates = append(predicates, permission.ScopeLTE(*i.ScopeLTE))
 	}
-	if i.KeyContains != nil {
-		predicates = append(predicates, permission.KeyContains(*i.KeyContains))
+	if i.ScopeContains != nil {
+		predicates = append(predicates, permission.ScopeContains(*i.ScopeContains))
 	}
-	if i.KeyHasPrefix != nil {
-		predicates = append(predicates, permission.KeyHasPrefix(*i.KeyHasPrefix))
+	if i.ScopeHasPrefix != nil {
+		predicates = append(predicates, permission.ScopeHasPrefix(*i.ScopeHasPrefix))
 	}
-	if i.KeyHasSuffix != nil {
-		predicates = append(predicates, permission.KeyHasSuffix(*i.KeyHasSuffix))
+	if i.ScopeHasSuffix != nil {
+		predicates = append(predicates, permission.ScopeHasSuffix(*i.ScopeHasSuffix))
 	}
-	if i.KeyEqualFold != nil {
-		predicates = append(predicates, permission.KeyEqualFold(*i.KeyEqualFold))
+	if i.ScopeEqualFold != nil {
+		predicates = append(predicates, permission.ScopeEqualFold(*i.ScopeEqualFold))
 	}
-	if i.KeyContainsFold != nil {
-		predicates = append(predicates, permission.KeyContainsFold(*i.KeyContainsFold))
+	if i.ScopeContainsFold != nil {
+		predicates = append(predicates, permission.ScopeContainsFold(*i.ScopeContainsFold))
 	}
 	if i.Type != nil {
 		predicates = append(predicates, permission.TypeEQ(*i.Type))
