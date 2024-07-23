@@ -1,25 +1,25 @@
 package permission
 
 const (
-	todoGroup PermissionGroup = "todo"
+	TodoGroup PermissionGroup = "todo"
 )
 
 var (
-	todoSuper  = newKey(todoGroup, ActionSuper)
-	todoView   = newKey(todoGroup, ActionView)
-	todoAdd    = newKey(todoGroup, ActionAdd)
-	todoEdit   = newKey(todoGroup, ActionEdit)
-	todoDelete = newKey(todoGroup, ActionDelete)
+	TodoSuper  = newKey(TodoGroup, ActionSuper)
+	TodoView   = newKey(TodoGroup, ActionView)
+	TodoAdd    = newKey(TodoGroup, ActionAdd)
+	TodoEdit   = newKey(TodoGroup, ActionEdit)
+	TodoDelete = newKey(TodoGroup, ActionDelete)
 
-	todoSeeder = NewSeeder(todoGroup,
-		todoSuper,
-		todoView,
-		todoAdd,
-		todoEdit,
-		todoDelete,
+	TodoSeeder = NewSeeder(TodoGroup,
+		TodoSuper,
+		TodoView,
+		TodoAdd,
+		TodoEdit,
+		TodoDelete,
 	)
 )
 
 func init() {
-	allSeeders = append(allSeeders, todoSeeder)
+	allSeeders = append(allSeeders, TodoSeeder)
 }

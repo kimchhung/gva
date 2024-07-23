@@ -22,9 +22,8 @@ var NewAdminModules = fx.Module("admin-module",
 	menu.MenuModule,
 	permission.PermissionModule,
 	index.IndexModule,
-
-	todo.TodoModule,
 	department.DepartmentModule,
+	todo.TodoModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(

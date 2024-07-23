@@ -23,7 +23,7 @@ type CodeGenParams struct {
 
 func NewCodeGenParams(name string) CodeGenParams {
 	params := CodeGenParams{
-		EntityPascal:     name,
+		EntityPascal:     ustrings.ToPascalCase(name),
 		EntityCamel:      ustrings.PascalToCamel(name),
 		EntityAllLower:   strings.ReplaceAll(ustrings.PascalToSnake(name), "_", ""),
 		EntitySnake:      ustrings.PascalToSnake(name),
@@ -36,8 +36,6 @@ func NewCodeGenParams(name string) CodeGenParams {
 
 func GenerateFiles(params CodeGenParams, opts ...string) {
 	for _, opt := range opts {
-		fmt.Printf("Generating %s ... \n", opt)
-
 		switch opt {
 		case "schema":
 			GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
@@ -50,7 +48,7 @@ func GenerateFiles(params CodeGenParams, opts ...string) {
 		case "repository":
 			GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)
 			InjectCodeToPos("app/common/common_module.go", map[string]string{
-				"// #inject:repository": fmt.Sprintf(`fx.Provide(repository.New%vRepository),`, params.EntityPascal),
+				"// #inject:repository": fmt.Sprintf("fx.Provide(repository.New%vRepository),\n", params.EntityPascal),
 			}, true)
 		case "permission":
 			GenerateModuleChildNoFolder(params, "permission", "app/common", "permission", module_template.Permission)
@@ -65,18 +63,6 @@ func GenerateFiles(params CodeGenParams, opts ...string) {
 			panic(fmt.Errorf("unknown option: %v", opt))
 		}
 	}
-}
-
-func Appends(params CodeGenParams) {
-	InjectCodeToPos("api/admin/module/module.go", map[string]string{
-		"// #inject:module":       fmt.Sprintf("%v.%vModule,\n", params.EntityAllLower, params.EntityPascal),
-		"// #inject:moduleImport": fmt.Sprintf(`"github.com/gva/api/admin/module/%v"`+"\n", params.EntityAllLower),
-	}, true)
-
-	// repo
-	InjectCodeToPos("app/common/common_module.go", map[string]string{
-		"// #inject:repository": fmt.Sprintf(`fx.Provide(repository.New%vRepository),`, params.EntityPascal),
-	}, true)
 }
 
 func GenerateCodeByTemplate(params CodeGenParams, templateName string, directory string, templateContent string) {

@@ -3,73 +3,87 @@
 
 Simple and scalable boilerplate to build powerful and organized REST projects with [Fiber](https://github.com/gofiber/fiber). 
 
-## Directory Structure
+## Backend Directory Structure
 
 ```
+├── api
+│   ├── admin
+│   │   ├── docs
+│   │   ├── main.go
+│   │   └── module
+│   │       └── todo
+│   │           ├── dto
+│   │           │   ├── todo_request.go
+│   │           │   └── todo_response.go
+│   │           ├── todo_controller.go
+│   │           ├── todo_module.go
+│   │           └── todo_service.go
+│   ├── bot
+│   │   ├── docs
+│   │   │   ├── bot_docs.go
+│   │   │   ├── bot_swagger.json
+│   │   │   └── bot_swagger.yaml
+│   │   ├── main.go
+│   │   └── module
+│   │       ├── comic
+│   │       │   ├── comic_module.go
+│   │       │   └── comic_service.go
+│   │       ├── index
+│   │       │   ├── index_controller.go
+│   │       │   ├── index_module.go
+│   │       │   └── index_service.go
+│   │       ├── module.go
+│   │       └── router.go
+│   ├── main.go
+│   └── web
+│       ├── docs
+│       │   ├── web_docs.go
+│       │   ├── web_swagger.json
+│       │   └── web_swagger.yaml
+│       ├── graph
+│       │   ├── generated
+│       │   ├── model
+│       │   ├── resolver
+│       │   ├── schema
+│       │   └── server.go
+│       ├── main.go
+│       └── module
+│           ├── index
+│           │   ├── index_controller.go
+│           │   ├── index_module.go
+│           │   └── index_service.go
+│           ├── module.go
+│           └── router.go
 ├── app
-│   ├── database
-│   │   ├── migrations 
-│   │   ├── schema
-│   │   │   └── article.go
-│   │   ├── seeder
-│   │   │    └── article_seeder.go
-│   │   └── local.connection.env  // migration connection
-│   ├── middleware
-│   │   ├── register.go
-│   │   └── token
-│   │       └── token.go
-│   ├── module
-│   │   └── router.go
-│   │   └── article
-│   │       ├── article_module.go
-│   │       ├── controller
-│   │       │   ├── article_controller.go
-│   │       ├── repository
-│   │       │   ├── article_repository.go
-│   │       ├── dto
-│   │       │   └── article_request.go
-│   │       ├── service
-│   │       │   └── article_service.go
-│   │       └── article_module.go
+│   ├── app.go
+│   ├── common
+│   │   ├── common_module.go
+│   │   ├── context
+│   │   ├── controller
+│   │   ├── error
+│   │   ├── permission
+│   │   ├── repository
+│   │   └── service
+│   │       └── jwt_service.go
+│   ├── database
+│   │   ├── create_db.sql
+│   │   ├── data
+│   │   ├── migrations
+│   │   ├── schema
+│   │   └── seeds
+│   ├── middleware
+│   └── router
 ├── build
-│   ├── Dockerfile
-│   └── DockerfileAir
 ├── cmd
-│   └── code_gen
-│   └── ent
-│       ├── generate.go
-│       └── migrate
-├── config
-│   │── config.go
-│   └── config.toml
-├── docker-compose.yaml
+├── env
 ├── go.mod
 ├── go.sum
+├── gqlgen.yml
 ├── internal
-│   └── bootstrap
-│       ├── database
-│       │   └── database.go
-│       ├── logger.go
-│       └── webserver.go
-├── LICENSE
-├── Makefile
-├── migrate.mk
-├── README.md
+├── lang
+├── repository
 ├── tools.go
-├── storage
-│   ├── ascii_art.txt
-│   ├── private
-│   │   └── example.html
-│   ├── private.go
-│   └── public
-│       └── example.txt
 └── utils
-    ├── config
-    │   └── config.go
-    ├── response
-    │   ├── request.go
-    │   └── validator.go
-    └── utils.go
 ```
 
 ## Usage
@@ -87,22 +101,10 @@ docker-compose up
 CUSTOM="Air" docker-compose up # Use with Air
 ```
 
-## Tech Stack
-- [Go](https://go.dev)
-- [Mysql](https://www.mysql.org)
-- [Docker](https://www.docker.com/)
-- [Fiber](https://github.com/gofiber/fiber)
-- [Ent](https://github.com/ent/ent)
-- [Atlas](https://atlasgo.io)
-- [Fx](https://github.com/uber-go/fx)
-- [Zerolog](https://github.com/rs/zerolog)
-- [CodeGen](https://github.com/dolmen-go/codegen)
-- [Swagger](https://github.com/swaggo/swag)
-
 
 ## CRUD generator
 
-```make crud name="todo" ```
+```make admincmd.gen name="todo" ```
 
 - example todo CRUD
 ```
@@ -128,23 +130,15 @@ CUSTOM="Air" docker-compose up # Use with Air
 │   │       └── todo_module.go
 
 
-➜  api git:(main) ✗ make crud name=todo_you
-go run cmd/code_gen/generate.go todo_you
-Generated app/database/schema/todo_you.go
-Generated app/module/todo_you/todo_you_module.go
-Generated app/module/todo_you/dto/todo_you_request.go
-Generated app/module/todo_you/repository/todo_you_repository.go
-Generated app/module/todo_you/service/todo_you_service.go
-Generated app/module/todo_you/controller/todo_you_controller.go
+➜  backend git:(main) ✗ make admincmd.gen name=todo
 
-2024/02/17 04:44:01 Generate swagger docs....
-2024/02/17 04:44:01 Generate general API Info, search dir:./
-2024/02/17 04:44:01 Generating request.Response
-2024/02/17 04:44:01 Generating dto.AdminRequest
-2024/02/17 04:44:01 Generating dto.TodoYouRequest
-2024/02/17 04:44:01 create docs.go at docs/docs.go
-2024/02/17 04:44:01 create swagger.json at docs/swagger.json
-2024/02/17 04:44:01 create swagger.yaml at docs/swagger.yaml
+Generated api/admin/module/todo/todo_module.go
+Generated app/common/repository/todo_repository.go
+Generated app/common/permission/todo_permission.go
+Generated api/admin/module/todo/dto/todo_request.go
+Generated api/admin/module/todo/dto/todo_response.go
+Generated api/admin/module/todo//todo_service.go
+Generated app/database/schema/todo.go
 
 ```
 

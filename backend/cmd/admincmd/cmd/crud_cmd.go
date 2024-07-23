@@ -15,12 +15,24 @@ func GenerateByCmd(params codegen.CodeGenParams, cmds ...string) {
 	all := []string{}
 	for _, text := range cmds {
 		parts := strings.Split(text, seperator)
-		all = append(all, parts...)
+		for _, p := range parts {
+			if p != "" {
+				all = append(all, p)
+			}
+		}
 	}
 
-	if len(all) == 0 {
+	isGenerateAll := len(all) == 0
+	if isGenerateAll {
 		all = []string{
-			"M", "R", "P", "D", "S", "SC",
+			// sche,a
+			"SC",
+
+			// module
+			"S", "C", "D", "M",
+
+			// common
+			"R", "P",
 		}
 	}
 
@@ -29,6 +41,17 @@ func GenerateByCmd(params codegen.CodeGenParams, cmds ...string) {
 		switch cmd {
 		case "SC", "schema":
 			codegen.GenerateFiles(params, "schema")
+
+			// generate ent
+			output, err := exec.Command("go", "generate", "cmd/ent/generate.go").CombinedOutput()
+			if err != nil {
+				fmt.Printf("Failed to run command: %v\n", err)
+				fmt.Println("info:", string(output))
+				return
+			} else {
+				fmt.Println("Generated ent: ok", string(output))
+			}
+
 		case "M", "module":
 			codegen.GenerateFiles(params, "module")
 		case "R", "repository":
@@ -45,6 +68,7 @@ func GenerateByCmd(params codegen.CodeGenParams, cmds ...string) {
 			panic(fmt.Errorf("unknown option: %v", cmd))
 		}
 	}
+
 }
 
 var crudCmd = &cobra.Command{
@@ -62,13 +86,6 @@ var crudCmd = &cobra.Command{
 		entity := codegen.NewCodeGenParams(name)
 		GenerateByCmd(entity, options...)
 
-		// generate ent
-		output, err := exec.Command("go", "generate", "cmd/ent/generate.go").CombinedOutput()
-		if err != nil {
-			fmt.Printf("Failed to run command: %v\n", err)
-			return
-		}
-		fmt.Println(string(output))
 	},
 }
 
