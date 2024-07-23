@@ -8,6 +8,7 @@ import (
 	"time"
 
 	apperror "github.com/gva/app/common/error"
+	"github.com/gva/env"
 	rerror "github.com/gva/internal/response/error"
 
 	"github.com/labstack/echo/v4"
@@ -60,6 +61,19 @@ type RequestContext struct {
 	context.Context
 	startTime time.Time
 	logFields *logFields
+	appEnv    string
+}
+
+func (c *RequestContext) IsProd() bool {
+	return c.appEnv == env.Prod
+}
+
+func (c *RequestContext) IsDev() bool {
+	return c.appEnv == env.Dev
+}
+
+func (c *RequestContext) IsStaging() bool {
+	return c.appEnv == env.Staging
 }
 
 func (ctx *RequestContext) PrintLog() {
@@ -102,7 +116,7 @@ func defaultLogFields(c echo.Context) *logFields {
 }
 
 // a context help handling error
-func Middleware() echo.MiddlewareFunc {
+func Middleware(cfg *env.Config) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c echo.Context) (err error) {
@@ -110,6 +124,7 @@ func Middleware() echo.MiddlewareFunc {
 			ctx.Context = context.WithValue(c.Request().Context(), RequestContextKey{}, ctx)
 			ctx.startTime = time.Now()
 			ctx.logFields = defaultLogFields(c)
+			ctx.appEnv = cfg.App.Env
 
 			//logger set context
 			c.SetRequest(c.Request().WithContext(ctx))

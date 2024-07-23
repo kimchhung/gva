@@ -26,7 +26,7 @@ const setSearchParams = (params: any) => {
 }
 
 const { tableRegister, tableState, tableMethods } = useTable({
-  fetchDataApi: async () => {
+  onFetchData: async () => {
     // const { currentPage, pageSize } = tableState
     // const res = await getTableListApi({
     //   pageIndex: unref(currentPage),
@@ -38,7 +38,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: 0
     }
   },
-  fetchDelApi: async () => {
+  onDeleteData: async () => {
     // const res = await delTableListApi(unref(ids))
     return true
   }

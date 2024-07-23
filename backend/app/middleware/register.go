@@ -35,7 +35,9 @@ func NewMiddleware(app *echo.Echo, cfg *env.Config, log *zerolog.Logger) *Middle
 func (m *Middleware) Register() {
 	mdCfg := m.cfg.Middleware
 
-	m.app.Pre(appctx.Middleware())
+	m.app.Pre(
+		appctx.Middleware(m.cfg),
+	)
 
 	m.app.Use(
 		lang.Middleware(),

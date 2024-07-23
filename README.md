@@ -1,75 +1,89 @@
 # GVA GO VUE ADMIN Boilerplate
 [![Go Reference](https://pkg.go.dev/badge/api.svg)](https://pkg.go.dev/api)
 
-Simple and scalable boilerplate to build powerful and organized REST projects with [Fiber](https://github.com/gofiber/fiber). 
+Simple and scalable boilerplate to build powerful and organized REST projects with [Echo](https://echo.labstack.com). 
 
-## Directory Structure
+## Backend Directory Structure
 
 ```
+├── api
+│   ├── admin
+│   │   ├── docs
+│   │   ├── main.go
+│   │   └── module
+│   │       └── todo
+│   │           ├── dto
+│   │           │   ├── todo_request.go
+│   │           │   └── todo_response.go
+│   │           ├── todo_controller.go
+│   │           ├── todo_module.go
+│   │           └── todo_service.go
+│   ├── bot
+│   │   ├── docs
+│   │   │   ├── bot_docs.go
+│   │   │   ├── bot_swagger.json
+│   │   │   └── bot_swagger.yaml
+│   │   ├── main.go
+│   │   └── module
+│   │       ├── comic
+│   │       │   ├── comic_module.go
+│   │       │   └── comic_service.go
+│   │       ├── index
+│   │       │   ├── index_controller.go
+│   │       │   ├── index_module.go
+│   │       │   └── index_service.go
+│   │       ├── module.go
+│   │       └── router.go
+│   ├── main.go
+│   └── web
+│       ├── docs
+│       │   ├── web_docs.go
+│       │   ├── web_swagger.json
+│       │   └── web_swagger.yaml
+│       ├── graph
+│       │   ├── generated
+│       │   ├── model
+│       │   ├── resolver
+│       │   ├── schema
+│       │   └── server.go
+│       ├── main.go
+│       └── module
+│           ├── index
+│           │   ├── index_controller.go
+│           │   ├── index_module.go
+│           │   └── index_service.go
+│           ├── module.go
+│           └── router.go
 ├── app
-│   ├── database
-│   │   ├── migrations 
-│   │   ├── schema
-│   │   │   └── article.go
-│   │   ├── seeder
-│   │   │    └── article_seeder.go
-│   │   └── local.connection.env  // migration connection
-│   ├── middleware
-│   │   ├── register.go
-│   │   └── token
-│   │       └── token.go
-│   ├── module
-│   │   └── router.go
-│   │   └── article
-│   │       ├── article_module.go
-│   │       ├── controller
-│   │       │   ├── article_controller.go
-│   │       ├── repository
-│   │       │   ├── article_repository.go
-│   │       ├── dto
-│   │       │   └── article_request.go
-│   │       ├── service
-│   │       │   └── article_service.go
-│   │       └── article_module.go
+│   ├── app.go
+│   ├── common
+│   │   ├── common_module.go
+│   │   ├── context
+│   │   ├── controller
+│   │   ├── error
+│   │   ├── permission
+│   │   ├── repository
+│   │   └── service
+│   │       └── jwt_service.go
+│   ├── database
+│   │   ├── create_db.sql
+│   │   ├── data
+│   │   ├── migrations
+│   │   ├── schema
+│   │   └── seeds
+│   ├── middleware
+│   └── router
 ├── build
-│   ├── Dockerfile
-│   └── DockerfileAir
 ├── cmd
-│   └── code_gen
-│   └── ent
-│       ├── generate.go
-│       └── migrate
-├── config
-│   │── config.go
-│   └── config.toml
-├── docker-compose.yaml
+├── env
 ├── go.mod
 ├── go.sum
+├── gqlgen.yml
 ├── internal
-│   └── bootstrap
-│       ├── database
-│       │   └── database.go
-│       ├── logger.go
-│       └── webserver.go
-├── LICENSE
-├── Makefile
-├── migrate.mk
-├── README.md
+├── lang
+├── repository
 ├── tools.go
-├── storage
-│   ├── ascii_art.txt
-│   ├── private
-│   │   └── example.html
-│   ├── private.go
-│   └── public
-│       └── example.txt
 └── utils
-    ├── config
-    │   └── config.go
-    ├── response
-    │   ├── request.go
-    │   └── validator.go
-    └── utils.go
 ```
 
 ## Usage
@@ -87,22 +101,10 @@ docker-compose up
 CUSTOM="Air" docker-compose up # Use with Air
 ```
 
-## Tech Stack
-- [Go](https://go.dev)
-- [Mysql](https://www.mysql.org)
-- [Docker](https://www.docker.com/)
-- [Fiber (REST API)](https://github.com/gofiber/fiber)
-- [Ent (DB ORM)](https://github.com/ent/ent)
-- [Atlas (DB safe migration)](https://atlasgo.io)
-- [Fx (Dependency Inject)](https://github.com/uber-go/fx)
-- [Zerolog](https://github.com/rs/zerolog)
-- [CodeGen (make Crud generator)](https://github.com/dolmen-go/codegen)
-- [Swagger (REST API Docs)](https://github.com/gofiber/swagger)
-
 
 ## CRUD generator
 
-```make crud name="todo" ```
+```make admincmd.gen name="todo" ```
 
 - example todo CRUD
 ```
@@ -128,117 +130,46 @@ CUSTOM="Air" docker-compose up # Use with Air
 │   │       └── todo_module.go
 
 
-➜  api git:(main) ✗ make crud name=todo_you
-go run cmd/code_gen/generate.go todo_you
-Generated app/database/schema/todo_you.go
-Generated app/module/todo_you/todo_you_module.go
-Generated app/module/todo_you/dto/todo_you_request.go
-Generated app/module/todo_you/repository/todo_you_repository.go
-Generated app/module/todo_you/service/todo_you_service.go
-Generated app/module/todo_you/controller/todo_you_controller.go
+➜  backend git:(main) ✗ make admincmd.gen name=todo
 
-2024/02/17 04:44:01 Generate swagger docs....
-2024/02/17 04:44:01 Generate general API Info, search dir:./
-2024/02/17 04:44:01 Generating request.Response
-2024/02/17 04:44:01 Generating dto.AdminRequest
-2024/02/17 04:44:01 Generating dto.TodoYouRequest
-2024/02/17 04:44:01 create docs.go at docs/docs.go
-2024/02/17 04:44:01 create swagger.json at docs/swagger.json
-2024/02/17 04:44:01 create swagger.yaml at docs/swagger.yaml
-
-```
-- Generated Controller Method example
-
-```
-// @Tags Admin
-// @Summary Update a Admin
-// @Description Update a Admin by ID
-// @ID update-Admin-by-id
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Admin ID"
-// @Param Admin body dto.AdminRequest true "Admin data"
-// @Success  200 {object} request.Response{data=dto.AdminResponse} "Successfully updated Admin"
-// @Router /admin/{id} [patch]
-func (con *AdminController) Update(meta *rctrl.RouteMeta) rctrl.MetaHandler {
-	return meta.Patch("/:id").Name("update one Admin").DoWithScope(func() []fiber.Handler {
-		req := new(dto.AdminRequest)
-		param := &struct {
-			ID int `params:"id" validate:"gte=0"`
-		}{}
-
-		return []fiber.Handler{
-			request.Validate(
-				request.ParamsParser(param),
-				request.BodyParser(req),
-			),
-			func(c *fiber.Ctx) error {
-				data, err := con.service.UpdateAdmin(c.UserContext(), param.ID, *req)
-				if err != nil {
-					return err
-				}
-
-				return request.Resp(c, request.Response{
-					Message: "The admin was updated successfully!",
-					Data:    data,
-				})
-			},
-		}
-	})
-}
+Generated api/admin/module/todo/todo_module.go
+Generated app/common/repository/todo_repository.go
+Generated app/common/permission/todo_permission.go
+Generated api/admin/module/todo/dto/todo_request.go
+Generated api/admin/module/todo/dto/todo_response.go
+Generated api/admin/module/todo//todo_service.go
+Generated app/database/schema/todo.go
 
 ```
 
 ## Migration
 
-### Getting Started
-- Install the Atlas CLI by following the instructions provided [here](https://atlasgo.io/integrations/go-sdk).
-
-### Resolving Hash Mismatches
-- If you encounter a hash mismatch error, run `make migrate.hash` to resolve it.
-
-### Additional Migration Commands
-- For more migration commands, refer to the `migrate.mk` file.
-
-### Generating Migrations
-1. Edit the schema in the `app/database/schema` directory.
-2. Generate entities using `make migrate.gen name="add_todo_index"`.
-3. Apply the migrations with `make migrate.apply`.
-
-### Creating Migrations Manually
-1. Create new migration files using `make migrate.new name="add_user_data"`.
-2. Generate a new hash with `make migrate.hash`.
-3. Apply the migrations using `make migrate.apply`.
-
-### Rolling Back Migrations
-1. Remove the latest migration files from the `app/database/migrations` directory.
-2. Apply the changes by running `make migrate.schema.apply`.
-3. Set the migration version to match the current version in the folder using `make migrate.apply`.
-4. Check the current migration status with `make migrate.status`.
-
-## Todo
-
-- [x] Migration CLI
-- [x] CRUD generator
-    - [X] API
-        - [x] module (controller,repo,service,schema)
-        - [x] swagger crud endpoint
-    - [X] Admin-Pannel
-        - [ ] Routers
-        - [ ] Table CRUD
-        - [ ] CRUD filter and RQL
-- [ ] Permission Admins
-- [ ] Rest Query Language
-    - [ ] Rest Query Parser in ts and go
-    - [ ] Rest Query Builder Component
+ - Install the Atlas CLI. You can find installation instructions [here](https://atlasgo.io/integrations/go-sdk).
+ - Run ```make migrate.hash``` whenever got error hash mismatched
+ - Check ```migrate.mk``` for more migration cli
 
 
+### Migration generate
+
+1. edit schema in "app/database/schema"
+2. genrate ent using ```make migrate.gen name="add_todo_index"```
+3. apply migrations ```make migrate.apply```
+
+### Create migration manually 
+1. create migration files ```make migrate.new name="add_user_data"```
+2. generate hash  ```make migrate.hash```
+3. apply migrations ```make migrate.apply```
+
+### Migration roleback or reverse
+
+1. remove one or two latest migration files in "app/database/migrations"
+2. check different and apply by ```make migrate.schema.apply```
+3. set version migration to match current version in folder ``` make migrate.apply ```
+4. check current version by ```make migrate.status```
 
 ## Resources
  - https://github.com/efectn/fiber-boilerplate 
- - https://vue3-element-admin-site.midfar.com/guide
 
 
 ## License
 api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).
-

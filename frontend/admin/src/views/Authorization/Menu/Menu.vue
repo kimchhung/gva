@@ -16,8 +16,8 @@ import { renderPermisionTag } from './hooks/useRenderPermTag'
 const { t } = useI18n()
 const { push } = useRouter()
 
-const { tableRegister, tableState } = useTable({
-  fetchDataApi: async (query) => {
+const { tableRegister, tableState } = useTable<MenuRoute>({
+  onFetchData: async (query) => {
     const [res, err] = await api.menu.getMany({ query })
     if (err) return null
     res.data = menuToNested(res.data)

@@ -5,6 +5,7 @@ import { Form, FormSchema, TreeSelectComponentProps } from '@/components/Form'
 import { MenuTypeEnum } from '@/constants/menuType'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
+import { QueryUrl } from '@/hooks/web/usePagi'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { cloneDeep } from 'lodash-es'
@@ -185,7 +186,7 @@ const formSchema = reactive<FormSchema[]>([
       tagType: 'primary'
     } as TreeSelectComponentProps,
     optionApi: async () => {
-      const [res, err] = await api.permission.getMany({ query: { limit: 100 } })
+      const [res, err] = await api.permission.getMany({ query: new QueryUrl(100) })
       if (err) return []
 
       return permissionToTree(res.data)
@@ -286,7 +287,6 @@ watch(
   (value) => {
     if (!value) return
     const currentRow = cloneDeep(value)
-    console.log({ currentRow })
 
     cacheComponent.value = currentRow.type === MenuTypeEnum.MENU ? currentRow.component : ''
     if (!currentRow.pid) {

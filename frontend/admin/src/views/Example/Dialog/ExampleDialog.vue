@@ -17,7 +17,7 @@ import Write from './components/Write.vue'
 const ids = ref<string[]>([])
 
 const { tableRegister, tableState, tableMethods } = useTable({
-  fetchDataApi: async () => {
+  onFetchData: async () => {
     // const res = await getTableListApi({
     //   pageIndex: unref(currentPage),
     //   pageSize: unref(pageSize),
@@ -28,7 +28,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: 0
     }
   },
-  fetchDelApi: async () => {
+  onDeleteData: async () => {
     return true
   }
 })

@@ -1,11 +1,13 @@
 package request
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
 
+	appctx "github.com/gva/app/common/context"
 	app_err "github.com/gva/app/common/error"
 	"github.com/gva/internal/rql"
 	"github.com/gva/utils"
@@ -117,24 +119,51 @@ https://github.com/a8m/rql
 */
 func RqlQueryParser(out *rql.Params, parser *rql.Parser) Parser {
 	return func(c echo.Context) (any, error) {
-		var (
-			param *rql.Params
-			err   error
-		)
-
-		urlValue := c.QueryParams()
-		if urlValue.Encode() != "" {
-			str := ParseUrlValue(urlValue)
-			param, err = parser.Parse([]byte(str))
-		} else {
-			param, err = parser.ParseQuery(
-				&rql.Query{
-					Limit:  20,
-					Offset: 0,
-				},
-			)
+		params := c.QueryParams()
+		query := &rql.Query{
+			Limit:  25,
+			Offset: 0,
 		}
 
+		if str := params.Get("limit"); str != "" {
+			if num, err := strconv.Atoi(str); err == nil {
+				query.Limit = num
+			}
+		}
+
+		if str := params.Get("offset"); str != "" {
+			if num, err := strconv.Atoi(str); err == nil {
+				query.Offset = num
+			}
+		}
+
+		if str := params.Get("select"); str != "" {
+			for _, sel := range strings.Split(str, ",") {
+				sel = strings.TrimSpace(sel)
+				if sel != "" {
+					query.Select = append(query.Select, sel)
+				}
+			}
+		}
+
+		if str := params.Get("filter"); str != "" {
+			decodedBytes, err := base64.URLEncoding.DecodeString(str)
+			if err != nil {
+				return nil, app_err.NewError(
+					app_err.ErrBadRequest,
+					app_err.Join(err),
+				)
+			}
+
+			if err := json.JSON(decodedBytes).Out(&query.Filter); err != nil {
+				return nil, app_err.NewError(
+					app_err.ErrBadRequest,
+					app_err.Join(err),
+				)
+			}
+		}
+
+		rqlParam, err := parser.ParseQuery(query)
 		if err != nil {
 			return nil, app_err.NewError(
 				app_err.ErrBadRequest,
@@ -142,7 +171,12 @@ func RqlQueryParser(out *rql.Params, parser *rql.Parser) Parser {
 			)
 		}
 
-		*out = *param
+		rctx := appctx.MustRequestContext(c.Request().Context())
+		if !rctx.IsProd() {
+			c.Response().Header().Set("X-Filter", fmt.Sprintf("%v", json.MustJSON(query.Filter)))
+		}
+
+		*out = *rqlParam
 		return nil, nil
 	}
 }

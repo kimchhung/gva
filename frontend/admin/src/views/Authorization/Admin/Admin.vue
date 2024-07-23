@@ -15,7 +15,7 @@ import Write from './components/Write.vue'
 const { t } = useI18n()
 
 const { tableRegister, tableState, tableMethods } = useTable({
-  fetchDataApi: async () => {
+  onFetchData: async () => {
     // const { pageSize, currentPage } = tableState
     // const res = await getUserByIdApi({
     //   id: unref(currentNodeKey),
@@ -28,7 +28,7 @@ const { tableRegister, tableState, tableMethods } = useTable({
       total: 0
     }
   },
-  fetchDelApi: async () => {
+  onDeleteData: async () => {
     // const res = await deleteUserByIdApi(unref(ids))
     return true
   }

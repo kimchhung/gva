@@ -1,5 +1,5 @@
 import { req, useAPI } from '@/axios'
-import { createQueryPayload } from '@/hooks/web/usePagi'
+import { parseQuery } from '@/hooks/web/usePagi'
 import { CreateNode, GetManyNode, GetNode, ManyNodesResponse, Node, UpdateNode } from './types'
 
 export class ResourceAPI<T extends object = Node<{}>> {
@@ -23,7 +23,7 @@ export class ResourceAPI<T extends object = Node<{}>> {
       fn: () =>
         req.get<ManyNodesResponse<T>>({
           url: this.base,
-          params: createQueryPayload(query)
+          params: parseQuery(query)
         }),
       opt
     })

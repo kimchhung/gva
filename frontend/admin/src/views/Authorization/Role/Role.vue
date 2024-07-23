@@ -15,7 +15,7 @@ import Write from './components/Write.vue'
 const { t } = useI18n()
 
 const { tableRegister, tableState, tableMethods } = useTable({
-  fetchDataApi: async () => {
+  onFetchData: async () => {
     return {
       list: [],
       // total: Recordables.data.total

@@ -2,26 +2,26 @@ import { Table, TableColumn, TableExpose, TableProps, TableSetProps } from '@/co
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox, ElTable } from 'element-plus'
 import { nextTick, onMounted, reactive, ref, unref, watch } from 'vue'
-import { QueryPagi } from './usePagi'
+import { QueryUrl } from './usePagi'
 
 const { t } = useI18n()
 
-type UseTableConfig<T = any> = {
+type UseTableConfig<T extends Object = any> = {
   /**
    * Do you request once when you initialize
    */
   immediate?: boolean
-  fetchDataApi: (props: QueryPagi) => Promise<{
+  onFetchData: (props: QueryUrl<T>) => Promise<{
     data: T[]
     meta?: {
       total?: number
     }
   } | null>
-  fetchDelApi?: () => Promise<boolean>
+  onDeleteData?: () => Promise<boolean>
 }
 
-const getTablePageAndSize = (v: { offset?: number; limit: number }) => {
-  return { page: Math.floor(Number(v.offset) / v.limit) + 1, pageSize: v.limit }
+const getTablePageAndSize = (v: { offset?: number; limit?: number }) => {
+  return { page: Math.floor(Number(v?.offset) / Number(v?.limit)) + 1, pageSize: Number(v?.limit) }
 }
 
 export type TableState<T> = {
@@ -38,12 +38,7 @@ export type TableState<T> = {
 
 export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
   const { immediate = true } = config
-
-  const fetchProps = ref({
-    offset: 0,
-    limit: 25
-  } as QueryPagi<T>)
-
+  const fetchProps = ref(new QueryUrl<T>())
   const { page, pageSize } = getTablePageAndSize(fetchProps.value)
   const tableState = reactive<TableState<T>>({
     page: page,
@@ -100,7 +95,7 @@ export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
     getList: async () => {
       tableState.isLoading = true
       try {
-        const res = await config?.fetchDataApi(unref(fetchProps.value as any))
+        const res = await config?.onFetchData(new QueryUrl(unref(fetchProps as any)))
         if (res) {
           tableState.data = (res.data as any) ?? []
           tableState.meta = res.meta as any
@@ -170,8 +165,8 @@ export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
     // }
     // delete data
     delList: async (idsLength: number) => {
-      const { fetchDelApi } = config
-      if (!fetchDelApi) {
+      const { onDeleteData: fetchDelete } = config
+      if (!fetchDelete) {
         console.warn('fetchDelApi is undefined')
         return
       }
@@ -180,13 +175,13 @@ export const useTable = <T extends RecordWithID>(config: UseTableConfig<T>) => {
         cancelButtonText: t('common.delCancel'),
         type: 'warning'
       }).then(async () => {
-        const res = await fetchDelApi()
+        const res = await fetchDelete()
         if (res) {
           ElMessage.success(t('common.delSuccess'))
 
           // Calculate the critical point
           const current =
-            unref(tableState.total) % unref(fetchProps.value.limit) === idsLength ||
+            unref(tableState.total) % unref(Number(fetchProps.value.limit)) === idsLength ||
             unref(fetchProps.value.limit) === 1
               ? Number(unref(fetchProps.value.offset)) > 1
                 ? Number(unref(fetchProps.value.offset)) - 1

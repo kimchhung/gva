@@ -1,5 +1,5 @@
 import { UseAPIOption } from '@/axios'
-import { QueryPagi } from '@/hooks/web/usePagi'
+import { QueryUrl } from '@/hooks/web/usePagi'
 
 export type Node<T = Record<string, any>> = T & {
   id: string
@@ -20,7 +20,7 @@ export type GetNode = UseAPIOption & {
 }
 
 export type GetManyNode<T extends Object = {}> = UseAPIOption & {
-  query: QueryPagi<T>
+  query: QueryUrl<T>
 }
 
 export type APIResponseMeta = {
