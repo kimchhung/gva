@@ -1,6 +1,5 @@
 export default {
   common: {
-    permission: '允许',
     scope: '范围',
     key: '钥匙',
     order: '命令',
@@ -212,7 +211,8 @@ export default {
     jsonEditor: 'JSON编辑器',
     jsonEditorDes: '基于 vue-json-pretty 二次封装'
   },
-  meta: {
+  menu: {
+    permission: '允许',
     parentName: '父级名称',
     menuName: '菜单名称',
     icon: '图标',

@@ -145,9 +145,13 @@ definitions:
         $ref: '#/definitions/types.MenuMeta'
       name:
         type: string
+      order:
+        type: integer
       path:
         type: string
       pid:
+        type: string
+      redirect:
         description: optionals
         type: string
       type:
@@ -209,38 +213,31 @@ definitions:
     type: object
   dto.PermissionRequest:
     properties:
+      group:
+        type: string
       name:
         type: string
+      order:
+        type: integer
+      scope:
+        type: string
+    required:
+    - group
+    - name
+    - order
+    - scope
     type: object
   dto.PermissionResponse:
     properties:
-      createdAt:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        allOf:
-        - $ref: '#/definitions/ent.PermissionEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the PermissionQuery when eager-loading is set.
       group:
-        description: Group holds the value of the "group" field.
         type: string
       id:
-        description: ID of the ent.
         type: string
-      key:
-        allOf:
-        - $ref: '#/definitions/permission.Type'
-        description: Type holds the value of the "type" field.
       name:
-        description: Name holds the value of the "name" field.
         type: string
       order:
-        description: Order holds the value of the "order" field.
         type: integer
-      updatedAt:
-        description: UpdatedAt holds the value of the "updated_at" field.
+      scope:
         type: string
     type: object
   dto.RegisterRequest:
@@ -472,6 +469,9 @@ definitions:
       order:
         description: Order holds the value of the "order" field.
         type: integer
+      scope:
+        description: Scope holds the value of the "scope" field.
+        type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updated_at" field.
         type: string
@@ -600,7 +600,7 @@ definitions:
         type: boolean
       noTagsView:
         type: boolean
-      permission:
+      permissions:
         items:
           type: string
         type: array

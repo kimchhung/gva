@@ -1,6 +1,5 @@
 export default {
   common: {
-    permission: 'Permission',
     scope: 'Scope',
     key: 'Key',
     order: 'Order',
@@ -154,6 +153,7 @@ export default {
     jsonEditorDes: 'Secondary packaging based on vue-json-pretty'
   },
   menu: {
+    permission: 'Permission',
     parentName: 'Parent Name',
     menuName: 'Menu name',
     redirect: 'Redirect',

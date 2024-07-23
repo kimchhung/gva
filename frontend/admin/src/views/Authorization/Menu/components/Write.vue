@@ -167,8 +167,8 @@ const formSchema = reactive<FormSchema[]>([
     component: 'Input'
   },
   {
-    field: 'meta.permission',
-    label: t('common.scope'),
+    field: 'meta.permissions',
+    label: t('menu.permission'),
     component: 'TreeSelect',
     componentProps: {
       nodeKey: 'id',
@@ -178,12 +178,10 @@ const formSchema = reactive<FormSchema[]>([
         children: 'children'
       },
       highlightCurrent: true,
-      expandOnClickNode: false,
-      checkStrictly: true,
-      checkOnClickNode: false,
       clearable: true,
       multiple: true,
       filterable: true,
+      checkStrictly: true,
       tagType: 'primary'
     } as TreeSelectComponentProps,
     optionApi: async () => {

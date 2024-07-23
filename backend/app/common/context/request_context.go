@@ -106,7 +106,6 @@ func Middleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c echo.Context) (err error) {
-			log.Print("Request_context")
 			ctx := &RequestContext{}
 			ctx.Context = context.WithValue(c.Request().Context(), RequestContextKey{}, ctx)
 			ctx.startTime = time.Now()

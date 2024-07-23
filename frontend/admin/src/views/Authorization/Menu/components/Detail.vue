@@ -5,6 +5,7 @@ import { Icon } from '@/components/Icon'
 import { ElTag } from 'element-plus'
 import { PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { renderPermisionTag } from '../hooks/useRenderPermTag'
 
 defineProps({
   currentRow: {
@@ -86,21 +87,13 @@ const detailSchema = ref<DescriptionsSchema[]>([
     label: t('menu.activeMenu')
   },
   {
-    field: 'permissionList',
-    label: 'permissionList',
+    field: 'meta.permissions',
+    label: t('menu.permissions'),
     span: 24,
     slots: {
-      default: (data: any) => (
-        <>
-          {data?.permissionList?.map((v) => {
-            return (
-              <ElTag class="mr-1" key={v.value}>
-                {v.label}
-              </ElTag>
-            )
-          })}
-        </>
-      )
+      default: (data: any) => {
+        return renderPermisionTag(data.meta.permissions)
+      }
     }
   },
   {

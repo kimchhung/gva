@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	module_template "github.com/gva/internal/codegen/module"
+	ustrings "github.com/gva/utils/strings"
 )
 
 type CodeGenParams struct {
@@ -19,15 +21,48 @@ type CodeGenParams struct {
 	Table            string
 }
 
-func GenerateCodes(params CodeGenParams) {
-	// GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
-	GenerateModule(params, "module", "api/admin/module", module_template.Module)
-	GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)
-	GenerateModuleChild(params, "dto", "api/admin/module", "request", module_template.DtoRequest)
-	GenerateModuleChild(params, "dto", "api/admin/module", "response", module_template.DtoResponse)
-	GenerateModuleChild(params, "", "api/admin/module", "service", module_template.Service)
-	GenerateModuleChild(params, "", "api/admin/module", "controller", module_template.Controller)
-	Appends(params)
+func NewCodeGenParams(name string) CodeGenParams {
+	params := CodeGenParams{
+		EntityPascal:     name,
+		EntityCamel:      ustrings.PascalToCamel(name),
+		EntityAllLower:   strings.ReplaceAll(ustrings.PascalToSnake(name), "_", ""),
+		EntitySnake:      ustrings.PascalToSnake(name),
+		EntityUpperSnake: strings.ToUpper(ustrings.PascalToSnake(name)),
+		EntityKebab:      strings.ReplaceAll(ustrings.PascalToSnake(name), "_", "-"),
+		Table:            ustrings.PascalToSnake(name) + "s",
+	}
+	return params
+}
+
+func GenerateFiles(params CodeGenParams, opts ...string) {
+	for _, opt := range opts {
+		switch opt {
+		case "schema":
+			GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
+		case "module":
+			GenerateModule(params, "module", "api/admin/module", module_template.Module)
+			InjectCodeToPos("api/admin/module/module.go", map[string]string{
+				"// #inject:module":       fmt.Sprintf("%v.%vModule,\n", params.EntityAllLower, params.EntityPascal),
+				"// #inject:moduleImport": fmt.Sprintf(`"github.com/gva/api/admin/module/%v"`+"\n", params.EntityAllLower),
+			}, true)
+		case "repository":
+			GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)
+			InjectCodeToPos("app/common/common_module.go", map[string]string{
+				"// #inject:repository": fmt.Sprintf(`fx.Provide(repository.New%vRepository),`, params.EntityPascal),
+			}, true)
+		case "permission":
+			GenerateModuleChildNoFolder(params, "permission", "app/common", "permission", module_template.Permission)
+		case "dto":
+			GenerateModuleChild(params, "dto", "api/admin/module", "request", module_template.DtoRequest)
+			GenerateModuleChild(params, "dto", "api/admin/module", "response", module_template.DtoResponse)
+		case "service":
+			GenerateModuleChild(params, "", "api/admin/module", "service", module_template.Service)
+		case "controller":
+			GenerateModuleChild(params, "", "api/admin/module", "controller", module_template.Controller)
+		default:
+			panic(fmt.Errorf("unknown option: %v", opt))
+		}
+	}
 }
 
 func Appends(params CodeGenParams) {

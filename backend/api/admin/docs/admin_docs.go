@@ -1666,10 +1666,16 @@ const docTemplateadmin = `{
                 "name": {
                     "type": "string"
                 },
+                "order": {
+                    "type": "integer"
+                },
                 "path": {
                     "type": "string"
                 },
                 "pid": {
+                    "type": "string"
+                },
+                "redirect": {
                     "description": "optionals",
                     "type": "string"
                 },
@@ -1749,8 +1755,23 @@ const docTemplateadmin = `{
         },
         "dto.PermissionRequest": {
             "type": "object",
+            "required": [
+                "group",
+                "name",
+                "order",
+                "scope"
+            ],
             "properties": {
+                "group": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "scope": {
                     "type": "string"
                 }
             }
@@ -1758,44 +1779,19 @@ const docTemplateadmin = `{
         "dto.PermissionResponse": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
-                    "type": "string"
-                },
-                "edges": {
-                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PermissionQuery when eager-loading is set.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/ent.PermissionEdges"
-                        }
-                    ]
-                },
                 "group": {
-                    "description": "Group holds the value of the \"group\" field.",
                     "type": "string"
                 },
                 "id": {
-                    "description": "ID of the ent.",
                     "type": "string"
                 },
-                "key": {
-                    "description": "Type holds the value of the \"type\" field.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/permission.Type"
-                        }
-                    ]
-                },
                 "name": {
-                    "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
                 },
                 "order": {
-                    "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
                 },
-                "updatedAt": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                "scope": {
                     "type": "string"
                 }
             }
@@ -2134,6 +2130,10 @@ const docTemplateadmin = `{
                     "description": "Order holds the value of the \"order\" field.",
                     "type": "integer"
                 },
+                "scope": {
+                    "description": "Scope holds the value of the \"scope\" field.",
+                    "type": "string"
+                },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
                     "type": "string"
@@ -2314,7 +2314,7 @@ const docTemplateadmin = `{
                 "noTagsView": {
                     "type": "boolean"
                 },
-                "permission": {
+                "permissions": {
                     "type": "array",
                     "items": {
                         "type": "string"

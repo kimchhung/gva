@@ -16,3 +16,8 @@ admincmd.seeds:
 admincmd.seed.permission:
 	go run cmd/admincmd/main.go seed.permission
 
+.PHONY: admincmd.gen
+
+admincmd.gen:
+	@echo "Running admincmd.gen with name: $(name), option: $(option)"
+	@go run cmd/admincmd/main.go crud "$(name)" "$(option)"

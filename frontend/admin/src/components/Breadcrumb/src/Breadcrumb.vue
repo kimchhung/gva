@@ -1,15 +1,15 @@
 <script lang="tsx">
-import { ElBreadcrumb, ElBreadcrumbItem } from 'element-plus'
-import { ref, watch, computed, unref, defineComponent, TransitionGroup } from 'vue'
-import { useRouter } from 'vue-router'
-import { usePermissionStore } from '@/store/modules/permission'
-import { filterBreadcrumb } from './helper'
-import { filter, treeToList } from '@/utils/tree'
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { useI18n } from '@/hooks/web/useI18n'
 import { Icon } from '@/components/Icon'
-import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useAppStore } from '@/store/modules/app'
+import { usePermissionStore } from '@/store/modules/permission'
+import { filter, treeToList } from '@/utils/tree'
+import { ElBreadcrumb, ElBreadcrumbItem } from 'element-plus'
+import { TransitionGroup, computed, defineComponent, ref, unref, watch } from 'vue'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { filterBreadcrumb } from './helper'
 
 const { getPrefixCls } = useDesign()
 
@@ -17,7 +17,7 @@ const prefixCls = getPrefixCls('breadcrumb')
 
 const appStore = useAppStore()
 
-// 面包屑图标
+// Bread crumb icon
 const breadcrumbIcon = computed(() => appStore.getBreadcrumbIcon)
 
 export default defineComponent({

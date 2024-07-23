@@ -25,9 +25,9 @@ func NewTodoService(repository *repository.TodoRepository) *TodoService {
 
 func (s *TodoService) toDto(value ...*ent.Todo) []*dto.TodoResponse {
 	list := make([]*dto.TodoResponse, len(value))
-	for i, _ := range value {
+	for i, v := range value {
 		// todo: map value to response value here
-		list[i] = &dto.TodoResponse{}
+		list[i] = &dto.TodoResponse{v}
 	}
 	return list
 }
@@ -63,7 +63,7 @@ func (s *TodoService) GetTodos(ctx context.Context, p *dto.TodoPagedRequest) ([]
 }
 
 func (s *TodoService) GetTodoByID(ctx context.Context, id xid.ID) (*dto.TodoResponse, error) {
-	data, err := s.repo.C().Query().Where(todo.IDEQ(id)).First(ctx)
+	data, err := s.repo.Q().Where(todo.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}

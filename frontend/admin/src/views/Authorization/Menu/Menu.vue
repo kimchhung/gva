@@ -11,6 +11,7 @@ import { useTable } from '@/hooks/web/useTable'
 import { ElButton, ElMessage, ElTag } from 'element-plus'
 import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { renderPermisionTag } from './hooks/useRenderPermTag'
 
 const { t } = useI18n()
 const { push } = useRouter()
@@ -105,30 +106,11 @@ const tableColumns = reactive<TableColumn<MenuRoute>[]>([
     }
   },
   {
-    field: 'meta.scopes',
-    label: t('common.scope'),
+    field: 'meta.permissions',
+    label: t('menu.permission'),
     slots: {
       default: ({ row }) => {
-        return (
-          <>
-            {[...(row.meta.scopes || [])].map((scope: string) => {
-              const [, action] = scope.split(':')
-              const tagTypes = {
-                super: 'primary',
-                add: 'warning',
-                delete: 'danger',
-                edit: 'warning',
-                view: 'info'
-              }
-              const typeColor = tagTypes[action]
-              return (
-                <ElTag class="mr-1" type={typeColor}>
-                  {action}
-                </ElTag>
-              )
-            })}
-          </>
-        )
+        return renderPermisionTag(row.meta.permissions)
       }
     }
   },

@@ -507,6 +507,7 @@ watch(
     cursor: pointer;
     border: 1px solid var(--el-border-color);
     border-radius: 4px;
+    transition: all 0.3s ease-in-out;
 
     &--close {
       position: absolute;
@@ -524,6 +525,8 @@ watch(
 
   &__item:not(.is-active) {
     &:hover {
+      transition: all 0.2s ease-in-out;
+      transform: translateY(-2px);
       color: var(--el-color-primary);
     }
   }

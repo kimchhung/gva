@@ -14,19 +14,19 @@ func AllSeeders() []database.Seeder {
 	return append([]database.Seeder{}, allSeeders...)
 }
 
-func createBulkPermissionDto(conn *ent.Client, keys ...permissionScope) []*ent.PermissionCreate {
-	bulks := make([]*ent.PermissionCreate, len(keys))
+func createBulkPermissionDto(conn *ent.Client, scopes ...permissionScope) []*ent.PermissionCreate {
+	bulks := make([]*ent.PermissionCreate, len(scopes))
 
-	for i, key := range keys {
-		group, _, err := key.Value()
+	for i, scope := range scopes {
+		group, _, err := scope.Value()
 		if err != nil {
 			panic(err)
 		}
 
 		bulks[i] = conn.Permission.Create().
 			SetGroup(string(group)).
-			SetScope(string(key)).
-			SetName(key.Name()).
+			SetScope(string(scope)).
+			SetName(scope.Name()).
 			SetOrder(i).
 			SetType(permission.TypeStatic)
 	}

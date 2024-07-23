@@ -13,9 +13,6 @@ gen.gql:
 	go generate cmd/ent/generategql.go
 
 
-crud:
-	go run cmd/codegen/generate.go $(name)
-
 # Run application inside Docker
 docker:
 	docker-compose up
