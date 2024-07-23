@@ -69,6 +69,7 @@ skip_mod_tidy: true
 autobind:
   - "github.com/99designs/gqlgen/graphql/introspection"
   - "github.com/gva/internal/ent"
+  - "github.com/gva/internal/ent/todo"
   # - "github.com/gva/app/database/schema/types"
 
 
