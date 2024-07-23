@@ -36,6 +36,8 @@ func NewCodeGenParams(name string) CodeGenParams {
 
 func GenerateFiles(params CodeGenParams, opts ...string) {
 	for _, opt := range opts {
+		fmt.Printf("Generating %s ... \n", opt)
+
 		switch opt {
 		case "schema":
 			GenerateCodeByTemplate(params, "schema", "app/database/schema", module_template.Schema)
