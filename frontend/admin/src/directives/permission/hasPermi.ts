@@ -1,6 +1,6 @@
-import type { App, Directive, DirectiveBinding } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
+import type { App, Directive, DirectiveBinding } from 'vue'
 
 const { t } = useI18n()
 

@@ -167,7 +167,7 @@ const formSchema = reactive<FormSchema[]>([
     component: 'Input'
   },
   {
-    field: 'meta.scopes',
+    field: 'meta.permission',
     label: t('common.scope'),
     component: 'TreeSelect',
     componentProps: {

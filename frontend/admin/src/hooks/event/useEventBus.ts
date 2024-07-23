@@ -2,8 +2,8 @@ import mitt from 'mitt'
 import { onBeforeUnmount } from 'vue'
 
 type Option = {
-  name: string // 事件名称
-  callback: Fn // 回调
+  name: string // Event name
+  callback: Fn // Call back
 }
 
 const emitter = mitt()
