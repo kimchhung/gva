@@ -135,55 +135,6 @@ func easyjson4bc42f5bDecodeGithubComA8mRql(in *jlexer.Lexer, out *Query) {
 				}
 				in.Delim('}')
 			}
-		case "aggregate":
-			if in.IsNull() {
-				in.Skip()
-			} else {
-				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Aggregate = make(map[string]interface{})
-				} else {
-					out.Aggregate = nil
-				}
-				for !in.IsDelim('}') {
-					key := string(in.String())
-					in.WantColon()
-					var v5 interface{}
-					if m, ok := v5.(easyjson.Unmarshaler); ok {
-						m.UnmarshalEasyJSON(in)
-					} else if m, ok := v5.(json.Unmarshaler); ok {
-						_ = m.UnmarshalJSON(in.Raw())
-					} else {
-						v5 = in.Interface()
-					}
-					(out.Aggregate)[key] = v5
-					in.WantComma()
-				}
-				in.Delim('}')
-			}
-		case "group":
-			if in.IsNull() {
-				in.Skip()
-				out.Group = nil
-			} else {
-				in.Delim('[')
-				if out.Group == nil {
-					if !in.IsDelim(']') {
-						out.Group = make([]string, 0, 4)
-					} else {
-						out.Group = []string{}
-					}
-				} else {
-					out.Group = (out.Group)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v6 string
-					v6 = string(in.String())
-					out.Group = append(out.Group, v6)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
 		default:
 			in.AddError(&jlexer.LexerError{
 				Offset: in.GetPos(),
@@ -303,55 +254,6 @@ func easyjson4bc42f5bEncodeGithubComA8mRql(out *jwriter.Writer, in Query) {
 				}
 			}
 			out.RawByte('}')
-		}
-	}
-	if len(in.Aggregate) != 0 {
-		const prefix string = ",\"aggregate\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('{')
-			v14First := true
-			for v14Name, v14Value := range in.Aggregate {
-				if v14First {
-					v14First = false
-				} else {
-					out.RawByte(',')
-				}
-				out.String(string(v14Name))
-				out.RawByte(':')
-				if m, ok := v14Value.(easyjson.Marshaler); ok {
-					m.MarshalEasyJSON(out)
-				} else if m, ok := v14Value.(json.Marshaler); ok {
-					out.Raw(m.MarshalJSON())
-				} else {
-					out.Raw(json.Marshal(v14Value))
-				}
-			}
-			out.RawByte('}')
-		}
-	}
-	if len(in.Group) != 0 {
-		const prefix string = ",\"group\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v15, v16 := range in.Group {
-				if v15 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v16))
-			}
-			out.RawByte(']')
 		}
 	}
 	out.RawByte('}')

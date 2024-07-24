@@ -1,9 +1,11 @@
-package rql
+package rql_test
 
 import (
 	"database/sql"
 	"testing"
 	"time"
+
+	"github.com/gva/internal/rql"
 )
 
 type Int int
@@ -31,7 +33,7 @@ type T struct {
 	}
 }
 
-var p = MustNewParser(Config{
+var p = rql.MustNewParser(rql.Config{
 	Model:    T{},
 	FieldSep: ".",
 })

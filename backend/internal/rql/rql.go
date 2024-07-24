@@ -13,6 +13,8 @@ import (
 	"sync"
 	"time"
 	"unicode"
+
+	"github.com/gva/internal/logger"
 )
 
 //go:generate easyjson -omit_empty -disallow_unknown_fields -snake_case rql.go
@@ -65,32 +67,6 @@ type Query struct {
 	//	}`))
 	//
 	Filter map[string]interface{} `json:"filter,omitempty"`
-
-	// ## in development
-	// Aggregate is the query object for building the value for the `SELECT` clause when grouped.
-	// An example for filter object:
-	//
-	//	params, err := p.Parse([]byte(`{
-	//		"aggregate": {
-	//			"gold": { "$sum": "gold_fieldname" },		// returns SUM(gold_fieldname) AS gold
-	//			"silver": { "$avg": "silver_fieldname" },	// returns AVG(silver_fieldname) AS silver
-	//			"bronze": { "$min": "bronze_fieldname" },	// returns MIN(bronze_fieldname) AS bronze
-	//			"bronze": { "$max": "bronze_fieldname" },	// returns MAX(bronze_fieldname) AS bronze
-	//			"bronze": { "$count": "bronze_fieldname" },	// returns COUNT(bronze_fieldname) AS bronze
-	//		}
-	//	}`))
-	//
-	Aggregate map[string]interface{} `json:"aggregate,omitempty"`
-
-	// ## in development
-	// Group is the query object for building the value for the `GROUP` clause and will be appended to the `SELECT` clause.
-	// An example for filter object:
-	//
-	//	params, err := p.Parse([]byte(`{
-	//		"group": ["name", "age"]
-	//	}`))
-	//
-	Group []string `json:"group,omitempty"`
 }
 
 // Params is the parser output after calling to `Parse`. You should pass its
@@ -116,10 +92,6 @@ type Params struct {
 	Offset int
 	// Select contains the expression for the `SELECT` clause defined in the Query. If group is not empty, values are automatically replaced by the group string and the aggregate string.
 	Select []string
-	// Aggregate contains additional aggregated `SELECT` expressions that can be optionally appended to the select statement.
-	Aggregate []string
-	// Update contains the expression for the `UPDATE` clause defined in the Query.
-	Update []string
 	// Sort used as a parameter for the `ORDER BY` clause. For example, "age desc, name".
 	Sort []string
 	// FilterExp and FilterArgs come together and used as a parameters for the `WHERE` clause.
@@ -132,8 +104,6 @@ type Params struct {
 	// 	   Args: "a8m", 22
 	FilterExp  ExpString
 	FilterArgs []interface{}
-	// GroupBy contains the expression for the `GROUP BY` clause defined in the Query. Values are automatically added to select string.
-	Group []string
 }
 
 type ExpString string
@@ -222,7 +192,7 @@ func (p *Parser) Parse(b []byte) (pr *Params, err error) {
 		return nil, err
 	}
 
-	// row group queries
+	logger.Log("q", q, r)
 
 	return r, nil
 }
@@ -286,23 +256,13 @@ func (p *Parser) ParseQuery(q *Query) (pr *Params, err error) {
 	ps.and(q.Filter)
 	pr.FilterExp = ExpString(ps.String())
 	pr.FilterArgs = ps.values
-	pr.Group = p.group(q.Group)
 	pr.Select = p.sel(q.Select)
-
-	aps := p.newParseState()
-	aps.aggregate(q.Aggregate)
-	agg := strings.Split(aps.String(), ", ")
-	for _, a := range agg {
-		if a != "" {
-			pr.Aggregate = append(pr.Aggregate, a)
-		}
-	}
-
 	pr.Sort = p.sort(q.Sort)
-	if len(pr.Sort) == 0 && len(p.DefaultSort) > 0 && len(pr.Group) == 0 {
+
+	if len(pr.Sort) == 0 && len(p.DefaultSort) > 0 {
 		pr.Sort = p.sort(p.DefaultSort)
 	}
-	pr.Update = p.validateUpdateColumnNames(q.Update)
+
 	parseStatePool.Put(ps)
 	return
 }
@@ -432,7 +392,6 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 	case reflect.Array, reflect.Slice:
 		f.ValidateFn = validateString
 		filterOps = append(filterOps, EQ, NEQ, ISNULL, ISNOTNULL)
-		// modifierOps = append(modifierOps, EQ)
 	case reflect.String:
 		f.ValidateFn = validateString
 		f.SortableCaseInsensitive = true
@@ -461,7 +420,6 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 		case sql.NullByte:
 			f.ValidateFn = validateString
 			filterOps = append(filterOps, EQ, NEQ, ISNULL, ISNOTNULL)
-			// modifierOps = append(modifierOps, EQ)
 		case sql.NullString:
 			f.ValidateFn = validateString
 			f.SortableCaseInsensitive = true
@@ -537,14 +495,6 @@ func (p *Parser) newParseState() (ps *parseState) {
 	return
 }
 
-func (p *Parser) validateUpdateColumnNames(fields []string) []string {
-	for _, field := range fields {
-		expect(p.fields[field] != nil, "unrecognized field %q for select", field)
-		expect(p.fields[field].Updateable, "update on field %q not allowed", field)
-	}
-	return fields
-}
-
 // sort build the sort clause.
 func (p *Parser) sort(fields []string) []string {
 	sortParams := make([]string, len(fields))
@@ -600,15 +550,6 @@ func (p *Parser) sort(fields []string) []string {
 // 	return sortParams
 // }
 
-func (p *Parser) group(fields []string) []string {
-	groupParams := make([]string, len(fields))
-	for i, field := range fields {
-		_, finalCol := p.applyModifiers(field, "group")
-		groupParams[i] = finalCol
-	}
-	return groupParams
-}
-
 func (p *Parser) sel(fields []string) []string {
 	selectFields := make([]string, len(fields))
 	for i, field := range fields {
@@ -658,50 +599,11 @@ func (p *Parser) applyOptions(val, cmd string) (res string) {
 	return Op(modifier).FormatModifier(val, options)
 }
 
-func (p *parseState) aggregate(f map[string]interface{}) {
-	// "gold": { "$sum": "gold_fieldname" },		// returns SUM(gold_fieldname) AS gold
-	var i int
-	for as, intrfc := range f {
-		expect(validateCustomColumnString(as), "invalid datatype for aggregation field %q", as)
-		if i > 0 {
-			p.WriteString(", ")
-		}
-		agg, ok := intrfc.(map[string]interface{})
-		if !ok {
-			expect(false, "invalid datatype for aggregation field %q", as)
-		} else {
-			for k, v := range agg {
-				col, ok := v.(string)
-				if !ok {
-					expect(false, "invalid datatype for aggregation field %q", as)
-				}
-				if _, ok := p.fields[col]; !ok {
-					expect(false, "unrecognized field %q for aggregation", col)
-				}
-				expect(p.fields[col].Aggregateable, "field %q is not aggregateable", v)
-				switch k {
-				case p.op(COUNT):
-					p.WriteString(fmt.Sprintf("COUNT(%v) AS %v", col, as))
-				case p.op(SUM):
-					p.WriteString(fmt.Sprintf("SUM(%v) AS %v", col, as))
-				case p.op(AVG):
-					p.WriteString(fmt.Sprintf("AVG(%v) AS %v", col, as))
-				case p.op(MAX):
-					p.WriteString(fmt.Sprintf("MAX(%v) AS %v", col, as))
-				case p.op(MIN):
-					p.WriteString(fmt.Sprintf("MIN(%v) AS %v", col, as))
-				default:
-					expect(false, "unrecognized key %q for aggregation", k)
-				}
-			}
-		}
-		i++
-	}
-}
-
 func (p *parseState) and(f map[string]interface{}) {
 	var i int
+
 	for k, v := range f {
+		fmt.Println("f-n", i)
 		if i > 0 {
 			p.WriteString(" AND ")
 		}
@@ -726,6 +628,7 @@ func (p *parseState) and(f map[string]interface{}) {
 		}
 		i++
 	}
+
 }
 
 func (p *parseState) relOp(op Op, terms []interface{}) {
@@ -791,7 +694,14 @@ func (p *parseState) field(f *field, v interface{}) {
 		expect(f.FilterOps[opName], "can not apply op %q on field %q", opName, f.Name)
 		if opName == p.op(ISNULL) || opName == p.op(ISNOTNULL) {
 			p.WriteString(p.fmtOp(f.Name, Op(opName[1:])))
-			// p.values = append(p.values, nil)
+
+			switch opName {
+			case p.op(ISNULL):
+				p.values = append(p.values, "NULL")
+			case p.op(ISNOTNULL):
+				p.values = append(p.values, "NOT NULL")
+			}
+
 		} else if opName == p.op(IN) {
 			if valArr, ok := opVal.([]interface{}); !ok {
 				expect(false, "invalid datatype for field %q", f.Name)
@@ -802,13 +712,16 @@ func (p *parseState) field(f *field, v interface{}) {
 				}
 				p.WriteString(p.fmtOp(f.Name, Op(opName[1:]), len(valArr)))
 			}
+
 		} else {
 			must(f.ValidateFn(opVal), "invalid datatype or format for field %q", f.Name)
 			p.WriteString(p.fmtOp(f.Name, Op(opName[1:])))
 			p.values = append(p.values, f.CovertFn(opVal))
 		}
+
 		i++
 	}
+
 	if len(terms) > 1 {
 		p.WriteByte(')')
 	}
@@ -822,8 +735,7 @@ func (p *Parser) fmtOp(field string, op Op, length ...int) string {
 	sql := func() string {
 		switch op {
 		case ISNOTNULL, ISNULL:
-			return colName + " " + op.SQL()
-
+			return colName + " IS ?"
 		}
 		return colName + " " + op.SQL() + " ?"
 	}
@@ -1022,9 +934,4 @@ var layouts = map[string]string{
 	"StampMilli":  time.StampMilli,
 	"StampMicro":  time.StampMicro,
 	"StampNano":   time.StampNano,
-}
-
-func validateCustomColumnString(columnName string) bool {
-	re := regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
-	return re.MatchString(columnName)
 }

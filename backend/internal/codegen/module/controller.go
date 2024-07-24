@@ -46,10 +46,11 @@ func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service) *{{.Entit
 // @Security Bearer
 func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
-		Model:        ent.{{.EntityPascal}}{},
-		DefaultLimit: 25,
-		DefaultSort:  []string{"-id"},
-		FieldSep:     ".",
+		request.MustRqlParser(rql.Config{
+			Model: struct {
+				ID xid.ID %sjson:"id" rql:"filter,sort"%s
+			}{},
+		})
 	})
 
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {

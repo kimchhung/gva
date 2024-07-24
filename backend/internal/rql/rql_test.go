@@ -1,13 +1,14 @@
-package rql
+package rql_test
 
 import (
 	"bytes"
 	"database/sql"
-	"fmt"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/gva/internal/rql"
 )
 
 func TestInit(t *testing.T) {
@@ -108,7 +109,7 @@ func TestInit(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewParser(Config{
+			_, err := rql.NewParser(rql.Config{
 				Model: tt.model,
 				Log:   t.Logf,
 			})
@@ -122,14 +123,14 @@ func TestInit(t *testing.T) {
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
-		conf    Config
+		conf    rql.Config
 		input   []byte
 		wantErr bool
-		wantOut *Params
+		wantOut *rql.Params
 	}{
 		{
 			name: "missing tag remains selectable",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					Age     int
 					Name    string `rql:"filter"`
@@ -140,7 +141,7 @@ func TestParse(t *testing.T) {
 			input: []byte(`{
 								"select": ["name", "age", "address"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:  25,
 				Select: []string{"age", "name", "address"},
 			},
@@ -148,7 +149,7 @@ func TestParse(t *testing.T) {
 
 		{
 			name: "simple test",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					Age     int    `rql:"filter"`
 					Name    string `rql:"filter"`
@@ -176,7 +177,7 @@ func TestParse(t *testing.T) {
 										]
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "name = ? AND age = ? AND (address = ? OR address = ?) AND (age <> ? AND age <> ? AND (age = ? OR age = ?)) AND NOT (age <> ? AND age <> ? AND (age = ? OR age = ?))",
 				FilterArgs: []interface{}{"foo", 12, "DC", "Marvel", 10, 20, 11, 10, 10, 20, 11, 10},
@@ -184,7 +185,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "nested model",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					Age     int    `rql:"filter"`
 					Name    string `rql:"filter"`
@@ -204,7 +205,7 @@ func TestParse(t *testing.T) {
 										]
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "name = ? AND age = ? AND (address_name = ? OR address_name = ?)",
 				FilterArgs: []interface{}{"foo", 12, "DC", "Marvel"},
@@ -212,7 +213,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "nested model with custom sep",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					Age     int    `rql:"filter"`
 					Name    string `rql:"filter"`
@@ -233,7 +234,7 @@ func TestParse(t *testing.T) {
 										]
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "name = ? AND age = ? AND (address_name = ? OR address_name = ?)",
 				FilterArgs: []interface{}{"foo", 12, "DC", "Marvel"},
@@ -241,7 +242,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "embed models",
-			conf: Config{
+			conf: rql.Config{
 				Model: (func() interface{} {
 					type Person struct {
 						Age  int    `rql:"filter"`
@@ -265,7 +266,7 @@ func TestParse(t *testing.T) {
 										]
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "name = ? AND age = ? AND (address = ? OR address = ?)",
 				FilterArgs: []interface{}{"foo", 12, "DC", "Marvel"},
@@ -273,14 +274,14 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "ignore non-struct embedding",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					int
 				}{},
 				DefaultLimit: 25,
 			},
 			input: []byte(`{}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "",
 				FilterArgs: []interface{}{},
@@ -288,7 +289,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "type alias",
-			conf: Config{
+			conf: rql.Config{
 				Model: (func() interface{} {
 					type Number float64
 					return struct {
@@ -304,7 +305,7 @@ func TestParse(t *testing.T) {
 										"age": 12.5
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address = ? AND age = ?",
 				FilterArgs: []interface{}{"foo", 12.5},
@@ -312,7 +313,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sql types 1",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Bool        bool          `rql:"filter"`
 					Int8        int8          `rql:"filter"`
@@ -331,7 +332,7 @@ func TestParse(t *testing.T) {
 										"ptr_null_bool": true
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "bool = ? AND int8 = ? AND uint8 = ? AND null_bool = ? AND ptr_null_bool = ?",
 				FilterArgs: []interface{}{true, 1, 1, true, true},
@@ -339,7 +340,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sql types 2",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					NullInt64      sql.NullInt64    `rql:"filter"`
 					PtrNullInt64   *sql.NullInt64   `rql:"filter"`
@@ -360,7 +361,7 @@ func TestParse(t *testing.T) {
 										"ptr_null_string": ""
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "null_int64 = ? AND ptr_null_int64 = ? AND null_float64 = ? AND ptr_null_float64 = ? AND null_string = ? AND ptr_null_string = ?",
 				FilterArgs: []interface{}{1, 1, 1.0, 1.0, "", ""},
@@ -368,7 +369,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "time",
-			conf: Config{
+			conf: rql.Config{
 				Model: func() interface{} {
 					type Date time.Time
 					return struct {
@@ -388,7 +389,7 @@ func TestParse(t *testing.T) {
 										"ptr_swagger_date": "2018-01-14T06:05:48.839Z"
 									}
 								}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:     25,
 				FilterExp: "created_at = ? AND updated_at = ? AND swagger_date = ? AND ptr_swagger_date = ?",
 				FilterArgs: []interface{}{
@@ -401,7 +402,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "valid operations",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					Age     int    `rql:"filter"`
 					Name    string `rql:"filter"`
@@ -420,7 +421,7 @@ func TestParse(t *testing.T) {
 									]
 								}
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "age > ? AND name LIKE ? AND name ILIKE ? AND (address = ? OR address <> ?)",
 				FilterArgs: []interface{}{10, "%foo%", "%foo%", "DC", "Marvel"},
@@ -428,7 +429,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "custom operation prefix",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					CreatedAt time.Time `rql:"filter"`
 					Work      struct {
@@ -454,7 +455,7 @@ func TestParse(t *testing.T) {
 									]
 								}
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "created_at > ? AND work_address LIKE ? AND (work_salary = ? OR (work_salary >= ? AND work_salary <= ?))",
 				FilterArgs: []interface{}{mustParseTime(time.RFC3339, "2018-01-14T06:05:48.839Z"), "%DC%", 100, 200, 300},
@@ -462,7 +463,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sort",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age     int    `rql:"filter,sort"`
 					Name    string `rql:"filter,sort"`
@@ -482,7 +483,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["address.name", "-address.zip.code", "+age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address_zip_code = ?",
 				FilterArgs: []interface{}{100},
@@ -492,7 +493,7 @@ func TestParse(t *testing.T) {
 
 		{
 			name: "sort ->InterpretFieldSepAsNestedJsonbObject",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age     int    `rql:"filter,sort"`
 					Name    string `rql:"filter,sort"`
@@ -513,7 +514,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["address.name", "-address.zip.code", "+age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address->'zip'->>'code' = ?",
 				FilterArgs: []interface{}{100},
@@ -522,7 +523,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sort ->InterpretFieldSepAsNestedJsonbObjectMysql",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age     int    `rql:"filter,sort"`
 					Name    string `rql:"filter,sort"`
@@ -543,7 +544,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["address.name", "-address.zip.code", "+age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address->'$.zip.code' = ?",
 				FilterArgs: []interface{}{100}, //"address->'$.zip.code' desc"
@@ -552,14 +553,14 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sort with type object ->InterpretFieldSepAsNestedJsonbObject",
-			conf: (func() Config {
+			conf: (func() rql.Config {
 				type Address struct {
 					Name string `rql:"filter,sort"`
 					ZIP  *struct {
 						Code int `rql:"filter,sort"`
 					}
 				}
-				return Config{
+				return rql.Config{
 					Model: struct {
 						Age     int    `rql:"filter,sort"`
 						Name    string `rql:"filter,sort"`
@@ -576,7 +577,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["address.name", "-address.zip.code", "+age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address->'zip'->>'code' = ?",
 				FilterArgs: []interface{}{100},
@@ -585,7 +586,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sort with default field separator",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age     int    `rql:"filter,sort"`
 					Name    string `rql:"filter,sort"`
@@ -604,7 +605,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["address_name", "-address_zip_code", "+age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address_zip_code = ?",
 				FilterArgs: []interface{}{100},
@@ -613,7 +614,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sort with default sort field configured, and no sort in query",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age     int    `rql:"filter,sort"`
 					Name    string `rql:"filter,sort"`
@@ -633,7 +634,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": []
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address_zip_code = ?",
 				FilterArgs: []interface{}{100},
@@ -642,7 +643,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "sort with default sort field configured, and sort specified in query",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age     int    `rql:"filter,sort"`
 					Name    string `rql:"filter,sort"`
@@ -662,7 +663,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["-age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "address_zip_code = ?",
 				FilterArgs: []interface{}{100},
@@ -671,7 +672,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "select one",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age  int    `rql:"filter,sort"`
 					Name string `rql:"filter,sort"`
@@ -681,14 +682,14 @@ func TestParse(t *testing.T) {
 			input: []byte(`{
 								"select": ["name"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:  25,
 				Select: []string{"name"},
 			},
 		},
 		{
 			name: "select many",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age  int    `rql:"filter,sort"`
 					Name string `rql:"filter,sort"`
@@ -698,48 +699,14 @@ func TestParse(t *testing.T) {
 			input: []byte(`{
 								"select": ["name", "age"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:  25,
 				Select: []string{"name", "age"},
 			},
 		},
 		{
-			name: "update one",
-			conf: Config{
-				Model: struct {
-					Age  int    `rql:"filter,sort,update"`
-					Name string `rql:"filter,sort,update"`
-				}{},
-				DefaultLimit: 25,
-			},
-			input: []byte(`{
-								"update": ["name"]
-							}`),
-			wantOut: &Params{
-				Limit:  25,
-				Update: []string{"name"},
-			},
-		},
-		{
-			name: "update many",
-			conf: Config{
-				Model: struct {
-					Age  int    `rql:"filter,sort,update"`
-					Name string `rql:"filter,sort,update"`
-				}{},
-				DefaultLimit: 25,
-			},
-			input: []byte(`{
-								"update": ["name", "age"]
-							}`),
-			wantOut: &Params{
-				Limit:  25,
-				Update: []string{"name", "age"},
-			},
-		},
-		{
 			name: "custom column name",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter,column=full_name,sort"`
 				}{},
@@ -751,7 +718,7 @@ func TestParse(t *testing.T) {
 								},
 								"sort": ["full_name"]
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "full_name = ?",
 				FilterArgs: []interface{}{"a8m"},
@@ -760,7 +727,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "naming columns",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					ID           string `rql:"filter"`
 					FullName     string `rql:"filter"`
@@ -779,7 +746,7 @@ func TestParse(t *testing.T) {
 									"nested_struct.uuid": "uuid"
 								}
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "id = ? AND full_name = ? AND http_url = ? AND nested_struct_uuid = ?",
 				FilterArgs: []interface{}{"id", "full_name", "http_url", "uuid"},
@@ -787,7 +754,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "time unix layout",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					CreatedAt time.Time `rql:"filter,layout=UnixDate"`
 				}),
@@ -797,7 +764,7 @@ func TestParse(t *testing.T) {
 									"created_at": { "$gt": "Thu May 23 09:30:06 IDT 2000" }
 								}
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "created_at > ?",
 				FilterArgs: []interface{}{mustParseTime(time.UnixDate, "Thu May 23 09:30:06 IDT 2000")},
@@ -805,7 +772,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "time custom layout",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					CreatedAt time.Time `rql:"filter,layout=2006-01-02 15:04"`
 				}),
@@ -815,34 +782,15 @@ func TestParse(t *testing.T) {
 									"created_at": { "$gt": "2006-01-02 15:04" }
 								}
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:      25,
 				FilterExp:  "created_at > ?",
 				FilterArgs: []interface{}{mustParseTime("2006-01-02 15:04", "2006-01-02 15:04")},
 			},
 		},
 		{
-			name: "cleanedup sort",
-			conf: Config{
-				Model: struct {
-					Name string `rql:"filter,sort,group"`
-					Age  int    `rql:"filter,sort,group,aggregate"`
-				}{},
-			},
-			input: []byte(`{
-								"select": ["name"],
-								"group": ["name"],
-								"sort": ["-name"]
-							}`),
-			wantOut: &Params{
-				Limit:  25,
-				Sort:   []string{"lower(name) desc"},
-				Select: []string{"name"},
-			},
-		},
-		{
 			name: "mismatch time unix layout",
-			conf: Config{
+			conf: rql.Config{
 				Model: new(struct {
 					CreatedAt time.Time `rql:"filter,layout=UnixDate"`
 				}),
@@ -856,7 +804,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch int type 1",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age  int    `rql:"filter"`
 					Name string `rql:"filter"`
@@ -872,7 +820,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch int type 2",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age int `rql:"filter"`
 				}{},
@@ -886,7 +834,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch string type",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter"`
 				}{},
@@ -900,7 +848,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch uint type 1",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age uint `rql:"filter"`
 				}{},
@@ -914,7 +862,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch uint type 2",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age uint `rql:"filter"`
 				}{},
@@ -928,7 +876,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch time type 1",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					CreatedAt time.Time `rql:"filter"`
 				}{},
@@ -942,7 +890,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch time type 2",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					CreatedAt time.Time `rql:"filter"`
 				}{},
@@ -956,7 +904,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch bool type",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Admin bool `rql:"filter"`
 				}{},
@@ -970,7 +918,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "mismatch float type",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Age float32 `rql:"filter"`
 				}{},
@@ -984,7 +932,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "unrecognized fields",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter"`
 				}{},
@@ -998,7 +946,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "ignored field 'rql:-' (as generated by ent.Model.config)",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"-"`
 				}{},
@@ -1012,7 +960,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "ignored field 'rql:ignore' ",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"ignore"`
 				}{},
@@ -1026,7 +974,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "field is not sortable",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter"`
 				}{},
@@ -1038,7 +986,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "invalid operation",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter"`
 				}{},
@@ -1054,7 +1002,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "unrecognized operation",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter"`
 				}{},
@@ -1070,24 +1018,24 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "limit and offset",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct{}{},
 			},
 			input: []byte(`{
 								"limit": 10,
 								"offset": 4
 							}`),
-			wantOut: &Params{
+			wantOut: &rql.Params{
 				Limit:  10,
 				Offset: 4,
 			},
 		},
 		{
 			name: "select column validation",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct {
-					Name string `rql:"filter,group"`
-					Age  string `rql:"filter,group"`
+					Name string `rql:"filter"`
+					Age  string `rql:"filter"`
 				}{},
 				DefaultLimit: 10,
 			},
@@ -1097,104 +1045,8 @@ func TestParse(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "group",
-			conf: Config{
-				Model: struct {
-					Name string `rql:"filter,group"`
-					Age  string `rql:"filter,group"`
-				}{},
-				DefaultLimit: 10,
-			},
-			input: []byte(`{
-							"select": ["name", "age"],
-							"group": ["name", "age"]
-							}`),
-			wantOut: &Params{
-				Select: []string{"name", "age"},
-				Group:  []string{"name", "age"},
-				Limit:  10,
-			},
-		},
-		{
-			name: "group aggregate - unrecognized field",
-			conf: Config{
-				Model: struct {
-					Name string `rql:"filter,group"`
-					Age  int    `rql:"filter,group,aggregate"`
-				}{},
-				DefaultLimit: 10,
-			},
-			input: []byte(`{
-					"select": ["name", "age"],
-					"group": ["name", "age"],
-					"aggregate": {
-						"gold": { "$sum": "gold_fieldname" }
-					}
-					}`),
-			wantErr: true,
-		},
-		{
-			name: "group aggregate",
-			conf: Config{
-				Model: struct {
-					Name string `rql:"filter,group"`
-					Age  int    `rql:"filter,group,aggregate"`
-				}{},
-				DefaultLimit: 10,
-			},
-			input: []byte(`{
-				"group": ["name", "age"],
-				"aggregate": {
-					"gold": { "$sum": "age" },
-					"count": { "$count": "age" }
-				}
-				}`),
-			wantErr: false, // not supported
-			wantOut: &Params{
-				Aggregate: []string{"SUM(age) AS gold", "COUNT(age) AS count"},
-				Group:     []string{"name", "age"},
-				Limit:     10,
-			},
-		},
-		{
-			name: "abs",
-			conf: Config{
-				Model: struct {
-					Age int `rql:"filter,group,aggregate"`
-				}{},
-				DefaultLimit: 10,
-			},
-			input: []byte(`{
-				"select": ["age|abs"]
-				}`),
-			wantErr: false, // not supported
-			wantOut: &Params{
-				Select: []string{"ABS(age) AS age"},
-				Limit:  10,
-			},
-		},
-		{
-			name: "column in (?,?,?)",
-			conf: Config{
-				Model: struct {
-					Name string `rql:"filter,group"`
-					Age  int    `rql:"filter,group,aggregate"`
-				}{},
-			},
-			input: []byte(`{
-				"filter": {
-					"name": { "$in": ["peter","hans","jakob"] }
-				}
-				}`),
-			wantOut: &Params{
-				FilterExp:  "name IN (?,?,?)",
-				FilterArgs: []interface{}{"peter", "hans", "jakob"},
-				Limit:      25,
-			},
-		},
-		{
 			name: "invalid offset",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct{}{},
 			},
 			input: []byte(`{
@@ -1205,7 +1057,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "invalid limit 1",
-			conf: Config{
+			conf: rql.Config{
 				Model: struct{}{},
 			},
 			input: []byte(`{
@@ -1215,7 +1067,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "invalid limit 2",
-			conf: Config{
+			conf: rql.Config{
 				Model:         struct{}{},
 				LimitMaxValue: 100,
 			},
@@ -1225,25 +1077,27 @@ func TestParse(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "column in (?,?,?)",
-			conf: Config{
+			name: "is null",
+			conf: rql.Config{
 				Model: struct {
-					Name string    `rql:"filter,group"`
-					Age  int       `rql:"filter,group,aggregate"`
-					Date time.Time `rql:"filter,group"`
+					Name string `rql:"filter"`
+					Age  int    `rql:"filter"`
 				}{},
 			},
 			input: []byte(`{
-									"group": ["age|sum","name|max","date|trunc:month"]
+									"filter": {
+										"name": { "$isnull": true }
+									}
 									}`),
-			wantOut: &Params{
-				Group: []string{"SUM(age)", "MAX(name)", "DATE_TRUNC('month', date)"},
-				Limit: 25,
+			wantOut: &rql.Params{
+				FilterExp:  "name IS ?",
+				FilterArgs: []interface{}{"NULL"},
+				Limit:      25,
 			},
 		},
 		{
-			name: "is null or is not null",
-			conf: Config{
+			name: "is null and is not null",
+			conf: rql.Config{
 				Model: struct {
 					Name string `rql:"filter"`
 					Age  int    `rql:"filter"`
@@ -1255,21 +1109,22 @@ func TestParse(t *testing.T) {
 										"age": { "$isnotnull": true }
 									}
 									}`),
-			wantOut: &Params{
-				FilterExp: "name IS NULL AND age IS NOT NULL",
-				Limit:     25,
+			wantOut: &rql.Params{
+				FilterExp:  "name IS ? AND age IS ?",
+				FilterArgs: []interface{}{"NULL", "NOT NULL"},
+				Limit:      25,
 			},
 		},
 	}
 	for _, tt := range tests {
-		fmt.Println("# " + tt.name)
 		t.Run(tt.name, func(t *testing.T) {
 			tt.conf.Log = t.Logf
-			p, err := NewParser(tt.conf)
+			p, err := rql.NewParser(tt.conf)
 			if err != nil {
 				t.Fatalf("failed to build parser: %v", err)
 			}
 			out, err := p.Parse(tt.input)
+
 			if tt.wantErr != (err != nil) {
 				t.Fatalf("want: %v\ngot:%v\nerr: %v", tt.wantErr, err != nil, err)
 			}
@@ -1280,7 +1135,7 @@ func TestParse(t *testing.T) {
 
 // AssertQueryEqual tests if two query input are equal.
 // TODO: improve this in the future.
-func assertParams(t *testing.T, got *Params, want *Params) {
+func assertParams(t *testing.T, got *rql.Params, want *rql.Params) {
 	if got == nil && want == nil {
 		return
 	}
@@ -1296,12 +1151,15 @@ func assertParams(t *testing.T, got *Params, want *Params) {
 	if !EqualUnorderedStringSlice(got.Select, want.Select) {
 		t.Fatalf("select: got: %q want %q", got.Select, want.Select)
 	}
+
 	if !equalExp(got.FilterExp.String(), want.FilterExp.String()) || !equalExp(want.FilterExp.String(), got.FilterExp.String()) {
 		t.Fatalf("filter expr:\n\tgot: %q\n\twant %q", got.FilterExp, want.FilterExp)
 	}
+
 	if !equalArgs(got.FilterArgs, want.FilterArgs) || !equalArgs(want.FilterArgs, got.FilterArgs) {
 		t.Fatalf("filter args:\n\tgot: %v\n\twant %v", got.FilterArgs, want.FilterArgs)
 	}
+
 }
 
 func equalArgs(a, b []interface{}) bool {
