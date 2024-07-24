@@ -25,6 +25,7 @@ const tranformError = (error: any) => {
     const axiosError = error
     if (axiosError.response) {
       resp = axiosError.response
+
       const hasRespMsg = !!(resp as any)?.message
       if (!hasRespMsg) {
         err.message = `Server error: ${[
@@ -36,7 +37,7 @@ const tranformError = (error: any) => {
       // The request was made but no response was received
       err.message = 'Network error. Please check your internet connection.'
     } else {
-      // hey hey what are you?
+      // what kind of error huh?
       err.message = 'An unexpected error occurred. Please try again later.'
     }
   }

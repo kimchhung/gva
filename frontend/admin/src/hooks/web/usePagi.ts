@@ -6,7 +6,7 @@ type PagiSort<T extends Object, S extends string = ExtractStringType<keyof T>> =
 type PagiSelects = ('count' | 'list ')[]
 type PagiSelect<T> = keyof T[]
 
-export class QueryUrl<T extends Object = any> {
+export class QueryUrl<T extends object = any> {
   offset?: number = 0
   limit?: number = 25
   filter?: Partial<Condition<T>> | ConditionOr<T>
