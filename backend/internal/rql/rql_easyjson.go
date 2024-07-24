@@ -63,29 +63,6 @@ func easyjson4bc42f5bDecodeGithubComA8mRql(in *jlexer.Lexer, out *Query) {
 				}
 				in.Delim(']')
 			}
-		case "update":
-			if in.IsNull() {
-				in.Skip()
-				out.Update = nil
-			} else {
-				in.Delim('[')
-				if out.Update == nil {
-					if !in.IsDelim(']') {
-						out.Update = make([]string, 0, 4)
-					} else {
-						out.Update = []string{}
-					}
-				} else {
-					out.Update = (out.Update)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v2 string
-					v2 = string(in.String())
-					out.Update = append(out.Update, v2)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
 		case "sort":
 			if in.IsNull() {
 				in.Skip()
