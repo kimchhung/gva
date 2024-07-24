@@ -37,9 +37,9 @@ const request = async <T = any, R = AxiosResponse<T>, D = any>(
       validateStatus: (s) => s >= 500
     })
 
-    const { data } = resp as AxiosResponse<T>
-    if ((data as APIRes<T>)?.code < 0) {
-      throw new Error((data as APIRes<T>).message)
+    const { data } = resp as AxiosResponse<T, R>
+    if ((data as APIRes<any>)?.code < 0) {
+      throw new Error((data as APIRes<any>).message)
     }
 
     return [data, null, resp] as const
