@@ -25,18 +25,18 @@ const tranformError = (error: any) => {
     const axiosError = error
     if (axiosError.response) {
       resp = axiosError.response
-      err.message = `Server error: ${[
-        axiosError.response.status,
-        axiosError.response.statusText,
-        (axiosError.response as any)?.code,
-        (axiosError.response as any)?.message
-      ]
-        .filter(Boolean)
-        .join(' ')}`
+      const hasRespMsg = !!(resp as any)?.message
+      if (!hasRespMsg) {
+        err.message = `Server error: ${[
+          axiosError.response.status,
+          axiosError.response.statusText
+        ].join(' ')}`
+      }
     } else if (axiosError.request) {
       // The request was made but no response was received
       err.message = 'Network error. Please check your internet connection.'
     } else {
+      // hey hey what are you?
       err.message = 'An unexpected error occurred. Please try again later.'
     }
   }
@@ -73,7 +73,7 @@ const request = async <
         ...headers
       },
       ...more,
-      validateStatus: (s) => s <= 500
+      validateStatus: (s) => s < 500
     })
 
     const { data } = resp as AxiosResponse<T, R>
