@@ -1,15 +1,12 @@
-import { UseAPIOption } from '@/axios'
 import { Admin } from '../admin/types'
 
 export type AuthLoginBody = {
   username: string
   password: string
 }
-export type AuthLoginReq = UseAPIOption & {
+export type AuthLoginReq = {
   body: AuthLoginBody
 }
-
-export type AuthMe = UseAPIOption & {}
 
 export type AuthLoginResp = {
   token: string

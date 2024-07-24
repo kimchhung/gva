@@ -1,6 +1,6 @@
-import { req, useAPI } from '@/axios'
+import { req } from '@/axios'
 import { Admin } from '../admin/types'
-import { AuthLoginReq, AuthLoginResp, AuthMe } from './types'
+import { AuthLoginReq, AuthLoginResp } from './types'
 
 export class AuthAPI {
   name: string
@@ -11,18 +11,12 @@ export class AuthAPI {
     this.base = `/${this.name.replace('/', '')}`
   }
 
-  me({ opt }: AuthMe) {
-    return useAPI({
-      fn: () => req.get<APIResponse<Admin>>({ url: `${this.base}/me` }),
-      opt
-    })
+  me() {
+    return req.get<Admin>({ url: `${this.base}/me` })
   }
 
-  login({ body, opt }: AuthLoginReq) {
-    return useAPI({
-      fn: () => req.post<APIResponse<AuthLoginResp>>({ url: `${this.base}/login`, data: body }),
-      opt
-    })
+  login({ body }: AuthLoginReq) {
+    return req.post<AuthLoginResp>({ url: `${this.base}/login`, data: body })
   }
 }
 

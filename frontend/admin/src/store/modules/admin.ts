@@ -61,16 +61,19 @@ export const useAdminStore = defineStore('admin', {
       this.routers = roleRouters
     },
     async fetchUserInfo() {
-      const [res, err] = await api.auth.me({ opt: { loading: this } })
-      if (err) return
+      this.loading = true
+      const [res] = await api.auth.me()
+      if (!res?.success) return
 
       this.setAdminInfo(res.data)
+      this.loading = false
     },
 
     async fetchAdminRouters() {
       const [res] = await api.menu.getMany({
         query: new QueryUrl(100)
       })
+
       if (!res?.success) return this.routers
 
       const routes = menuToRoute(res.data)

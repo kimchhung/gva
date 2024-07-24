@@ -1,4 +1,4 @@
-import { APIRes } from '@/api/types'
+import { APIRes, FailedRes, SuccessRes } from '@/api/types'
 import { CONTENT_TYPE } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
@@ -19,7 +19,14 @@ type RequestConfig = {
 
 const requestConfig: RequestConfig = {}
 
-const request = async <T = any, R = AxiosResponse<T>, D = any>(
+const request = async <
+  DataT,
+  MetaT = any,
+  FailedT extends Recordable<any, string> = any,
+  T extends APIRes<DataT, MetaT, FailedT> = any,
+  R = AxiosResponse<T>,
+  D = any
+>(
   config: AxiosRequestConfig<D>,
   opt = requestConfig
 ) => {
@@ -34,15 +41,19 @@ const request = async <T = any, R = AxiosResponse<T>, D = any>(
         ...headers
       },
       ...more,
-      validateStatus: (s) => s >= 500
+      validateStatus: (s) => s < 500
     })
 
     const { data } = resp as AxiosResponse<T, R>
-    if ((data as APIRes<any>)?.code < 0) {
-      throw new Error((data as APIRes<any>).message)
+
+    if (data && data.code === 0) {
+      ;(data as SuccessRes<DataT, MetaT>).success = true
+    } else {
+      ;(data as FailedRes<FailedT>).success = false
+      throw new Error(data.message)
     }
 
-    return [data, null, resp] as const
+    return [data as SuccessRes<DataT, MetaT>, null, resp] as const
   } catch (error) {
     //  validateStatus: (s) => s >= 500, when status >= 500
     let err = error instanceof Error ? error : new Error(error as any)
@@ -81,20 +92,20 @@ const request = async <T = any, R = AxiosResponse<T>, D = any>(
 }
 
 export const req = {
-  get: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
-    return request<T, R, D>({ method: 'get', ...option })
+  get: <D = any, M = any, F extends Recordable = any>(option: AxiosConfig) => {
+    return request<D, M, F>({ method: 'get', ...option })
   },
-  post: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
-    return request<T, R, D>({ method: 'post', ...option })
+  post: <D = any, M = any, F extends Recordable = any>(option: AxiosConfig) => {
+    return request<D, M, F>({ method: 'post', ...option })
   },
-  delete: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
-    return request<T, R, D>({ method: 'delete', ...option })
+  delete: <D = any, M = any, F extends Recordable = any>(option: AxiosConfig) => {
+    return request<D, M, F>({ method: 'delete', ...option })
   },
-  put: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
-    return request<T, R, D>({ method: 'put', ...option })
+  put: <D = any, M = any, F extends Recordable = any>(option: AxiosConfig) => {
+    return request<D, M, F>({ method: 'put', ...option })
   },
-  patch: <T = any, R = AxiosResponse<T>, D = any>(option: AxiosConfig) => {
-    return request<T, R, D>({ method: 'patch', ...option })
+  patch: <D = any, M = any, F extends Recordable = any>(option: AxiosConfig) => {
+    return request<D, M, F>({ method: 'patch', ...option })
   },
   cancelRequest: (...urls: string[]) => {
     return service.cancelRequest(...urls)

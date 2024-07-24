@@ -74,13 +74,6 @@ declare global {
     topToolBorderColor?: string
   }
 
-  declare type APIResponse<Data = any, Meta = any> = {
-    code: number
-    message: string
-    data: Data
-    meta?: Meta
-  }
-
   declare var api: API
 
   declare interface Window {
