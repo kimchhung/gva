@@ -1,5 +1,6 @@
 export default {
   common: {
+    isEnable: '使能够',
     scope: '范围',
     key: '钥匙',
     order: '命令',

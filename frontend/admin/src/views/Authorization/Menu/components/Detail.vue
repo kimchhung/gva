@@ -83,16 +83,19 @@ const detailSchema = ref<DescriptionsSchema[]>([
     label: t('menu.path')
   },
   {
+    field: 'redirect',
+    label: t('menu.redirect')
+  },
+  {
     field: 'meta.activeMenu',
     label: t('menu.activeMenu')
   },
   {
     field: 'meta.permissions',
-    label: t('menu.permissions'),
-    span: 24,
+    label: t('menu.permission'),
     slots: {
       default: (data: any) => {
-        return renderPermisionTag(data.meta.permissions)
+        return renderPermisionTag(data?.meta?.permissions)
       }
     }
   },

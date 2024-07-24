@@ -1,7 +1,6 @@
 import { isArray } from 'lodash-es'
 import * as qs from 'qs'
 
-type ExtractStringType<T> = T extends `${infer U}` ? U : string
 type PagiSort<T extends Object, S extends string = ExtractStringType<keyof T>> = `-${S}` | `${S}`
 type PagiSelects = ('count' | 'list ')[]
 type PagiSelect<T> = keyof T[]

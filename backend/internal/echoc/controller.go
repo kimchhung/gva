@@ -14,6 +14,10 @@ type Controller interface {
 	Init(r *echo.Group) *echo.Group
 }
 
+type ControllerParent interface {
+	Parent() Controller
+}
+
 type Group struct {
 	*echo.Group
 }

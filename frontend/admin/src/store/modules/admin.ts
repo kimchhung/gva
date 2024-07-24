@@ -3,7 +3,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import router from '@/router'
 
 import { menuToRoute } from '@/api/menu/tranform'
-import { QueryUrl } from '@/hooks/web/usePagi'
 import { ElMessageBox } from 'element-plus'
 import { defineStore } from 'pinia'
 import { store } from '../index'
@@ -70,9 +69,7 @@ export const useAdminStore = defineStore('admin', {
     },
 
     async fetchAdminRouters() {
-      const [res] = await api.menu.getMany({
-        query: new QueryUrl(100)
-      })
+      const [res] = await api.menu.enabledList()
 
       if (!res?.success) return this.routers
 

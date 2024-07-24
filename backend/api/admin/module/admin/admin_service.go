@@ -25,6 +25,7 @@ type AdminService struct {
 func NewAdminService(
 	db *database.Database,
 	repo *repository.AdminRepository,
+
 ) *AdminService {
 	return &AdminService{
 		db:      db,

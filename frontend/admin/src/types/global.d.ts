@@ -3,6 +3,7 @@ declare global {
   declare type Fn<T = any> = {
     (...arg: T[]): T
   }
+  type ExtractStringType<T> = T extends `${infer U}` ? U : string
 
   declare type Nullable<T> = T | null
 

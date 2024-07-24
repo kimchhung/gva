@@ -80,6 +80,32 @@ func (con *RouteController) List(m *echoc.RouteMeta) echoc.MetaHandler {
 }
 
 // @Tags        Menu
+// @Summary     List all Menus
+// @Description Get a list of all Enabled Menus
+// @ID          list-all-public-menus
+// @Produce     json
+// @Success     200 {object} response.Response{data=map[string]dto.MenuResponse{list=[]dto.MenuResponse}}
+// @Router      /menu/enabled-list [get]
+// @Security    Bearer
+// @Param   	limit     query     int     false  "string default"     default(A)
+func (con *RouteController) EnableList(m *echoc.RouteMeta) echoc.MetaHandler {
+	return m.Get("/enabled-list").DoWithScope(func() []echo.HandlerFunc {
+		return []echo.HandlerFunc{
+			func(c echo.Context) error {
+				list, err := con.service.EnabledList(c.Request().Context())
+				if err != nil {
+					return err
+				}
+
+				return request.Response(c,
+					response.Data(list),
+				)
+			},
+		}
+	})
+}
+
+// @Tags        Menu
 // @Summary     Get a Route
 // @Description Get a Route
 // @ID          Get-a-route

@@ -12,7 +12,7 @@ type MenuRequest struct {
 	Name      string         `json:"name,omitempty" validate:"required"`
 	Path      string         `json:"path,omitempty" validate:"required"`
 	Component string         `json:"component,omitempty" validate:"required"`
-	IsEnable  bool           `json:"isEnable"  validate:"required"`
+	IsEnable  *bool          `json:"isEnable"  validate:"required"`
 	Type      menu.Type      `json:"type,omitempty" validate:"required"`
 	Meta      types.MenuMeta `json:"meta,omitempty" validate:"required"`
 	Order     int            `json:"order,omitempty" validate:"number"`

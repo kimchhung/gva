@@ -18,6 +18,8 @@ type (
 
 		middlewares []echo.MiddlewareFunc
 		handlers    func() []echo.HandlerFunc
+
+		Parent *RouteMeta
 	}
 
 	MetaHandler = func() []echo.HandlerFunc
@@ -103,10 +105,29 @@ func (r *RouteMeta) DoWithScope(handler MetaHandler) MetaHandler {
 	return handler
 }
 
-// Register registers routes defined by the controller methods.
-func Register(app *echo.Group, controller Controller) {
+type ControllerMeta struct {
+	isInit     bool
+	initFn     func(r *echo.Group) *echo.Group
+	routeMetas []*RouteMeta
+	parent     *ControllerMeta
+}
 
-	r := controller.Init(app)
+func refectController(controller Controller) *ControllerMeta {
+	controllerMeta := &ControllerMeta{
+		initFn: controller.Init,
+	}
+
+	controllerMeta.initFn = func(r *echo.Group) *echo.Group {
+		if controllerMeta.isInit {
+			return r
+		}
+
+		defer func() {
+			controllerMeta.isInit = true
+		}()
+
+		return controller.Init(r)
+	}
 
 	controllerType := reflect.TypeOf(controller)
 	controllerValue := reflect.ValueOf(controller)
@@ -129,8 +150,44 @@ func Register(app *echo.Group, controller Controller) {
 			}
 
 			meta.handlers = metaHandlerFunc(meta)
-			addRoute(r, meta)
+			controllerMeta.routeMetas = append(controllerMeta.routeMetas, meta)
 		}
+
+		// hasParent
+		if method.Type.NumOut() == 1 && method.Type.Out(0).ConvertibleTo(reflect.TypeOf((*MetaHandler)(nil)).Elem()) {
+			methodValue := controllerValue.MethodByName(method.Name)
+			metaHandlerFunc, ok := methodValue.Interface().(func(*RouteMeta) MetaHandler)
+			if !ok {
+				// Log an error instead of panicking
+				log.Printf("controller method %s must be a func(*RouteMeta) MetaHandler", method.Name)
+				continue
+			}
+
+			meta := &RouteMeta{
+				name:   strings.Replace(fmt.Sprintf("%v.%s", controllerType, method.Name), "*", "", 1),
+				method: "GET",
+				path:   "/",
+			}
+
+			meta.handlers = metaHandlerFunc(meta)
+			controllerMeta.routeMetas = append(controllerMeta.routeMetas, meta)
+		}
+	}
+
+	if controllerParent, ok := controller.(ControllerParent); ok {
+		controllerMeta.parent = refectController(controllerParent.Parent())
+	}
+
+	return controllerMeta
+}
+
+// Register registers routes defined by the controller methods.
+func Register(app *echo.Group, controller Controller) {
+	controllerMeta := refectController(controller)
+	group := controllerMeta.initFn(app)
+
+	for _, meta := range controllerMeta.routeMetas {
+		addRoute(group, meta)
 	}
 }
 

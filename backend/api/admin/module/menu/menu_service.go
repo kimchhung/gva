@@ -1,7 +1,6 @@
 package menu
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gva/api/admin/module/menu/dto"
@@ -25,15 +24,6 @@ func NewMenuService(repo *repository.MenuRepository) *MenuService {
 	return &MenuService{
 		repo: repo,
 	}
-}
-
-func (s *MenuService) toDto(value ...*ent.Menu) []*dto.MenuResponse {
-	list := make([]*dto.MenuResponse, len(value))
-	for i, v := range value {
-		list[i] = &dto.MenuResponse{Menu: v}
-	}
-
-	return list
 }
 
 func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPagedRequest) ([]*dto.MenuResponse, *pagi.Meta, error) {
@@ -63,7 +53,7 @@ func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPagedRequest) ([]
 	})
 	list := <-listCh
 	meta := <-metaCh
-	return s.toDto(list...), meta, nil
+	return dto.ToMenuResponse(list...), meta, nil
 }
 
 func (s *MenuService) GetMenuByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
@@ -72,14 +62,14 @@ func (s *MenuService) GetMenuByID(ctx context.Context, id xid.ID) (*dto.MenuResp
 		return nil, err
 	}
 
-	return s.toDto(data)[0], nil
+	return dto.ToMenuResponse(data)[0], nil
 }
 
 func (s *MenuService) CreateMenu(ctx context.Context, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	data, err := s.repo.C().Create().
 		SetComponent(r.Component).
 		SetPath(r.Path).
-		SetIsEnable(r.IsEnable).
+		SetNillableIsEnable(r.IsEnable).
 		SetMeta(r.Meta).
 		SetName(r.Name).
 		SetType(r.Type).
@@ -91,14 +81,14 @@ func (s *MenuService) CreateMenu(ctx context.Context, r *dto.MenuRequest) (*dto.
 		return nil, err
 	}
 
-	return s.toDto(data)[0], nil
+	return dto.ToMenuResponse(data)[0], nil
 }
 
 func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	update := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
-		SetIsEnable(r.IsEnable).
+		SetNillableIsEnable(r.IsEnable).
 		SetMeta(r.Meta).
 		SetName(r.Name).
 		SetType(r.Type).
@@ -112,7 +102,6 @@ func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequ
 	}
 
 	if r.Pid != nil {
-		fmt.Println("r---", *r.Pid)
 		isSelfParent := *r.Pid == id
 		if isSelfParent {
 			return nil, apperror.ErrBadRequest
@@ -128,9 +117,17 @@ func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequ
 		return nil, err
 	}
 
-	return s.toDto(updated)[0], nil
+	return dto.ToMenuResponse(updated)[0], nil
 }
 
 func (s *MenuService) DeleteMenu(ctx context.Context, id xid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
+}
+
+func (s *MenuService) EnabledList(ctx context.Context) ([]*dto.MenuResponse, error) {
+	list, err := s.repo.Q().Where(menu.IsEnable(true)).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return dto.ToMenuResponse(list...), nil
 }

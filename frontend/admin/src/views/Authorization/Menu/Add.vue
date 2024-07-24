@@ -23,11 +23,11 @@ const save = async () => {
   const formData = await write?.submit()
 
   if (formData) {
+    loading.value = false
     const [res] = await api.menu.create({
-      body: formData as MenuRoute,
-      opt: { loading }
+      body: formData as MenuRoute
     })
-
+    loading.value = true
     if (res) goBack()
   }
 }

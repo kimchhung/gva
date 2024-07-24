@@ -25,9 +25,10 @@ const tranformError = (error: any) => {
     const axiosError = error
     if (axiosError.response) {
       resp = axiosError.response
-
-      const hasRespMsg = !!(resp as any)?.message
-      if (!hasRespMsg) {
+      const hasRespMsg = !!(resp as any)?.data?.message
+      if (hasRespMsg) {
+        err.message = (resp as any)?.data?.message
+      } else {
         err.message = `Server error: ${[
           axiosError.response.status,
           axiosError.response.statusText

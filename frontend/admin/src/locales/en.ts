@@ -1,5 +1,6 @@
 export default {
   common: {
+    isEnable: 'Enable',
     scope: 'Scope',
     key: 'Key',
     order: 'Order',

@@ -1141,6 +1141,41 @@ paths:
       summary: Update a Menu
       tags:
       - Menu
+  /menu/enabled-list:
+    get:
+      description: Get a list of all Enabled Menus
+      operationId: list-all-public-menus
+      parameters:
+      - description: string default
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.MenuResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.MenuResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Menus
+      tags:
+      - Menu
   /now:
     get:
       operationId: now

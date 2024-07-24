@@ -195,7 +195,8 @@ const formSchema = reactive<FormSchema[]>([
   {
     field: 'meta.icon',
     label: t('menu.icon'),
-    component: 'IconPicker'
+    component: 'IconPicker',
+    componentProps: {}
   },
   {
     field: 'meta.activeMenu',
