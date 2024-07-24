@@ -4,7 +4,7 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig
 } from 'axios'
-import { defaultRequestInterceptors, defaultResponseInterceptors } from './config'
+import { defaultRequestInterceptors } from './config'
 
 import { REQUEST_TIMEOUT } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
@@ -41,9 +41,7 @@ const interceptor = {
 
 axiosInstance.interceptors.request.use(interceptor.request)
 axiosInstance.interceptors.response.use(interceptor.response, interceptor.responseError)
-
 axiosInstance.interceptors.request.use(defaultRequestInterceptors)
-axiosInstance.interceptors.response.use(defaultResponseInterceptors)
 
 const service = {
   request: <T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>) => {

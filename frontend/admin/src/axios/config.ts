@@ -1,7 +1,6 @@
 import { TRANSFORM_REQUEST_DATA } from '@/constants'
-import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { objToFormData } from '@/utils'
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import { InternalAxiosRequestConfig } from 'axios'
 import qs from 'qs'
 
 const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
@@ -30,18 +29,4 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
   return config
 }
 
-const defaultResponseInterceptors = (response: AxiosResponse) => {
-  if (response?.config?.responseType === 'blob') {
-    // If it is a file flow, pass it directly
-    return response
-  }
-
-  if ([401, 402, 403].includes(response.status)) {
-    const userStore = useAdminStoreWithOut()
-    userStore.logout()
-  }
-
-  return response
-}
-
-export { defaultRequestInterceptors, defaultResponseInterceptors }
+export { defaultRequestInterceptors }
