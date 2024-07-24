@@ -186,8 +186,8 @@ const formSchema = reactive<FormSchema[]>([
       tagType: 'primary'
     } as TreeSelectComponentProps,
     optionApi: async () => {
-      const [res, err] = await api.permission.getMany({ query: new QueryUrl(100) })
-      if (err) return []
+      const [res] = await api.permission.getMany({ query: new QueryUrl(100) })
+      if (!res?.success) return []
 
       return permissionToTree(res.data)
     }

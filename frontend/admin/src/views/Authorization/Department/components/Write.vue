@@ -3,6 +3,7 @@ import { Department } from '@/api/department/types'
 import { Form, FormSchema, TreeSelectComponentProps } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
+import { QueryUrl } from '@/hooks/web/usePagi'
 import { useValidator } from '@/hooks/web/useValidator'
 import { convertEdgeChildren, edgelistToTree } from '@/utils/edgeTree'
 import { PropType, reactive } from 'vue'
@@ -45,8 +46,8 @@ const formSchema = reactive<FormSchema[]>([
       clearable: true
     } as TreeSelectComponentProps,
     optionApi: async () => {
-      const [res, err] = await api.department.getMany({ query: { limit: 100 } })
-      if (err) {
+      const [res] = await api.department.getMany({ query: new QueryUrl(100) })
+      if (!res?.success) {
         return []
       }
 

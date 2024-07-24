@@ -18,8 +18,8 @@ const { push } = useRouter()
 
 const { tableRegister, tableState } = useTable<MenuRoute>({
   onFetchData: async (query) => {
-    const [res, err] = await api.menu.getMany({ query })
-    if (err) return null
+    const [res] = await api.menu.getMany({ query })
+    if (!res?.success) return null
     res.data = menuToNested(res.data)
     return res
   }

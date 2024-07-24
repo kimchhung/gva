@@ -1,85 +1,83 @@
-import { CONTENT_TYPE, SUCCESS_CODE } from '@/constants'
+import { APIRes } from '@/api/types'
+import { CONTENT_TYPE } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { ElNotification } from 'element-plus'
 import service from './service'
 
-type Loading = Record<string, boolean>
+const defaultOnError = (err: Error) => {
+  console.log(err)
+  ElNotification.error({
+    message: err.message
+  })
+}
 
-export type FetchOption<L extends Loading = any> = {
-  loading?: L
-
-  /**
-   * need this case: form = reactive({isloading:true})
-   * @description loading=form, loadingKey = "isloading"
-   */
-  loadingKey?: keyof L
-
+type RequestConfig = {
+  onError?: (err: Error, onError: typeof defaultOnError) => void
   onFinally?: () => void
-  onError?: (error: Error | AxiosError) => void
 }
 
-export type FetchFunc<T, M> = () => Promise<AxiosResponse<APIResponse<T, M>>>
+const requestConfig: RequestConfig = {}
 
-export type UseAPIOption = {
-  opt?: FetchOption
-}
-
-/** api response tranformer
- * @returns [data,error,reponse]
- */
-export const useAPI = async <
-  T = any,
-  M = any,
-  E extends Error | AxiosError = AxiosError,
-  L extends Loading = any
->({
-  fn,
-  opt
-}: {
-  fn: FetchFunc<T, M>
-  opt?: FetchOption<L>
-}) => {
-  const setIsLoading = (bool: boolean) => {
-    if (!opt?.loading) return
-    //@ts-ignore
-    opt.loading[`${opt.loadingKey ?? 'value'}`] = bool
-  }
-
+const request = async <T = any, R = AxiosResponse<T>, D = any>(
+  config: AxiosRequestConfig<D>,
+  opt = requestConfig
+) => {
+  const { headers, responseType, ...more } = config
+  const userStore = useAdminStoreWithOut()
   try {
-    setIsLoading(true)
-    const axiosResp = await fn()
-    const resp = axiosResp.data
+    const resp = await service.request<T, R, D>({
+      responseType: responseType,
+      headers: {
+        'Content-Type': CONTENT_TYPE,
+        [userStore.getTokenKey ?? 'Authorization']: `Bearer ${userStore.getToken}`,
+        ...headers
+      },
+      ...more,
+      validateStatus: (s) => s >= 500
+    })
 
-    if (resp?.code !== SUCCESS_CODE) {
-      throw new AxiosError(resp.message, axiosResp.statusText, axiosResp.config, resp)
+    const { data } = resp as AxiosResponse<T>
+    if ((data as APIRes<T>)?.code < 0) {
+      throw new Error((data as APIRes<T>).message)
     }
 
-    return [resp, null, axiosResp] as const
+    return [data, null, resp] as const
   } catch (error) {
-    opt?.onError?.(error as E)
+    //  validateStatus: (s) => s >= 500, when status >= 500
+    let err = error instanceof Error ? error : new Error(error as any)
+    let resp: AxiosResponse<any, any> | undefined = undefined
 
-    return [null, error as E, null] as const
-  } finally {
-    opt?.onFinally?.()
-    setIsLoading(false)
+    if (error instanceof AxiosError) {
+      const axiosError = error
+      if (axiosError.response) {
+        resp = axiosError.response
+        err = new Error(
+          `Server error: ${[
+            axiosError.response.status,
+            axiosError.response.statusText,
+            (axiosError.response as any)?.code,
+            (axiosError.response as any)?.message
+          ]
+            .filter(Boolean)
+            .join(' ')}`
+        )
+      } else if (axiosError.request) {
+        // The request was made but no response was received
+        err = new Error('Network error. Please check your internet connection.')
+      } else {
+        err = new Error('An unexpected error occurred. Please try again later.')
+      }
+    }
+
+    if (opt?.onError) {
+      opt.onError(err, defaultOnError)
+    } else {
+      defaultOnError(err)
+    }
+
+    return [null, err, resp] as const
   }
-}
-
-const request = async <T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>) => {
-  const { headers, responseType, ...more } = config
-
-  const userStore = useAdminStoreWithOut()
-  const resp = await service.request<T, R, D>({
-    responseType: responseType,
-    headers: {
-      'Content-Type': CONTENT_TYPE,
-      [userStore.getTokenKey ?? 'Authorization']: `Bearer ${userStore.getToken}`,
-      ...headers
-    },
-    ...more
-  })
-
-  return resp
 }
 
 export const req = {

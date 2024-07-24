@@ -2,6 +2,7 @@
 import { Form, FormSchema } from '@/components/Form'
 import { useForm } from '@/hooks/web/useForm'
 import { useI18n } from '@/hooks/web/useI18n'
+import { QueryUrl } from '@/hooks/web/usePagi'
 import { useValidator } from '@/hooks/web/useValidator'
 import { findIndex } from '@/utils'
 import { eachTree, filter } from '@/utils/tree'
@@ -108,18 +109,15 @@ const { setValues, getFormData, getElFormExpose } = formMethods
 
 const treeData = ref<any[]>([])
 const getMenuList = async () => {
-  const [list] = await api.menu.getMany({
-    query: {
-      limit: 100,
-      offset: 1
-    }
+  const [res] = await api.menu.getMany({
+    query: new QueryUrl(100)
   })
 
-  if (!list) {
+  if (!res?.success) {
     return
   }
 
-  treeData.value = list
+  treeData.value = res.data
   if (!props.currentRow) return
   await nextTick()
   const checked: any[] = []

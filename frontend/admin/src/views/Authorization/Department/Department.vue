@@ -16,8 +16,8 @@ const { push } = useRouter()
 
 const { tableRegister, tableState } = useTable<Department>({
   onFetchData: async (query) => {
-    const [res, err] = await api.department.getMany({ query })
-    if (err) return null
+    const [res] = await api.department.getMany({ query })
+    if (!res?.success) return null
     res.data = edgelistToTree(res.data)
     return res
   }

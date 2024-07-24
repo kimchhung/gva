@@ -33,6 +33,6 @@
       "vite-plugin-svg-icons/client"
     ]
   },
-  "include": ["src", "src/types/**/*.d.ts", "mock/**/*.ts"]
-  // "exclude": ["dist", "node_modules"]
+  "include": ["src", "src/types/**/*.d.ts", "mock/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }

@@ -1,6 +1,7 @@
-import { req, useAPI } from '@/axios'
+import { req } from '@/axios'
 import { parseQuery } from '@/hooks/web/usePagi'
-import { CreateNode, GetManyNode, GetNode, ManyNodesResponse, Node, UpdateNode } from './types'
+import { APIRes } from '../types'
+import { CreateNode, GetManyMeta, GetManyNode, GetNode, Node, UpdateNode } from './types'
 
 export class ResourceAPI<T extends object = Node<{}>> {
   name: string
@@ -11,42 +12,24 @@ export class ResourceAPI<T extends object = Node<{}>> {
     this.base = `/${this.name.replace('/', '')}`
   }
 
-  get({ id, opt }: GetNode) {
-    return useAPI({
-      fn: () => req.get<APIResponse<Node<T>>>({ url: `${this.base}/${id}` }),
-      opt
-    })
+  get({ id }: GetNode) {
+    return req.get<APIRes<Node<T>>>({ url: `${this.base}/${id}` })
   }
 
-  getMany({ query, opt }: GetManyNode<T>) {
-    return useAPI({
-      fn: () =>
-        req.get<ManyNodesResponse<T>>({
-          url: this.base,
-          params: parseQuery(query)
-        }),
-      opt
-    })
+  getMany({ query }: GetManyNode<T>) {
+    const params = parseQuery(query)
+    return req.get<APIRes<Node<T>[], GetManyMeta>>({ url: this.base, params })
   }
 
-  create({ body, opt }: CreateNode) {
-    return useAPI({
-      fn: () => req.post<APIResponse<Node<T>>>({ url: this.base, data: body }),
-      opt
-    })
+  create({ body }: CreateNode<T>) {
+    return req.post<APIRes<Node<T>>>({ url: this.base, data: body })
   }
 
-  update({ id, body, opt }: UpdateNode) {
-    return useAPI({
-      fn: () => req.put<APIResponse<Node<T>>>({ url: `${this.base}/${id}`, data: body }),
-      opt
-    })
+  update({ id, body }: UpdateNode<T>) {
+    return req.put<APIRes<Node<T>>>({ url: `${this.base}/${id}`, data: body })
   }
 
-  delete({ id, opt }: GetNode) {
-    return useAPI({
-      fn: () => req.delete<APIResponse<Node<T>>>({ url: `${this.base}/${id}` }),
-      opt
-    })
+  delete({ id }: GetNode) {
+    return req.delete<APIRes<Node<T>>>({ url: `${this.base}/${id}` })
   }
 }
