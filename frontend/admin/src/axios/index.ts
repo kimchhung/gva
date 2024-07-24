@@ -17,6 +17,33 @@ const defaultOnError = (err: Error) => {
   }
 }
 
+const tranformError = (error: any) => {
+  const err = error instanceof Error ? error : new Error(error as any)
+  let resp: AxiosResponse<any, any> | undefined = undefined
+
+  if (error instanceof AxiosError) {
+    const axiosError = error
+    if (axiosError.response) {
+      resp = axiosError.response
+      err.message = `Server error: ${[
+        axiosError.response.status,
+        axiosError.response.statusText,
+        (axiosError.response as any)?.code,
+        (axiosError.response as any)?.message
+      ]
+        .filter(Boolean)
+        .join(' ')}`
+    } else if (axiosError.request) {
+      // The request was made but no response was received
+      err.message = 'Network error. Please check your internet connection.'
+    } else {
+      err.message = 'An unexpected error occurred. Please try again later.'
+    }
+  }
+
+  return [err, resp] as const
+}
+
 type RequestConfig = {
   onError?: (err: Error, onError: typeof defaultOnError) => void
   onFinally?: () => void
@@ -46,7 +73,7 @@ const request = async <
         ...headers
       },
       ...more,
-      validateStatus: (s) => s < 500
+      validateStatus: (s) => s <= 500
     })
 
     const { data } = resp as AxiosResponse<T, R>
@@ -60,29 +87,7 @@ const request = async <
 
     return [data as SuccessRes<DataT, MetaT>, null, resp] as const
   } catch (error) {
-    //  validateStatus: (s) => s >= 500, when status >= 500
-    const err = error instanceof Error ? error : new Error(error as any)
-    let resp: AxiosResponse<any, any> | undefined = undefined
-
-    if (error instanceof AxiosError) {
-      const axiosError = error
-      if (axiosError.response) {
-        resp = axiosError.response
-        err.message = `Server error: ${[
-          axiosError.response.status,
-          axiosError.response.statusText,
-          (axiosError.response as any)?.code,
-          (axiosError.response as any)?.message
-        ]
-          .filter(Boolean)
-          .join(' ')}`
-      } else if (axiosError.request) {
-        // The request was made but no response was received
-        err.message = 'Network error. Please check your internet connection.'
-      } else {
-        err.message = 'An unexpected error occurred. Please try again later.'
-      }
-    }
+    const [err, resp] = tranformError(error)
 
     if (opt?.onError) {
       opt.onError(err, defaultOnError)
