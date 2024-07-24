@@ -130,11 +130,15 @@ func GenerateModuleChild(params CodeGenParams, templateName, directory, suffix, 
 
 	fullPath := directory + "/" + params.EntityAllLower + "/" + templateName + "/" + params.EntityAllLower + "_" + suffix + ".go"
 
+	if _, err := os.Stat(fullPath); !os.IsNotExist(err) {
+		fmt.Printf("Skipping generation for existing file: %s\n", fullPath)
+		return
+	}
+
 	file := createFullPathFile(fullPath)
 	defer file.Close()
 
-	err = tmpl.Execute(file, params)
-	if err != nil {
+	if err = tmpl.Execute(file, params); err != nil {
 		panic(err)
 	}
 
@@ -143,7 +147,9 @@ func GenerateModuleChild(params CodeGenParams, templateName, directory, suffix, 
 
 func createFullPathFile(fullPath string) *os.File {
 	dirPath := filepath.Dir(fullPath)
-	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+	_, err := os.Stat(dirPath)
+
+	if os.IsNotExist(err) {
 		if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 			panic(err)
 		}
@@ -153,5 +159,6 @@ func createFullPathFile(fullPath string) *os.File {
 	if err != nil {
 		panic(err)
 	}
+
 	return file
 }

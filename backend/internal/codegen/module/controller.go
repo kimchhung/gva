@@ -13,7 +13,6 @@ import (
 	"github.com/gva/internal/response"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/labstack/echo/v4"
-	"github.com/gva/internal/ent"
 	"github.com/gva/internal/rql"
 )
 
@@ -46,13 +45,10 @@ func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service) *{{.Entit
 // @Security Bearer
 func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
-		request.MustRqlParser(rql.Config{
-			Model: struct {
-				ID xid.ID %sjson:"id" rql:"filter,sort"%s
-			}{},
-		})
+		Model: struct {
+			ID xid.ID %sjson:"id" rql:"filter,sort"%s
+		}{},
 	})
-
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
 		params := new(dto.{{.EntityPascal}}PagedRequest)
 		return []echo.HandlerFunc{

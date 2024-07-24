@@ -48,10 +48,9 @@ func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
 
 	// init parser once and reused
 	parser := request.MustRqlParser(rql.Config{
-		// Table:        admin.Table,
-		Model:        struct{ ent.Admin }{},
-		DefaultLimit: 20,
-		DefaultSort:  []string{"-id"},
+		Model: struct {
+			ID xid.ID `json:"id" rql:"filter,sort"`
+		}{},
 	})
 
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {

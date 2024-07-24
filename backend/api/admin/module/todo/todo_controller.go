@@ -2,22 +2,23 @@ package todo
 
 import (
 	"github.com/gva/api/admin/module/todo/dto"
-	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/echoc"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
-	"github.com/gva/internal/rql"
+	"github.com/gva/app/database/schema/xid"
 	"github.com/labstack/echo/v4"
+	"github.com/gva/internal/rql"
 )
 
 // don't remove for runtime type checking
 var _ interface{ echoc.Controller } = (*TodoController)(nil)
 
+
 type TodoController struct {
 	service *TodoService
 }
 
-func (con *TodoController) Init(r *echo.Group) *echo.Group {
+func (con *TodoController) Init(r *echo.Group) *echo.Group{
 	return r.Group("/todo")
 }
 
@@ -42,7 +43,6 @@ func (con *TodoController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 			ID xid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
-
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
 		params := new(dto.TodoPagedRequest)
 		return []echo.HandlerFunc{
@@ -119,7 +119,7 @@ func (con *TodoController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 			),
 
 			func(c echo.Context) error {
-				data, err := con.service.CreateTodo(c.Request().Context(), body)
+				data, err := con.service.CreateTodo(c.Request().Context(),body)
 				if err != nil {
 					return err
 				}
@@ -131,6 +131,7 @@ func (con *TodoController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 		}
 	})
 }
+
 
 // @Tags Todo
 // @Security Bearer
@@ -156,7 +157,7 @@ func (con *TodoController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 				request.BodyParser(body),
 			),
 			func(c echo.Context) error {
-				data, err := con.service.UpdateTodo(c.Request().Context(), param.ID, body)
+				data, err := con.service.UpdateTodo(c.Request().Context(), param.ID,body)
 				if err != nil {
 					return err
 				}
@@ -179,7 +180,7 @@ func (con *TodoController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param id path int true "Todo ID"
 // @Success  200 {object} response.Response{} "The todo deleted successfully!"
 // @Router /todo/{id} [delete]
-func (con *TodoController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con  *TodoController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
 	return meta.Delete("/:id").Name("delete one Todo").DoWithScope(func() []echo.HandlerFunc {
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`

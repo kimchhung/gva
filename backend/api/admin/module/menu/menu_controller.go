@@ -10,7 +10,6 @@ import (
 	"github.com/gva/app/common/service"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/echoc"
-	"github.com/gva/internal/ent"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/internal/rql"
@@ -52,10 +51,9 @@ func (con *RouteController) Init(r *echo.Group) *echo.Group {
 // @Param   	limit     query     int     false  "string default"     default(A)
 func (con *RouteController) List(m *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
-		Model:        ent.Menu{},
-		DefaultLimit: 20,
-		DefaultSort:  []string{"order"},
-		FieldSep:     ".",
+		Model: struct {
+			ID xid.ID `json:"id" rql:"filter,sort"`
+		}{},
 	})
 
 	return m.Get("/").DoWithScope(func() []echo.HandlerFunc {

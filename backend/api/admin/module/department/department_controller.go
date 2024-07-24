@@ -4,7 +4,6 @@ import (
 	"github.com/gva/api/admin/module/department/dto"
 	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/echoc"
-	"github.com/gva/internal/ent"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/internal/rql"
@@ -39,10 +38,9 @@ func NewDepartmentController(service *DepartmentService) *DepartmentController {
 // @Security Bearer
 func (con *DepartmentController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 	parser := request.MustRqlParser(rql.Config{
-		Model:        ent.Department{},
-		DefaultLimit: 25,
-		DefaultSort:  []string{"-id"},
-		FieldSep:     ".",
+		Model: struct {
+			ID xid.ID `json:"id" rql:"filter,sort"`
+		}{},
 	})
 
 	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
