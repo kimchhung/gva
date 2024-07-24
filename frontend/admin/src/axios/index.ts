@@ -6,10 +6,15 @@ import { ElNotification } from 'element-plus'
 import service from './service'
 
 const defaultOnError = (err: Error) => {
-  console.log(err)
   ElNotification.error({
     message: err.message
   })
+
+  if (err instanceof AxiosError) {
+    if ([401, 402, 403].includes(err.response?.status ?? 0)) {
+      useAdminStoreWithOut().logout()
+    }
+  }
 }
 
 type RequestConfig = {
@@ -56,28 +61,26 @@ const request = async <
     return [data as SuccessRes<DataT, MetaT>, null, resp] as const
   } catch (error) {
     //  validateStatus: (s) => s >= 500, when status >= 500
-    let err = error instanceof Error ? error : new Error(error as any)
+    const err = error instanceof Error ? error : new Error(error as any)
     let resp: AxiosResponse<any, any> | undefined = undefined
 
     if (error instanceof AxiosError) {
       const axiosError = error
       if (axiosError.response) {
         resp = axiosError.response
-        err = new Error(
-          `Server error: ${[
-            axiosError.response.status,
-            axiosError.response.statusText,
-            (axiosError.response as any)?.code,
-            (axiosError.response as any)?.message
-          ]
-            .filter(Boolean)
-            .join(' ')}`
-        )
+        err.message = `Server error: ${[
+          axiosError.response.status,
+          axiosError.response.statusText,
+          (axiosError.response as any)?.code,
+          (axiosError.response as any)?.message
+        ]
+          .filter(Boolean)
+          .join(' ')}`
       } else if (axiosError.request) {
         // The request was made but no response was received
-        err = new Error('Network error. Please check your internet connection.')
+        err.message = 'Network error. Please check your internet connection.'
       } else {
-        err = new Error('An unexpected error occurred. Please try again later.')
+        err.message = 'An unexpected error occurred. Please try again later.'
       }
     }
 

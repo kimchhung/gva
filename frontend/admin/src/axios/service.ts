@@ -8,7 +8,6 @@ import { defaultRequestInterceptors, defaultResponseInterceptors } from './confi
 
 import { REQUEST_TIMEOUT } from '@/constants'
 import { useAdminStoreWithOut } from '@/store/modules/admin'
-import { ElMessage } from 'element-plus'
 
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
@@ -32,19 +31,8 @@ const interceptor = {
     return res
   },
   responseError: (error: AxiosError) => {
-    const apiData = error.response?.data as {
-      code: number
-      data: any
-      message: string
-    }
-
-    const text = apiData ? apiData.message : `msg: ${error.message}, code ${error.code}`
-
     if ([401, 402, 403].includes(error.response?.status ?? 0)) {
-      ElMessage.error(text)
       useAdminStoreWithOut().logout()
-    } else {
-      ElMessage.error(text)
     }
 
     return Promise.reject(error)
