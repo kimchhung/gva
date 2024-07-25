@@ -6,12 +6,11 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gva/internal/treeprint"
 	"github.com/labstack/echo/v4"
 )
 
 type H = echo.HandlerFunc
-type M = echo.MiddlewareFunc
+type M = func(next H) error
 
 type ScopeHandler func() []H
 
@@ -98,6 +97,10 @@ func (r *Route) DoWithScope(handler ScopeHandler) *Route {
 	return r
 }
 
+func (r *Route) ScopeHandler(handler ScopeHandler) ScopeHandler {
+	return r.scopeHandler
+}
+
 /*
 provide a scope to store middleware data and reuse
 
@@ -116,58 +119,99 @@ provide a scope to store middleware data and reuse
 */
 
 type Ctr struct {
-	group    string
-	routes   []*Route
+	ID       string `json:"id"`
+	PID      string `json:"pid"`
+	Children []*Ctr
 	parent   *Ctr
-	children []*Ctr
+	root     *Ctr
 
-	groupOption []func(*echo.Group) *echo.Group
+	prefix  string
+	groupFn func(*echo.Group) *echo.Group
+	routes  []*Route
 }
 
-func New() *Ctr {
-	return &Ctr{}
+func (c *Ctr) IsRoot() bool {
+	return c.PID != ""
 }
 
-func (c *Ctr) ForEach(f func(c *Ctr)) *Ctr {
-	f(c)
+func (c *Ctr) Root() *Ctr {
+	return c.root
+}
 
-	for _, child := range c.children {
-		child.ForEach(f)
+func New(opts ...Option) *Ctr {
+	c := &Ctr{}
+	c.Option(opts...)
+	return c
+}
+
+func (c *Ctr) Option(opts ...Option) *Ctr {
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c
+}
+
+type Option func(*Ctr)
+
+func Group(prefix string, middleware ...echo.MiddlewareFunc) Option {
+	return func(c *Ctr) {
+		c.prefix = prefix
+		c.groupFn = func(g *echo.Group) *echo.Group {
+			return g.Group(prefix, middleware...)
+		}
+	}
+}
+
+func ParentID(parentId any) Option {
+	return func(c *Ctr) {
+		c.PID = fmt.Sprintf("%v", parentId)
+	}
+}
+
+func (c *Ctr) Add(controller any) (err error) {
+	ctr, ok := controller.(*Ctr)
+	if ok {
+		if c.IsRoot() {
+			ctr.root = c
+		} else {
+			ctr.root = c.Root()
+		}
+
+		ctr.PID = c.ID
+		ctr.parent = c
+		ctr.Children = append(ctr.Children, ctr)
+		return nil
 	}
 
-	return c
-}
-
-func (c *Ctr) PrintTree(prefix string) {
-
-	root := printTree(c, nil)
-	treeprint.Print(root)
-}
-
-func (c *Ctr) SetGroup(g string) *Ctr {
-	c.group = strings.ReplaceAll(g, "/", "")
-	return c
-}
-
-func (c *Ctr) Group() string {
-	return c.group
-}
-
-func (c *Ctr) FullPath() string {
-	return getGroup(c)
-}
-
-func (c *Ctr) Add(controller CTR) {
 	// Reflectively analyze the controller and generate its metadata
-	controllerMeta := c.reflectController(controller, nil)
-	c.children = append(c.children, controllerMeta...)
+	ctr, err = ReflectController(controller)
+	if err != nil {
+		if c.IsRoot() {
+			ctr.root = c
+		} else {
+			ctr.root = c.Root()
+		}
+
+		ctr.PID = c.ID
+		ctr.parent = c
+		c.Children = append(c.Children, ctr)
+		return err
+	}
+	return nil
 }
 
-func (c *Ctr) reflectController(controller CTR, parent *Ctr) (list []*Ctr) {
-	controllerMeta := &Ctr{}
-	controllerMeta = controller.Init(controllerMeta)
-	if parent != nil {
-		controllerMeta.parent = parent
+func ReflectController(controller any) (*Ctr, error) {
+	var (
+		controllerMeta *Ctr
+	)
+
+	if ctr, ok := controller.(CTR); ok {
+		controllerMeta = ctr.Init()
+	} else if ctrw, ok := controller.(CTRWith); ok {
+		c := New() // Assuming New() creates a new Ctr instance
+		controllerMeta = ctrw.Init(c)
+	} else {
+		return nil, fmt.Errorf("controller:%v is missing init method", reflect.TypeOf(controller).Elem())
 	}
 
 	controllerType := reflect.TypeOf(controller)
@@ -192,54 +236,64 @@ func (c *Ctr) reflectController(controller CTR, parent *Ctr) (list []*Ctr) {
 		}
 	}
 
-	// Handle children recursively if the controller implements Children
-	if childrenController, ok := controller.(Children); ok {
-		for _, child := range childrenController.Children() {
-			childMeta := c.reflectController(child, controllerMeta) // Set current controllerMeta as parent for child
-			controllerMeta.children = append(controllerMeta.children, childMeta...)
+	return controllerMeta, nil
+}
+
+func GroupController(flats ...*Ctr) (nested []*Ctr) {
+	rootMap := make(map[string]*Ctr)
+	for _, node := range flats {
+		rootMap[node.ID] = node
+	}
+
+	for _, node := range flats {
+		parent, ok := rootMap[node.PID]
+		if ok {
+			parent.Children = append(parent.Children, node)
+		} else {
+			nested = append(nested, node)
+		}
+
+	}
+
+	return nested
+}
+
+func FlatController(root ...*Ctr) ([]*Ctr, error) {
+	visited := make(map[string]bool) // Tracks visited nodes to prevent infinite recursion
+	var flats []*Ctr
+
+	for _, r := range root {
+		if err := flattenNode(r, &flats, visited); err != nil {
+			return nil, err
 		}
 	}
 
-	list = append(list, controllerMeta)
-	return list
+	return flats, nil
 }
 
-type CTR interface {
+func flattenNode(node *Ctr, flats *[]*Ctr, visited map[string]bool) error {
+	if visited[node.ID] {
+		return fmt.Errorf("circular reference detected for node %s", node.ID)
+	}
+	visited[node.ID] = true
+
+	if len(node.Children) > 0 {
+		for _, child := range node.Children {
+			if err := flattenNode(child, flats, visited); err != nil {
+				return err
+			}
+		}
+	}
+
+	node.Children = []*Ctr{}
+	*flats = append(*flats, node)
+	return nil
+}
+
+type CTRWith interface {
 	Init(ctm *Ctr) *Ctr
 }
 
-type Parent interface {
-	Parent() CTR
-}
-
-type Children interface {
-	Children() []CTR
-}
-
-func getGroup(c *Ctr) (path string) {
-	if c.parent == nil {
-		path += c.group
-	} else {
-		path += getGroup(c.parent) + "/" + c.group
-	}
-
-	return
-}
-
-func printTree(c *Ctr, parentNode *treeprint.Node) *treeprint.Node {
-	if parentNode == nil {
-		parentNode = treeprint.New(c.group)
-	} else {
-		parentNode = parentNode.Add(fmt.Sprintf("%v", c.group))
-	}
-
-	for _, r := range c.routes {
-		parentNode.Add(fmt.Sprintf("%s %s", r.method, r.path))
-	}
-
-	for _, ch := range c.children {
-		printTree(ch, parentNode)
-	}
-
-	return parentNode
+type CTR interface {
+	Init() *Ctr
 }
