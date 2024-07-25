@@ -125,7 +125,6 @@ func refectController(controller Controller) *ControllerMeta {
 		defer func() {
 			controllerMeta.isInit = true
 		}()
-
 		return controller.Init(r)
 	}
 
@@ -134,26 +133,6 @@ func refectController(controller Controller) *ControllerMeta {
 
 	for i := controllerType.NumMethod() - 1; i >= 0; i-- {
 		method := controllerType.Method(i)
-		if method.Type.NumOut() == 1 && method.Type.Out(0).ConvertibleTo(reflect.TypeOf((*MetaHandler)(nil)).Elem()) {
-			methodValue := controllerValue.MethodByName(method.Name)
-			metaHandlerFunc, ok := methodValue.Interface().(func(*RouteMeta) MetaHandler)
-			if !ok {
-				// Log an error instead of panicking
-				log.Printf("controller method %s must be a func(*RouteMeta) MetaHandler", method.Name)
-				continue
-			}
-
-			meta := &RouteMeta{
-				name:   strings.Replace(fmt.Sprintf("%v.%s", controllerType, method.Name), "*", "", 1),
-				method: "GET",
-				path:   "/",
-			}
-
-			meta.handlers = metaHandlerFunc(meta)
-			controllerMeta.routeMetas = append(controllerMeta.routeMetas, meta)
-		}
-
-		// hasParent
 		if method.Type.NumOut() == 1 && method.Type.Out(0).ConvertibleTo(reflect.TypeOf((*MetaHandler)(nil)).Elem()) {
 			methodValue := controllerValue.MethodByName(method.Name)
 			metaHandlerFunc, ok := methodValue.Interface().(func(*RouteMeta) MetaHandler)
