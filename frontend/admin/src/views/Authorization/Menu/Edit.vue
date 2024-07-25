@@ -41,8 +41,7 @@ const save = async () => {
   const { id, ...body } = formData as MenuRoute
   const [data] = await api.menu.update({
     id,
-    body,
-    opt: { loading }
+    body
   })
 
   if (data) goBack()

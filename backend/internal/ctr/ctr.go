@@ -1,11 +1,12 @@
 package ctr
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
-	"reflect"
-	"strings"
 
+	"github.com/gva/internal/treeprint"
+	"github.com/gva/utils/color"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,6 +14,14 @@ type H = echo.HandlerFunc
 type M = func(next H) error
 
 type ScopeHandler func() []H
+
+type CTRWith interface {
+	Init(ctm *Ctr) *Ctr
+}
+
+type CTR interface {
+	Init() *Ctr
+}
 
 type (
 	Route struct {
@@ -23,8 +32,13 @@ type (
 		middlewares  []M
 		handlers     []H
 		scopeHandler ScopeHandler
+		ctr          *Ctr
 	}
 )
+
+func NewRoute() *Route {
+	return &Route{}
+}
 
 // Set add middlewares to current route
 func (r *Route) Use(middlewares ...M) *Route {
@@ -84,6 +98,10 @@ func (r *Route) Pre(hnadlers ...H) *Route {
 	return r
 }
 
+func (r *Route) FullPath() string {
+	return r.ctr.FullPrefix() + r.path
+}
+
 func (r *Route) Do(more ...H) *Route {
 	r.Pre(more...)
 	r.scopeHandler = func() []H {
@@ -119,27 +137,132 @@ provide a scope to store middleware data and reuse
 */
 
 type Ctr struct {
-	ID       string `json:"id"`
-	PID      string `json:"pid"`
+	ID  string
+	PID string
+
 	Children []*Ctr
 	parent   *Ctr
 	root     *Ctr
+	all      map[string]*Ctr
 
 	prefix  string
 	groupFn func(*echo.Group) *echo.Group
 	routes  []*Route
+
+	_infoFn      func(*Ctr) any
+	_infoRouteFn func(*Route) any
 }
 
-func (c *Ctr) IsRoot() bool {
-	return c.PID != ""
+func (c *Ctr) infoFn(ctr *Ctr) any {
+	if c.root != nil {
+		return c._infoFn(ctr)
+	}
+	return c._infoFn(ctr)
+}
+
+func (c *Ctr) infoRouteFn(r *Route) any {
+	if c.root != nil {
+		return c._infoRouteFn(r)
+	}
+	return c._infoRouteFn(r)
+}
+
+// check has in root
+func (c *Ctr) Has(id any) bool {
+	_, ok := c.GetAll()[fmt.Sprintf("%v", id)]
+	return ok
+}
+
+// get all from root chain
+func (c *Ctr) GetAll() map[string]*Ctr {
+	if c.root != nil {
+		if c.root.all == nil {
+			c.root.all = map[string]*Ctr{}
+		}
+		return c.root.all
+	}
+
+	if c.all == nil {
+		c.all = map[string]*Ctr{}
+	}
+
+	return c.all
+}
+
+// get one from root
+func (c *Ctr) Get(id any) (*Ctr, bool) {
+	d, ok := c.GetAll()[fmt.Sprintf("%v", id)]
+	return d, ok
+}
+
+func (c *Ctr) set(ctr *Ctr) {
+	c.GetAll()[ctr.ID] = ctr
+}
+
+// concurrent add not support
+func (c *Ctr) AddChild(ctr *Ctr) (child *Ctr, err error) {
+	if ctr.ID == "" {
+		return nil, errors.New("id is required, use ctr.ID(any)")
+	}
+
+	if c.Has(ctr.ID) {
+		return nil, fmt.Errorf("duplicated Id %v", ctr.ID)
+	}
+	c.set(ctr)
+
+	ctr.PID = c.ID
+	ctr.parent = c
+
+	// Update root if necessary
+	if c.parent == nil {
+		c.root = c
+	}
+
+	ctr.root = c.root
+	c.Children = append(c.Children, ctr)
+	return ctr, nil
+}
+
+// concurrent add not support
+func (c *Ctr) AddChildren(ctrs ...*Ctr) ([]*Ctr, error) {
+	added := make([]*Ctr, len(ctrs))
+	var err error
+
+	for i, ctr := range ctrs {
+		added[i], err = c.AddChild(ctr)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return added, nil
+}
+
+func (c *Ctr) Parent() *Ctr {
+	return c.parent
+}
+
+func (c *Ctr) FullPrefix() string {
+	return FullPathCtr(c)
 }
 
 func (c *Ctr) Root() *Ctr {
 	return c.root
 }
 
+func DefaultInfoFn(c *Ctr) any {
+	return color.Cyan(c.ID)
+}
+
+func DefaultRouteFn(r *Route) any {
+	return fmt.Sprintf("%v %v", color.MethodColor(r.method), r.FullPath())
+}
+
 func New(opts ...Option) *Ctr {
-	c := &Ctr{}
+	c := &Ctr{
+		_infoFn:      DefaultInfoFn,
+		_infoRouteFn: DefaultRouteFn,
+	}
 	c.Option(opts...)
 	return c
 }
@@ -156,6 +279,7 @@ type Option func(*Ctr)
 func Group(prefix string, middleware ...echo.MiddlewareFunc) Option {
 	return func(c *Ctr) {
 		c.prefix = prefix
+		c.ID = prefix
 		c.groupFn = func(g *echo.Group) *echo.Group {
 			return g.Group(prefix, middleware...)
 		}
@@ -168,132 +292,65 @@ func ParentID(parentId any) Option {
 	}
 }
 
-func (c *Ctr) Add(controller any) (err error) {
-	ctr, ok := controller.(*Ctr)
-	if ok {
-		if c.IsRoot() {
-			ctr.root = c
+func AddRoute(routes ...*Route) Option {
+	return func(c *Ctr) {
+		for _, r := range routes {
+			r.ctr = c
+			c.routes = append(c.routes, r)
+		}
+	}
+}
+
+func ID(parentId any) Option {
+	return func(c *Ctr) {
+		c.ID = fmt.Sprintf("%v", parentId)
+		c.prefix = c.ID
+	}
+}
+
+func Each(c *Ctr, f func(c *Ctr)) {
+	for _, child := range c.Children {
+		Each(child, f)
+	}
+}
+
+func CreateIDTreePrint(parent *treeprint.Node, list ...*Ctr) (current *treeprint.Node) {
+	for _, c := range list {
+		if parent == nil {
+			current = treeprint.New(c.infoFn(c))
 		} else {
-			ctr.root = c.Root()
+			current = parent.Add(c.infoFn(c))
+			for _, r := range c.routes {
+				current.Add(c.infoRouteFn(r))
+			}
 		}
 
-		ctr.PID = c.ID
-		ctr.parent = c
-		ctr.Children = append(ctr.Children, ctr)
-		return nil
+		for _, child := range c.Children {
+			CreateIDTreePrint(current, child) // Corrected recursive call
+		}
 	}
 
-	// Reflectively analyze the controller and generate its metadata
-	ctr, err = ReflectController(controller)
+	return current // Return the current node
+}
+
+func AddToParentNested(parent *Ctr, child *Ctr) (*Ctr, error) {
+	childNode, err := parent.AddChild(child)
 	if err != nil {
-		if c.IsRoot() {
-			ctr.root = c
-		} else {
-			ctr.root = c.Root()
-		}
-
-		ctr.PID = c.ID
-		ctr.parent = c
-		c.Children = append(c.Children, ctr)
-		return err
+		return nil, err // Return the error immediately if adding a child fails
 	}
-	return nil
+
+	for _, node := range childNode.Children {
+		childNode.AddChild(node)
+	}
+
+	return childNode, nil
 }
 
-func ReflectController(controller any) (*Ctr, error) {
-	var (
-		controllerMeta *Ctr
-	)
-
-	if ctr, ok := controller.(CTR); ok {
-		controllerMeta = ctr.Init()
-	} else if ctrw, ok := controller.(CTRWith); ok {
-		c := New() // Assuming New() creates a new Ctr instance
-		controllerMeta = ctrw.Init(c)
-	} else {
-		return nil, fmt.Errorf("controller:%v is missing init method", reflect.TypeOf(controller).Elem())
+func FullPathCtr(c *Ctr) (path string) {
+	if c.parent == nil {
+		return c.prefix
 	}
 
-	controllerType := reflect.TypeOf(controller)
-	controllerValue := reflect.ValueOf(controller)
-
-	for i := controllerType.NumMethod() - 1; i >= 0; i-- {
-		method := controllerType.Method(i)
-
-		if method.Type.NumOut() == 1 && method.Type.Out(0).AssignableTo(reflect.TypeOf((*Route)(nil))) {
-			route := &Route{
-				name:   strings.Replace(fmt.Sprintf("%v.%s", controllerType, method.Name), "*", "", 1),
-				method: "GET",
-				path:   "/",
-			}
-
-			defineRoute, ok := controllerValue.MethodByName(method.Name).Interface().(func(*Route) *Route)
-			if !ok {
-				continue
-			}
-			route = defineRoute(route)
-			controllerMeta.routes = append(controllerMeta.routes, route)
-		}
-	}
-
-	return controllerMeta, nil
-}
-
-func GroupController(flats ...*Ctr) (nested []*Ctr) {
-	rootMap := make(map[string]*Ctr)
-	for _, node := range flats {
-		rootMap[node.ID] = node
-	}
-
-	for _, node := range flats {
-		parent, ok := rootMap[node.PID]
-		if ok {
-			parent.Children = append(parent.Children, node)
-		} else {
-			nested = append(nested, node)
-		}
-
-	}
-
-	return nested
-}
-
-func FlatController(root ...*Ctr) ([]*Ctr, error) {
-	visited := make(map[string]bool) // Tracks visited nodes to prevent infinite recursion
-	var flats []*Ctr
-
-	for _, r := range root {
-		if err := flattenNode(r, &flats, visited); err != nil {
-			return nil, err
-		}
-	}
-
-	return flats, nil
-}
-
-func flattenNode(node *Ctr, flats *[]*Ctr, visited map[string]bool) error {
-	if visited[node.ID] {
-		return fmt.Errorf("circular reference detected for node %s", node.ID)
-	}
-	visited[node.ID] = true
-
-	if len(node.Children) > 0 {
-		for _, child := range node.Children {
-			if err := flattenNode(child, flats, visited); err != nil {
-				return err
-			}
-		}
-	}
-
-	node.Children = []*Ctr{}
-	*flats = append(*flats, node)
-	return nil
-}
-
-type CTRWith interface {
-	Init(ctm *Ctr) *Ctr
-}
-
-type CTR interface {
-	Init() *Ctr
+	fullPath := FullPathCtr(c.parent) + c.prefix
+	return fullPath
 }

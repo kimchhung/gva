@@ -5,6 +5,7 @@ import (
 
 	docs "github.com/gva/api/admin/docs"
 	"github.com/gva/env"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/echoc"
 	"github.com/gva/utils"
 	"github.com/gva/utils/swagger"
@@ -36,7 +37,10 @@ func (r *Router) Register(app *echo.Echo, args ...any) {
 	)
 
 	api := app.Group(cfg.API.Admin.BasePath)
+
+	apiCtr := ctr.New()
 	for _, controller := range r.controllers {
+		apiCtr.Add(controller)
 		echoc.Register(api, controller)
 	}
 }
