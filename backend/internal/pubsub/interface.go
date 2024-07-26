@@ -13,10 +13,6 @@ type Topic any
 // Methods allow the subscriber to retrieve the topic they are subscribed to,
 // receive payloads, and unsubscribe from the topic.
 type SubResult interface {
-
-	// Topic returns the topic this subscriber is subscribed to.
-	Topic() Topic
-
 	// Payload returns a channel that receives payloads published to this topic.
 	Payload() <-chan Payload
 
@@ -27,7 +23,6 @@ type SubResult interface {
 type Pubsub interface {
 	Sub(ctx context.Context, topic Topic) (SubResult, error)
 	Pub(ctx context.Context, topic Topic, m Payload) error
-	Close() error
 }
 
 var (

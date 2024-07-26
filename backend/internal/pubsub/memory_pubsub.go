@@ -23,22 +23,22 @@ func NewMemorySubResult(
 	payloadch chan Payload,
 	unsub func() error,
 ) SubResult {
-	return &MemorySubResult{
+	return MemorySubResult{
 		topic:     topic,
 		payloadch: payloadch,
 		unsub:     unsub,
 	}
 }
 
-func (sr *MemorySubResult) Topic() Topic {
+func (sr MemorySubResult) Topic() Topic {
 	return sr.topic
 }
 
-func (sr *MemorySubResult) Payload() <-chan Payload {
+func (sr MemorySubResult) Payload() <-chan Payload {
 	return sr.payloadch
 }
 
-func (sr *MemorySubResult) UnSub() error {
+func (sr MemorySubResult) UnSub() error {
 	return sr.unsub()
 }
 
@@ -56,7 +56,6 @@ func NewMemoryPubsub() *memoryPubsub {
 func (b *memoryPubsub) Pub(ctx context.Context, topic Topic, p Payload) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-
 	ch, ok := b.topics[topic]
 	if !ok {
 		return ErrTopicNotFound
@@ -86,20 +85,20 @@ func (b *memoryPubsub) Sub(ctx context.Context, topic Topic) (SubResult, error) 
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
-	ch := make(chan Payload, 1)
+	ch := make(chan Payload)
 	pch := &ch
 	if b.topics[topic] == nil {
 		b.topics[topic] = map[*chan Payload]struct{}{}
 	}
 
 	b.topics[topic][pch] = struct{}{}
-	sr := NewMemorySubResult(
-		topic,
-		ch,
-		func() error {
-			return b.UnSub(topic, pch)
-		},
-	)
+	sr := NewMemorySubResult(topic, ch, func() error {
+		return b.UnSub(topic, pch)
+	})
+	go func() {
+		<-ctx.Done()
+		sr.UnSub()
+	}()
 	return sr, nil
 }
 
@@ -107,6 +106,9 @@ func (b *memoryPubsub) UnSub(topic Topic, pch *chan Payload) error {
 	fmt.Println("unsub")
 	b.mu.Lock()
 	defer b.mu.Unlock()
+	if pch == nil {
+		return errors.Errorf("channel pointer is nil")
+	}
 
 	chs, ok := b.topics[topic]
 	if !ok || len(chs) == 0 {
@@ -119,10 +121,5 @@ func (b *memoryPubsub) UnSub(topic Topic, pch *chan Payload) error {
 
 	close(*pch)
 	delete(chs, pch)
-	return nil
-}
-
-func (b *memoryPubsub) Close() error {
-
 	return nil
 }
