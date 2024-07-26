@@ -10,14 +10,14 @@ import (
 	"github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
 	"github.com/gva/app/database/schema/xid"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/internal/rql"
 )
 
-var _ interface{ echoc.Controller } = (*AdminController)(nil)
+var _ interface{ ctr.CTR } = (*AdminController)(nil)
 
 type AdminController struct {
 	service *AdminService
@@ -31,8 +31,10 @@ func NewAdminController(service *AdminService, jwt_s *service.JwtService) *Admin
 	}
 }
 
-func (con *AdminController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/admin", con.jwt_s.RequiredAdmin())
+func (con *AdminController) Init() *ctr.Ctr {
+	return ctr.New(
+		ctr.Group("/admin", con.jwt_s.RequiredAdmin()),
+	)
 }
 
 // @Tags		Admin
@@ -44,19 +46,18 @@ func (con *AdminController) Init(r *echo.Group) *echo.Group {
 // @Produce		json
 // @Success		200	{object}	response.Response{data=[]ent.Admin,meta=pagi.Meta}	"Successfully retrieved Admins"
 // @Router		/admin [get]
-func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
-
-	// init parser once and reused
+func (con *AdminController) Paginate() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
 			ID xid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
-	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
-		params := new(dto.AdminPaginateRequest)
-
-		return []echo.HandlerFunc{
+	return ctr.GET("/").Do(func() []ctr.H {
+		var (
+			params = new(dto.AdminPaginateRequest)
+		)
+		return []ctr.H{
 			permission.RequireAny(
 				permission.AdminView,
 				permission.AdminSuper,
@@ -89,11 +90,11 @@ func (con *AdminController) Paginate(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Produce		json
 // @Success		200	{object}	response.Response{}	"Successfully retrieved Admin routes"
 // @Router		/admin/route [get]
-func (con *AdminController) AdminRoutes(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/routes").DoWithScope(func() []echo.HandlerFunc {
+func (con *AdminController) AdminRoutes() *ctr.Route {
+	return ctr.GET("/routes").Do(func() []ctr.H {
 		adminCtx := new(appctx.AdminContext)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.MustAdminContext(adminCtx),
 			func(c echo.Context) error {
 				list, err := con.service.GetAdminNestedRouteById(c.Request().Context(), adminCtx.Admin.ID)
@@ -119,11 +120,11 @@ func (con *AdminController) AdminRoutes(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Produce		json
 // @Success		200	{object}	response.Response{}	"Successfully retrieved Admin permissionissions"
 // @Router		/admin/permission [get]
-func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/permission").DoWithScope(func() []echo.HandlerFunc {
+func (con *AdminController) AdminPermission() *ctr.Route {
+	return ctr.GET("/permission").Do(func() []ctr.H {
 		admin := new(ent.Admin)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.MustAdmin(admin),
 			func(c echo.Context) error {
 				permission, err := con.service.GetAdminPermissionById(c.Request().Context(), admin.ID)
@@ -150,13 +151,13 @@ func (con *AdminController) AdminPermission(meta *echoc.RouteMeta) echoc.MetaHan
 // @Param		id	path		int	true	"Admin ID"
 // @Success		200	{object}	response.Response{data=dto.AdminResponse}
 // @Router		/admin/{id} [get]
-func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *AdminController) Get() *ctr.Route {
+	return ctr.GET("/:id").Do(func() []ctr.H {
 		param := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
 		})
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permission.RequireAny(
 				permission.AdminView,
 				permission.AdminSuper,
@@ -188,11 +189,11 @@ func (con *AdminController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param		Admin	body		dto.AdminRequest							true	"Admin data"
 // @Success		200		{object}	response.Response{data=dto.AdminResponse}	"Successfully created Admin"
 // @Router		/admin [post]
-func (con *AdminController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Post("/").DoWithScope(func() []echo.HandlerFunc {
+func (con *AdminController) Create() *ctr.Route {
+	return ctr.POST("/").Do(func() []ctr.H {
 		req := new(dto.AdminRequest)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permission.RequireAny(
 				permission.AdminAdd,
 				permission.AdminSuper,
@@ -226,14 +227,14 @@ func (con *AdminController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param		Admin	body		dto.AdminRequest							true	"Admin data"
 // @Success		200		{object}	response.Response{data=dto.AdminResponse}	"Successfully updated Admin"
 // @Router		/admin/{id} [patch]
-func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Patch("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *AdminController) Update() *ctr.Route {
+	return ctr.PUT("/:id").Do(func() []ctr.H {
 		body := new(dto.AdminRequest)
 		param := new(struct {
 			ID xid.ID `param:"id" validate:"gt=0"`
 		})
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permission.RequireAny(
 				permission.AdminAdd,
 				permission.AdminSuper,
@@ -266,13 +267,13 @@ func (con *AdminController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param		id	path		int					true	"Admin ID"
 // @Success		200	{object}	response.Response{}	"Successfully deleted Admin"
 // @Router		/admin/{id} [delete]
-func (con *AdminController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *AdminController) Delete() *ctr.Route {
+	return ctr.DELETE("/:id").Do(func() []ctr.H {
 		param := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
 		})
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permission.RequireAny(
 				permission.AdminDelete,
 				permission.AdminSuper,

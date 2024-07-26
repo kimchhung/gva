@@ -2,7 +2,7 @@ package system
 
 import (
 	"github.com/gva/app/common/controller"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/labstack/echo/v4"
@@ -20,12 +20,15 @@ func (con *SystemController) Init(r *echo.Group) *echo.Group {
 	return r.Group("/system")
 }
 
-func (con *SystemController) Test(m *echoc.RouteMeta) echoc.MetaHandler {
-	return m.Get("/").Do(func(c echo.Context) error {
-
-		return request.Response(c,
-			response.Data("test"),
-		)
+func (con *SystemController) Test() *ctr.Route {
+	return ctr.GET("/").Do(func() []ctr.H {
+		return []ctr.H{
+			func(c echo.Context) error {
+				return request.Response(c,
+					response.Data("test"),
+				)
+			},
+		}
 	})
 }
 

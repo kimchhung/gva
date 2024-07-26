@@ -9,14 +9,14 @@ import (
 	permissions "github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
 	"github.com/gva/app/database/schema/xid"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/internal/rql"
 )
 
 // don't remove for runtime type checking
-var _ interface{ echoc.Controller } = (*RouteController)(nil)
+var _ interface{ ctr.CTR } = (*RouteController)(nil)
 
 type RouteController struct {
 	service *MenuService
@@ -36,8 +36,10 @@ func NewMenuController(
 	}
 }
 
-func (con *RouteController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/menu", con.jwt_s.RequiredAdmin())
+func (con *RouteController) Init() *ctr.Ctr {
+	return ctr.New(
+		ctr.Group("/menu", con.jwt_s.RequiredAdmin()),
+	)
 }
 
 // @Tags        Menu
@@ -49,16 +51,18 @@ func (con *RouteController) Init(r *echo.Group) *echo.Group {
 // @Router      /menu [get]
 // @Security    Bearer
 // @Param   	limit     query     int     false  "string default"     default(A)
-func (con *RouteController) List(m *echoc.RouteMeta) echoc.MetaHandler {
+func (con *RouteController) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
 			ID xid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
-	return m.Get("/").DoWithScope(func() []echo.HandlerFunc {
-		params := new(dto.MenuPagedRequest)
-		return []echo.HandlerFunc{
+	return ctr.GET("/").Do(func() []ctr.H {
+		var (
+			params = new(dto.MenuPagedRequest)
+		)
+		return []ctr.H{
 			permissions.OnlySuperAdmin(),
 			request.Parse(
 				request.RqlQueryParser(&params.Params, parser),
@@ -88,20 +92,18 @@ func (con *RouteController) List(m *echoc.RouteMeta) echoc.MetaHandler {
 // @Router      /menu/enabled-list [get]
 // @Security    Bearer
 // @Param   	limit     query     int     false  "string default"     default(A)
-func (con *RouteController) EnableList(m *echoc.RouteMeta) echoc.MetaHandler {
-	return m.Get("/enabled-list").DoWithScope(func() []echo.HandlerFunc {
-		return []echo.HandlerFunc{
-			func(c echo.Context) error {
-				list, err := con.service.EnabledList(c.Request().Context())
-				if err != nil {
-					return err
-				}
+func (con *RouteController) EnableList() *ctr.Route {
+	return ctr.GET("/enabled-list").Do(func() []ctr.H {
+		return []ctr.H{func(c echo.Context) error {
+			list, err := con.service.EnabledList(c.Request().Context())
+			if err != nil {
+				return err
+			}
 
-				return request.Response(c,
-					response.Data(list),
-				)
-			},
-		}
+			return request.Response(c,
+				response.Data(list),
+			)
+		}}
 	})
 }
 
@@ -116,13 +118,13 @@ func (con *RouteController) EnableList(m *echoc.RouteMeta) echoc.MetaHandler {
 // @Security    Bearer
 // @Param 		info body dto.MenuRequest true "Route Info"
 // @Param 		id path int true "Route ID"
-func (con *RouteController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *RouteController) Get() *ctr.Route {
+	return ctr.GET("/:id").Do(func() []ctr.H {
 		params := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
 		})
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permissions.OnlySuperAdmin(),
 			request.Validate(
 				request.ParamsParser(params),
@@ -151,11 +153,11 @@ func (con *RouteController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Router      /menu [post]
 // @Security    Bearer
 // @Param 		info body dto.MenuRequest true "Route Info"
-func (con *RouteController) Create(m *echoc.RouteMeta) echoc.MetaHandler {
-	return m.Post("/").DoWithScope(func() []echo.HandlerFunc {
+func (con *RouteController) Create() *ctr.Route {
+	return ctr.POST("/").Do(func() []ctr.H {
 		body := new(dto.MenuRequest)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permissions.OnlySuperAdmin(),
 			request.Validate(request.BodyParser(body)),
 			func(c echo.Context) error {
@@ -183,14 +185,14 @@ func (con *RouteController) Create(m *echoc.RouteMeta) echoc.MetaHandler {
 // @Security    Bearer
 // @Param 		info body dto.MenuRequest true "Route Info"
 // @Param 		id path int true "Route ID"
-func (con *RouteController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Put("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *RouteController) Update() *ctr.Route {
+	return ctr.PUT("/:id").Do(func() []ctr.H {
 		body := new(dto.MenuRequest)
 		params := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
 		})
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permissions.OnlySuperAdmin(),
 			request.Validate(
 				request.BodyParser(body),
@@ -220,13 +222,13 @@ func (con *RouteController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Router      /menu/{id} [delete]
 // @Security    Bearer
 // @Param 		id path int true "Route ID"
-func (con *RouteController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Delete("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *RouteController) Delete() *ctr.Route {
+	return ctr.DELETE("/:id").Do(func() []ctr.H {
 		params := new(struct {
 			ID xid.ID `param:"id" validate:"required"`
 		})
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			permissions.OnlySuperAdmin(),
 			request.Validate(
 				request.ParamsParser(params),

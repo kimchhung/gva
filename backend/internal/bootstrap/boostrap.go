@@ -2,6 +2,8 @@ package bootstrap
 
 import (
 	"context"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/gva/app/middleware"
@@ -9,6 +11,8 @@ import (
 	"github.com/gva/env"
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/lang"
+	"github.com/gva/internal/treeprint"
+	"github.com/gva/utils/color"
 	"github.com/gva/utils/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
@@ -147,4 +151,70 @@ func (b *Bootstrap) stop(ctx context.Context) {
 
 	log.Info().Msgf("%s was successful shutdown.", b.cfg.App.Name)
 	log.Info().Msg("\u001b[96mSee you again👋\u001b[0m")
+}
+
+func printRoutes(routes []*echo.Route) {
+	tree := treeprint.New("api")
+	N := 4
+
+	sort.Slice(routes, func(i, j int) bool {
+		return len(strings.Split(routes[i].Path, "")) > len(strings.Split(routes[j].Path, ""))
+	})
+
+	maxLenth := calculateMaxLength(routes, N)
+	for _, r := range routes {
+		if r.Method == "echo_route_not_found" {
+			continue
+		}
+
+		paths := []any{}
+		for _, str := range strings.SplitAfterN(r.Path, "/", N) {
+			str := strings.TrimSuffix(str, "/")
+			if str == "" {
+				continue
+			}
+			paths = append(paths, strings.TrimSuffix(str, "/"))
+		}
+		if len(paths) > N-2 {
+			paths[N-2] = strings.ReplaceAll(strings.Split(paths[N-2].(string), "/")[0], "/", "")
+		}
+		httpPath := color.MethodColor(r.Method) + " " + r.Path
+		space := calculateDynamicSpace(httpPath, maxLenth)
+		paths = append(paths, httpPath+space+color.Cyan(r.Name))
+		tree.AddPath(paths...)
+	}
+
+	treeprint.Print(tree)
+}
+
+func calculateMaxLength(routes []*echo.Route, N int) int {
+	maxLength := 0
+
+	for _, r := range routes {
+		paths := []any{}
+		for _, str := range strings.SplitAfterN(r.Path, "/", N) {
+			paths = append(paths, strings.TrimSuffix(str, "/"))
+		}
+
+		length := 0
+		for _, str := range paths {
+			strs := strings.ReplaceAll(str.(string), "/", "")
+			length += len(strs)
+		}
+
+		length += len(color.MethodColor(r.Method))
+		if length > maxLength {
+			maxLength = length
+		}
+	}
+
+	return maxLength
+}
+
+func calculateDynamicSpace(path string, maxLength int) string {
+	spaceNeeded := maxLength - len(path)
+	if spaceNeeded <= 0 {
+		spaceNeeded = 1
+	}
+	return strings.Repeat(" ", spaceNeeded)
 }

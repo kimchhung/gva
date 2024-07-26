@@ -3,7 +3,7 @@ package permission
 import (
 	"github.com/gva/api/admin/module/permission/dto"
 	"github.com/gva/app/database/schema/xid"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/internal/rql"
@@ -11,14 +11,16 @@ import (
 )
 
 // don't remove for runtime type checking
-var _ interface{ echoc.Controller } = (*PermissionController)(nil)
+var _ interface{ ctr.CTR } = (*PermissionController)(nil)
 
 type PermissionController struct {
 	service *PermissionService
 }
 
-func (con *PermissionController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/permission")
+func (con *PermissionController) Init() *ctr.Ctr {
+	return ctr.New(
+		ctr.Group("/permission"),
+	)
 }
 
 func NewPermissionController(service *PermissionService) *PermissionController {
@@ -36,16 +38,16 @@ func NewPermissionController(service *PermissionService) *PermissionController {
 // @Success 200 {object} response.Response{data=map[string]dto.PermissionResponse{list=[]dto.PermissionResponse}}"
 // @Router /permission [get]
 // @Security Bearer
-func (con *PermissionController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *PermissionController) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
 			ID xid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
-	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
+	return ctr.GET("/").Do(func() []ctr.H {
 		params := new(dto.PermissionPagedRequest)
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Parse(
 				request.RqlQueryParser(&params.Params, parser),
 				request.QueryParser(params),
@@ -75,13 +77,13 @@ func (con *PermissionController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param id path int true "Permission ID"
 // @Success   200 {object} response.Response{data=dto.PermissionResponse}
 // @Router /permission/{id} [get]
-func (con *PermissionController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/:id").Name("get one Permission").DoWithScope(func() []echo.HandlerFunc {
+func (con *PermissionController) Get() *ctr.Route {
+	return ctr.GET("/:id").Name("get one Permission").Do(func() []ctr.H {
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.ParamsParser(param),
 			),
@@ -109,11 +111,11 @@ func (con *PermissionController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param Permission body dto.PermissionRequest true "Permission data"
 // @Success  200 {object} response.Response{data=dto.PermissionResponse}
 // @Router /permission [post]
-func (con *PermissionController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Post("/").Name("create one Permission").DoWithScope(func() []echo.HandlerFunc {
+func (con *PermissionController) Create() *ctr.Route {
+	return ctr.POST("/").Name("create one Permission").Do(func() []ctr.H {
 		body := new(dto.PermissionRequest)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.BodyParser(body),
 			),
@@ -143,14 +145,14 @@ func (con *PermissionController) Create(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Param Permission body dto.PermissionRequest true "Permission data"
 // @Success  200 {object} response.Response{data=dto.PermissionResponse}
 // @Router /permission/{id} [patch]
-func (con *PermissionController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Patch("/:id").Name("update one Permission").DoWithScope(func() []echo.HandlerFunc {
+func (con *PermissionController) Update() *ctr.Route {
+	return ctr.PUT("/:id").Name("update one Permission").Do(func() []ctr.H {
 		body := new(dto.PermissionRequest)
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.ParamsParser(param),
 				request.BodyParser(body),
@@ -179,13 +181,13 @@ func (con *PermissionController) Update(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Param id path int true "Permission ID"
 // @Success  200 {object} response.Response{} "The permission deleted successfully!"
 // @Router /permission/{id} [delete]
-func (con *PermissionController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Delete("/:id").Name("delete one Permission").DoWithScope(func() []echo.HandlerFunc {
+func (con *PermissionController) Delete() *ctr.Route {
+	return ctr.DELETE("/:id").Name("delete one Permission").Do(func() []ctr.H {
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.ParamsParser(param),
 			),

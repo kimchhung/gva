@@ -66,18 +66,5 @@ func printStartupMessage(cfg *env.Config) {
 	fmt.Printf("\n --------------- %s --------------- \n\n", color.White(cfg.App.Name)+" is running at the moment!")
 	fmt.Println(table)
 	fmt.Print("\n")
-}
 
-func printRoutes(routes []*echo.Route) {
-	table := uitable.New()
-	table.AddRow("Method", "Path", "Name")
-	for _, r := range routes {
-		table.AddRow(color.MethodColor(r.Method), color.Yellow(r.Path), color.Cyan(r.Name))
-	}
-
-	table.Wrap = true
-	// Print the table
-	fmt.Print("\n ------------- Routes --------------- \n\n")
-	fmt.Println(table)
-	fmt.Print("\n")
 }

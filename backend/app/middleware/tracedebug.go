@@ -33,7 +33,9 @@ func TraceDebug(cfg *env.Config) echo.MiddlewareFunc {
 			}
 		}
 
-		return false
+		return true
+
+		// return false
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {

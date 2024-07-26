@@ -4,26 +4,28 @@ import (
 	"github.com/labstack/echo/v4"
 
 	docs "github.com/gva/api/bot/docs"
+	"github.com/gva/app/common/controller"
 	"github.com/gva/env"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/utils"
 	"github.com/gva/utils/swagger"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-var _ interface{ echoc.ModuleRouter } = (*Router)(nil)
+var _ interface{ ctr.ModuleRouter } = (*Router)(nil)
 
 type Router struct {
-	controllers []echoc.Controller
+	controllers []ctr.CTR
 }
 
-func NewRouter(controllers []echoc.Controller) *Router {
+func NewRouter(controllers []ctr.CTR) *Router {
 	return &Router{controllers}
 }
 
-func (r *Router) Register(app *echo.Echo, args ...any) {
-	cfg := args[0].(*env.Config)
+func (r *Router) Register(args ...any) {
+	app := args[0].(*echo.Echo)
+	cfg := args[1].(*env.Config)
 
 	//default value if not exist in env config
 	utils.SetIfEmpty(&cfg.API.Bot.BasePath, "/bot/v1")
@@ -36,7 +38,7 @@ func (r *Router) Register(app *echo.Echo, args ...any) {
 	)
 
 	api := app.Group(cfg.API.Bot.BasePath)
-	for _, controller := range r.controllers {
-		echoc.Register(api, controller)
+	if err := controller.RegisterEcho(api, r.controllers); err != nil {
+		panic(err)
 	}
 }

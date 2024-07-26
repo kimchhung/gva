@@ -8,10 +8,9 @@ import (
 	"github.com/gva/api/admin/module/permission"
 
 	"github.com/gva/app/common/controller"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 
 	"github.com/gva/api/admin/module/department"
-	"github.com/gva/api/admin/module/todo"
 	"go.uber.org/fx"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )
@@ -23,15 +22,14 @@ var NewAdminModules = fx.Module("admin-module",
 	permission.PermissionModule,
 	index.IndexModule,
 	department.DepartmentModule,
-	todo.TodoModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
-			// convert type *Router => echoc.ModuleRouter
-			fx.As(new(echoc.ModuleRouter)),
+			// convert type *Router => ctr.ModuleRouter
+			fx.As(new(ctr.ModuleRouter)),
 
-			// take group params from container => []echoc.Controller -> NewRouter
+			// take group params from container => []ctr.CTR -> NewRouter
 			fx.ParamTags(controller.TagAdminController),
 
 			// register to container as member of module group

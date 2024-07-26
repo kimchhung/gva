@@ -3,7 +3,7 @@ package department
 import (
 	"github.com/gva/api/admin/module/department/dto"
 	"github.com/gva/app/database/schema/xid"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/internal/rql"
@@ -11,14 +11,16 @@ import (
 )
 
 // don't remove for runtime type checking
-var _ interface{ echoc.Controller } = (*DepartmentController)(nil)
+var _ interface{ ctr.CTR } = (*DepartmentController)(nil)
 
 type DepartmentController struct {
 	service *DepartmentService
 }
 
-func (con *DepartmentController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/department")
+func (con *DepartmentController) Init() *ctr.Ctr {
+	return ctr.New(
+		ctr.Group("/department"),
+	)
 }
 
 func NewDepartmentController(service *DepartmentService) *DepartmentController {
@@ -36,16 +38,16 @@ func NewDepartmentController(service *DepartmentService) *DepartmentController {
 // @Success 200 {object} response.Response{data=map[string]dto.DepartmentResponse{list=[]dto.DepartmentResponse}} "Successfully retrieved Departments"
 // @Router /department [get]
 // @Security Bearer
-func (con *DepartmentController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *DepartmentController) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
 			ID xid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
-	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
+	return ctr.GET("/").Do(func() []ctr.H {
 		params := new(dto.DepartmentPagedRequest)
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Parse(
 				request.RqlQueryParser(&params.Params, parser),
 				request.QueryParser(params),
@@ -75,13 +77,13 @@ func (con *DepartmentController) List(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param id path int true "Department ID"
 // @Success   200 {object} response.Response{data=dto.DepartmentResponse}
 // @Router /department/{id} [get]
-func (con *DepartmentController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *DepartmentController) Get() *ctr.Route {
+	return ctr.GET("/:id").Do(func() []ctr.H {
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.ParamsParser(param),
 			),
@@ -110,11 +112,11 @@ func (con *DepartmentController) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param Department body dto.DepartmentRequest true "Department data"
 // @Success  200 {object} response.Response{data=dto.DepartmentResponse} "Successfully created Department"
 // @Router /department [post]
-func (con *DepartmentController) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Post("/").DoWithScope(func() []echo.HandlerFunc {
+func (con *DepartmentController) Create() *ctr.Route {
+	return ctr.POST("/").Do(func() []ctr.H {
 		body := new(dto.DepartmentRequest)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.BodyParser(body),
 			),
@@ -145,14 +147,14 @@ func (con *DepartmentController) Create(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Param Department body dto.DepartmentRequest true "Department data"
 // @Success  200 {object} response.Response{data=dto.DepartmentResponse} "Successfully updated Department"
 // @Router /department/{id} [patch]
-func (con *DepartmentController) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Patch("/:id").DoWithScope(func() []echo.HandlerFunc {
+func (con *DepartmentController) Update() *ctr.Route {
+	return ctr.PUT("/:id").Do(func() []ctr.H {
 		body := new(dto.DepartmentRequest)
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.ParamsParser(param),
 				request.BodyParser(body),
@@ -182,13 +184,13 @@ func (con *DepartmentController) Update(meta *echoc.RouteMeta) echoc.MetaHandler
 // @Param id path int true "Department ID"
 // @Success  200 {object} response.Response{} "Successfully deleted Department"
 // @Router /department/{id} [delete]
-func (con *DepartmentController) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Delete("/:id").Name("delete one Department").DoWithScope(func() []echo.HandlerFunc {
+func (con *DepartmentController) Delete() *ctr.Route {
+	return ctr.DELETE("/:id").Name("delete one Department").Do(func() []ctr.H {
 		param := &struct {
 			ID xid.ID `param:"id" validate:"required"`
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.ParamsParser(param),
 			),

@@ -2,19 +2,18 @@ package router
 
 import (
 	"github.com/gva/app/common/controller"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 
-	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
 
-var _ interface{ echoc.ModuleRouter } = (*Router)(nil)
+var _ interface{ ctr.ModuleRouter } = (*Router)(nil)
 
 type Router struct {
-	modules []echoc.ModuleRouter
+	modules []ctr.ModuleRouter
 }
 
-func NewRouter(modules []echoc.ModuleRouter) *Router {
+func NewRouter(modules []ctr.ModuleRouter) *Router {
 	r := &Router{
 		modules: modules,
 	}
@@ -22,9 +21,9 @@ func NewRouter(modules []echoc.ModuleRouter) *Router {
 	return r
 }
 
-func (r *Router) Register(app *echo.Echo, args ...any) {
+func (r *Router) Register(args ...any) {
 	for _, r := range r.modules {
-		r.Register(app, args...)
+		r.Register(args...)
 	}
 }
 
@@ -32,7 +31,7 @@ func WithRouter(modules ...fx.Option) []fx.Option {
 	app := append(modules, fx.Provide(
 		// register as *Router
 		fx.Annotate(NewRouter,
-			// take group params from container => []echoc.ModuleRouter -> NewRouter
+			// take group params from container => []ctr.ModuleRouter -> NewRouter
 			fx.ParamTags(controller.TagModule),
 		),
 	))

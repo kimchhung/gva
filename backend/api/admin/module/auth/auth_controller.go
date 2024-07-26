@@ -3,7 +3,7 @@ package auth
 import (
 	"github.com/gva/api/admin/module/auth/dto"
 	"github.com/gva/app/common/service"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var _ interface{ echoc.Controller } = (*AuthController)(nil)
+var _ interface{ ctr.CTR } = (*AuthController)(nil)
 
 type AuthController struct {
 	service *AuthService
@@ -25,8 +25,10 @@ func NewAuthController(service *AuthService, jwt_s *service.JwtService) *AuthCon
 	}
 }
 
-func (con *AuthController) Init(r *echo.Group) *echo.Group {
-	return r.Group("/auth")
+func (con *AuthController) Init() *ctr.Ctr {
+	return ctr.New(
+		ctr.Group("/auth", con.jwt_s.RequiredAdmin()),
+	)
 }
 
 // @Tags			Auth
@@ -38,11 +40,11 @@ func (con *AuthController) Init(r *echo.Group) *echo.Group {
 // @Param			Auth	body		dto.LoginRequest	true	"Auth data"
 // @Success			200		{object}	response.Response{data=dto.LoginResponse}	"Successfully created Auth"
 // @Router			/auth/login [post]
-func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Post("/login").DoWithScope(func() []echo.HandlerFunc {
+func (con *AuthController) Login() *ctr.Route {
+	return ctr.POST("/login").Do(func() []ctr.H {
 		body := new(dto.LoginRequest)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.BodyParser(body),
 			),
@@ -70,11 +72,11 @@ func (con *AuthController) Login(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Param			Auth	body		dto.RegisterRequest		true	"Registration data"
 // @Success			200		{object}	response.Response{data=dto.RegisterResponse}	"Successfully registered admin"
 // @Router			/auth/register [post]
-func (con *AuthController) Register(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Post("/register").DoWithScope(func() []echo.HandlerFunc {
+func (con *AuthController) Register() *ctr.Route {
+	return ctr.POST("/register").Do(func() []ctr.H {
 		body := new(dto.RegisterRequest)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			request.Validate(
 				request.BodyParser(body),
 			),
@@ -102,14 +104,11 @@ func (con *AuthController) Register(meta *echoc.RouteMeta) echoc.MetaHandler {
 // @Produce		json
 // @Success		200	{object}	response.Response{data=ent.Admin}	"Successfully registered admin"
 // @Router			/auth/me [get]
-func (con *AuthController) Me(meta *echoc.RouteMeta) echoc.MetaHandler {
-	meta.Use(
-		con.jwt_s.RequiredAdmin(),
-	)
-	return meta.Get("/me").DoWithScope(func() []echo.HandlerFunc {
+func (con *AuthController) Me() *ctr.Route {
+	return ctr.GET("/me").Use(con.jwt_s.RequiredAdmin()).Do(func() []ctr.H {
 		admin := new(ent.Admin)
 
-		return []echo.HandlerFunc{
+		return []ctr.H{
 			// extract the admin from context which inject by jwt_s.RequiredAdmin()
 			request.MustAdmin(admin),
 

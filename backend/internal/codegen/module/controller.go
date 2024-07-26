@@ -17,7 +17,7 @@ import (
 )
 
 // don't remove for runtime type checking
-var _ interface{ echoc.Controller } = (*{{.EntityPascal}}Controller)(nil)
+var _ interface{ ctr.CTR} = (*{{.EntityPascal}}Controller)(nil)
 
 
 type {{.EntityPascal}}Controller struct {
@@ -43,15 +43,15 @@ func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service) *{{.Entit
 // @Success 200 {object} response.Response{data=map[string]dto.{{.EntityPascal}}Response{list=[]dto.{{.EntityPascal}}Response}}"
 // @Router /{{.EntityKebab}} [get]
 // @Security Bearer
-func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHandler {
+func (con *{{.EntityPascal}}Controller) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
 			ID xid.ID %sjson:"id" rql:"filter,sort"%s
 		}{},
 	})
-	return meta.Get("/").DoWithScope(func() []echo.HandlerFunc {
+	return ctr.GET("/").Do(func() []ctr.H {
 		params := new(dto.{{.EntityPascal}}PagedRequest)
-		return []echo.HandlerFunc{
+		return []ctr.H {
 			request.Parse(
 				request.RqlQueryParser(&params.Params, parser),
 				request.QueryParser(params),
@@ -81,13 +81,13 @@ func (con *{{.EntityPascal}}Controller) List(meta *echoc.RouteMeta) echoc.MetaHa
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success   200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}}/{id} [get]
-func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Get("/:id").Name("get one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
+func (con *{{.EntityPascal}}Controller) Get() *ctr.Route {
+	return ctr.GET("/:id").Name("get one {{.EntityPascal}}").Do(func() []ctr.H {
 		param := &struct {
 			ID xid.ID %sparam:"id" validate:"required"%s
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H {
 			request.Validate(
 				request.ParamsParser(param),
 			),
@@ -115,11 +115,11 @@ func (con *{{.EntityPascal}}Controller) Get(meta *echoc.RouteMeta) echoc.MetaHan
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
 // @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}} [post]
-func (con *{{.EntityPascal}}Controller) Create(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Post("/").Name("create one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
+func (con *{{.EntityPascal}}Controller) Create() *ctr.Route {
+	return ctr.POST("/").Name("create one {{.EntityPascal}}").Do(func() []ctr.H {
 		body := new(dto.{{.EntityPascal}}Request)
 
-		return []echo.HandlerFunc{
+		return []ctr.H {
 			request.Validate(
 				request.BodyParser(body),
 			),
@@ -150,14 +150,14 @@ func (con *{{.EntityPascal}}Controller) Create(meta *echoc.RouteMeta) echoc.Meta
 // @Param {{.EntityPascal}} body dto.{{.EntityPascal}}Request true "{{.EntityPascal}} data"
 // @Success  200 {object} response.Response{data=dto.{{.EntityPascal}}Response}
 // @Router /{{.EntityKebab}}/{id} [patch]
-func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Patch("/:id").Name("update one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
+func (con *{{.EntityPascal}}Controller) Update() *ctr.Route {
+	return ctr.PUT("/:id").Name("update one {{.EntityPascal}}").Do(func() []ctr.H {
 		body := new(dto.{{.EntityPascal}}Request)
 		param := &struct {
 			ID xid.ID %sparam:"id" validate:"required"%s
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H {
 			request.Validate(
 				request.ParamsParser(param),
 				request.BodyParser(body),
@@ -186,13 +186,13 @@ func (con *{{.EntityPascal}}Controller) Update(meta *echoc.RouteMeta) echoc.Meta
 // @Param id path int true "{{.EntityPascal}} ID"
 // @Success  200 {object} response.Response{} "The {{.EntityAllLower}} deleted successfully!"
 // @Router /{{.EntityKebab}}/{id} [delete]
-func (con  *{{.EntityPascal}}Controller) Delete(meta *echoc.RouteMeta) echoc.MetaHandler {
-	return meta.Delete("/:id").Name("delete one {{.EntityPascal}}").DoWithScope(func() []echo.HandlerFunc {
+func (con  *{{.EntityPascal}}Controller) Delete() *ctr.Route {
+	return ctr.DELETE("/:id").Name("delete one {{.EntityPascal}}").Do(func() []ctr.H {
 		param := &struct {
 			ID xid.ID %sparam:"id" validate:"required"%s
 		}{}
 
-		return []echo.HandlerFunc{
+		return []ctr.H {
 			request.Validate(
 				request.ParamsParser(param),
 			),

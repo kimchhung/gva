@@ -4,7 +4,7 @@ import (
 	"github.com/gva/api/web/graph"
 	index "github.com/gva/api/web/module/index"
 	"github.com/gva/app/common/controller"
-	"github.com/gva/internal/echoc"
+	"github.com/gva/internal/ctr"
 
 	"go.uber.org/fx"
 )
@@ -15,13 +15,13 @@ var NewWebModules = fx.Module("web-module",
 	// Add Router
 	fx.Provide(
 		fx.Annotate(NewRouter,
-			// convert type *Router => echoc.ModuleRouter
-			fx.As(new(echoc.ModuleRouter)),
+			// convert type *Router => ctr.ModuleRouter
+			fx.As(new(ctr.ModuleRouter)),
 
-			// take group params from container => []echoc.Controller -> NewRouter
+			// take group params from container => []ctr.CTR -> NewRouter
 			fx.ParamTags(controller.TagWebController),
 
-			// register echoc.ModuleRouter to container as member of module group
+			// register ctr.ModuleRouter to container as member of module group
 			fx.ResultTags(controller.TagModule),
 		),
 	),
