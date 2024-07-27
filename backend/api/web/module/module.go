@@ -2,7 +2,7 @@ package module
 
 import (
 	"github.com/gva/api/web/graph"
-	index "github.com/gva/api/web/module/index"
+	mdatetime "github.com/gva/api/web/module/datetime"
 	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/ctr"
 
@@ -10,7 +10,7 @@ import (
 )
 
 var NewWebModules = fx.Module("web-module",
-	index.IndexModule,
+	mdatetime.DatetimeModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(

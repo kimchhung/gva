@@ -68,6 +68,10 @@ func (r *Route) GetPath() string {
 	return "/" + r.path
 }
 
+func (r *Route) GetFullPath() string {
+	return r.ctr.GetPrefix() + r.GetPath()
+}
+
 func (r *Route) Path(path string) *Route {
 	path = strings.TrimPrefix(path, "/")
 	path = strings.TrimSuffix(path, "/")

@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/handler/debug"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
@@ -43,15 +43,22 @@ func (s *Server) Register(prefix string) {
 		}),
 	)
 
-	srv.Use(&debug.Tracer{})
+	// srv.Use(&debug.Tracer{})
 	srv.Use(entgql.Transactioner{TxOpener: s.db.Client})
+	srv.AddTransport(&transport.Websocket{})
 
 	playground := playground.ApolloSandboxHandler(
 		"GraphQL",
 		prefix+"/query",
+		playground.WithApolloSandboxEndpointIsEditable(true),
 	)
 
 	s.echo.POST(prefix+"/query", func(c echo.Context) error {
+		srv.ServeHTTP(c.Response(), c.Request())
+		return nil
+	})
+
+	s.echo.GET(prefix+"/query", func(c echo.Context) error {
 		srv.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})

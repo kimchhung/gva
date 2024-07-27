@@ -15,39 +15,7 @@ const docTemplateweb = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/now": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Time"
-                ],
-                "summary": "Current Server Time",
-                "operationId": "now",
-                "responses": {
-                    "200": {
-                        "description": "format time.RFC3339",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/sse/now": {
+        "/datetime/now": {
             "get": {
                 "consumes": [
                     "text/event-stream"
@@ -55,8 +23,8 @@ const docTemplateweb = `{
                 "tags": [
                     "Time"
                 ],
-                "summary": "SSE Current Server Time",
-                "operationId": "sse-now",
+                "summary": "WS Current Server Time",
+                "operationId": "ws-now",
                 "responses": {
                     "200": {
                         "description": "format time.RFC3339",
@@ -67,7 +35,7 @@ const docTemplateweb = `{
                 }
             }
         },
-        "/ws/now": {
+        "/datetime/sse/now": {
             "get": {
                 "consumes": [
                     "text/event-stream"
@@ -75,8 +43,8 @@ const docTemplateweb = `{
                 "tags": [
                     "Time"
                 ],
-                "summary": "WS Current Server Time",
-                "operationId": "ws-now",
+                "summary": "SSE Current Server Time",
+                "operationId": "sse-now",
                 "responses": {
                     "200": {
                         "description": "format time.RFC3339",

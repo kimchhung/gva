@@ -1,4 +1,4 @@
-package index
+package mdatetime
 
 import (
 	"github.com/gva/app/common/controller"
@@ -8,7 +8,7 @@ import (
 )
 
 // Register bulkly
-var IndexModule = fx.Module("IndexModule",
+var DatetimeModule = fx.Module("IndexModule",
 	fx.Provide(NewIndexService),
 
 	// Regiser Controller
@@ -16,4 +16,6 @@ var IndexModule = fx.Module("IndexModule",
 		fx.As(new(ctr.CTR)),
 		fx.ResultTags(controller.TagWebController),
 	)),
+
+	fx.Invoke(BackgroundNow),
 )

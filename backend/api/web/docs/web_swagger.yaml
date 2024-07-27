@@ -19,38 +19,7 @@ info:
   title: GVA Web API
   version: "1.0"
 paths:
-  /now:
-    get:
-      operationId: now
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: format time.RFC3339
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-      summary: Current Server Time
-      tags:
-      - Time
-  /sse/now:
-    get:
-      consumes:
-      - text/event-stream
-      operationId: sse-now
-      responses:
-        "200":
-          description: format time.RFC3339
-          schema:
-            type: string
-      summary: SSE Current Server Time
-      tags:
-      - Time
-  /ws/now:
+  /datetime/now:
     get:
       consumes:
       - text/event-stream
@@ -61,6 +30,19 @@ paths:
           schema:
             type: string
       summary: WS Current Server Time
+      tags:
+      - Time
+  /datetime/sse/now:
+    get:
+      consumes:
+      - text/event-stream
+      operationId: sse-now
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            type: string
+      summary: SSE Current Server Time
       tags:
       - Time
 securityDefinitions:

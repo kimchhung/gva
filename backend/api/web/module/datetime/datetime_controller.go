@@ -1,4 +1,4 @@
-package index
+package mdatetime
 
 import (
 	"context"
@@ -17,20 +17,22 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var _ interface{ ctr.CTR } = (*IndexController)(nil)
+var _ interface{ ctr.CTR } = (*DatetimeController)(nil)
 
-type IndexController struct {
-	index_s *IndexService
+type DatetimeController struct {
+	index_s *DatetimeService
 	log     zerolog.Logger
 	psub    pubsub.Pubsub
 }
 
-func (con *IndexController) Init() *ctr.Ctr {
-	return ctr.New()
+func (con *DatetimeController) Init() *ctr.Ctr {
+	return ctr.New(
+		ctr.Group("datetime"),
+	)
 }
 
-func NewIndexController(index_s *IndexService, log *zerolog.Logger, psub pubsub.Pubsub) *IndexController {
-	return &IndexController{
+func NewIndexController(index_s *DatetimeService, log *zerolog.Logger, psub pubsub.Pubsub) *DatetimeController {
+	return &DatetimeController{
 		index_s: index_s,
 		log: log.With().
 			Str("module", "index").
@@ -44,8 +46,8 @@ func NewIndexController(index_s *IndexService, log *zerolog.Logger, psub pubsub.
 // @ID          now
 // @Produce     json
 // @Success     200 {object} response.Response{data=string} "format time.RFC3339"
-// @Router      /now [get]
-func (con *IndexController) Now() *ctr.Route {
+// @Router      /datetime/now [get]
+func (con *DatetimeController) Now() *ctr.Route {
 	return ctr.GET("/now").Do(func() []ctr.H {
 		return []ctr.H{
 			func(c echo.Context) error {
@@ -67,21 +69,8 @@ func (con *IndexController) Now() *ctr.Route {
 // @ID          sse-now
 // @Accept 		text/event-stream
 // @Success     200 {object} string "format time.RFC3339"
-// @Router      /sse/now [get]
-func (con *IndexController) SSENow() *ctr.Route {
-	ticker := time.NewTicker(3 * time.Second)
-	topic := "time_updates"
-
-	go func() {
-		for {
-			<-ticker.C
-			ts := "time: " + time.Now().Format(time.RFC3339)
-			if err := con.psub.Pub(context.Background(), topic, ts); err != nil {
-				con.log.Error().Err(err).Msg("")
-			}
-			fmt.Println("publish:", ts)
-		}
-	}()
+// @Router      /datetime/sse/now [get]
+func (con *DatetimeController) SSENow() *ctr.Route {
 
 	return ctr.GET("/sse/now").Do(func() []ctr.H {
 		return []ctr.H{
@@ -91,7 +80,7 @@ func (con *IndexController) SSENow() *ctr.Route {
 				w.Header().Set("Cache-Control", "no-cache")
 				w.Header().Set("Connection", "keep-alive")
 
-				subscription, err := con.psub.Sub(context.Background(), topic)
+				subscription, err := con.psub.Sub(context.Background(), "now")
 				if err != nil {
 					return err
 				}
@@ -112,7 +101,7 @@ func (con *IndexController) SSENow() *ctr.Route {
 						defer fmt.Println("recieve:", payload)
 
 						event := sse.Event{
-							Data: []byte(payload.(string)),
+							Data: []byte(payload.(time.Time).Format(time.RFC3339)),
 						}
 						if err := event.MarshalTo(w); err != nil {
 							return err
@@ -130,8 +119,8 @@ func (con *IndexController) SSENow() *ctr.Route {
 // @ID          ws-now
 // @Accept 		text/event-stream
 // @Success     200 {object} string "format time.RFC3339"
-// @Router      /ws/now [get]
-func (con *IndexController) WSNow() *ctr.Route {
+// @Router      /datetime/now [get]
+func (con *DatetimeController) WSNow() *ctr.Route {
 	upgrader := websocket.Upgrader{}
 	return ctr.GET("/ws/now").Do(func() []ctr.H {
 		return []ctr.H{
@@ -142,7 +131,7 @@ func (con *IndexController) WSNow() *ctr.Route {
 				}
 
 				defer ws.Close()
-				result, err := con.psub.Sub(context.Background(), "time_updates")
+				result, err := con.psub.Sub(context.Background(), "now")
 				if err != nil {
 					return err
 				}
@@ -151,7 +140,7 @@ func (con *IndexController) WSNow() *ctr.Route {
 				go func() {
 					for {
 						<-ticker.C
-						err := con.psub.Pub(context.Background(), "time_updates", time.Now().UTC().Format(time.RFC3339))
+						err := con.psub.Pub(context.Background(), "now", time.Now().UTC().Format(time.RFC3339))
 						if err != nil {
 							log.Printf("error publishing: %v", err)
 						}
