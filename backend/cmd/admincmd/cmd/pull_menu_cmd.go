@@ -28,7 +28,7 @@ var pushRouteCmd = &cobra.Command{
 		defer log.Info().Msg("Push routes is completed")
 
 		db := database.NewDatabase(env.NewConfig(), log)
-		db.ConnectDatabase()
+		db.Connect()
 
 		menu.PushMenuList(ctx, db.Client, routeDataPath)
 	},
@@ -47,7 +47,7 @@ var pullRouteCmd = &cobra.Command{
 		defer log.Info().Msg("Pull routes is completed")
 
 		db := database.NewDatabase(env.NewConfig(), log)
-		db.ConnectDatabase()
+		db.Connect()
 
 		menu.PullMenuList(ctx, db.Client, routeDataPath)
 	},

@@ -46,6 +46,10 @@ type (
 		Mysql struct {
 			DSN string `toml:"dsn"`
 		}
+		Redis struct {
+			Addr     string `toml:"addr"`
+			Password string `toml:"password"`
+		}
 	}
 	seed struct {
 		Enable     bool

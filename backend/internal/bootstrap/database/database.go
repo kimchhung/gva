@@ -40,7 +40,7 @@ func NewDatabase(cfg *env.Config, log *zerolog.Logger) *Database {
 	return db
 }
 
-func (db *Database) ConnectDatabase() error {
+func (db *Database) Connect() error {
 	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
 	if err != nil {
 		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
@@ -58,7 +58,7 @@ func (db *Database) ConnectDatabase() error {
 		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}
 
-	db.Log.Info().Msg("database is connected")
+	db.Log.Info().Msg("Database is connected")
 	return nil
 }
 
@@ -66,7 +66,7 @@ func (db *Database) Sql() *dsql.DB {
 	return db.sql.DB()
 }
 
-func (db *Database) ShutdownDatabase() error {
+func (db *Database) Close() error {
 	defer db.Log.Info().Msg("Database connection is closed")
 
 	if err := db.Client.Close(); err != nil {

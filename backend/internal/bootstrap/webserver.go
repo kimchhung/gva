@@ -66,5 +66,4 @@ func printStartupMessage(cfg *env.Config) {
 	fmt.Printf("\n --------------- %s --------------- \n\n", color.White(cfg.App.Name)+" is running at the moment!")
 	fmt.Println(table)
 	fmt.Print("\n")
-
 }

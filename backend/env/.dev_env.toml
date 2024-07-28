@@ -17,6 +17,10 @@ key_file = "./storage/selfsigned.key"
 [db.mysql]
 dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true" # <username>:<password>@tcp(<host>:<port>)/<dbname>
 
+[db.redis]
+addr = "localhost:6379"
+password = "123456"
+
 [seed]
 enable = true
 

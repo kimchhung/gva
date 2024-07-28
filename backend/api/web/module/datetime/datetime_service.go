@@ -4,20 +4,20 @@ import (
 	"context"
 	"time"
 
+	"github.com/gva/app/common/service"
 	"github.com/gva/internal/bootstrap/database"
-	"github.com/gva/internal/pubsub"
 )
 
 type DatetimeService struct {
-	db   *database.Database
-	psub pubsub.Pubsub
+	db       *database.Database
+	pubsub_s *service.PubsubService
 }
 
 // NewAuthService initializes a new AuthService with a JwtService and a UserStore.
-func NewIndexService(db *database.Database, psub pubsub.Pubsub) *DatetimeService {
+func NewIndexService(db *database.Database, pubsub_s *service.PubsubService) *DatetimeService {
 	return &DatetimeService{
-		db:   db,
-		psub: psub,
+		db:       db,
+		pubsub_s: pubsub_s,
 	}
 }
 
@@ -40,23 +40,20 @@ func (s *DatetimeService) Now(ctx context.Context) (*time.Time, error) {
 
 func (s *DatetimeService) NowChannel(ctx context.Context) (<-chan *time.Time, error) {
 	ch := make(chan *time.Time)
-	sub, err := s.psub.Sub(ctx, "now")
+	sub, err := s.pubsub_s.Local().Sub(ctx, "now")
 	if err != nil {
 		return nil, err
 	}
 
 	go func() {
-		defer sub.UnSub()
-
 		for {
 			select {
 			case <-ctx.Done():
+				sub.UnSub()
 				return
-			default:
-				for payload := range sub.Payload() {
-					if time, ok := payload.(time.Time); ok {
-						ch <- &time
-					}
+			case payload := <-sub.Payload():
+				if time, ok := payload.(time.Time); ok {
+					ch <- &time
 				}
 			}
 		}

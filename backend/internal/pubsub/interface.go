@@ -6,7 +6,7 @@ import (
 )
 
 type Payload any
-type Topic any
+type Topic string
 
 // SubResult represents the result of subscribing to a topic.
 //
@@ -20,9 +20,18 @@ type SubResult interface {
 	UnSub() error
 }
 
-type Pubsub interface {
+type Broker interface {
 	Sub(ctx context.Context, topic Topic) (SubResult, error)
+	Listen(ctx context.Context) error
+}
+
+type Publisher interface {
 	Pub(ctx context.Context, topic Topic, m Payload) error
+}
+
+type Pubsub interface {
+	Publisher
+	Broker
 }
 
 var (

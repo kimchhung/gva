@@ -27,6 +27,7 @@ type Bootstrap struct {
 	app         *echo.Echo
 	middlewares *middleware.Middleware
 	db          *database.Database
+	redis       *database.Redis
 	log         *zerolog.Logger
 
 	listeners      []chan struct{}
@@ -40,6 +41,7 @@ func NewBootstrap(
 	app *echo.Echo,
 	middlewares *middleware.Middleware,
 	db *database.Database,
+	redis *database.Redis,
 	log *zerolog.Logger,
 ) *Bootstrap {
 	return &Bootstrap{
@@ -50,6 +52,7 @@ func NewBootstrap(
 		middlewares: middlewares,
 		db:          db,
 		log:         log,
+		redis:       redis,
 	}
 }
 
@@ -79,16 +82,19 @@ func (b *Bootstrap) start(ctx context.Context) {
 
 	// Initailize validator and translator
 	if err := lang.InitializeTranslator(); err != nil {
-		b.log.Panic().Err(err).Msg("failed to initialize translator!")
+		b.log.Panic().Err(err).Msg("")
 	}
 
 	if err := validator.InitializeValidator(); err != nil {
-		b.log.Panic().Err(err).Msg("failed to initialize validator!")
+		b.log.Panic().Err(err).Msg("")
 	}
 
-	// Connect db
-	if err := b.db.ConnectDatabase(); err != nil {
-		b.log.Panic().Err(err).Msg("failed to connect to db!")
+	if err := b.db.Connect(); err != nil {
+		b.log.Panic().Err(err).Msg("")
+	}
+
+	if err := b.redis.Connect(); err != nil {
+		b.log.Panic().Err(err).Msg("")
 	}
 
 	// Register middlewares & routes
@@ -97,8 +103,13 @@ func (b *Bootstrap) start(ctx context.Context) {
 
 	b.app.Server.RegisterOnShutdown(func() {
 		log.Info().Msg("1- Shutdown the database")
-		if err := b.db.ShutdownDatabase(); err != nil {
-			log.Err(err).Msg("failed to shutdown db!")
+		if err := b.db.Close(); err != nil {
+			log.Err(err).Msg("")
+		}
+
+		log.Info().Msg("2- Shutdown the redis")
+		if err := b.redis.Close(); err != nil {
+			log.Err(err).Msg("")
 		}
 	})
 

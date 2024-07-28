@@ -2,7 +2,7 @@ package pubsubchannel
 
 import (
 	"context"
-	"log"
+	"errors"
 
 	"github.com/gva/internal/pubsub"
 )
@@ -12,6 +12,7 @@ type memoryPubsub struct {
 	addSubscriber    chan Subscriber
 	removeSubscriber chan Subscriber
 	publishChan      chan PublishRequest
+	isStarted        bool
 }
 
 type PublishRequest struct {
@@ -38,55 +39,8 @@ func NewMemoryPubsub() pubsub.Pubsub {
 		topics:           make(map[pubsub.Topic]map[*chan pubsub.Payload]struct{}),
 		addSubscriber:    make(chan Subscriber),
 		removeSubscriber: make(chan Subscriber),
-		publishChan:      make(chan PublishRequest),
+		publishChan:      make(chan PublishRequest, 100),
 	}
-
-	go func(m *memoryPubsub) {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Printf("Recovered from panic: %v\n", r)
-			}
-		}()
-
-		for {
-			select {
-			case sub := <-m.addSubscriber:
-				if m.topics[sub.topic] == nil {
-					m.topics[sub.topic] = map[*chan pubsub.Payload]struct{}{}
-				}
-
-				m.topics[sub.topic][sub.subId] = struct{}{}
-
-			case sub := <-m.removeSubscriber:
-				subs, hasTopic := m.topics[sub.topic]
-				if !hasTopic {
-					continue
-				}
-
-				_, hasSub := subs[sub.subId]
-				if !hasSub {
-					continue
-				}
-
-				delete(subs, sub.subId)
-				if len(subs) == 0 {
-					delete(m.topics, sub.topic)
-				}
-
-			case pub := <-m.publishChan:
-				subs, hasTopic := m.topics[pub.topic]
-				if !hasTopic {
-					continue
-				}
-
-				for subId := range subs {
-					sub := *subId
-					sub <- pub.payload
-				}
-			}
-		}
-	}(m)
-
 	return m
 }
 
@@ -101,7 +55,7 @@ func (b *memoryPubsub) Pub(ctx context.Context, topic pubsub.Topic, p pubsub.Pay
 }
 
 func (b *memoryPubsub) Sub(ctx context.Context, topic pubsub.Topic) (pubsub.SubResult, error) {
-	ch := make(chan pubsub.Payload, 1000)
+	ch := make(chan pubsub.Payload)
 	subscriber := Subscriber{
 		topic: topic,
 		subId: &ch,
@@ -114,4 +68,53 @@ func (b *memoryPubsub) Sub(ctx context.Context, topic pubsub.Topic) (pubsub.SubR
 
 	b.addSubscriber <- subscriber
 	return subscriber, nil
+}
+
+func (m *memoryPubsub) Listen(ctx context.Context) error {
+	if m.isStarted {
+		return errors.New("can't listen more than once")
+	}
+
+	m.isStarted = true
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+
+		case sub := <-m.addSubscriber:
+			if m.topics[sub.topic] == nil {
+				m.topics[sub.topic] = map[*chan pubsub.Payload]struct{}{}
+			}
+
+			m.topics[sub.topic][sub.subId] = struct{}{}
+
+		case sub := <-m.removeSubscriber:
+			subs, hasTopic := m.topics[sub.topic]
+			if !hasTopic {
+				continue
+			}
+
+			_, hasSub := subs[sub.subId]
+			if !hasSub {
+				continue
+			}
+
+			close(*sub.subId)
+			delete(subs, sub.subId)
+			if len(subs) == 0 {
+				delete(m.topics, sub.topic)
+			}
+
+		case pub := <-m.publishChan:
+			subs, hasTopic := m.topics[pub.topic]
+			if !hasTopic {
+				continue
+			}
+
+			for subId := range subs {
+				sub := *subId
+				sub <- pub.payload
+			}
+		}
+	}
 }

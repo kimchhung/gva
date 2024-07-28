@@ -5,22 +5,24 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gva/app/common/service"
 	"github.com/gva/internal/bootstrap"
-	"github.com/gva/internal/pubsub"
 	"github.com/rs/zerolog"
 )
 
-func BackgroundNow(log *zerolog.Logger, boot *bootstrap.Bootstrap, psub pubsub.Pubsub) {
+func BackgroundNow(log *zerolog.Logger, boot *bootstrap.Bootstrap, pubsub_s *service.PubsubService) {
 	go func() {
 		<-boot.Done()
 
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(1 * time.Second)
 		topic := "now"
+
+		log.Info().Msg("background initialed")
 
 		for {
 			<-ticker.C
 			ts := time.Now()
-			if err := psub.Pub(context.Background(), topic, ts); err != nil {
+			if err := pubsub_s.Local().Pub(context.Background(), topic, ts); err != nil {
 				fmt.Println("psub.Pub err:", err)
 			}
 			log.Info().Time("t", ts).Msg("backgroundNow")

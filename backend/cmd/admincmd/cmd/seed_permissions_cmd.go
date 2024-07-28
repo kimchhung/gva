@@ -25,7 +25,7 @@ var seedPermissionCmd = &cobra.Command{
 		defer log.Info().Msg("Run seed is completed")
 
 		db := database.NewDatabase(env.NewConfig(), log)
-		db.ConnectDatabase()
+		db.Connect()
 		defer db.Close()
 
 		// dependencies for seeding

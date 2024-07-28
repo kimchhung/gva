@@ -1,13 +1,10 @@
 package mdatetime
 
 import (
-	"context"
-	"fmt"
-	"log"
 	"time"
 
+	"github.com/gva/app/common/service"
 	"github.com/gva/internal/ctr"
-	"github.com/gva/internal/pubsub"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
 	"github.com/gva/utils/sse"
@@ -20,9 +17,10 @@ import (
 var _ interface{ ctr.CTR } = (*DatetimeController)(nil)
 
 type DatetimeController struct {
-	index_s *DatetimeService
-	log     zerolog.Logger
-	psub    pubsub.Pubsub
+	index_s  *DatetimeService
+	log      zerolog.Logger
+	service  *DatetimeService
+	pubsub_s *service.PubsubService
 }
 
 func (con *DatetimeController) Init() *ctr.Ctr {
@@ -31,13 +29,19 @@ func (con *DatetimeController) Init() *ctr.Ctr {
 	)
 }
 
-func NewIndexController(index_s *DatetimeService, log *zerolog.Logger, psub pubsub.Pubsub) *DatetimeController {
+func NewIndexController(
+	index_s *DatetimeService,
+	log *zerolog.Logger,
+	service *DatetimeService,
+	pubsub_s *service.PubsubService,
+) *DatetimeController {
 	return &DatetimeController{
 		index_s: index_s,
 		log: log.With().
 			Str("module", "index").
 			Str("provider", "controller").Logger(),
-		psub: psub,
+		pubsub_s: pubsub_s,
+		service:  service,
 	}
 }
 
@@ -71,7 +75,6 @@ func (con *DatetimeController) Now() *ctr.Route {
 // @Success     200 {object} string "format time.RFC3339"
 // @Router      /datetime/sse/now [get]
 func (con *DatetimeController) SSENow() *ctr.Route {
-
 	return ctr.GET("/sse/now").Do(func() []ctr.H {
 		return []ctr.H{
 			func(c echo.Context) error {
@@ -80,35 +83,22 @@ func (con *DatetimeController) SSENow() *ctr.Route {
 				w.Header().Set("Cache-Control", "no-cache")
 				w.Header().Set("Connection", "keep-alive")
 
-				subscription, err := con.psub.Sub(context.Background(), "now")
+				nowChan, err := con.service.NowChannel(c.Request().Context())
 				if err != nil {
 					return err
 				}
 
-				defer func() {
-					if err := subscription.UnSub(); err != nil {
-						con.log.Error().Err(err).Msg("")
+				for now := range nowChan {
+					event := sse.Event{
+						Data: []byte(now.Format(time.RFC3339)),
 					}
-				}()
-
-				for {
-					select {
-					case <-c.Request().Context().Done():
-						log.Printf("SSE client disconnected, ip: %v", c.RealIP())
-						return nil
-
-					case payload := <-subscription.Payload():
-						defer fmt.Println("recieve:", payload)
-
-						event := sse.Event{
-							Data: []byte(payload.(time.Time).Format(time.RFC3339)),
-						}
-						if err := event.MarshalTo(w); err != nil {
-							return err
-						}
-						w.Flush()
+					if err := event.MarshalTo(w); err != nil {
+						return err
 					}
+
+					w.Flush()
 				}
+				return nil
 			},
 		}
 	})
@@ -131,37 +121,18 @@ func (con *DatetimeController) WSNow() *ctr.Route {
 				}
 
 				defer ws.Close()
-				result, err := con.psub.Sub(context.Background(), "now")
+				nowChan, err := con.service.NowChannel(c.Request().Context())
 				if err != nil {
-					return err
+					return nil
 				}
-				defer result.UnSub()
-				ticker := time.NewTicker(1 * time.Second)
-				go func() {
-					for {
-						<-ticker.C
-						err := con.psub.Pub(context.Background(), "now", time.Now().UTC().Format(time.RFC3339))
-						if err != nil {
-							log.Printf("error publishing: %v", err)
-						}
-					}
-				}()
 
-				log.Printf("WS client connected, ip: %v", c.RealIP())
-
-				for {
-					select {
-					case <-c.Request().Context().Done():
-						log.Printf("WS client disconnected, ip: %v", c.RealIP())
-						return nil
-					case payload := <-result.Payload():
-						err := ws.WriteJSON(payload)
-						if err != nil {
-							con.log.Err(err).Msg("write message")
-						}
-						return nil
+				for now := range nowChan {
+					err := ws.WriteJSON(now)
+					if err != nil {
+						con.log.Err(err).Msg("write message")
 					}
 				}
+				return nil
 			},
 		}
 	})
