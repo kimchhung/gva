@@ -100,7 +100,6 @@ func (c *channelSubscriptions) append(channelName string, channel reflect.Value,
 	c.Lock()
 	defer c.Unlock()
 	id := string(pxid.New("id"))
-	pxid.ID("").XID()
 	c.subscriptions[id] = &subscription{
 		channelName: channelName,
 		channel:     channel,

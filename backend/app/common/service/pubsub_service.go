@@ -6,7 +6,6 @@ import (
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/pubsub"
 	pubsubchannel "github.com/gva/internal/pubsub/channel"
-	pubsubredis "github.com/gva/internal/pubsub/redis"
 	"github.com/rs/zerolog"
 )
 
@@ -14,17 +13,12 @@ type PubsubService struct {
 	log   zerolog.Logger
 	redis *database.Redis
 
-	localPubsub       pubsub.Pubsub
-	subsciptionPubsub pubsub.Pubsub
+	localPubsub pubsub.Pubsub
 }
 
 func NewPubsubService(log *zerolog.Logger, redis *database.Redis) *PubsubService {
 	s := &PubsubService{
 		localPubsub: pubsubchannel.NewMemoryPubsub(),
-		subsciptionPubsub: pubsubredis.NewRedisPubSub(
-			redis.Client,
-			[]string{"gql:subsciption"},
-		),
 
 		redis: redis,
 		log:   log.With().Str("service", "PubsubService").Logger(),
@@ -47,9 +41,5 @@ func (s *PubsubService) Listen() {
 }
 
 func (p *PubsubService) Local() pubsub.Pubsub {
-	return p.localPubsub
-}
-
-func (p *PubsubService) GqlSub() pubsub.Pubsub {
 	return p.localPubsub
 }
