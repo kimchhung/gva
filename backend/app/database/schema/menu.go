@@ -2,9 +2,9 @@ package schema
 
 import (
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/softdelete"
 	"github.com/gva/app/database/schema/types"
-	"github.com/gva/app/database/schema/xid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -17,7 +17,7 @@ type Menu struct {
 
 func (Menu) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		xid.MixinWithPrefix("menu"),
+		pxid.MixinWithPrefix("menu"),
 		mixins.TimeMixin{},
 		mixins.IsEnableMixin{},
 		softdelete.SoftDeleteMixin{},
@@ -31,7 +31,7 @@ func (Menu) Indexes() []ent.Index {
 func (Menu) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("pid").
-			GoType(xid.ID("")).
+			GoType(pxid.ID("")).
 			Optional().
 			Nillable().
 			StructTag(`json:"pid,omitempty" rql:"filter,sort"`),

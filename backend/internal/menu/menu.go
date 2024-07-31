@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/softdelete"
-	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/menu"
@@ -49,7 +49,7 @@ func PushMenuList(ctx context.Context, conn *ent.Client, filePath string) {
 		return
 	}
 
-	childToParent := map[xid.ID]xid.ID{}
+	childToParent := map[pxid.ID]pxid.ID{}
 	database.WithTx(ctx, conn, func(tx *ent.Tx) error {
 		tx.Menu.Delete().ExecX(softdelete.SkipSoftDelete(ctx))
 		for _, r := range flats {

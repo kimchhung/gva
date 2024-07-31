@@ -7,6 +7,7 @@ import (
 
 	"github.com/gva/app/common/service"
 	"github.com/gva/internal/bootstrap"
+	"github.com/gva/internal/pubsub"
 	"github.com/rs/zerolog"
 )
 
@@ -15,7 +16,7 @@ func BackgroundNow(log *zerolog.Logger, boot *bootstrap.Bootstrap, pubsub_s *ser
 		<-boot.Done()
 
 		ticker := time.NewTicker(1 * time.Second)
-		topic := "now"
+		topic := pubsub.Topic("now")
 
 		log.Info().Msg("background initialed")
 

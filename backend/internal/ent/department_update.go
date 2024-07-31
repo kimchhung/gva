@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/predicate"
@@ -117,15 +117,15 @@ func (du *DepartmentUpdate) SetNillableName(s *string) *DepartmentUpdate {
 }
 
 // SetPid sets the "pid" field.
-func (du *DepartmentUpdate) SetPid(x xid.ID) *DepartmentUpdate {
-	du.mutation.SetPid(x)
+func (du *DepartmentUpdate) SetPid(px pxid.ID) *DepartmentUpdate {
+	du.mutation.SetPid(px)
 	return du
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (du *DepartmentUpdate) SetNillablePid(x *xid.ID) *DepartmentUpdate {
-	if x != nil {
-		du.SetPid(*x)
+func (du *DepartmentUpdate) SetNillablePid(px *pxid.ID) *DepartmentUpdate {
+	if px != nil {
+		du.SetPid(*px)
 	}
 	return du
 }
@@ -137,13 +137,13 @@ func (du *DepartmentUpdate) ClearPid() *DepartmentUpdate {
 }
 
 // SetParentID sets the "parent" edge to the Department entity by ID.
-func (du *DepartmentUpdate) SetParentID(id xid.ID) *DepartmentUpdate {
+func (du *DepartmentUpdate) SetParentID(id pxid.ID) *DepartmentUpdate {
 	du.mutation.SetParentID(id)
 	return du
 }
 
 // SetNillableParentID sets the "parent" edge to the Department entity by ID if the given value is not nil.
-func (du *DepartmentUpdate) SetNillableParentID(id *xid.ID) *DepartmentUpdate {
+func (du *DepartmentUpdate) SetNillableParentID(id *pxid.ID) *DepartmentUpdate {
 	if id != nil {
 		du = du.SetParentID(*id)
 	}
@@ -156,14 +156,14 @@ func (du *DepartmentUpdate) SetParent(d *Department) *DepartmentUpdate {
 }
 
 // AddChildIDs adds the "children" edge to the Department entity by IDs.
-func (du *DepartmentUpdate) AddChildIDs(ids ...xid.ID) *DepartmentUpdate {
+func (du *DepartmentUpdate) AddChildIDs(ids ...pxid.ID) *DepartmentUpdate {
 	du.mutation.AddChildIDs(ids...)
 	return du
 }
 
 // AddChildren adds the "children" edges to the Department entity.
 func (du *DepartmentUpdate) AddChildren(d ...*Department) *DepartmentUpdate {
-	ids := make([]xid.ID, len(d))
+	ids := make([]pxid.ID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
 	}
@@ -171,14 +171,14 @@ func (du *DepartmentUpdate) AddChildren(d ...*Department) *DepartmentUpdate {
 }
 
 // AddMemberIDs adds the "members" edge to the Admin entity by IDs.
-func (du *DepartmentUpdate) AddMemberIDs(ids ...xid.ID) *DepartmentUpdate {
+func (du *DepartmentUpdate) AddMemberIDs(ids ...pxid.ID) *DepartmentUpdate {
 	du.mutation.AddMemberIDs(ids...)
 	return du
 }
 
 // AddMembers adds the "members" edges to the Admin entity.
 func (du *DepartmentUpdate) AddMembers(a ...*Admin) *DepartmentUpdate {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -203,14 +203,14 @@ func (du *DepartmentUpdate) ClearChildren() *DepartmentUpdate {
 }
 
 // RemoveChildIDs removes the "children" edge to Department entities by IDs.
-func (du *DepartmentUpdate) RemoveChildIDs(ids ...xid.ID) *DepartmentUpdate {
+func (du *DepartmentUpdate) RemoveChildIDs(ids ...pxid.ID) *DepartmentUpdate {
 	du.mutation.RemoveChildIDs(ids...)
 	return du
 }
 
 // RemoveChildren removes "children" edges to Department entities.
 func (du *DepartmentUpdate) RemoveChildren(d ...*Department) *DepartmentUpdate {
-	ids := make([]xid.ID, len(d))
+	ids := make([]pxid.ID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
 	}
@@ -224,14 +224,14 @@ func (du *DepartmentUpdate) ClearMembers() *DepartmentUpdate {
 }
 
 // RemoveMemberIDs removes the "members" edge to Admin entities by IDs.
-func (du *DepartmentUpdate) RemoveMemberIDs(ids ...xid.ID) *DepartmentUpdate {
+func (du *DepartmentUpdate) RemoveMemberIDs(ids ...pxid.ID) *DepartmentUpdate {
 	du.mutation.RemoveMemberIDs(ids...)
 	return du
 }
 
 // RemoveMembers removes "members" edges to Admin entities.
 func (du *DepartmentUpdate) RemoveMembers(a ...*Admin) *DepartmentUpdate {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -551,15 +551,15 @@ func (duo *DepartmentUpdateOne) SetNillableName(s *string) *DepartmentUpdateOne 
 }
 
 // SetPid sets the "pid" field.
-func (duo *DepartmentUpdateOne) SetPid(x xid.ID) *DepartmentUpdateOne {
-	duo.mutation.SetPid(x)
+func (duo *DepartmentUpdateOne) SetPid(px pxid.ID) *DepartmentUpdateOne {
+	duo.mutation.SetPid(px)
 	return duo
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (duo *DepartmentUpdateOne) SetNillablePid(x *xid.ID) *DepartmentUpdateOne {
-	if x != nil {
-		duo.SetPid(*x)
+func (duo *DepartmentUpdateOne) SetNillablePid(px *pxid.ID) *DepartmentUpdateOne {
+	if px != nil {
+		duo.SetPid(*px)
 	}
 	return duo
 }
@@ -571,13 +571,13 @@ func (duo *DepartmentUpdateOne) ClearPid() *DepartmentUpdateOne {
 }
 
 // SetParentID sets the "parent" edge to the Department entity by ID.
-func (duo *DepartmentUpdateOne) SetParentID(id xid.ID) *DepartmentUpdateOne {
+func (duo *DepartmentUpdateOne) SetParentID(id pxid.ID) *DepartmentUpdateOne {
 	duo.mutation.SetParentID(id)
 	return duo
 }
 
 // SetNillableParentID sets the "parent" edge to the Department entity by ID if the given value is not nil.
-func (duo *DepartmentUpdateOne) SetNillableParentID(id *xid.ID) *DepartmentUpdateOne {
+func (duo *DepartmentUpdateOne) SetNillableParentID(id *pxid.ID) *DepartmentUpdateOne {
 	if id != nil {
 		duo = duo.SetParentID(*id)
 	}
@@ -590,14 +590,14 @@ func (duo *DepartmentUpdateOne) SetParent(d *Department) *DepartmentUpdateOne {
 }
 
 // AddChildIDs adds the "children" edge to the Department entity by IDs.
-func (duo *DepartmentUpdateOne) AddChildIDs(ids ...xid.ID) *DepartmentUpdateOne {
+func (duo *DepartmentUpdateOne) AddChildIDs(ids ...pxid.ID) *DepartmentUpdateOne {
 	duo.mutation.AddChildIDs(ids...)
 	return duo
 }
 
 // AddChildren adds the "children" edges to the Department entity.
 func (duo *DepartmentUpdateOne) AddChildren(d ...*Department) *DepartmentUpdateOne {
-	ids := make([]xid.ID, len(d))
+	ids := make([]pxid.ID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
 	}
@@ -605,14 +605,14 @@ func (duo *DepartmentUpdateOne) AddChildren(d ...*Department) *DepartmentUpdateO
 }
 
 // AddMemberIDs adds the "members" edge to the Admin entity by IDs.
-func (duo *DepartmentUpdateOne) AddMemberIDs(ids ...xid.ID) *DepartmentUpdateOne {
+func (duo *DepartmentUpdateOne) AddMemberIDs(ids ...pxid.ID) *DepartmentUpdateOne {
 	duo.mutation.AddMemberIDs(ids...)
 	return duo
 }
 
 // AddMembers adds the "members" edges to the Admin entity.
 func (duo *DepartmentUpdateOne) AddMembers(a ...*Admin) *DepartmentUpdateOne {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -637,14 +637,14 @@ func (duo *DepartmentUpdateOne) ClearChildren() *DepartmentUpdateOne {
 }
 
 // RemoveChildIDs removes the "children" edge to Department entities by IDs.
-func (duo *DepartmentUpdateOne) RemoveChildIDs(ids ...xid.ID) *DepartmentUpdateOne {
+func (duo *DepartmentUpdateOne) RemoveChildIDs(ids ...pxid.ID) *DepartmentUpdateOne {
 	duo.mutation.RemoveChildIDs(ids...)
 	return duo
 }
 
 // RemoveChildren removes "children" edges to Department entities.
 func (duo *DepartmentUpdateOne) RemoveChildren(d ...*Department) *DepartmentUpdateOne {
-	ids := make([]xid.ID, len(d))
+	ids := make([]pxid.ID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
 	}
@@ -658,14 +658,14 @@ func (duo *DepartmentUpdateOne) ClearMembers() *DepartmentUpdateOne {
 }
 
 // RemoveMemberIDs removes the "members" edge to Admin entities by IDs.
-func (duo *DepartmentUpdateOne) RemoveMemberIDs(ids ...xid.ID) *DepartmentUpdateOne {
+func (duo *DepartmentUpdateOne) RemoveMemberIDs(ids ...pxid.ID) *DepartmentUpdateOne {
 	duo.mutation.RemoveMemberIDs(ids...)
 	return duo
 }
 
 // RemoveMembers removes "members" edges to Admin entities.
 func (duo *DepartmentUpdateOne) RemoveMembers(a ...*Admin) *DepartmentUpdateOne {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}

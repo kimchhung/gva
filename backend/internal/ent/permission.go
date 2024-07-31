@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/permission"
 )
 
@@ -17,7 +17,7 @@ import (
 type Permission struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID xid.ID `json:"id" rql:"filter,sort"`
+	ID pxid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -65,14 +65,14 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case permission.FieldID:
+			values[i] = new(pxid.ID)
 		case permission.FieldOrder:
 			values[i] = new(sql.NullInt64)
 		case permission.FieldGroup, permission.FieldName, permission.FieldScope, permission.FieldType:
 			values[i] = new(sql.NullString)
 		case permission.FieldCreatedAt, permission.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case permission.FieldID:
-			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -89,7 +89,7 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case permission.FieldID:
-			if value, ok := values[i].(*xid.ID); !ok {
+			if value, ok := values[i].(*pxid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				pe.ID = *value

@@ -6,7 +6,7 @@ import (
 	"github.com/gva/api/admin/module/admin/dto"
 	appctx "github.com/gva/app/common/context"
 	"github.com/gva/app/common/repository"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
@@ -65,7 +65,7 @@ func (s *AdminService) Paginate(ctx context.Context, p *dto.AdminPaginateRequest
 	return s.toDto(list...), meta, nil
 }
 
-func (s *AdminService) GetAdminByID(ctx context.Context, id xid.ID) (*dto.AdminResponse, error) {
+func (s *AdminService) GetAdminByID(ctx context.Context, id pxid.ID) (*dto.AdminResponse, error) {
 	data, err := s.admin_r.C().Query().Where(admin.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (s *AdminService) CreateAdmin(ctx context.Context, request *dto.AdminReques
 	return s.toDto(data)[0], nil
 }
 
-func (s *AdminService) UpdateAdmin(ctx context.Context, id xid.ID, request *dto.AdminRequest) (*dto.AdminResponse, error) {
+func (s *AdminService) UpdateAdmin(ctx context.Context, id pxid.ID, request *dto.AdminRequest) (*dto.AdminResponse, error) {
 	data, err := s.admin_r.C().UpdateOneID(id).
 		SetDisplayName(request.DisplayName).
 		SetUsername(request.Username).
@@ -100,11 +100,11 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, id xid.ID, request *dto.
 	return s.toDto(data)[0], nil
 }
 
-func (s *AdminService) DeleteAdmin(ctx context.Context, id xid.ID) error {
+func (s *AdminService) DeleteAdmin(ctx context.Context, id pxid.ID) error {
 	return s.admin_r.C().DeleteOneID(id).Exec(ctx)
 }
 
-func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId xid.ID) ([]*ent.Menu, error) {
+func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId pxid.ID) ([]*ent.Menu, error) {
 	if appctx.MustAdminContext(ctx).IsSuperAdmin() {
 		routes, err := s.db.Menu.Query().Where(menu.IsEnable(true)).All(ctx)
 		if err != nil {
@@ -127,7 +127,7 @@ func (s *AdminService) GetAdminNestedRouteById(ctx context.Context, adminId xid.
 	return routeutil.GroupRouteToNested(routes), nil
 }
 
-func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId xid.ID) ([]*ent.Permission, error) {
+func (s *AdminService) GetAdminPermissionById(ctx context.Context, adminId pxid.ID) ([]*ent.Permission, error) {
 	routes, err := s.db.Role.Query().
 		Where(
 			role.HasAdminsWith(admin.ID(adminId)),

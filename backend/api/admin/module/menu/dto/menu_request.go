@@ -1,8 +1,8 @@
 package dto
 
 import (
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/types"
-	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/rql"
 )
@@ -18,8 +18,8 @@ type MenuRequest struct {
 	Order     int            `json:"order,omitempty" validate:"number"`
 
 	// optionals
-	Redirect *string `json:"redirect,omitempty"`
-	Pid      *xid.ID `json:"pid,omitempty"`
+	Redirect *string  `json:"redirect,omitempty"`
+	Pid      *pxid.ID `json:"pid,omitempty"`
 }
 
 type MenuPagedRequest struct {

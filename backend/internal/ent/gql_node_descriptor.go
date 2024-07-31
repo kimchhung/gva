@@ -6,7 +6,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
@@ -17,7 +17,7 @@ import (
 
 // Node in the graph.
 type Node struct {
-	ID     xid.ID   `json:"id,omitempty"`     // node id.
+	ID     pxid.ID  `json:"id,omitempty"`     // node id.
 	Type   string   `json:"type,omitempty"`   // node type.
 	Fields []*Field `json:"fields,omitempty"` // node fields.
 	Edges  []*Edge  `json:"edges,omitempty"`  // node edges.
@@ -32,9 +32,9 @@ type Field struct {
 
 // Edges between two nodes.
 type Edge struct {
-	Type string   `json:"type,omitempty"` // edge type.
-	Name string   `json:"name,omitempty"` // edge name.
-	IDs  []xid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
+	Type string    `json:"type,omitempty"` // edge type.
+	Name string    `json:"name,omitempty"` // edge name.
+	IDs  []pxid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
 }
 
 // Node implements Noder interface
@@ -114,7 +114,7 @@ func (a *Admin) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[8] = &Field{
-		Type:  "xid.ID",
+		Type:  "pxid.ID",
 		Name:  "department_id",
 		Value: string(buf),
 	}
@@ -202,7 +202,7 @@ func (d *Department) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[6] = &Field{
-		Type:  "xid.ID",
+		Type:  "pxid.ID",
 		Name:  "pid",
 		Value: string(buf),
 	}
@@ -284,7 +284,7 @@ func (m *Menu) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[4] = &Field{
-		Type:  "xid.ID",
+		Type:  "pxid.ID",
 		Name:  "pid",
 		Value: string(buf),
 	}
@@ -524,7 +524,7 @@ func (r *Region) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[7] = &Field{
-		Type:  "xid.ID",
+		Type:  "pxid.ID",
 		Name:  "pid",
 		Value: string(buf),
 	}
@@ -705,7 +705,7 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 //
 // This API helpful in case you want to build
 // an administrator tool to browser all types in system.
-func (c *Client) Node(ctx context.Context, id xid.ID) (*Node, error) {
+func (c *Client) Node(ctx context.Context, id pxid.ID) (*Node, error) {
 	n, err := c.Noder(ctx, id)
 	if err != nil {
 		return nil, err

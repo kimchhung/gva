@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/role"
@@ -115,42 +115,42 @@ func (ac *AdminCreate) SetNillableDisplayName(s *string) *AdminCreate {
 }
 
 // SetDepartmentID sets the "department_id" field.
-func (ac *AdminCreate) SetDepartmentID(x xid.ID) *AdminCreate {
-	ac.mutation.SetDepartmentID(x)
+func (ac *AdminCreate) SetDepartmentID(px pxid.ID) *AdminCreate {
+	ac.mutation.SetDepartmentID(px)
 	return ac
 }
 
 // SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
-func (ac *AdminCreate) SetNillableDepartmentID(x *xid.ID) *AdminCreate {
-	if x != nil {
-		ac.SetDepartmentID(*x)
+func (ac *AdminCreate) SetNillableDepartmentID(px *pxid.ID) *AdminCreate {
+	if px != nil {
+		ac.SetDepartmentID(*px)
 	}
 	return ac
 }
 
 // SetID sets the "id" field.
-func (ac *AdminCreate) SetID(x xid.ID) *AdminCreate {
-	ac.mutation.SetID(x)
+func (ac *AdminCreate) SetID(px pxid.ID) *AdminCreate {
+	ac.mutation.SetID(px)
 	return ac
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ac *AdminCreate) SetNillableID(x *xid.ID) *AdminCreate {
-	if x != nil {
-		ac.SetID(*x)
+func (ac *AdminCreate) SetNillableID(px *pxid.ID) *AdminCreate {
+	if px != nil {
+		ac.SetID(*px)
 	}
 	return ac
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (ac *AdminCreate) AddRoleIDs(ids ...xid.ID) *AdminCreate {
+func (ac *AdminCreate) AddRoleIDs(ids ...pxid.ID) *AdminCreate {
 	ac.mutation.AddRoleIDs(ids...)
 	return ac
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (ac *AdminCreate) AddRoles(r ...*Role) *AdminCreate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -269,7 +269,7 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -519,7 +519,7 @@ func (u *AdminUpsert) ClearDisplayName() *AdminUpsert {
 }
 
 // SetDepartmentID sets the "department_id" field.
-func (u *AdminUpsert) SetDepartmentID(v xid.ID) *AdminUpsert {
+func (u *AdminUpsert) SetDepartmentID(v pxid.ID) *AdminUpsert {
 	u.Set(admin.FieldDepartmentID, v)
 	return u
 }
@@ -711,7 +711,7 @@ func (u *AdminUpsertOne) ClearDisplayName() *AdminUpsertOne {
 }
 
 // SetDepartmentID sets the "department_id" field.
-func (u *AdminUpsertOne) SetDepartmentID(v xid.ID) *AdminUpsertOne {
+func (u *AdminUpsertOne) SetDepartmentID(v pxid.ID) *AdminUpsertOne {
 	return u.Update(func(s *AdminUpsert) {
 		s.SetDepartmentID(v)
 	})
@@ -747,7 +747,7 @@ func (u *AdminUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AdminUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *AdminUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -761,7 +761,7 @@ func (u *AdminUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AdminUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *AdminUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1073,7 +1073,7 @@ func (u *AdminUpsertBulk) ClearDisplayName() *AdminUpsertBulk {
 }
 
 // SetDepartmentID sets the "department_id" field.
-func (u *AdminUpsertBulk) SetDepartmentID(v xid.ID) *AdminUpsertBulk {
+func (u *AdminUpsertBulk) SetDepartmentID(v pxid.ID) *AdminUpsertBulk {
 	return u.Update(func(s *AdminUpsert) {
 		s.SetDepartmentID(v)
 	})

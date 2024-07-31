@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
 
@@ -130,15 +130,15 @@ func (ru *RegionUpdate) SetNillableType(r *region.Type) *RegionUpdate {
 }
 
 // SetPid sets the "pid" field.
-func (ru *RegionUpdate) SetPid(x xid.ID) *RegionUpdate {
-	ru.mutation.SetPid(x)
+func (ru *RegionUpdate) SetPid(px pxid.ID) *RegionUpdate {
+	ru.mutation.SetPid(px)
 	return ru
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (ru *RegionUpdate) SetNillablePid(x *xid.ID) *RegionUpdate {
-	if x != nil {
-		ru.SetPid(*x)
+func (ru *RegionUpdate) SetNillablePid(px *pxid.ID) *RegionUpdate {
+	if px != nil {
+		ru.SetPid(*px)
 	}
 	return ru
 }
@@ -150,13 +150,13 @@ func (ru *RegionUpdate) ClearPid() *RegionUpdate {
 }
 
 // SetParentID sets the "parent" edge to the Region entity by ID.
-func (ru *RegionUpdate) SetParentID(id xid.ID) *RegionUpdate {
+func (ru *RegionUpdate) SetParentID(id pxid.ID) *RegionUpdate {
 	ru.mutation.SetParentID(id)
 	return ru
 }
 
 // SetNillableParentID sets the "parent" edge to the Region entity by ID if the given value is not nil.
-func (ru *RegionUpdate) SetNillableParentID(id *xid.ID) *RegionUpdate {
+func (ru *RegionUpdate) SetNillableParentID(id *pxid.ID) *RegionUpdate {
 	if id != nil {
 		ru = ru.SetParentID(*id)
 	}
@@ -169,14 +169,14 @@ func (ru *RegionUpdate) SetParent(r *Region) *RegionUpdate {
 }
 
 // AddChildIDs adds the "children" edge to the Region entity by IDs.
-func (ru *RegionUpdate) AddChildIDs(ids ...xid.ID) *RegionUpdate {
+func (ru *RegionUpdate) AddChildIDs(ids ...pxid.ID) *RegionUpdate {
 	ru.mutation.AddChildIDs(ids...)
 	return ru
 }
 
 // AddChildren adds the "children" edges to the Region entity.
 func (ru *RegionUpdate) AddChildren(r ...*Region) *RegionUpdate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -201,14 +201,14 @@ func (ru *RegionUpdate) ClearChildren() *RegionUpdate {
 }
 
 // RemoveChildIDs removes the "children" edge to Region entities by IDs.
-func (ru *RegionUpdate) RemoveChildIDs(ids ...xid.ID) *RegionUpdate {
+func (ru *RegionUpdate) RemoveChildIDs(ids ...pxid.ID) *RegionUpdate {
 	ru.mutation.RemoveChildIDs(ids...)
 	return ru
 }
 
 // RemoveChildren removes "children" edges to Region entities.
 func (ru *RegionUpdate) RemoveChildren(r ...*Region) *RegionUpdate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -510,15 +510,15 @@ func (ruo *RegionUpdateOne) SetNillableType(r *region.Type) *RegionUpdateOne {
 }
 
 // SetPid sets the "pid" field.
-func (ruo *RegionUpdateOne) SetPid(x xid.ID) *RegionUpdateOne {
-	ruo.mutation.SetPid(x)
+func (ruo *RegionUpdateOne) SetPid(px pxid.ID) *RegionUpdateOne {
+	ruo.mutation.SetPid(px)
 	return ruo
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (ruo *RegionUpdateOne) SetNillablePid(x *xid.ID) *RegionUpdateOne {
-	if x != nil {
-		ruo.SetPid(*x)
+func (ruo *RegionUpdateOne) SetNillablePid(px *pxid.ID) *RegionUpdateOne {
+	if px != nil {
+		ruo.SetPid(*px)
 	}
 	return ruo
 }
@@ -530,13 +530,13 @@ func (ruo *RegionUpdateOne) ClearPid() *RegionUpdateOne {
 }
 
 // SetParentID sets the "parent" edge to the Region entity by ID.
-func (ruo *RegionUpdateOne) SetParentID(id xid.ID) *RegionUpdateOne {
+func (ruo *RegionUpdateOne) SetParentID(id pxid.ID) *RegionUpdateOne {
 	ruo.mutation.SetParentID(id)
 	return ruo
 }
 
 // SetNillableParentID sets the "parent" edge to the Region entity by ID if the given value is not nil.
-func (ruo *RegionUpdateOne) SetNillableParentID(id *xid.ID) *RegionUpdateOne {
+func (ruo *RegionUpdateOne) SetNillableParentID(id *pxid.ID) *RegionUpdateOne {
 	if id != nil {
 		ruo = ruo.SetParentID(*id)
 	}
@@ -549,14 +549,14 @@ func (ruo *RegionUpdateOne) SetParent(r *Region) *RegionUpdateOne {
 }
 
 // AddChildIDs adds the "children" edge to the Region entity by IDs.
-func (ruo *RegionUpdateOne) AddChildIDs(ids ...xid.ID) *RegionUpdateOne {
+func (ruo *RegionUpdateOne) AddChildIDs(ids ...pxid.ID) *RegionUpdateOne {
 	ruo.mutation.AddChildIDs(ids...)
 	return ruo
 }
 
 // AddChildren adds the "children" edges to the Region entity.
 func (ruo *RegionUpdateOne) AddChildren(r ...*Region) *RegionUpdateOne {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -581,14 +581,14 @@ func (ruo *RegionUpdateOne) ClearChildren() *RegionUpdateOne {
 }
 
 // RemoveChildIDs removes the "children" edge to Region entities by IDs.
-func (ruo *RegionUpdateOne) RemoveChildIDs(ids ...xid.ID) *RegionUpdateOne {
+func (ruo *RegionUpdateOne) RemoveChildIDs(ids ...pxid.ID) *RegionUpdateOne {
 	ruo.mutation.RemoveChildIDs(ids...)
 	return ruo
 }
 
 // RemoveChildren removes "children" edges to Region entities.
 func (ruo *RegionUpdateOne) RemoveChildren(r ...*Region) *RegionUpdateOne {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

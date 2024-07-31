@@ -11,7 +11,7 @@ import (
 	"github.com/gva/internal/echoc"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/labstack/echo/v4"
 	"github.com/gva/internal/rql"
 )
@@ -46,7 +46,7 @@ func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service) *{{.Entit
 func (con *{{.EntityPascal}}Controller) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
-			ID xid.ID %sjson:"id" rql:"filter,sort"%s
+			ID pxid.ID %sjson:"id" rql:"filter,sort"%s
 		}{},
 	})
 	return ctr.GET("/").Do(func() []ctr.H {
@@ -84,7 +84,7 @@ func (con *{{.EntityPascal}}Controller) List() *ctr.Route {
 func (con *{{.EntityPascal}}Controller) Get() *ctr.Route {
 	return ctr.GET("/:id").Name("get one {{.EntityPascal}}").Do(func() []ctr.H {
 		param := &struct {
-			ID xid.ID %sparam:"id" validate:"required"%s
+			ID pxid.ID %sparam:"id" validate:"required"%s
 		}{}
 
 		return []ctr.H {
@@ -154,7 +154,7 @@ func (con *{{.EntityPascal}}Controller) Update() *ctr.Route {
 	return ctr.PUT("/:id").Name("update one {{.EntityPascal}}").Do(func() []ctr.H {
 		body := new(dto.{{.EntityPascal}}Request)
 		param := &struct {
-			ID xid.ID %sparam:"id" validate:"required"%s
+			ID pxid.ID %sparam:"id" validate:"required"%s
 		}{}
 
 		return []ctr.H {
@@ -189,7 +189,7 @@ func (con *{{.EntityPascal}}Controller) Update() *ctr.Route {
 func (con  *{{.EntityPascal}}Controller) Delete() *ctr.Route {
 	return ctr.DELETE("/:id").Name("delete one {{.EntityPascal}}").Do(func() []ctr.H {
 		param := &struct {
-			ID xid.ID %sparam:"id" validate:"required"%s
+			ID pxid.ID %sparam:"id" validate:"required"%s
 		}{}
 
 		return []ctr.H {

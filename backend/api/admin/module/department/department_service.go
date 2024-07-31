@@ -6,7 +6,7 @@ import (
 
 	"github.com/gva/api/admin/module/department/dto"
 	"github.com/gva/app/common/repository"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/utils"
@@ -64,7 +64,7 @@ func (s *DepartmentService) GetDepartments(ctx context.Context, p *dto.Departmen
 	return s.toDto(list...), meta, nil
 }
 
-func (s *DepartmentService) GetDepartmentByID(ctx context.Context, id xid.ID) (*dto.DepartmentResponse, error) {
+func (s *DepartmentService) GetDepartmentByID(ctx context.Context, id pxid.ID) (*dto.DepartmentResponse, error) {
 	data, err := s.repo.C().Query().Where(department.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (s *DepartmentService) CreateDepartment(ctx context.Context, payload *dto.D
 	return s.toDto(created)[0], nil
 }
 
-func (s *DepartmentService) UpdateDepartment(ctx context.Context, id xid.ID, payload *dto.DepartmentRequest) (*dto.DepartmentResponse, error) {
+func (s *DepartmentService) UpdateDepartment(ctx context.Context, id pxid.ID, payload *dto.DepartmentRequest) (*dto.DepartmentResponse, error) {
 	update := s.repo.C().UpdateOneID(id)
 	update.SetName(payload.Name).
 		SetName(payload.Name).
@@ -102,6 +102,6 @@ func (s *DepartmentService) UpdateDepartment(ctx context.Context, id xid.ID, pay
 	return s.toDto(updated)[0], nil
 }
 
-func (s *DepartmentService) DeleteDepartment(ctx context.Context, id xid.ID) error {
+func (s *DepartmentService) DeleteDepartment(ctx context.Context, id pxid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }

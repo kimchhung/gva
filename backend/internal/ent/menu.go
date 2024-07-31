@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/types"
-	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/menu"
 )
 
@@ -19,7 +19,7 @@ import (
 type Menu struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID xid.ID `json:"id" rql:"filter,sort"`
+	ID pxid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -29,7 +29,7 @@ type Menu struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt int `json:"-"`
 	// Pid holds the value of the "pid" field.
-	Pid *xid.ID `json:"pid,omitempty" rql:"filter,sort"`
+	Pid *pxid.ID `json:"pid,omitempty" rql:"filter,sort"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty" rql:"filter,sort"`
 	// Component holds the value of the "component" field.
@@ -103,9 +103,11 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case menu.FieldPid:
-			values[i] = &sql.NullScanner{S: new(xid.ID)}
+			values[i] = &sql.NullScanner{S: new(pxid.ID)}
 		case menu.FieldMeta:
 			values[i] = new([]byte)
+		case menu.FieldID:
+			values[i] = new(pxid.ID)
 		case menu.FieldIsEnable:
 			values[i] = new(sql.NullBool)
 		case menu.FieldDeletedAt, menu.FieldOrder:
@@ -114,8 +116,6 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case menu.FieldCreatedAt, menu.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case menu.FieldID:
-			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -132,7 +132,7 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case menu.FieldID:
-			if value, ok := values[i].(*xid.ID); !ok {
+			if value, ok := values[i].(*pxid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				m.ID = *value
@@ -165,8 +165,8 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field pid", values[i])
 			} else if value.Valid {
-				m.Pid = new(xid.ID)
-				*m.Pid = *value.S.(*xid.ID)
+				m.Pid = new(pxid.ID)
+				*m.Pid = *value.S.(*pxid.ID)
 			}
 		case menu.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {

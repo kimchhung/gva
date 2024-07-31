@@ -5,8 +5,8 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/softdelete"
-	"github.com/gva/app/database/schema/xid"
 )
 
 type Region struct {
@@ -15,7 +15,7 @@ type Region struct {
 
 func (Region) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		xid.MixinWithPrefix("regi"),
+		pxid.MixinWithPrefix("regi"),
 		mixins.TimeMixin{},
 		softdelete.SoftDeleteMixin{},
 		mixins.IsEnableMixin{},
@@ -36,7 +36,7 @@ func (Region) Fields() []ent.Field {
 			StructTag(`json:"type" rql:"column=name,filter,sort"`),
 
 		field.String("pid").
-			GoType(xid.ID("")).
+			GoType(pxid.ID("")).
 			Optional().
 			Nillable().
 			StructTag(`json:"pid,omitempty" rql:"filter,sort"`),

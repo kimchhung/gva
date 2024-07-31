@@ -4,8 +4,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/mixins"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/softdelete"
-	"github.com/gva/app/database/schema/xid"
 )
 
 type Todo struct {
@@ -14,7 +14,7 @@ type Todo struct {
 
 func (Todo) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		xid.MixinWithPrefix("todo"),
+		pxid.MixinWithPrefix("todo"),
 		mixins.TimeMixin{},
 		softdelete.SoftDeleteMixin{},
 	}
@@ -29,5 +29,3 @@ func (Todo) Fields() []ent.Field {
 func (Todo) Edges() []ent.Edge {
 	return nil
 }
-
-

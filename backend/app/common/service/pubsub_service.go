@@ -23,7 +23,7 @@ func NewPubsubService(log *zerolog.Logger, redis *database.Redis) *PubsubService
 		localPubsub: pubsubchannel.NewMemoryPubsub(),
 		subsciptionPubsub: pubsubredis.NewRedisPubSub(
 			redis.Client,
-			"gql:subsciption",
+			[]string{"gql:subsciption"},
 		),
 
 		redis: redis,

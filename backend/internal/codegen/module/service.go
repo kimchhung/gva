@@ -8,7 +8,7 @@ import (
 
 	"github.com/gva/api/admin/module/{{.EntityAllLower}}/dto"
 	"github.com/gva/app/common/repository"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/{{.EntityAllLower}}"
 	"github.com/gva/utils"
@@ -64,7 +64,7 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, p 
 	return s.toDto(list...), meta, nil
 }
 
-func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context, id xid.ID) (*dto.{{.EntityPascal}}Response, error) {
+func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}ByID(ctx context.Context, id pxid.ID) (*dto.{{.EntityPascal}}Response, error) {
 	data, err := s.repo.Q().Where({{.EntityAllLower}}.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, 
 	return s.toDto(created)[0], nil
 }
 
-func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id xid.ID, payload *dto.{{.EntityPascal}}Request) (*dto.{{.EntityPascal}}Response, error) {
+func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id pxid.ID, payload *dto.{{.EntityPascal}}Request) (*dto.{{.EntityPascal}}Response, error) {
 	update := s.repo.C().UpdateOneID(id)
 	update.SetName(payload.Name)
 	updated, err := update.Save(ctx)
@@ -92,7 +92,7 @@ func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, 
 	return s.toDto(updated)[0], nil
 }
 
-func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id xid.ID) error {
+func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id pxid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }
 `

@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/department"
 )
 
@@ -17,7 +17,7 @@ import (
 type Department struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID xid.ID `json:"id" rql:"filter,sort"`
+	ID pxid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -31,7 +31,7 @@ type Department struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name" rql:"column=name,filter,sort"`
 	// Pid holds the value of the "pid" field.
-	Pid *xid.ID `json:"pid,omitempty" rql:"filter,sort"`
+	Pid *pxid.ID `json:"pid,omitempty" rql:"filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DepartmentQuery when eager-loading is set.
 	Edges        DepartmentEdges `json:"edges" rql:"-"`
@@ -91,7 +91,9 @@ func (*Department) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case department.FieldPid:
-			values[i] = &sql.NullScanner{S: new(xid.ID)}
+			values[i] = &sql.NullScanner{S: new(pxid.ID)}
+		case department.FieldID:
+			values[i] = new(pxid.ID)
 		case department.FieldIsEnable:
 			values[i] = new(sql.NullBool)
 		case department.FieldDeletedAt:
@@ -100,8 +102,6 @@ func (*Department) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case department.FieldCreatedAt, department.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case department.FieldID:
-			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -118,7 +118,7 @@ func (d *Department) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case department.FieldID:
-			if value, ok := values[i].(*xid.ID); !ok {
+			if value, ok := values[i].(*pxid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				d.ID = *value
@@ -163,8 +163,8 @@ func (d *Department) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field pid", values[i])
 			} else if value.Valid {
-				d.Pid = new(xid.ID)
-				*d.Pid = *value.S.(*xid.ID)
+				d.Pid = new(pxid.ID)
+				*d.Pid = *value.S.(*pxid.ID)
 			}
 		default:
 			d.selectValues.Set(columns[i], values[i])

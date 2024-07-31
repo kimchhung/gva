@@ -83,7 +83,7 @@ omit_getters: true
 models:
   ID:
     model:
-      - github.com/gva/app/database/schema/xid.ID
+      - github.com/gva/app/database/schema/pxid.ID
   Node:
     model:
       - github.com/gva/internal/ent.Noder

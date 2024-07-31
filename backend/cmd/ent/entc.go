@@ -30,7 +30,7 @@ func main() {
 			Features: gen.AllFeatures,
 			Package:  "github.com/gva/internal/ent",
 		},
-		entc.TemplateFiles("../../app/database/schema/xid/template/xid.tmpl"),
+		entc.TemplateFiles("../../app/database/schema/pxid/template/pxid.tmpl"),
 		entc.Extensions(ex),
 	); err != nil {
 		log.Fatalf("running ent codegen: %v", err)

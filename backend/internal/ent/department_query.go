@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/predicate"
@@ -169,8 +169,8 @@ func (dq *DepartmentQuery) FirstX(ctx context.Context) *Department {
 
 // FirstID returns the first Department ID from the query.
 // Returns a *NotFoundError when no Department ID was found.
-func (dq *DepartmentQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (dq *DepartmentQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = dq.Limit(1).IDs(setContextOp(ctx, dq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -182,7 +182,7 @@ func (dq *DepartmentQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (dq *DepartmentQuery) FirstIDX(ctx context.Context) xid.ID {
+func (dq *DepartmentQuery) FirstIDX(ctx context.Context) pxid.ID {
 	id, err := dq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -220,8 +220,8 @@ func (dq *DepartmentQuery) OnlyX(ctx context.Context) *Department {
 // OnlyID is like Only, but returns the only Department ID in the query.
 // Returns a *NotSingularError when more than one Department ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (dq *DepartmentQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (dq *DepartmentQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = dq.Limit(2).IDs(setContextOp(ctx, dq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -237,7 +237,7 @@ func (dq *DepartmentQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (dq *DepartmentQuery) OnlyIDX(ctx context.Context) xid.ID {
+func (dq *DepartmentQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	id, err := dq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -265,7 +265,7 @@ func (dq *DepartmentQuery) AllX(ctx context.Context) []*Department {
 }
 
 // IDs executes the query and returns a list of Department IDs.
-func (dq *DepartmentQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
+func (dq *DepartmentQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if dq.ctx.Unique == nil && dq.path != nil {
 		dq.Unique(true)
 	}
@@ -277,7 +277,7 @@ func (dq *DepartmentQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (dq *DepartmentQuery) IDsX(ctx context.Context) []xid.ID {
+func (dq *DepartmentQuery) IDsX(ctx context.Context) []pxid.ID {
 	ids, err := dq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -549,8 +549,8 @@ func (dq *DepartmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*D
 }
 
 func (dq *DepartmentQuery) loadParent(ctx context.Context, query *DepartmentQuery, nodes []*Department, init func(*Department), assign func(*Department, *Department)) error {
-	ids := make([]xid.ID, 0, len(nodes))
-	nodeids := make(map[xid.ID][]*Department)
+	ids := make([]pxid.ID, 0, len(nodes))
+	nodeids := make(map[pxid.ID][]*Department)
 	for i := range nodes {
 		if nodes[i].Pid == nil {
 			continue
@@ -582,7 +582,7 @@ func (dq *DepartmentQuery) loadParent(ctx context.Context, query *DepartmentQuer
 }
 func (dq *DepartmentQuery) loadChildren(ctx context.Context, query *DepartmentQuery, nodes []*Department, init func(*Department), assign func(*Department, *Department)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[xid.ID]*Department)
+	nodeids := make(map[pxid.ID]*Department)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -615,7 +615,7 @@ func (dq *DepartmentQuery) loadChildren(ctx context.Context, query *DepartmentQu
 }
 func (dq *DepartmentQuery) loadMembers(ctx context.Context, query *AdminQuery, nodes []*Department, init func(*Department), assign func(*Department, *Admin)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[xid.ID]*Department)
+	nodeids := make(map[pxid.ID]*Department)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]

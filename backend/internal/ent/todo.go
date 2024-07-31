@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/todo"
 )
 
@@ -17,7 +17,7 @@ import (
 type Todo struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID xid.ID `json:"id" rql:"filter,sort"`
+	ID pxid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -34,14 +34,14 @@ func (*Todo) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case todo.FieldID:
+			values[i] = new(pxid.ID)
 		case todo.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case todo.FieldName:
 			values[i] = new(sql.NullString)
 		case todo.FieldCreatedAt, todo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case todo.FieldID:
-			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -58,7 +58,7 @@ func (t *Todo) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case todo.FieldID:
-			if value, ok := values[i].(*xid.ID); !ok {
+			if value, ok := values[i].(*pxid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				t.ID = *value

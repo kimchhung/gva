@@ -7,7 +7,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 )
 
 const (
@@ -63,7 +63,7 @@ var (
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt int
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() xid.ID
+	DefaultID func() pxid.ID
 )
 
 // OrderOption defines the ordering options for the Todo queries.

@@ -9,7 +9,7 @@ import (
 	appctx "github.com/gva/app/common/context"
 	"github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/request"
@@ -49,7 +49,7 @@ func (con *AdminController) Init() *ctr.Ctr {
 func (con *AdminController) Paginate() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
-			ID xid.ID `json:"id" rql:"filter,sort"`
+			ID pxid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
@@ -154,7 +154,7 @@ func (con *AdminController) AdminPermission() *ctr.Route {
 func (con *AdminController) Get() *ctr.Route {
 	return ctr.GET("/:id").Do(func() []ctr.H {
 		param := new(struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		})
 
 		return []ctr.H{
@@ -231,7 +231,7 @@ func (con *AdminController) Update() *ctr.Route {
 	return ctr.PUT("/:id").Do(func() []ctr.H {
 		body := new(dto.AdminRequest)
 		param := new(struct {
-			ID xid.ID `param:"id" validate:"gt=0"`
+			ID pxid.ID `param:"id" validate:"gt=0"`
 		})
 
 		return []ctr.H{
@@ -270,7 +270,7 @@ func (con *AdminController) Update() *ctr.Route {
 func (con *AdminController) Delete() *ctr.Route {
 	return ctr.DELETE("/:id").Do(func() []ctr.H {
 		param := new(struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		})
 
 		return []ctr.H{

@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
@@ -68,7 +68,7 @@ type NodeOption func(*nodeOptions)
 // WithNodeType sets the node Type resolver function (i.e. the table to query).
 // If was not provided, the table will be derived from the universal-id
 // configuration as described in: https://entgo.io/docs/migrate/#universal-ids.
-func WithNodeType(f func(context.Context, xid.ID) (string, error)) NodeOption {
+func WithNodeType(f func(context.Context, pxid.ID) (string, error)) NodeOption {
 	return func(o *nodeOptions) {
 		o.nodeType = f
 	}
@@ -76,13 +76,13 @@ func WithNodeType(f func(context.Context, xid.ID) (string, error)) NodeOption {
 
 // WithFixedNodeType sets the Type of the node to a fixed value.
 func WithFixedNodeType(t string) NodeOption {
-	return WithNodeType(func(context.Context, xid.ID) (string, error) {
+	return WithNodeType(func(context.Context, pxid.ID) (string, error) {
 		return t, nil
 	})
 }
 
 type nodeOptions struct {
-	nodeType func(context.Context, xid.ID) (string, error)
+	nodeType func(context.Context, pxid.ID) (string, error)
 }
 
 func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
@@ -91,7 +91,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 		opt(nopts)
 	}
 	if nopts.nodeType == nil {
-		nopts.nodeType = func(ctx context.Context, id xid.ID) (string, error) {
+		nopts.nodeType = func(ctx context.Context, id pxid.ID) (string, error) {
 			return "", fmt.Errorf("cannot resolve noder (%v) without its type", id)
 		}
 	}
@@ -103,7 +103,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 //
 //	c.Noder(ctx, id)
 //	c.Noder(ctx, id, ent.WithNodeType(typeResolver))
-func (c *Client) Noder(ctx context.Context, id xid.ID, opts ...NodeOption) (_ Noder, err error) {
+func (c *Client) Noder(ctx context.Context, id pxid.ID, opts ...NodeOption) (_ Noder, err error) {
 	defer func() {
 		if IsNotFound(err) {
 			err = multierror.Append(err, entgql.ErrNodeNotFound(id))
@@ -116,10 +116,10 @@ func (c *Client) Noder(ctx context.Context, id xid.ID, opts ...NodeOption) (_ No
 	return c.noder(ctx, table, id)
 }
 
-func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, error) {
+func (c *Client) noder(ctx context.Context, table string, id pxid.ID) (Noder, error) {
 	switch table {
 	case admin.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -132,7 +132,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 		}
 		return query.Only(ctx)
 	case department.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -145,7 +145,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 		}
 		return query.Only(ctx)
 	case menu.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -158,7 +158,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 		}
 		return query.Only(ctx)
 	case permission.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -171,7 +171,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 		}
 		return query.Only(ctx)
 	case region.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -184,7 +184,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 		}
 		return query.Only(ctx)
 	case role.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -197,7 +197,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 		}
 		return query.Only(ctx)
 	case todo.Table:
-		var uid xid.ID
+		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -214,7 +214,7 @@ func (c *Client) noder(ctx context.Context, table string, id xid.ID) (Noder, err
 	}
 }
 
-func (c *Client) Noders(ctx context.Context, ids []xid.ID, opts ...NodeOption) ([]Noder, error) {
+func (c *Client) Noders(ctx context.Context, ids []pxid.ID, opts ...NodeOption) ([]Noder, error) {
 	switch len(ids) {
 	case 1:
 		noder, err := c.Noder(ctx, ids[0], opts...)
@@ -228,8 +228,8 @@ func (c *Client) Noders(ctx context.Context, ids []xid.ID, opts ...NodeOption) (
 
 	noders := make([]Noder, len(ids))
 	errors := make([]error, len(ids))
-	tables := make(map[string][]xid.ID)
-	id2idx := make(map[xid.ID][]int, len(ids))
+	tables := make(map[string][]pxid.ID)
+	id2idx := make(map[pxid.ID][]int, len(ids))
 	nopts := c.newNodeOpts(opts)
 	for i, id := range ids {
 		table, err := nopts.nodeType(ctx, id)
@@ -275,9 +275,9 @@ func (c *Client) Noders(ctx context.Context, ids []xid.ID, opts ...NodeOption) (
 	return noders, nil
 }
 
-func (c *Client) noders(ctx context.Context, table string, ids []xid.ID) ([]Noder, error) {
+func (c *Client) noders(ctx context.Context, table string, ids []pxid.ID) ([]Noder, error) {
 	noders := make([]Noder, len(ids))
-	idmap := make(map[xid.ID][]*Noder, len(ids))
+	idmap := make(map[pxid.ID][]*Noder, len(ids))
 	for i, id := range ids {
 		idmap[id] = append(idmap[id], &noders[i])
 	}

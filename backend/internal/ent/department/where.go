@@ -7,54 +7,54 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id xid.ID) predicate.Department {
+func ID(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id xid.ID) predicate.Department {
+func IDEQ(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id xid.ID) predicate.Department {
+func IDNEQ(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...xid.ID) predicate.Department {
+func IDIn(ids ...pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...xid.ID) predicate.Department {
+func IDNotIn(ids ...pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id xid.ID) predicate.Department {
+func IDGT(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id xid.ID) predicate.Department {
+func IDGTE(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id xid.ID) predicate.Department {
+func IDLT(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id xid.ID) predicate.Department {
+func IDLTE(id pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldLTE(FieldID, id))
 }
 
@@ -89,7 +89,7 @@ func Name(v string) predicate.Department {
 }
 
 // Pid applies equality check predicate on the "pid" field. It's identical to PidEQ.
-func Pid(v xid.ID) predicate.Department {
+func Pid(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldEQ(FieldPid, v))
 }
 
@@ -354,59 +354,59 @@ func NameContainsFold(v string) predicate.Department {
 }
 
 // PidEQ applies the EQ predicate on the "pid" field.
-func PidEQ(v xid.ID) predicate.Department {
+func PidEQ(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldEQ(FieldPid, v))
 }
 
 // PidNEQ applies the NEQ predicate on the "pid" field.
-func PidNEQ(v xid.ID) predicate.Department {
+func PidNEQ(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldNEQ(FieldPid, v))
 }
 
 // PidIn applies the In predicate on the "pid" field.
-func PidIn(vs ...xid.ID) predicate.Department {
+func PidIn(vs ...pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldIn(FieldPid, vs...))
 }
 
 // PidNotIn applies the NotIn predicate on the "pid" field.
-func PidNotIn(vs ...xid.ID) predicate.Department {
+func PidNotIn(vs ...pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldNotIn(FieldPid, vs...))
 }
 
 // PidGT applies the GT predicate on the "pid" field.
-func PidGT(v xid.ID) predicate.Department {
+func PidGT(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldGT(FieldPid, v))
 }
 
 // PidGTE applies the GTE predicate on the "pid" field.
-func PidGTE(v xid.ID) predicate.Department {
+func PidGTE(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldGTE(FieldPid, v))
 }
 
 // PidLT applies the LT predicate on the "pid" field.
-func PidLT(v xid.ID) predicate.Department {
+func PidLT(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldLT(FieldPid, v))
 }
 
 // PidLTE applies the LTE predicate on the "pid" field.
-func PidLTE(v xid.ID) predicate.Department {
+func PidLTE(v pxid.ID) predicate.Department {
 	return predicate.Department(sql.FieldLTE(FieldPid, v))
 }
 
 // PidContains applies the Contains predicate on the "pid" field.
-func PidContains(v xid.ID) predicate.Department {
+func PidContains(v pxid.ID) predicate.Department {
 	vc := string(v)
 	return predicate.Department(sql.FieldContains(FieldPid, vc))
 }
 
 // PidHasPrefix applies the HasPrefix predicate on the "pid" field.
-func PidHasPrefix(v xid.ID) predicate.Department {
+func PidHasPrefix(v pxid.ID) predicate.Department {
 	vc := string(v)
 	return predicate.Department(sql.FieldHasPrefix(FieldPid, vc))
 }
 
 // PidHasSuffix applies the HasSuffix predicate on the "pid" field.
-func PidHasSuffix(v xid.ID) predicate.Department {
+func PidHasSuffix(v pxid.ID) predicate.Department {
 	vc := string(v)
 	return predicate.Department(sql.FieldHasSuffix(FieldPid, vc))
 }
@@ -422,13 +422,13 @@ func PidNotNil() predicate.Department {
 }
 
 // PidEqualFold applies the EqualFold predicate on the "pid" field.
-func PidEqualFold(v xid.ID) predicate.Department {
+func PidEqualFold(v pxid.ID) predicate.Department {
 	vc := string(v)
 	return predicate.Department(sql.FieldEqualFold(FieldPid, vc))
 }
 
 // PidContainsFold applies the ContainsFold predicate on the "pid" field.
-func PidContainsFold(v xid.ID) predicate.Department {
+func PidContainsFold(v pxid.ID) predicate.Department {
 	vc := string(v)
 	return predicate.Department(sql.FieldContainsFold(FieldPid, vc))
 }

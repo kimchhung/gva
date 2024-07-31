@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/todo"
 )
 
@@ -73,15 +73,15 @@ func (tc *TodoCreate) SetName(s string) *TodoCreate {
 }
 
 // SetID sets the "id" field.
-func (tc *TodoCreate) SetID(x xid.ID) *TodoCreate {
-	tc.mutation.SetID(x)
+func (tc *TodoCreate) SetID(px pxid.ID) *TodoCreate {
+	tc.mutation.SetID(px)
 	return tc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (tc *TodoCreate) SetNillableID(x *xid.ID) *TodoCreate {
-	if x != nil {
-		tc.SetID(*x)
+func (tc *TodoCreate) SetNillableID(px *pxid.ID) *TodoCreate {
+	if px != nil {
+		tc.SetID(*px)
 	}
 	return tc
 }
@@ -180,7 +180,7 @@ func (tc *TodoCreate) sqlSave(ctx context.Context) (*Todo, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -451,7 +451,7 @@ func (u *TodoUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *TodoUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *TodoUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -465,7 +465,7 @@ func (u *TodoUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *TodoUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *TodoUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

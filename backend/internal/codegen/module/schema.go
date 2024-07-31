@@ -9,7 +9,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/mixins"
 	"github.com/gva/app/database/schema/softdelete"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 )
 
 type {{.EntityPascal}} struct {

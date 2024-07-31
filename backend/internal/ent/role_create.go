@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
@@ -108,28 +108,28 @@ func (rc *RoleCreate) SetIsChangeable(b bool) *RoleCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *RoleCreate) SetID(x xid.ID) *RoleCreate {
-	rc.mutation.SetID(x)
+func (rc *RoleCreate) SetID(px pxid.ID) *RoleCreate {
+	rc.mutation.SetID(px)
 	return rc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *RoleCreate) SetNillableID(x *xid.ID) *RoleCreate {
-	if x != nil {
-		rc.SetID(*x)
+func (rc *RoleCreate) SetNillableID(px *pxid.ID) *RoleCreate {
+	if px != nil {
+		rc.SetID(*px)
 	}
 	return rc
 }
 
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
-func (rc *RoleCreate) AddAdminIDs(ids ...xid.ID) *RoleCreate {
+func (rc *RoleCreate) AddAdminIDs(ids ...pxid.ID) *RoleCreate {
 	rc.mutation.AddAdminIDs(ids...)
 	return rc
 }
 
 // AddAdmins adds the "admins" edges to the Admin entity.
 func (rc *RoleCreate) AddAdmins(a ...*Admin) *RoleCreate {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -137,14 +137,14 @@ func (rc *RoleCreate) AddAdmins(a ...*Admin) *RoleCreate {
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
-func (rc *RoleCreate) AddPermissionIDs(ids ...xid.ID) *RoleCreate {
+func (rc *RoleCreate) AddPermissionIDs(ids ...pxid.ID) *RoleCreate {
 	rc.mutation.AddPermissionIDs(ids...)
 	return rc
 }
 
 // AddPermissions adds the "permissions" edges to the Permission entity.
 func (rc *RoleCreate) AddPermissions(p ...*Permission) *RoleCreate {
-	ids := make([]xid.ID, len(p))
+	ids := make([]pxid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -152,14 +152,14 @@ func (rc *RoleCreate) AddPermissions(p ...*Permission) *RoleCreate {
 }
 
 // AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
-func (rc *RoleCreate) AddRouteIDs(ids ...xid.ID) *RoleCreate {
+func (rc *RoleCreate) AddRouteIDs(ids ...pxid.ID) *RoleCreate {
 	rc.mutation.AddRouteIDs(ids...)
 	return rc
 }
 
 // AddRoutes adds the "routes" edges to the Menu entity.
 func (rc *RoleCreate) AddRoutes(m ...*Menu) *RoleCreate {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -276,7 +276,7 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -731,7 +731,7 @@ func (u *RoleUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RoleUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *RoleUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -745,7 +745,7 @@ func (u *RoleUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RoleUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *RoleUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

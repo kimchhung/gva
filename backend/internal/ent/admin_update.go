@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/predicate"
@@ -151,15 +151,15 @@ func (au *AdminUpdate) ClearDisplayName() *AdminUpdate {
 }
 
 // SetDepartmentID sets the "department_id" field.
-func (au *AdminUpdate) SetDepartmentID(x xid.ID) *AdminUpdate {
-	au.mutation.SetDepartmentID(x)
+func (au *AdminUpdate) SetDepartmentID(px pxid.ID) *AdminUpdate {
+	au.mutation.SetDepartmentID(px)
 	return au
 }
 
 // SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
-func (au *AdminUpdate) SetNillableDepartmentID(x *xid.ID) *AdminUpdate {
-	if x != nil {
-		au.SetDepartmentID(*x)
+func (au *AdminUpdate) SetNillableDepartmentID(px *pxid.ID) *AdminUpdate {
+	if px != nil {
+		au.SetDepartmentID(*px)
 	}
 	return au
 }
@@ -171,14 +171,14 @@ func (au *AdminUpdate) ClearDepartmentID() *AdminUpdate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (au *AdminUpdate) AddRoleIDs(ids ...xid.ID) *AdminUpdate {
+func (au *AdminUpdate) AddRoleIDs(ids ...pxid.ID) *AdminUpdate {
 	au.mutation.AddRoleIDs(ids...)
 	return au
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (au *AdminUpdate) AddRoles(r ...*Role) *AdminUpdate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -202,14 +202,14 @@ func (au *AdminUpdate) ClearRoles() *AdminUpdate {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (au *AdminUpdate) RemoveRoleIDs(ids ...xid.ID) *AdminUpdate {
+func (au *AdminUpdate) RemoveRoleIDs(ids ...pxid.ID) *AdminUpdate {
 	au.mutation.RemoveRoleIDs(ids...)
 	return au
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (au *AdminUpdate) RemoveRoles(r ...*Role) *AdminUpdate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -533,15 +533,15 @@ func (auo *AdminUpdateOne) ClearDisplayName() *AdminUpdateOne {
 }
 
 // SetDepartmentID sets the "department_id" field.
-func (auo *AdminUpdateOne) SetDepartmentID(x xid.ID) *AdminUpdateOne {
-	auo.mutation.SetDepartmentID(x)
+func (auo *AdminUpdateOne) SetDepartmentID(px pxid.ID) *AdminUpdateOne {
+	auo.mutation.SetDepartmentID(px)
 	return auo
 }
 
 // SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
-func (auo *AdminUpdateOne) SetNillableDepartmentID(x *xid.ID) *AdminUpdateOne {
-	if x != nil {
-		auo.SetDepartmentID(*x)
+func (auo *AdminUpdateOne) SetNillableDepartmentID(px *pxid.ID) *AdminUpdateOne {
+	if px != nil {
+		auo.SetDepartmentID(*px)
 	}
 	return auo
 }
@@ -553,14 +553,14 @@ func (auo *AdminUpdateOne) ClearDepartmentID() *AdminUpdateOne {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (auo *AdminUpdateOne) AddRoleIDs(ids ...xid.ID) *AdminUpdateOne {
+func (auo *AdminUpdateOne) AddRoleIDs(ids ...pxid.ID) *AdminUpdateOne {
 	auo.mutation.AddRoleIDs(ids...)
 	return auo
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (auo *AdminUpdateOne) AddRoles(r ...*Role) *AdminUpdateOne {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -584,14 +584,14 @@ func (auo *AdminUpdateOne) ClearRoles() *AdminUpdateOne {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (auo *AdminUpdateOne) RemoveRoleIDs(ids ...xid.ID) *AdminUpdateOne {
+func (auo *AdminUpdateOne) RemoveRoleIDs(ids ...pxid.ID) *AdminUpdateOne {
 	auo.mutation.RemoveRoleIDs(ids...)
 	return auo
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (auo *AdminUpdateOne) RemoveRoles(r ...*Role) *AdminUpdateOne {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

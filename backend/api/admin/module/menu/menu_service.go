@@ -6,7 +6,7 @@ import (
 	"github.com/gva/api/admin/module/menu/dto"
 	apperror "github.com/gva/app/common/error"
 	"github.com/gva/app/common/repository"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/utils"
 	"github.com/gva/utils/pagi"
 
@@ -56,7 +56,7 @@ func (s *MenuService) Paginate(ctx context.Context, p *dto.MenuPagedRequest) ([]
 	return dto.ToMenuResponse(list...), meta, nil
 }
 
-func (s *MenuService) GetMenuByID(ctx context.Context, id xid.ID) (*dto.MenuResponse, error) {
+func (s *MenuService) GetMenuByID(ctx context.Context, id pxid.ID) (*dto.MenuResponse, error) {
 	data, err := s.repo.Q().Where(menu.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (s *MenuService) CreateMenu(ctx context.Context, r *dto.MenuRequest) (*dto.
 	return dto.ToMenuResponse(data)[0], nil
 }
 
-func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
+func (s *MenuService) UpdateMenu(ctx context.Context, id pxid.ID, r *dto.MenuRequest) (*dto.MenuResponse, error) {
 	update := s.repo.C().UpdateOneID(id).
 		SetComponent(r.Component).
 		SetPath(r.Path).
@@ -120,7 +120,7 @@ func (s *MenuService) UpdateMenu(ctx context.Context, id xid.ID, r *dto.MenuRequ
 	return dto.ToMenuResponse(updated)[0], nil
 }
 
-func (s *MenuService) DeleteMenu(ctx context.Context, id xid.ID) error {
+func (s *MenuService) DeleteMenu(ctx context.Context, id pxid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }
 

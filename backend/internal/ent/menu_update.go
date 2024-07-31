@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/types"
-	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
@@ -90,15 +90,15 @@ func (mu *MenuUpdate) AddDeletedAt(i int) *MenuUpdate {
 }
 
 // SetPid sets the "pid" field.
-func (mu *MenuUpdate) SetPid(x xid.ID) *MenuUpdate {
-	mu.mutation.SetPid(x)
+func (mu *MenuUpdate) SetPid(px pxid.ID) *MenuUpdate {
+	mu.mutation.SetPid(px)
 	return mu
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillablePid(x *xid.ID) *MenuUpdate {
-	if x != nil {
-		mu.SetPid(*x)
+func (mu *MenuUpdate) SetNillablePid(px *pxid.ID) *MenuUpdate {
+	if px != nil {
+		mu.SetPid(*px)
 	}
 	return mu
 }
@@ -227,13 +227,13 @@ func (mu *MenuUpdate) SetNillableMeta(tm *types.MenuMeta) *MenuUpdate {
 }
 
 // SetParentID sets the "parent" edge to the Menu entity by ID.
-func (mu *MenuUpdate) SetParentID(id xid.ID) *MenuUpdate {
+func (mu *MenuUpdate) SetParentID(id pxid.ID) *MenuUpdate {
 	mu.mutation.SetParentID(id)
 	return mu
 }
 
 // SetNillableParentID sets the "parent" edge to the Menu entity by ID if the given value is not nil.
-func (mu *MenuUpdate) SetNillableParentID(id *xid.ID) *MenuUpdate {
+func (mu *MenuUpdate) SetNillableParentID(id *pxid.ID) *MenuUpdate {
 	if id != nil {
 		mu = mu.SetParentID(*id)
 	}
@@ -246,14 +246,14 @@ func (mu *MenuUpdate) SetParent(m *Menu) *MenuUpdate {
 }
 
 // AddChildIDs adds the "children" edge to the Menu entity by IDs.
-func (mu *MenuUpdate) AddChildIDs(ids ...xid.ID) *MenuUpdate {
+func (mu *MenuUpdate) AddChildIDs(ids ...pxid.ID) *MenuUpdate {
 	mu.mutation.AddChildIDs(ids...)
 	return mu
 }
 
 // AddChildren adds the "children" edges to the Menu entity.
 func (mu *MenuUpdate) AddChildren(m ...*Menu) *MenuUpdate {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -261,14 +261,14 @@ func (mu *MenuUpdate) AddChildren(m ...*Menu) *MenuUpdate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (mu *MenuUpdate) AddRoleIDs(ids ...xid.ID) *MenuUpdate {
+func (mu *MenuUpdate) AddRoleIDs(ids ...pxid.ID) *MenuUpdate {
 	mu.mutation.AddRoleIDs(ids...)
 	return mu
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (mu *MenuUpdate) AddRoles(r ...*Role) *MenuUpdate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -293,14 +293,14 @@ func (mu *MenuUpdate) ClearChildren() *MenuUpdate {
 }
 
 // RemoveChildIDs removes the "children" edge to Menu entities by IDs.
-func (mu *MenuUpdate) RemoveChildIDs(ids ...xid.ID) *MenuUpdate {
+func (mu *MenuUpdate) RemoveChildIDs(ids ...pxid.ID) *MenuUpdate {
 	mu.mutation.RemoveChildIDs(ids...)
 	return mu
 }
 
 // RemoveChildren removes "children" edges to Menu entities.
 func (mu *MenuUpdate) RemoveChildren(m ...*Menu) *MenuUpdate {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -314,14 +314,14 @@ func (mu *MenuUpdate) ClearRoles() *MenuUpdate {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (mu *MenuUpdate) RemoveRoleIDs(ids ...xid.ID) *MenuUpdate {
+func (mu *MenuUpdate) RemoveRoleIDs(ids ...pxid.ID) *MenuUpdate {
 	mu.mutation.RemoveRoleIDs(ids...)
 	return mu
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (mu *MenuUpdate) RemoveRoles(r ...*Role) *MenuUpdate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -650,15 +650,15 @@ func (muo *MenuUpdateOne) AddDeletedAt(i int) *MenuUpdateOne {
 }
 
 // SetPid sets the "pid" field.
-func (muo *MenuUpdateOne) SetPid(x xid.ID) *MenuUpdateOne {
-	muo.mutation.SetPid(x)
+func (muo *MenuUpdateOne) SetPid(px pxid.ID) *MenuUpdateOne {
+	muo.mutation.SetPid(px)
 	return muo
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillablePid(x *xid.ID) *MenuUpdateOne {
-	if x != nil {
-		muo.SetPid(*x)
+func (muo *MenuUpdateOne) SetNillablePid(px *pxid.ID) *MenuUpdateOne {
+	if px != nil {
+		muo.SetPid(*px)
 	}
 	return muo
 }
@@ -787,13 +787,13 @@ func (muo *MenuUpdateOne) SetNillableMeta(tm *types.MenuMeta) *MenuUpdateOne {
 }
 
 // SetParentID sets the "parent" edge to the Menu entity by ID.
-func (muo *MenuUpdateOne) SetParentID(id xid.ID) *MenuUpdateOne {
+func (muo *MenuUpdateOne) SetParentID(id pxid.ID) *MenuUpdateOne {
 	muo.mutation.SetParentID(id)
 	return muo
 }
 
 // SetNillableParentID sets the "parent" edge to the Menu entity by ID if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillableParentID(id *xid.ID) *MenuUpdateOne {
+func (muo *MenuUpdateOne) SetNillableParentID(id *pxid.ID) *MenuUpdateOne {
 	if id != nil {
 		muo = muo.SetParentID(*id)
 	}
@@ -806,14 +806,14 @@ func (muo *MenuUpdateOne) SetParent(m *Menu) *MenuUpdateOne {
 }
 
 // AddChildIDs adds the "children" edge to the Menu entity by IDs.
-func (muo *MenuUpdateOne) AddChildIDs(ids ...xid.ID) *MenuUpdateOne {
+func (muo *MenuUpdateOne) AddChildIDs(ids ...pxid.ID) *MenuUpdateOne {
 	muo.mutation.AddChildIDs(ids...)
 	return muo
 }
 
 // AddChildren adds the "children" edges to the Menu entity.
 func (muo *MenuUpdateOne) AddChildren(m ...*Menu) *MenuUpdateOne {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -821,14 +821,14 @@ func (muo *MenuUpdateOne) AddChildren(m ...*Menu) *MenuUpdateOne {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (muo *MenuUpdateOne) AddRoleIDs(ids ...xid.ID) *MenuUpdateOne {
+func (muo *MenuUpdateOne) AddRoleIDs(ids ...pxid.ID) *MenuUpdateOne {
 	muo.mutation.AddRoleIDs(ids...)
 	return muo
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (muo *MenuUpdateOne) AddRoles(r ...*Role) *MenuUpdateOne {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -853,14 +853,14 @@ func (muo *MenuUpdateOne) ClearChildren() *MenuUpdateOne {
 }
 
 // RemoveChildIDs removes the "children" edge to Menu entities by IDs.
-func (muo *MenuUpdateOne) RemoveChildIDs(ids ...xid.ID) *MenuUpdateOne {
+func (muo *MenuUpdateOne) RemoveChildIDs(ids ...pxid.ID) *MenuUpdateOne {
 	muo.mutation.RemoveChildIDs(ids...)
 	return muo
 }
 
 // RemoveChildren removes "children" edges to Menu entities.
 func (muo *MenuUpdateOne) RemoveChildren(m ...*Menu) *MenuUpdateOne {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -874,14 +874,14 @@ func (muo *MenuUpdateOne) ClearRoles() *MenuUpdateOne {
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (muo *MenuUpdateOne) RemoveRoleIDs(ids ...xid.ID) *MenuUpdateOne {
+func (muo *MenuUpdateOne) RemoveRoleIDs(ids ...pxid.ID) *MenuUpdateOne {
 	muo.mutation.RemoveRoleIDs(ids...)
 	return muo
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
 func (muo *MenuUpdateOne) RemoveRoles(r ...*Role) *MenuUpdateOne {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

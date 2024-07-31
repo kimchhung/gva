@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/region"
 )
 
@@ -99,41 +99,41 @@ func (rc *RegionCreate) SetType(r region.Type) *RegionCreate {
 }
 
 // SetPid sets the "pid" field.
-func (rc *RegionCreate) SetPid(x xid.ID) *RegionCreate {
-	rc.mutation.SetPid(x)
+func (rc *RegionCreate) SetPid(px pxid.ID) *RegionCreate {
+	rc.mutation.SetPid(px)
 	return rc
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (rc *RegionCreate) SetNillablePid(x *xid.ID) *RegionCreate {
-	if x != nil {
-		rc.SetPid(*x)
+func (rc *RegionCreate) SetNillablePid(px *pxid.ID) *RegionCreate {
+	if px != nil {
+		rc.SetPid(*px)
 	}
 	return rc
 }
 
 // SetID sets the "id" field.
-func (rc *RegionCreate) SetID(x xid.ID) *RegionCreate {
-	rc.mutation.SetID(x)
+func (rc *RegionCreate) SetID(px pxid.ID) *RegionCreate {
+	rc.mutation.SetID(px)
 	return rc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *RegionCreate) SetNillableID(x *xid.ID) *RegionCreate {
-	if x != nil {
-		rc.SetID(*x)
+func (rc *RegionCreate) SetNillableID(px *pxid.ID) *RegionCreate {
+	if px != nil {
+		rc.SetID(*px)
 	}
 	return rc
 }
 
 // SetParentID sets the "parent" edge to the Region entity by ID.
-func (rc *RegionCreate) SetParentID(id xid.ID) *RegionCreate {
+func (rc *RegionCreate) SetParentID(id pxid.ID) *RegionCreate {
 	rc.mutation.SetParentID(id)
 	return rc
 }
 
 // SetNillableParentID sets the "parent" edge to the Region entity by ID if the given value is not nil.
-func (rc *RegionCreate) SetNillableParentID(id *xid.ID) *RegionCreate {
+func (rc *RegionCreate) SetNillableParentID(id *pxid.ID) *RegionCreate {
 	if id != nil {
 		rc = rc.SetParentID(*id)
 	}
@@ -146,14 +146,14 @@ func (rc *RegionCreate) SetParent(r *Region) *RegionCreate {
 }
 
 // AddChildIDs adds the "children" edge to the Region entity by IDs.
-func (rc *RegionCreate) AddChildIDs(ids ...xid.ID) *RegionCreate {
+func (rc *RegionCreate) AddChildIDs(ids ...pxid.ID) *RegionCreate {
 	rc.mutation.AddChildIDs(ids...)
 	return rc
 }
 
 // AddChildren adds the "children" edges to the Region entity.
 func (rc *RegionCreate) AddChildren(r ...*Region) *RegionCreate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -272,7 +272,7 @@ func (rc *RegionCreate) sqlSave(ctx context.Context) (*Region, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -500,7 +500,7 @@ func (u *RegionUpsert) UpdateType() *RegionUpsert {
 }
 
 // SetPid sets the "pid" field.
-func (u *RegionUpsert) SetPid(v xid.ID) *RegionUpsert {
+func (u *RegionUpsert) SetPid(v pxid.ID) *RegionUpsert {
 	u.Set(region.FieldPid, v)
 	return u
 }
@@ -671,7 +671,7 @@ func (u *RegionUpsertOne) UpdateType() *RegionUpsertOne {
 }
 
 // SetPid sets the "pid" field.
-func (u *RegionUpsertOne) SetPid(v xid.ID) *RegionUpsertOne {
+func (u *RegionUpsertOne) SetPid(v pxid.ID) *RegionUpsertOne {
 	return u.Update(func(s *RegionUpsert) {
 		s.SetPid(v)
 	})
@@ -707,7 +707,7 @@ func (u *RegionUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RegionUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *RegionUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -721,7 +721,7 @@ func (u *RegionUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RegionUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *RegionUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1012,7 +1012,7 @@ func (u *RegionUpsertBulk) UpdateType() *RegionUpsertBulk {
 }
 
 // SetPid sets the "pid" field.
-func (u *RegionUpsertBulk) SetPid(v xid.ID) *RegionUpsertBulk {
+func (u *RegionUpsertBulk) SetPid(v pxid.ID) *RegionUpsertBulk {
 	return u.Update(func(s *RegionUpsert) {
 		s.SetPid(v)
 	})

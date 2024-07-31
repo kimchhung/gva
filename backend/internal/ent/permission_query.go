@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
@@ -116,8 +116,8 @@ func (pq *PermissionQuery) FirstX(ctx context.Context) *Permission {
 
 // FirstID returns the first Permission ID from the query.
 // Returns a *NotFoundError when no Permission ID was found.
-func (pq *PermissionQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (pq *PermissionQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -129,7 +129,7 @@ func (pq *PermissionQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PermissionQuery) FirstIDX(ctx context.Context) xid.ID {
+func (pq *PermissionQuery) FirstIDX(ctx context.Context) pxid.ID {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -167,8 +167,8 @@ func (pq *PermissionQuery) OnlyX(ctx context.Context) *Permission {
 // OnlyID is like Only, but returns the only Permission ID in the query.
 // Returns a *NotSingularError when more than one Permission ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PermissionQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (pq *PermissionQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -184,7 +184,7 @@ func (pq *PermissionQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PermissionQuery) OnlyIDX(ctx context.Context) xid.ID {
+func (pq *PermissionQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -212,7 +212,7 @@ func (pq *PermissionQuery) AllX(ctx context.Context) []*Permission {
 }
 
 // IDs executes the query and returns a list of Permission IDs.
-func (pq *PermissionQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
+func (pq *PermissionQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if pq.ctx.Unique == nil && pq.path != nil {
 		pq.Unique(true)
 	}
@@ -224,7 +224,7 @@ func (pq *PermissionQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PermissionQuery) IDsX(ctx context.Context) []xid.ID {
+func (pq *PermissionQuery) IDsX(ctx context.Context) []pxid.ID {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -431,8 +431,8 @@ func (pq *PermissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*P
 
 func (pq *PermissionQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Permission, init func(*Permission), assign func(*Permission, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[xid.ID]*Permission)
-	nids := make(map[xid.ID]map[*Permission]struct{})
+	byID := make(map[pxid.ID]*Permission)
+	nids := make(map[pxid.ID]map[*Permission]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -462,11 +462,11 @@ func (pq *PermissionQuery) loadRoles(ctx context.Context, query *RoleQuery, node
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(xid.ID)}, values...), nil
+				return append([]any{new(pxid.ID)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*xid.ID)
-				inValue := *values[1].(*xid.ID)
+				outValue := *values[0].(*pxid.ID)
+				inValue := *values[1].(*pxid.ID)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Permission]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])

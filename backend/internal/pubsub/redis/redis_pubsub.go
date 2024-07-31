@@ -6,24 +6,13 @@ import (
 )
 
 type RedisSubSub struct {
-	redisBroker
-	redisPublisher
+	*redisBroker
+	*redisPublisher
 }
 
-func NewRedisPubSub(client *redis.Client, channel string, opts ...redis.ChannelOption) pubsub.Pubsub {
-	broker := redisBroker{
-		client:           client,
-		redisChannel:     channel,
-		topics:           make(map[pubsub.Topic]topicSubscribers),
-		addSubscriber:    make(chan Subscriber),
-		removeSubscriber: make(chan Subscriber),
-		opts:             opts,
-	}
-
-	publisher := redisPublisher{
-		client:       client,
-		redisChannel: channel,
-	}
+func NewRedisPubSub(client *redis.Client, channels []string, opts ...redis.ChannelOption) pubsub.Pubsub {
+	broker := NewBroker(client, channels, opts...)
+	publisher := NewPublisher(client, channels)
 
 	return &RedisSubSub{
 		broker,

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 )
@@ -94,41 +94,41 @@ func (dc *DepartmentCreate) SetName(s string) *DepartmentCreate {
 }
 
 // SetPid sets the "pid" field.
-func (dc *DepartmentCreate) SetPid(x xid.ID) *DepartmentCreate {
-	dc.mutation.SetPid(x)
+func (dc *DepartmentCreate) SetPid(px pxid.ID) *DepartmentCreate {
+	dc.mutation.SetPid(px)
 	return dc
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (dc *DepartmentCreate) SetNillablePid(x *xid.ID) *DepartmentCreate {
-	if x != nil {
-		dc.SetPid(*x)
+func (dc *DepartmentCreate) SetNillablePid(px *pxid.ID) *DepartmentCreate {
+	if px != nil {
+		dc.SetPid(*px)
 	}
 	return dc
 }
 
 // SetID sets the "id" field.
-func (dc *DepartmentCreate) SetID(x xid.ID) *DepartmentCreate {
-	dc.mutation.SetID(x)
+func (dc *DepartmentCreate) SetID(px pxid.ID) *DepartmentCreate {
+	dc.mutation.SetID(px)
 	return dc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (dc *DepartmentCreate) SetNillableID(x *xid.ID) *DepartmentCreate {
-	if x != nil {
-		dc.SetID(*x)
+func (dc *DepartmentCreate) SetNillableID(px *pxid.ID) *DepartmentCreate {
+	if px != nil {
+		dc.SetID(*px)
 	}
 	return dc
 }
 
 // SetParentID sets the "parent" edge to the Department entity by ID.
-func (dc *DepartmentCreate) SetParentID(id xid.ID) *DepartmentCreate {
+func (dc *DepartmentCreate) SetParentID(id pxid.ID) *DepartmentCreate {
 	dc.mutation.SetParentID(id)
 	return dc
 }
 
 // SetNillableParentID sets the "parent" edge to the Department entity by ID if the given value is not nil.
-func (dc *DepartmentCreate) SetNillableParentID(id *xid.ID) *DepartmentCreate {
+func (dc *DepartmentCreate) SetNillableParentID(id *pxid.ID) *DepartmentCreate {
 	if id != nil {
 		dc = dc.SetParentID(*id)
 	}
@@ -141,14 +141,14 @@ func (dc *DepartmentCreate) SetParent(d *Department) *DepartmentCreate {
 }
 
 // AddChildIDs adds the "children" edge to the Department entity by IDs.
-func (dc *DepartmentCreate) AddChildIDs(ids ...xid.ID) *DepartmentCreate {
+func (dc *DepartmentCreate) AddChildIDs(ids ...pxid.ID) *DepartmentCreate {
 	dc.mutation.AddChildIDs(ids...)
 	return dc
 }
 
 // AddChildren adds the "children" edges to the Department entity.
 func (dc *DepartmentCreate) AddChildren(d ...*Department) *DepartmentCreate {
-	ids := make([]xid.ID, len(d))
+	ids := make([]pxid.ID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
 	}
@@ -156,14 +156,14 @@ func (dc *DepartmentCreate) AddChildren(d ...*Department) *DepartmentCreate {
 }
 
 // AddMemberIDs adds the "members" edge to the Admin entity by IDs.
-func (dc *DepartmentCreate) AddMemberIDs(ids ...xid.ID) *DepartmentCreate {
+func (dc *DepartmentCreate) AddMemberIDs(ids ...pxid.ID) *DepartmentCreate {
 	dc.mutation.AddMemberIDs(ids...)
 	return dc
 }
 
 // AddMembers adds the "members" edges to the Admin entity.
 func (dc *DepartmentCreate) AddMembers(a ...*Admin) *DepartmentCreate {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -274,7 +274,7 @@ func (dc *DepartmentCreate) sqlSave(ctx context.Context) (*Department, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -503,7 +503,7 @@ func (u *DepartmentUpsert) UpdateName() *DepartmentUpsert {
 }
 
 // SetPid sets the "pid" field.
-func (u *DepartmentUpsert) SetPid(v xid.ID) *DepartmentUpsert {
+func (u *DepartmentUpsert) SetPid(v pxid.ID) *DepartmentUpsert {
 	u.Set(department.FieldPid, v)
 	return u
 }
@@ -660,7 +660,7 @@ func (u *DepartmentUpsertOne) UpdateName() *DepartmentUpsertOne {
 }
 
 // SetPid sets the "pid" field.
-func (u *DepartmentUpsertOne) SetPid(v xid.ID) *DepartmentUpsertOne {
+func (u *DepartmentUpsertOne) SetPid(v pxid.ID) *DepartmentUpsertOne {
 	return u.Update(func(s *DepartmentUpsert) {
 		s.SetPid(v)
 	})
@@ -696,7 +696,7 @@ func (u *DepartmentUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *DepartmentUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *DepartmentUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -710,7 +710,7 @@ func (u *DepartmentUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *DepartmentUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *DepartmentUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -987,7 +987,7 @@ func (u *DepartmentUpsertBulk) UpdateName() *DepartmentUpsertBulk {
 }
 
 // SetPid sets the "pid" field.
-func (u *DepartmentUpsertBulk) SetPid(v xid.ID) *DepartmentUpsertBulk {
+func (u *DepartmentUpsertBulk) SetPid(v pxid.ID) *DepartmentUpsertBulk {
 	return u.Update(func(s *DepartmentUpsert) {
 		s.SetPid(v)
 	})

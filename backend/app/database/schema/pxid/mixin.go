@@ -1,18 +1,4 @@
-// Copyright 2019-present Facebook
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-package xid
+package pxid
 
 import (
 	"entgo.io/contrib/entgql"
@@ -39,7 +25,7 @@ func (m Mixin) Fields() []ent.Field {
 		field.String("id").
 			GoType(ID("")).
 			DefaultFunc(func() ID {
-				return MustNew(m.prefix)
+				return New(m.prefix)
 			}).
 			Annotations(
 				entgql.OrderField("id"),
@@ -54,7 +40,7 @@ type Annotation struct {
 
 // Name implements the ent Annotation interface.
 func (a Annotation) Name() string {
-	return "XID"
+	return "PXID"
 }
 
 // Annotations returns the annotations for a Mixin instance.

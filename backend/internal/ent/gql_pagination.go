@@ -14,7 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
@@ -27,8 +27,8 @@ import (
 
 // Common entgql types.
 type (
-	Cursor         = entgql.Cursor[xid.ID]
-	PageInfo       = entgql.PageInfo[xid.ID]
+	Cursor         = entgql.Cursor[pxid.ID]
+	PageInfo       = entgql.PageInfo[pxid.ID]
 	OrderDirection = entgql.OrderDirection
 )
 

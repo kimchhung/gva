@@ -51,7 +51,7 @@ func (s *DatetimeService) NowChannel(ctx context.Context) (<-chan *time.Time, er
 			case <-ctx.Done():
 				sub.UnSub()
 				return
-			case payload := <-sub.Payload():
+			case payload := <-sub.Data():
 				if time, ok := payload.(time.Time); ok {
 					ch <- &time
 				}

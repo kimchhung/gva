@@ -8,25 +8,20 @@ import (
 )
 
 type memoryPubsub struct {
-	topics           map[pubsub.Topic]map[*chan pubsub.Payload]struct{}
+	topics           map[pubsub.Topic]map[*chan pubsub.Data]struct{}
 	addSubscriber    chan Subscriber
 	removeSubscriber chan Subscriber
-	publishChan      chan PublishRequest
+	publishPayload   chan pubsub.Payload
 	isStarted        bool
-}
-
-type PublishRequest struct {
-	topic   pubsub.Topic
-	payload pubsub.Payload
 }
 
 type Subscriber struct {
 	topic           pubsub.Topic
-	subId           *chan pubsub.Payload
+	subId           *chan pubsub.Data
 	unsubscribeFunc func() error
 }
 
-func (ms Subscriber) Payload() <-chan pubsub.Payload {
+func (ms Subscriber) Data() <-chan pubsub.Data {
 	return *ms.subId
 }
 
@@ -36,26 +31,26 @@ func (ms Subscriber) UnSub() error {
 
 func NewMemoryPubsub() pubsub.Pubsub {
 	m := &memoryPubsub{
-		topics:           make(map[pubsub.Topic]map[*chan pubsub.Payload]struct{}),
+		topics:           make(map[pubsub.Topic]map[*chan pubsub.Data]struct{}),
 		addSubscriber:    make(chan Subscriber),
 		removeSubscriber: make(chan Subscriber),
-		publishChan:      make(chan PublishRequest, 100),
+		publishPayload:   make(chan pubsub.Payload, 100),
 	}
 	return m
 }
 
-func (b *memoryPubsub) Pub(ctx context.Context, topic pubsub.Topic, p pubsub.Payload) error {
+func (b *memoryPubsub) Pub(ctx context.Context, topic pubsub.Topic, data pubsub.Data) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	default:
-		b.publishChan <- PublishRequest{topic: topic, payload: p}
+		b.publishPayload <- pubsub.Payload{Topic: topic, Data: data}
 	}
 	return nil
 }
 
 func (b *memoryPubsub) Sub(ctx context.Context, topic pubsub.Topic) (pubsub.SubResult, error) {
-	ch := make(chan pubsub.Payload)
+	ch := make(chan pubsub.Data, 1)
 	subscriber := Subscriber{
 		topic: topic,
 		subId: &ch,
@@ -83,7 +78,7 @@ func (m *memoryPubsub) Listen(ctx context.Context) error {
 
 		case sub := <-m.addSubscriber:
 			if m.topics[sub.topic] == nil {
-				m.topics[sub.topic] = map[*chan pubsub.Payload]struct{}{}
+				m.topics[sub.topic] = map[*chan pubsub.Data]struct{}{}
 			}
 
 			m.topics[sub.topic][sub.subId] = struct{}{}
@@ -101,19 +96,15 @@ func (m *memoryPubsub) Listen(ctx context.Context) error {
 
 			close(*sub.subId)
 			delete(subs, sub.subId)
-			if len(subs) == 0 {
-				delete(m.topics, sub.topic)
-			}
 
-		case pub := <-m.publishChan:
-			subs, hasTopic := m.topics[pub.topic]
+		case pub := <-m.publishPayload:
+			subs, hasTopic := m.topics[pub.Topic]
 			if !hasTopic {
 				continue
 			}
 
 			for subId := range subs {
-				sub := *subId
-				sub <- pub.payload
+				*subId <- pub.Data
 			}
 		}
 	}

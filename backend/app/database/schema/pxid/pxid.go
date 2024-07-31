@@ -1,20 +1,4 @@
-// Copyright 2019-present Facebook
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-// Package xid implements the xid type.
-// A xid is an identifier that is a two-byte prefixed ULIDs, with the first two bytes encoding the type of the entity.
-package xid
+package pxid
 
 import (
 	"database/sql/driver"
@@ -36,7 +20,7 @@ var _ interface {
 	graphql.Unmarshaler
 } = (*ID)(nil)
 
-// ID implements a xid - a prefixed ULID.
+// ID implements a xid - a prefixed xid.
 type ID string
 
 // newULID returns a new ULID for time.Now() using the default entropy source.
@@ -45,8 +29,8 @@ func newId(prefix string) ID {
 	return ID(prefix + seperator + xid.New().String())
 }
 
-// MustNew returns a new xid for time.Now() given a prefix. This uses the default entropy source.
-func MustNew(prefix string) ID {
+// New returns a new xid for time.Now() given a prefix. This uses the default entropy source.
+func New(prefix string) ID {
 	return newId(prefix)
 }
 
@@ -55,13 +39,20 @@ func (u ID) PrefixIndex() int {
 	return strings.Index(string(u), seperator)
 }
 
-func (u ID) XID() xid.ID {
+func (u ID) XID() (xid.ID, error) {
 	prefixIndex := u.PrefixIndex()
 	if prefixIndex < 0 {
-		return xid.ID{}
+		return xid.ID{}, nil
 	}
-	xid, _ := xid.FromString(string(u)[prefixIndex:])
-	return xid
+	xid, err := xid.FromString(string(u)[prefixIndex:])
+	if err != nil {
+		return xid, err
+	}
+	return xid, nil
+}
+
+func (u ID) String() string {
+	return string(u)
 }
 
 func (u ID) Prefix() string {

@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/region"
 )
 
@@ -17,7 +17,7 @@ import (
 type Region struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID xid.ID `json:"id" rql:"filter,sort"`
+	ID pxid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -33,7 +33,7 @@ type Region struct {
 	// Type holds the value of the "type" field.
 	Type region.Type `json:"type" rql:"column=name,filter,sort"`
 	// Pid holds the value of the "pid" field.
-	Pid *xid.ID `json:"pid,omitempty" rql:"filter,sort"`
+	Pid *pxid.ID `json:"pid,omitempty" rql:"filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RegionQuery when eager-loading is set.
 	Edges        RegionEdges `json:"edges" rql:"-"`
@@ -81,7 +81,9 @@ func (*Region) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case region.FieldPid:
-			values[i] = &sql.NullScanner{S: new(xid.ID)}
+			values[i] = &sql.NullScanner{S: new(pxid.ID)}
+		case region.FieldID:
+			values[i] = new(pxid.ID)
 		case region.FieldIsEnable:
 			values[i] = new(sql.NullBool)
 		case region.FieldDeletedAt:
@@ -90,8 +92,6 @@ func (*Region) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case region.FieldCreatedAt, region.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case region.FieldID:
-			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -108,7 +108,7 @@ func (r *Region) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case region.FieldID:
-			if value, ok := values[i].(*xid.ID); !ok {
+			if value, ok := values[i].(*pxid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				r.ID = *value
@@ -159,8 +159,8 @@ func (r *Region) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field pid", values[i])
 			} else if value.Valid {
-				r.Pid = new(xid.ID)
-				*r.Pid = *value.S.(*xid.ID)
+				r.Pid = new(pxid.ID)
+				*r.Pid = *value.S.(*pxid.ID)
 			}
 		default:
 			r.selectValues.Set(columns[i], values[i])

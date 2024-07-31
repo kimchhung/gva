@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/gva/api/web/graph/generated"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 )
 
@@ -20,22 +20,22 @@ func (r *menuResolver) Meta(ctx context.Context, obj *ent.Menu) (string, error) 
 }
 
 // Node is the resolver for the node field.
-func (r *queryResolver) Node(ctx context.Context, id xid.ID) (ent.Noder, error) {
+func (r *queryResolver) Node(ctx context.Context, id pxid.ID) (ent.Noder, error) {
 	return r.db.Noder(ctx, id, ent.WithNodeType(ent.IDToType))
 }
 
 // Nodes is the resolver for the nodes field.
-func (r *queryResolver) Nodes(ctx context.Context, ids []xid.ID) ([]ent.Noder, error) {
+func (r *queryResolver) Nodes(ctx context.Context, ids []pxid.ID) ([]ent.Noder, error) {
 	return r.db.Noders(ctx, ids, ent.WithNodeType(ent.IDToType))
 }
 
 // Departments is the resolver for the departments field.
-func (r *queryResolver) Departments(ctx context.Context, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) (*ent.DepartmentConnection, error) {
+func (r *queryResolver) Departments(ctx context.Context, after *entgql.Cursor[pxid.ID], first *int, before *entgql.Cursor[pxid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) (*ent.DepartmentConnection, error) {
 	return r.db.Department.Query().Paginate(ctx, after, first, before, last, ent.WithDepartmentOrder(orderBy), ent.WithDepartmentFilter(where.Filter))
 }
 
 // Regions is the resolver for the regions field.
-func (r *queryResolver) Regions(ctx context.Context, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) (*ent.RegionConnection, error) {
+func (r *queryResolver) Regions(ctx context.Context, after *entgql.Cursor[pxid.ID], first *int, before *entgql.Cursor[pxid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) (*ent.RegionConnection, error) {
 	return r.db.Region.Query().Paginate(ctx, after, first, before, last, ent.WithRegionOrder(orderBy), ent.WithRegionFilter(where.Filter))
 }
 

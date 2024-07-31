@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
 )
@@ -100,28 +100,28 @@ func (pc *PermissionCreate) SetNillableOrder(i *int) *PermissionCreate {
 }
 
 // SetID sets the "id" field.
-func (pc *PermissionCreate) SetID(x xid.ID) *PermissionCreate {
-	pc.mutation.SetID(x)
+func (pc *PermissionCreate) SetID(px pxid.ID) *PermissionCreate {
+	pc.mutation.SetID(px)
 	return pc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (pc *PermissionCreate) SetNillableID(x *xid.ID) *PermissionCreate {
-	if x != nil {
-		pc.SetID(*x)
+func (pc *PermissionCreate) SetNillableID(px *pxid.ID) *PermissionCreate {
+	if px != nil {
+		pc.SetID(*px)
 	}
 	return pc
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (pc *PermissionCreate) AddRoleIDs(ids ...xid.ID) *PermissionCreate {
+func (pc *PermissionCreate) AddRoleIDs(ids ...pxid.ID) *PermissionCreate {
 	pc.mutation.AddRoleIDs(ids...)
 	return pc
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (pc *PermissionCreate) AddRoles(r ...*Role) *PermissionCreate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -222,7 +222,7 @@ func (pc *PermissionCreate) sqlSave(ctx context.Context) (*Permission, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -626,7 +626,7 @@ func (u *PermissionUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PermissionUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *PermissionUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -640,7 +640,7 @@ func (u *PermissionUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PermissionUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *PermissionUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

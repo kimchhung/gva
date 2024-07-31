@@ -16,7 +16,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
@@ -132,11 +132,11 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Departments func(childComplexity int, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) int
-		Node        func(childComplexity int, id xid.ID) int
-		Nodes       func(childComplexity int, ids []xid.ID) int
+		Departments func(childComplexity int, after *entgql.Cursor[pxid.ID], first *int, before *entgql.Cursor[pxid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) int
+		Node        func(childComplexity int, id pxid.ID) int
+		Nodes       func(childComplexity int, ids []pxid.ID) int
 		Now         func(childComplexity int) int
-		Regions     func(childComplexity int, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) int
+		Regions     func(childComplexity int, after *entgql.Cursor[pxid.ID], first *int, before *entgql.Cursor[pxid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) int
 	}
 
 	Region struct {
@@ -196,10 +196,10 @@ type MenuResolver interface {
 	Meta(ctx context.Context, obj *ent.Menu) (string, error)
 }
 type QueryResolver interface {
-	Node(ctx context.Context, id xid.ID) (ent.Noder, error)
-	Nodes(ctx context.Context, ids []xid.ID) ([]ent.Noder, error)
-	Departments(ctx context.Context, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) (*ent.DepartmentConnection, error)
-	Regions(ctx context.Context, after *entgql.Cursor[xid.ID], first *int, before *entgql.Cursor[xid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) (*ent.RegionConnection, error)
+	Node(ctx context.Context, id pxid.ID) (ent.Noder, error)
+	Nodes(ctx context.Context, ids []pxid.ID) ([]ent.Noder, error)
+	Departments(ctx context.Context, after *entgql.Cursor[pxid.ID], first *int, before *entgql.Cursor[pxid.ID], last *int, orderBy *ent.DepartmentOrder, where *ent.DepartmentWhereInput) (*ent.DepartmentConnection, error)
+	Regions(ctx context.Context, after *entgql.Cursor[pxid.ID], first *int, before *entgql.Cursor[pxid.ID], last *int, orderBy *ent.RegionOrder, where *ent.RegionWhereInput) (*ent.RegionConnection, error)
 	Now(ctx context.Context) (*time.Time, error)
 }
 type SubscriptionResolver interface {
@@ -627,7 +627,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Departments(childComplexity, args["after"].(*entgql.Cursor[xid.ID]), args["first"].(*int), args["before"].(*entgql.Cursor[xid.ID]), args["last"].(*int), args["orderBy"].(*ent.DepartmentOrder), args["where"].(*ent.DepartmentWhereInput)), true
+		return e.complexity.Query.Departments(childComplexity, args["after"].(*entgql.Cursor[pxid.ID]), args["first"].(*int), args["before"].(*entgql.Cursor[pxid.ID]), args["last"].(*int), args["orderBy"].(*ent.DepartmentOrder), args["where"].(*ent.DepartmentWhereInput)), true
 
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
@@ -639,7 +639,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Node(childComplexity, args["id"].(xid.ID)), true
+		return e.complexity.Query.Node(childComplexity, args["id"].(pxid.ID)), true
 
 	case "Query.nodes":
 		if e.complexity.Query.Nodes == nil {
@@ -651,7 +651,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Nodes(childComplexity, args["ids"].([]xid.ID)), true
+		return e.complexity.Query.Nodes(childComplexity, args["ids"].([]pxid.ID)), true
 
 	case "Query.now":
 		if e.complexity.Query.Now == nil {
@@ -670,7 +670,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Regions(childComplexity, args["after"].(*entgql.Cursor[xid.ID]), args["first"].(*int), args["before"].(*entgql.Cursor[xid.ID]), args["last"].(*int), args["orderBy"].(*ent.RegionOrder), args["where"].(*ent.RegionWhereInput)), true
+		return e.complexity.Query.Regions(childComplexity, args["after"].(*entgql.Cursor[pxid.ID]), args["first"].(*int), args["before"].(*entgql.Cursor[pxid.ID]), args["last"].(*int), args["orderBy"].(*ent.RegionOrder), args["where"].(*ent.RegionWhereInput)), true
 
 	case "Region.children":
 		if e.complexity.Region.Children == nil {
@@ -2362,7 +2362,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_departments_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[xid.ID]
+	var arg0 *entgql.Cursor[pxid.ID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -2380,7 +2380,7 @@ func (ec *executionContext) field_Query_departments_args(ctx context.Context, ra
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[xid.ID]
+	var arg2 *entgql.Cursor[pxid.ID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -2422,7 +2422,7 @@ func (ec *executionContext) field_Query_departments_args(ctx context.Context, ra
 func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 xid.ID
+	var arg0 pxid.ID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, tmp)
@@ -2437,7 +2437,7 @@ func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []xid.ID
+	var arg0 []pxid.ID
 	if tmp, ok := rawArgs["ids"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 		arg0, err = ec.unmarshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx, tmp)
@@ -2452,7 +2452,7 @@ func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs 
 func (ec *executionContext) field_Query_regions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[xid.ID]
+	var arg0 *entgql.Cursor[pxid.ID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -2470,7 +2470,7 @@ func (ec *executionContext) field_Query_regions_args(ctx context.Context, rawArg
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[xid.ID]
+	var arg2 *entgql.Cursor[pxid.ID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -2573,7 +2573,7 @@ func (ec *executionContext) _Admin_id(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -2919,7 +2919,7 @@ func (ec *executionContext) _Admin_departmentID(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*xid.ID)
+	res := resTmp.(*pxid.ID)
 	fc.Result = res
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -3095,7 +3095,7 @@ func (ec *executionContext) _Department_id(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -3400,7 +3400,7 @@ func (ec *executionContext) _Department_pid(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*xid.ID)
+	res := resTmp.(*pxid.ID)
 	fc.Result = res
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -3686,7 +3686,7 @@ func (ec *executionContext) _DepartmentConnection_pageInfo(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.PageInfo[xid.ID])
+	res := resTmp.(entgql.PageInfo[pxid.ID])
 	fc.Result = res
 	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
@@ -3849,7 +3849,7 @@ func (ec *executionContext) _DepartmentEdge_cursor(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.Cursor[xid.ID])
+	res := resTmp.(entgql.Cursor[pxid.ID])
 	fc.Result = res
 	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -3893,7 +3893,7 @@ func (ec *executionContext) _Menu_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -4110,7 +4110,7 @@ func (ec *executionContext) _Menu_pid(ctx context.Context, field graphql.Collect
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*xid.ID)
+	res := resTmp.(*pxid.ID)
 	fc.Result = res
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -4647,7 +4647,7 @@ func (ec *executionContext) fieldContext_Menu_roles(_ context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[xid.ID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[pxid.ID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasNextPage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4691,7 +4691,7 @@ func (ec *executionContext) fieldContext_PageInfo_hasNextPage(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[xid.ID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[pxid.ID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4735,7 +4735,7 @@ func (ec *executionContext) fieldContext_PageInfo_hasPreviousPage(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[xid.ID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[pxid.ID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_startCursor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4758,7 +4758,7 @@ func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*entgql.Cursor[xid.ID])
+	res := resTmp.(*entgql.Cursor[pxid.ID])
 	fc.Result = res
 	return ec.marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -4776,7 +4776,7 @@ func (ec *executionContext) fieldContext_PageInfo_startCursor(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[xid.ID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[pxid.ID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_endCursor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4799,7 +4799,7 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*entgql.Cursor[xid.ID])
+	res := resTmp.(*entgql.Cursor[pxid.ID])
 	fc.Result = res
 	return ec.marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -4843,7 +4843,7 @@ func (ec *executionContext) _Permission_id(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -5244,7 +5244,7 @@ func (ec *executionContext) _Query_node(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Node(rctx, fc.Args["id"].(xid.ID))
+		return ec.resolvers.Query().Node(rctx, fc.Args["id"].(pxid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5296,7 +5296,7 @@ func (ec *executionContext) _Query_nodes(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Nodes(rctx, fc.Args["ids"].([]xid.ID))
+		return ec.resolvers.Query().Nodes(rctx, fc.Args["ids"].([]pxid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5351,7 +5351,7 @@ func (ec *executionContext) _Query_departments(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Departments(rctx, fc.Args["after"].(*entgql.Cursor[xid.ID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[xid.ID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.DepartmentOrder), fc.Args["where"].(*ent.DepartmentWhereInput))
+		return ec.resolvers.Query().Departments(rctx, fc.Args["after"].(*entgql.Cursor[pxid.ID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[pxid.ID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.DepartmentOrder), fc.Args["where"].(*ent.DepartmentWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5414,7 +5414,7 @@ func (ec *executionContext) _Query_regions(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Regions(rctx, fc.Args["after"].(*entgql.Cursor[xid.ID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[xid.ID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.RegionOrder), fc.Args["where"].(*ent.RegionWhereInput))
+		return ec.resolvers.Query().Regions(rctx, fc.Args["after"].(*entgql.Cursor[pxid.ID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[pxid.ID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.RegionOrder), fc.Args["where"].(*ent.RegionWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5662,7 +5662,7 @@ func (ec *executionContext) _Region_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -6011,7 +6011,7 @@ func (ec *executionContext) _Region_pid(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*xid.ID)
+	res := resTmp.(*pxid.ID)
 	fc.Result = res
 	return ec.marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -6232,7 +6232,7 @@ func (ec *executionContext) _RegionConnection_pageInfo(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.PageInfo[xid.ID])
+	res := resTmp.(entgql.PageInfo[pxid.ID])
 	fc.Result = res
 	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
@@ -6395,7 +6395,7 @@ func (ec *executionContext) _RegionEdge_cursor(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.Cursor[xid.ID])
+	res := resTmp.(entgql.Cursor[pxid.ID])
 	fc.Result = res
 	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -6439,7 +6439,7 @@ func (ec *executionContext) _Role_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -7094,7 +7094,7 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(xid.ID)
+	res := resTmp.(pxid.ID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, field.Selections, res)
 }
@@ -14274,7 +14274,7 @@ func (ec *executionContext) _Menu(ctx context.Context, sel ast.SelectionSet, obj
 
 var pageInfoImplementors = []string{"PageInfo"}
 
-func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *entgql.PageInfo[xid.ID]) graphql.Marshaler {
+func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *entgql.PageInfo[pxid.ID]) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, pageInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -15436,13 +15436,13 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (entgql.Cursor[xid.ID], error) {
-	var res entgql.Cursor[xid.ID]
+func (ec *executionContext) unmarshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (entgql.Cursor[pxid.ID], error) {
+	var res entgql.Cursor[pxid.ID]
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v entgql.Cursor[xid.ID]) graphql.Marshaler {
+func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v entgql.Cursor[pxid.ID]) graphql.Marshaler {
 	return v
 }
 
@@ -15491,23 +15491,23 @@ func (ec *executionContext) unmarshalNDepartmentWhereInput2ᚖgithubᚗcomᚋgva
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, v interface{}) (xid.ID, error) {
-	var res xid.ID
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, v interface{}) (pxid.ID, error) {
+	var res pxid.ID
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, sel ast.SelectionSet, v xid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, sel ast.SelectionSet, v pxid.ID) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, v interface{}) ([]xid.ID, error) {
+func (ec *executionContext) unmarshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, v interface{}) ([]pxid.ID, error) {
 	var vSlice []interface{}
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]xid.ID, len(vSlice))
+	res := make([]pxid.ID, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, vSlice[i])
@@ -15518,7 +15518,7 @@ func (ec *executionContext) unmarshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabase�
 	return res, nil
 }
 
-func (ec *executionContext) marshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []xid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []pxid.ID) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	for i := range v {
 		ret[i] = ec.marshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, sel, v[i])
@@ -15652,7 +15652,7 @@ func (ec *executionContext) marshalNOrderDirection2entgoᚗioᚋcontribᚋentgql
 	return v
 }
 
-func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v entgql.PageInfo[xid.ID]) graphql.Marshaler {
+func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v entgql.PageInfo[pxid.ID]) graphql.Marshaler {
 	return ec._PageInfo(ctx, sel, &v)
 }
 
@@ -16241,16 +16241,16 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (*entgql.Cursor[xid.ID], error) {
+func (ec *executionContext) unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (*entgql.Cursor[pxid.ID], error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(entgql.Cursor[xid.ID])
+	var res = new(entgql.Cursor[pxid.ID])
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v *entgql.Cursor[xid.ID]) graphql.Marshaler {
+func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v *entgql.Cursor[pxid.ID]) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -16395,7 +16395,7 @@ func (ec *executionContext) unmarshalODepartmentWhereInput2ᚖgithubᚗcomᚋgva
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, v interface{}) ([]xid.ID, error) {
+func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, v interface{}) ([]pxid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -16404,7 +16404,7 @@ func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabase�
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]xid.ID, len(vSlice))
+	res := make([]pxid.ID, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNID2githubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx, vSlice[i])
@@ -16415,7 +16415,7 @@ func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabase�
 	return res, nil
 }
 
-func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []xid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []pxid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -16433,16 +16433,16 @@ func (ec *executionContext) marshalOID2ᚕgithubᚗcomᚋgvaᚋappᚋdatabaseᚋ
 	return ret
 }
 
-func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, v interface{}) (*xid.ID, error) {
+func (ec *executionContext) unmarshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, v interface{}) (*pxid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(xid.ID)
+	var res = new(pxid.ID)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, sel ast.SelectionSet, v *xid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚖgithubᚗcomᚋgvaᚋappᚋdatabaseᚋschemaᚋxidᚐID(ctx context.Context, sel ast.SelectionSet, v *pxid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/region"
 
@@ -141,8 +141,8 @@ func (rq *RegionQuery) FirstX(ctx context.Context) *Region {
 
 // FirstID returns the first Region ID from the query.
 // Returns a *NotFoundError when no Region ID was found.
-func (rq *RegionQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (rq *RegionQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -154,7 +154,7 @@ func (rq *RegionQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rq *RegionQuery) FirstIDX(ctx context.Context) xid.ID {
+func (rq *RegionQuery) FirstIDX(ctx context.Context) pxid.ID {
 	id, err := rq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -192,8 +192,8 @@ func (rq *RegionQuery) OnlyX(ctx context.Context) *Region {
 // OnlyID is like Only, but returns the only Region ID in the query.
 // Returns a *NotSingularError when more than one Region ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rq *RegionQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (rq *RegionQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -209,7 +209,7 @@ func (rq *RegionQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rq *RegionQuery) OnlyIDX(ctx context.Context) xid.ID {
+func (rq *RegionQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	id, err := rq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -237,7 +237,7 @@ func (rq *RegionQuery) AllX(ctx context.Context) []*Region {
 }
 
 // IDs executes the query and returns a list of Region IDs.
-func (rq *RegionQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
+func (rq *RegionQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
@@ -249,7 +249,7 @@ func (rq *RegionQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rq *RegionQuery) IDsX(ctx context.Context) []xid.ID {
+func (rq *RegionQuery) IDsX(ctx context.Context) []pxid.ID {
 	ids, err := rq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -484,8 +484,8 @@ func (rq *RegionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Regio
 }
 
 func (rq *RegionQuery) loadParent(ctx context.Context, query *RegionQuery, nodes []*Region, init func(*Region), assign func(*Region, *Region)) error {
-	ids := make([]xid.ID, 0, len(nodes))
-	nodeids := make(map[xid.ID][]*Region)
+	ids := make([]pxid.ID, 0, len(nodes))
+	nodeids := make(map[pxid.ID][]*Region)
 	for i := range nodes {
 		if nodes[i].Pid == nil {
 			continue
@@ -517,7 +517,7 @@ func (rq *RegionQuery) loadParent(ctx context.Context, query *RegionQuery, nodes
 }
 func (rq *RegionQuery) loadChildren(ctx context.Context, query *RegionQuery, nodes []*Region, init func(*Region), assign func(*Region, *Region)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[xid.ID]*Region)
+	nodeids := make(map[pxid.ID]*Region)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]

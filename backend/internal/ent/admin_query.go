@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/predicate"
@@ -143,8 +143,8 @@ func (aq *AdminQuery) FirstX(ctx context.Context) *Admin {
 
 // FirstID returns the first Admin ID from the query.
 // Returns a *NotFoundError when no Admin ID was found.
-func (aq *AdminQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (aq *AdminQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -156,7 +156,7 @@ func (aq *AdminQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (aq *AdminQuery) FirstIDX(ctx context.Context) xid.ID {
+func (aq *AdminQuery) FirstIDX(ctx context.Context) pxid.ID {
 	id, err := aq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -194,8 +194,8 @@ func (aq *AdminQuery) OnlyX(ctx context.Context) *Admin {
 // OnlyID is like Only, but returns the only Admin ID in the query.
 // Returns a *NotSingularError when more than one Admin ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (aq *AdminQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (aq *AdminQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -211,7 +211,7 @@ func (aq *AdminQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (aq *AdminQuery) OnlyIDX(ctx context.Context) xid.ID {
+func (aq *AdminQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	id, err := aq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -239,7 +239,7 @@ func (aq *AdminQuery) AllX(ctx context.Context) []*Admin {
 }
 
 // IDs executes the query and returns a list of Admin IDs.
-func (aq *AdminQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
+func (aq *AdminQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if aq.ctx.Unique == nil && aq.path != nil {
 		aq.Unique(true)
 	}
@@ -251,7 +251,7 @@ func (aq *AdminQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (aq *AdminQuery) IDsX(ctx context.Context) []xid.ID {
+func (aq *AdminQuery) IDsX(ctx context.Context) []pxid.ID {
 	ids, err := aq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -477,8 +477,8 @@ func (aq *AdminQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Admin,
 
 func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Admin, init func(*Admin), assign func(*Admin, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[xid.ID]*Admin)
-	nids := make(map[xid.ID]map[*Admin]struct{})
+	byID := make(map[pxid.ID]*Admin)
+	nids := make(map[pxid.ID]map[*Admin]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -508,11 +508,11 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(xid.ID)}, values...), nil
+				return append([]any{new(pxid.ID)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*xid.ID)
-				inValue := *values[1].(*xid.ID)
+				outValue := *values[0].(*pxid.ID)
+				inValue := *values[1].(*pxid.ID)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Admin]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -538,8 +538,8 @@ func (aq *AdminQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*
 	return nil
 }
 func (aq *AdminQuery) loadDepartment(ctx context.Context, query *DepartmentQuery, nodes []*Admin, init func(*Admin), assign func(*Admin, *Department)) error {
-	ids := make([]xid.ID, 0, len(nodes))
-	nodeids := make(map[xid.ID][]*Admin)
+	ids := make([]pxid.ID, 0, len(nodes))
+	nodeids := make(map[pxid.ID][]*Admin)
 	for i := range nodes {
 		if nodes[i].DepartmentID == nil {
 			continue

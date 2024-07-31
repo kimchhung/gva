@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
@@ -26,14 +26,14 @@ type AdminWhereInput struct {
 	And        []*AdminWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -117,21 +117,21 @@ type AdminWhereInput struct {
 	DisplayNameContainsFold *string  `json:"displayNameContainsFold,omitempty"`
 
 	// "department_id" field predicates.
-	DepartmentID             *xid.ID  `json:"departmentID,omitempty"`
-	DepartmentIDNEQ          *xid.ID  `json:"departmentIDNEQ,omitempty"`
-	DepartmentIDIn           []xid.ID `json:"departmentIDIn,omitempty"`
-	DepartmentIDNotIn        []xid.ID `json:"departmentIDNotIn,omitempty"`
-	DepartmentIDGT           *xid.ID  `json:"departmentIDGT,omitempty"`
-	DepartmentIDGTE          *xid.ID  `json:"departmentIDGTE,omitempty"`
-	DepartmentIDLT           *xid.ID  `json:"departmentIDLT,omitempty"`
-	DepartmentIDLTE          *xid.ID  `json:"departmentIDLTE,omitempty"`
-	DepartmentIDContains     *xid.ID  `json:"departmentIDContains,omitempty"`
-	DepartmentIDHasPrefix    *xid.ID  `json:"departmentIDHasPrefix,omitempty"`
-	DepartmentIDHasSuffix    *xid.ID  `json:"departmentIDHasSuffix,omitempty"`
-	DepartmentIDIsNil        bool     `json:"departmentIDIsNil,omitempty"`
-	DepartmentIDNotNil       bool     `json:"departmentIDNotNil,omitempty"`
-	DepartmentIDEqualFold    *xid.ID  `json:"departmentIDEqualFold,omitempty"`
-	DepartmentIDContainsFold *xid.ID  `json:"departmentIDContainsFold,omitempty"`
+	DepartmentID             *pxid.ID  `json:"departmentID,omitempty"`
+	DepartmentIDNEQ          *pxid.ID  `json:"departmentIDNEQ,omitempty"`
+	DepartmentIDIn           []pxid.ID `json:"departmentIDIn,omitempty"`
+	DepartmentIDNotIn        []pxid.ID `json:"departmentIDNotIn,omitempty"`
+	DepartmentIDGT           *pxid.ID  `json:"departmentIDGT,omitempty"`
+	DepartmentIDGTE          *pxid.ID  `json:"departmentIDGTE,omitempty"`
+	DepartmentIDLT           *pxid.ID  `json:"departmentIDLT,omitempty"`
+	DepartmentIDLTE          *pxid.ID  `json:"departmentIDLTE,omitempty"`
+	DepartmentIDContains     *pxid.ID  `json:"departmentIDContains,omitempty"`
+	DepartmentIDHasPrefix    *pxid.ID  `json:"departmentIDHasPrefix,omitempty"`
+	DepartmentIDHasSuffix    *pxid.ID  `json:"departmentIDHasSuffix,omitempty"`
+	DepartmentIDIsNil        bool      `json:"departmentIDIsNil,omitempty"`
+	DepartmentIDNotNil       bool      `json:"departmentIDNotNil,omitempty"`
+	DepartmentIDEqualFold    *pxid.ID  `json:"departmentIDEqualFold,omitempty"`
+	DepartmentIDContainsFold *pxid.ID  `json:"departmentIDContainsFold,omitempty"`
 
 	// "roles" edge predicates.
 	HasRoles     *bool             `json:"hasRoles,omitempty"`
@@ -538,14 +538,14 @@ type DepartmentWhereInput struct {
 	And        []*DepartmentWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -612,21 +612,21 @@ type DepartmentWhereInput struct {
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
 	// "pid" field predicates.
-	Pid             *xid.ID  `json:"pid,omitempty"`
-	PidNEQ          *xid.ID  `json:"pidNEQ,omitempty"`
-	PidIn           []xid.ID `json:"pidIn,omitempty"`
-	PidNotIn        []xid.ID `json:"pidNotIn,omitempty"`
-	PidGT           *xid.ID  `json:"pidGT,omitempty"`
-	PidGTE          *xid.ID  `json:"pidGTE,omitempty"`
-	PidLT           *xid.ID  `json:"pidLT,omitempty"`
-	PidLTE          *xid.ID  `json:"pidLTE,omitempty"`
-	PidContains     *xid.ID  `json:"pidContains,omitempty"`
-	PidHasPrefix    *xid.ID  `json:"pidHasPrefix,omitempty"`
-	PidHasSuffix    *xid.ID  `json:"pidHasSuffix,omitempty"`
-	PidIsNil        bool     `json:"pidIsNil,omitempty"`
-	PidNotNil       bool     `json:"pidNotNil,omitempty"`
-	PidEqualFold    *xid.ID  `json:"pidEqualFold,omitempty"`
-	PidContainsFold *xid.ID  `json:"pidContainsFold,omitempty"`
+	Pid             *pxid.ID  `json:"pid,omitempty"`
+	PidNEQ          *pxid.ID  `json:"pidNEQ,omitempty"`
+	PidIn           []pxid.ID `json:"pidIn,omitempty"`
+	PidNotIn        []pxid.ID `json:"pidNotIn,omitempty"`
+	PidGT           *pxid.ID  `json:"pidGT,omitempty"`
+	PidGTE          *pxid.ID  `json:"pidGTE,omitempty"`
+	PidLT           *pxid.ID  `json:"pidLT,omitempty"`
+	PidLTE          *pxid.ID  `json:"pidLTE,omitempty"`
+	PidContains     *pxid.ID  `json:"pidContains,omitempty"`
+	PidHasPrefix    *pxid.ID  `json:"pidHasPrefix,omitempty"`
+	PidHasSuffix    *pxid.ID  `json:"pidHasSuffix,omitempty"`
+	PidIsNil        bool      `json:"pidIsNil,omitempty"`
+	PidNotNil       bool      `json:"pidNotNil,omitempty"`
+	PidEqualFold    *pxid.ID  `json:"pidEqualFold,omitempty"`
+	PidContainsFold *pxid.ID  `json:"pidContainsFold,omitempty"`
 
 	// "parent" edge predicates.
 	HasParent     *bool                   `json:"hasParent,omitempty"`
@@ -1010,14 +1010,14 @@ type MenuWhereInput struct {
 	And        []*MenuWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1054,21 +1054,21 @@ type MenuWhereInput struct {
 	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
 
 	// "pid" field predicates.
-	Pid             *xid.ID  `json:"pid,omitempty"`
-	PidNEQ          *xid.ID  `json:"pidNEQ,omitempty"`
-	PidIn           []xid.ID `json:"pidIn,omitempty"`
-	PidNotIn        []xid.ID `json:"pidNotIn,omitempty"`
-	PidGT           *xid.ID  `json:"pidGT,omitempty"`
-	PidGTE          *xid.ID  `json:"pidGTE,omitempty"`
-	PidLT           *xid.ID  `json:"pidLT,omitempty"`
-	PidLTE          *xid.ID  `json:"pidLTE,omitempty"`
-	PidContains     *xid.ID  `json:"pidContains,omitempty"`
-	PidHasPrefix    *xid.ID  `json:"pidHasPrefix,omitempty"`
-	PidHasSuffix    *xid.ID  `json:"pidHasSuffix,omitempty"`
-	PidIsNil        bool     `json:"pidIsNil,omitempty"`
-	PidNotNil       bool     `json:"pidNotNil,omitempty"`
-	PidEqualFold    *xid.ID  `json:"pidEqualFold,omitempty"`
-	PidContainsFold *xid.ID  `json:"pidContainsFold,omitempty"`
+	Pid             *pxid.ID  `json:"pid,omitempty"`
+	PidNEQ          *pxid.ID  `json:"pidNEQ,omitempty"`
+	PidIn           []pxid.ID `json:"pidIn,omitempty"`
+	PidNotIn        []pxid.ID `json:"pidNotIn,omitempty"`
+	PidGT           *pxid.ID  `json:"pidGT,omitempty"`
+	PidGTE          *pxid.ID  `json:"pidGTE,omitempty"`
+	PidLT           *pxid.ID  `json:"pidLT,omitempty"`
+	PidLTE          *pxid.ID  `json:"pidLTE,omitempty"`
+	PidContains     *pxid.ID  `json:"pidContains,omitempty"`
+	PidHasPrefix    *pxid.ID  `json:"pidHasPrefix,omitempty"`
+	PidHasSuffix    *pxid.ID  `json:"pidHasSuffix,omitempty"`
+	PidIsNil        bool      `json:"pidIsNil,omitempty"`
+	PidNotNil       bool      `json:"pidNotNil,omitempty"`
+	PidEqualFold    *pxid.ID  `json:"pidEqualFold,omitempty"`
+	PidContainsFold *pxid.ID  `json:"pidContainsFold,omitempty"`
 
 	// "path" field predicates.
 	Path             *string  `json:"path,omitempty"`
@@ -1658,14 +1658,14 @@ type PermissionWhereInput struct {
 	And        []*PermissionWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -2102,14 +2102,14 @@ type RegionWhereInput struct {
 	And        []*RegionWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -2182,21 +2182,21 @@ type RegionWhereInput struct {
 	TypeNotIn []region.Type `json:"typeNotIn,omitempty"`
 
 	// "pid" field predicates.
-	Pid             *xid.ID  `json:"pid,omitempty"`
-	PidNEQ          *xid.ID  `json:"pidNEQ,omitempty"`
-	PidIn           []xid.ID `json:"pidIn,omitempty"`
-	PidNotIn        []xid.ID `json:"pidNotIn,omitempty"`
-	PidGT           *xid.ID  `json:"pidGT,omitempty"`
-	PidGTE          *xid.ID  `json:"pidGTE,omitempty"`
-	PidLT           *xid.ID  `json:"pidLT,omitempty"`
-	PidLTE          *xid.ID  `json:"pidLTE,omitempty"`
-	PidContains     *xid.ID  `json:"pidContains,omitempty"`
-	PidHasPrefix    *xid.ID  `json:"pidHasPrefix,omitempty"`
-	PidHasSuffix    *xid.ID  `json:"pidHasSuffix,omitempty"`
-	PidIsNil        bool     `json:"pidIsNil,omitempty"`
-	PidNotNil       bool     `json:"pidNotNil,omitempty"`
-	PidEqualFold    *xid.ID  `json:"pidEqualFold,omitempty"`
-	PidContainsFold *xid.ID  `json:"pidContainsFold,omitempty"`
+	Pid             *pxid.ID  `json:"pid,omitempty"`
+	PidNEQ          *pxid.ID  `json:"pidNEQ,omitempty"`
+	PidIn           []pxid.ID `json:"pidIn,omitempty"`
+	PidNotIn        []pxid.ID `json:"pidNotIn,omitempty"`
+	PidGT           *pxid.ID  `json:"pidGT,omitempty"`
+	PidGTE          *pxid.ID  `json:"pidGTE,omitempty"`
+	PidLT           *pxid.ID  `json:"pidLT,omitempty"`
+	PidLTE          *pxid.ID  `json:"pidLTE,omitempty"`
+	PidContains     *pxid.ID  `json:"pidContains,omitempty"`
+	PidHasPrefix    *pxid.ID  `json:"pidHasPrefix,omitempty"`
+	PidHasSuffix    *pxid.ID  `json:"pidHasSuffix,omitempty"`
+	PidIsNil        bool      `json:"pidIsNil,omitempty"`
+	PidNotNil       bool      `json:"pidNotNil,omitempty"`
+	PidEqualFold    *pxid.ID  `json:"pidEqualFold,omitempty"`
+	PidContainsFold *pxid.ID  `json:"pidContainsFold,omitempty"`
 
 	// "parent" edge predicates.
 	HasParent     *bool               `json:"hasParent,omitempty"`
@@ -2570,14 +2570,14 @@ type RoleWhereInput struct {
 	And        []*RoleWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -3024,14 +3024,14 @@ type TodoWhereInput struct {
 	And        []*TodoWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *xid.ID  `json:"id,omitempty"`
-	IDNEQ   *xid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []xid.ID `json:"idIn,omitempty"`
-	IDNotIn []xid.ID `json:"idNotIn,omitempty"`
-	IDGT    *xid.ID  `json:"idGT,omitempty"`
-	IDGTE   *xid.ID  `json:"idGTE,omitempty"`
-	IDLT    *xid.ID  `json:"idLT,omitempty"`
-	IDLTE   *xid.ID  `json:"idLTE,omitempty"`
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`

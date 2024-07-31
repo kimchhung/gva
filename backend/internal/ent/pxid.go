@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
@@ -16,7 +16,7 @@ import (
 	"github.com/gva/internal/ent/todo"
 )
 
-// prefixMap maps XID prefixes to table names.
+// prefixMap maps PXID prefixes to table names.
 var prefixMap = map[string]string{
 	"admin": admin.Table,
 	"dpm":   department.Table,
@@ -27,8 +27,8 @@ var prefixMap = map[string]string{
 	"todo":  todo.Table,
 }
 
-// IDToType maps a xid.ID to the underlying table.
-func IDToType(ctx context.Context, id xid.ID) (string, error) {
+// IDToType maps a pxid.ID to the underlying table.
+func IDToType(ctx context.Context, id pxid.ID) (string, error) {
 	prefix := id.Prefix()
 	typ := prefixMap[prefix]
 	if typ == "" {

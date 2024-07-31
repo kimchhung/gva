@@ -6,7 +6,7 @@ import (
 
 	"github.com/gva/api/admin/module/permission/dto"
 	"github.com/gva/app/common/repository"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/utils"
@@ -78,7 +78,7 @@ func (s *PermissionService) GetPermissions(ctx context.Context, p *dto.Permissio
 	return s.toDto(list...), meta, nil
 }
 
-func (s *PermissionService) GetPermissionByID(ctx context.Context, id xid.ID) (*dto.PermissionResponse, error) {
+func (s *PermissionService) GetPermissionByID(ctx context.Context, id pxid.ID) (*dto.PermissionResponse, error) {
 	data, err := s.repo.Q().Where(permission.IDEQ(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (s *PermissionService) CreatePermission(ctx context.Context, body *dto.Perm
 	return s.toDto(created)[0], nil
 }
 
-func (s *PermissionService) UpdatePermission(ctx context.Context, id xid.ID, body *dto.PermissionRequest) (*dto.PermissionResponse, error) {
+func (s *PermissionService) UpdatePermission(ctx context.Context, id pxid.ID, body *dto.PermissionRequest) (*dto.PermissionResponse, error) {
 	update := s.repo.C().UpdateOneID(id)
 	update.SetName(body.Name)
 	update.SetScope(body.Scope)
@@ -112,6 +112,6 @@ func (s *PermissionService) UpdatePermission(ctx context.Context, id xid.ID, bod
 	return s.toDto(updated)[0], nil
 }
 
-func (s *PermissionService) DeletePermission(ctx context.Context, id xid.ID) error {
+func (s *PermissionService) DeletePermission(ctx context.Context, id pxid.ID) error {
 	return s.repo.C().DeleteOneID(id).Exec(ctx)
 }

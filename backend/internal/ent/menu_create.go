@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/app/database/schema/types"
-	"github.com/gva/app/database/schema/xid"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/role"
 )
@@ -83,15 +83,15 @@ func (mc *MenuCreate) SetNillableDeletedAt(i *int) *MenuCreate {
 }
 
 // SetPid sets the "pid" field.
-func (mc *MenuCreate) SetPid(x xid.ID) *MenuCreate {
-	mc.mutation.SetPid(x)
+func (mc *MenuCreate) SetPid(px pxid.ID) *MenuCreate {
+	mc.mutation.SetPid(px)
 	return mc
 }
 
 // SetNillablePid sets the "pid" field if the given value is not nil.
-func (mc *MenuCreate) SetNillablePid(x *xid.ID) *MenuCreate {
-	if x != nil {
-		mc.SetPid(*x)
+func (mc *MenuCreate) SetNillablePid(px *pxid.ID) *MenuCreate {
+	if px != nil {
+		mc.SetPid(*px)
 	}
 	return mc
 }
@@ -163,27 +163,27 @@ func (mc *MenuCreate) SetMeta(tm types.MenuMeta) *MenuCreate {
 }
 
 // SetID sets the "id" field.
-func (mc *MenuCreate) SetID(x xid.ID) *MenuCreate {
-	mc.mutation.SetID(x)
+func (mc *MenuCreate) SetID(px pxid.ID) *MenuCreate {
+	mc.mutation.SetID(px)
 	return mc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (mc *MenuCreate) SetNillableID(x *xid.ID) *MenuCreate {
-	if x != nil {
-		mc.SetID(*x)
+func (mc *MenuCreate) SetNillableID(px *pxid.ID) *MenuCreate {
+	if px != nil {
+		mc.SetID(*px)
 	}
 	return mc
 }
 
 // SetParentID sets the "parent" edge to the Menu entity by ID.
-func (mc *MenuCreate) SetParentID(id xid.ID) *MenuCreate {
+func (mc *MenuCreate) SetParentID(id pxid.ID) *MenuCreate {
 	mc.mutation.SetParentID(id)
 	return mc
 }
 
 // SetNillableParentID sets the "parent" edge to the Menu entity by ID if the given value is not nil.
-func (mc *MenuCreate) SetNillableParentID(id *xid.ID) *MenuCreate {
+func (mc *MenuCreate) SetNillableParentID(id *pxid.ID) *MenuCreate {
 	if id != nil {
 		mc = mc.SetParentID(*id)
 	}
@@ -196,14 +196,14 @@ func (mc *MenuCreate) SetParent(m *Menu) *MenuCreate {
 }
 
 // AddChildIDs adds the "children" edge to the Menu entity by IDs.
-func (mc *MenuCreate) AddChildIDs(ids ...xid.ID) *MenuCreate {
+func (mc *MenuCreate) AddChildIDs(ids ...pxid.ID) *MenuCreate {
 	mc.mutation.AddChildIDs(ids...)
 	return mc
 }
 
 // AddChildren adds the "children" edges to the Menu entity.
 func (mc *MenuCreate) AddChildren(m ...*Menu) *MenuCreate {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -211,14 +211,14 @@ func (mc *MenuCreate) AddChildren(m ...*Menu) *MenuCreate {
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (mc *MenuCreate) AddRoleIDs(ids ...xid.ID) *MenuCreate {
+func (mc *MenuCreate) AddRoleIDs(ids ...pxid.ID) *MenuCreate {
 	mc.mutation.AddRoleIDs(ids...)
 	return mc
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
 func (mc *MenuCreate) AddRoles(r ...*Role) *MenuCreate {
-	ids := make([]xid.ID, len(r))
+	ids := make([]pxid.ID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -351,7 +351,7 @@ func (mc *MenuCreate) sqlSave(ctx context.Context) (*Menu, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*xid.ID); ok {
+		if id, ok := _spec.ID.Value.(*pxid.ID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -576,7 +576,7 @@ func (u *MenuUpsert) AddDeletedAt(v int) *MenuUpsert {
 }
 
 // SetPid sets the "pid" field.
-func (u *MenuUpsert) SetPid(v xid.ID) *MenuUpsert {
+func (u *MenuUpsert) SetPid(v pxid.ID) *MenuUpsert {
 	u.Set(menu.FieldPid, v)
 	return u
 }
@@ -807,7 +807,7 @@ func (u *MenuUpsertOne) UpdateDeletedAt() *MenuUpsertOne {
 }
 
 // SetPid sets the "pid" field.
-func (u *MenuUpsertOne) SetPid(v xid.ID) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetPid(v pxid.ID) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetPid(v)
 	})
@@ -962,7 +962,7 @@ func (u *MenuUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *MenuUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
+func (u *MenuUpsertOne) ID(ctx context.Context) (id pxid.ID, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -976,7 +976,7 @@ func (u *MenuUpsertOne) ID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *MenuUpsertOne) IDX(ctx context.Context) xid.ID {
+func (u *MenuUpsertOne) IDX(ctx context.Context) pxid.ID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1225,7 +1225,7 @@ func (u *MenuUpsertBulk) UpdateDeletedAt() *MenuUpsertBulk {
 }
 
 // SetPid sets the "pid" field.
-func (u *MenuUpsertBulk) SetPid(v xid.ID) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetPid(v pxid.ID) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetPid(v)
 	})

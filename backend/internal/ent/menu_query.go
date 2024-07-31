@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
@@ -169,8 +169,8 @@ func (mq *MenuQuery) FirstX(ctx context.Context) *Menu {
 
 // FirstID returns the first Menu ID from the query.
 // Returns a *NotFoundError when no Menu ID was found.
-func (mq *MenuQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (mq *MenuQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -182,7 +182,7 @@ func (mq *MenuQuery) FirstID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (mq *MenuQuery) FirstIDX(ctx context.Context) xid.ID {
+func (mq *MenuQuery) FirstIDX(ctx context.Context) pxid.ID {
 	id, err := mq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -220,8 +220,8 @@ func (mq *MenuQuery) OnlyX(ctx context.Context) *Menu {
 // OnlyID is like Only, but returns the only Menu ID in the query.
 // Returns a *NotSingularError when more than one Menu ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (mq *MenuQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
-	var ids []xid.ID
+func (mq *MenuQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
+	var ids []pxid.ID
 	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -237,7 +237,7 @@ func (mq *MenuQuery) OnlyID(ctx context.Context) (id xid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (mq *MenuQuery) OnlyIDX(ctx context.Context) xid.ID {
+func (mq *MenuQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	id, err := mq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -265,7 +265,7 @@ func (mq *MenuQuery) AllX(ctx context.Context) []*Menu {
 }
 
 // IDs executes the query and returns a list of Menu IDs.
-func (mq *MenuQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
+func (mq *MenuQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if mq.ctx.Unique == nil && mq.path != nil {
 		mq.Unique(true)
 	}
@@ -277,7 +277,7 @@ func (mq *MenuQuery) IDs(ctx context.Context) (ids []xid.ID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (mq *MenuQuery) IDsX(ctx context.Context) []xid.ID {
+func (mq *MenuQuery) IDsX(ctx context.Context) []pxid.ID {
 	ids, err := mq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -539,8 +539,8 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 }
 
 func (mq *MenuQuery) loadParent(ctx context.Context, query *MenuQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Menu)) error {
-	ids := make([]xid.ID, 0, len(nodes))
-	nodeids := make(map[xid.ID][]*Menu)
+	ids := make([]pxid.ID, 0, len(nodes))
+	nodeids := make(map[pxid.ID][]*Menu)
 	for i := range nodes {
 		if nodes[i].Pid == nil {
 			continue
@@ -572,7 +572,7 @@ func (mq *MenuQuery) loadParent(ctx context.Context, query *MenuQuery, nodes []*
 }
 func (mq *MenuQuery) loadChildren(ctx context.Context, query *MenuQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Menu)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[xid.ID]*Menu)
+	nodeids := make(map[pxid.ID]*Menu)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -605,8 +605,8 @@ func (mq *MenuQuery) loadChildren(ctx context.Context, query *MenuQuery, nodes [
 }
 func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[xid.ID]*Menu)
-	nids := make(map[xid.ID]map[*Menu]struct{})
+	byID := make(map[pxid.ID]*Menu)
+	nids := make(map[pxid.ID]map[*Menu]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -636,11 +636,11 @@ func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*M
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(xid.ID)}, values...), nil
+				return append([]any{new(pxid.ID)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*xid.ID)
-				inValue := *values[1].(*xid.ID)
+				outValue := *values[0].(*pxid.ID)
+				inValue := *values[1].(*pxid.ID)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Menu]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])

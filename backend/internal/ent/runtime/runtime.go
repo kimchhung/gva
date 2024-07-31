@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gva/app/database/schema"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 	"github.com/gva/internal/ent/menu"
@@ -56,7 +56,7 @@ func init() {
 	// adminDescID is the schema descriptor for id field.
 	adminDescID := adminMixinFields0[0].Descriptor()
 	// admin.DefaultID holds the default value on creation for the id field.
-	admin.DefaultID = adminDescID.Default.(func() xid.ID)
+	admin.DefaultID = adminDescID.Default.(func() pxid.ID)
 	departmentMixin := schema.Department{}.Mixin()
 	departmentMixinHooks2 := departmentMixin[2].Hooks()
 	department.Hooks[0] = departmentMixinHooks2[0]
@@ -93,7 +93,7 @@ func init() {
 	// departmentDescID is the schema descriptor for id field.
 	departmentDescID := departmentMixinFields0[0].Descriptor()
 	// department.DefaultID holds the default value on creation for the id field.
-	department.DefaultID = departmentDescID.Default.(func() xid.ID)
+	department.DefaultID = departmentDescID.Default.(func() pxid.ID)
 	menuMixin := schema.Menu{}.Mixin()
 	menuMixinHooks3 := menuMixin[3].Hooks()
 	menu.Hooks[0] = menuMixinHooks3[0]
@@ -134,7 +134,7 @@ func init() {
 	// menuDescID is the schema descriptor for id field.
 	menuDescID := menuMixinFields0[0].Descriptor()
 	// menu.DefaultID holds the default value on creation for the id field.
-	menu.DefaultID = menuDescID.Default.(func() xid.ID)
+	menu.DefaultID = menuDescID.Default.(func() pxid.ID)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
@@ -159,7 +159,7 @@ func init() {
 	// permissionDescID is the schema descriptor for id field.
 	permissionDescID := permissionMixinFields0[0].Descriptor()
 	// permission.DefaultID holds the default value on creation for the id field.
-	permission.DefaultID = permissionDescID.Default.(func() xid.ID)
+	permission.DefaultID = permissionDescID.Default.(func() pxid.ID)
 	regionMixin := schema.Region{}.Mixin()
 	regionMixinHooks2 := regionMixin[2].Hooks()
 	region.Hooks[0] = regionMixinHooks2[0]
@@ -196,7 +196,7 @@ func init() {
 	// regionDescID is the schema descriptor for id field.
 	regionDescID := regionMixinFields0[0].Descriptor()
 	// region.DefaultID holds the default value on creation for the id field.
-	region.DefaultID = regionDescID.Default.(func() xid.ID)
+	region.DefaultID = regionDescID.Default.(func() pxid.ID)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinHooks3 := roleMixin[3].Hooks()
 	role.Hooks[0] = roleMixinHooks3[0]
@@ -233,7 +233,7 @@ func init() {
 	// roleDescID is the schema descriptor for id field.
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
-	role.DefaultID = roleDescID.Default.(func() xid.ID)
+	role.DefaultID = roleDescID.Default.(func() pxid.ID)
 	todoMixin := schema.Todo{}.Mixin()
 	todoMixinHooks2 := todoMixin[2].Hooks()
 	todo.Hooks[0] = todoMixinHooks2[0]
@@ -264,7 +264,7 @@ func init() {
 	// todoDescID is the schema descriptor for id field.
 	todoDescID := todoMixinFields0[0].Descriptor()
 	// todo.DefaultID holds the default value on creation for the id field.
-	todo.DefaultID = todoDescID.Default.(func() xid.ID)
+	todo.DefaultID = todoDescID.Default.(func() pxid.ID)
 }
 
 const (

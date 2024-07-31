@@ -7,54 +7,54 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id xid.ID) predicate.Permission {
+func ID(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id xid.ID) predicate.Permission {
+func IDEQ(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id xid.ID) predicate.Permission {
+func IDNEQ(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...xid.ID) predicate.Permission {
+func IDIn(ids ...pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...xid.ID) predicate.Permission {
+func IDNotIn(ids ...pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id xid.ID) predicate.Permission {
+func IDGT(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id xid.ID) predicate.Permission {
+func IDGTE(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id xid.ID) predicate.Permission {
+func IDLT(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id xid.ID) predicate.Permission {
+func IDLTE(id pxid.ID) predicate.Permission {
 	return predicate.Permission(sql.FieldLTE(FieldID, id))
 }
 

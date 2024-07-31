@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
 )
@@ -19,7 +19,7 @@ import (
 type Admin struct {
 	config `json:"-" rql:"-"`
 	// ID of the ent.
-	ID xid.ID `json:"id" rql:"filter,sort"`
+	ID pxid.ID `json:"id" rql:"filter,sort"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -37,7 +37,7 @@ type Admin struct {
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"displayName,omitempty" rql:"filter,sort"`
 	// DepartmentID holds the value of the "department_id" field.
-	DepartmentID *xid.ID `json:"departmentId,omitempty" rql:"filter,sort"`
+	DepartmentID *pxid.ID `json:"departmentId,omitempty" rql:"filter,sort"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AdminQuery when eager-loading is set.
 	Edges        AdminEdges `json:"edges" rql:"-"`
@@ -85,9 +85,11 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case admin.FieldDepartmentID:
-			values[i] = &sql.NullScanner{S: new(xid.ID)}
+			values[i] = &sql.NullScanner{S: new(pxid.ID)}
 		case admin.FieldWhitelistIps:
 			values[i] = new([]byte)
+		case admin.FieldID:
+			values[i] = new(pxid.ID)
 		case admin.FieldIsEnable:
 			values[i] = new(sql.NullBool)
 		case admin.FieldDeletedAt:
@@ -96,8 +98,6 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case admin.FieldCreatedAt, admin.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case admin.FieldID:
-			values[i] = new(xid.ID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -114,7 +114,7 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case admin.FieldID:
-			if value, ok := values[i].(*xid.ID); !ok {
+			if value, ok := values[i].(*pxid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				a.ID = *value
@@ -173,8 +173,8 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field department_id", values[i])
 			} else if value.Valid {
-				a.DepartmentID = new(xid.ID)
-				*a.DepartmentID = *value.S.(*xid.ID)
+				a.DepartmentID = new(pxid.ID)
+				*a.DepartmentID = *value.S.(*pxid.ID)
 			}
 		default:
 			a.selectValues.Set(columns[i], values[i])

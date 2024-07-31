@@ -2,7 +2,7 @@ package department
 
 import (
 	"github.com/gva/api/admin/module/department/dto"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
@@ -41,7 +41,7 @@ func NewDepartmentController(service *DepartmentService) *DepartmentController {
 func (con *DepartmentController) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
-			ID xid.ID `json:"id" rql:"filter,sort"`
+			ID pxid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
@@ -80,7 +80,7 @@ func (con *DepartmentController) List() *ctr.Route {
 func (con *DepartmentController) Get() *ctr.Route {
 	return ctr.GET("/:id").Do(func() []ctr.H {
 		param := &struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		}{}
 
 		return []ctr.H{
@@ -151,7 +151,7 @@ func (con *DepartmentController) Update() *ctr.Route {
 	return ctr.PUT("/:id").Do(func() []ctr.H {
 		body := new(dto.DepartmentRequest)
 		param := &struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		}{}
 
 		return []ctr.H{
@@ -187,7 +187,7 @@ func (con *DepartmentController) Update() *ctr.Route {
 func (con *DepartmentController) Delete() *ctr.Route {
 	return ctr.DELETE("/:id").Name("delete one Department").Do(func() []ctr.H {
 		param := &struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		}{}
 
 		return []ctr.H{

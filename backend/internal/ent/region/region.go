@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 )
 
 const (
@@ -93,7 +93,7 @@ var (
 	// DefaultIsEnable holds the default value on creation for the "is_enable" field.
 	DefaultIsEnable bool
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() xid.ID
+	DefaultID func() pxid.ID
 )
 
 // Type defines the type for the "type" enum field.

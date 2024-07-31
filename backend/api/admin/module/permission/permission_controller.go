@@ -2,7 +2,7 @@ package permission
 
 import (
 	"github.com/gva/api/admin/module/permission/dto"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
@@ -41,7 +41,7 @@ func NewPermissionController(service *PermissionService) *PermissionController {
 func (con *PermissionController) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
-			ID xid.ID `json:"id" rql:"filter,sort"`
+			ID pxid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
@@ -80,7 +80,7 @@ func (con *PermissionController) List() *ctr.Route {
 func (con *PermissionController) Get() *ctr.Route {
 	return ctr.GET("/:id").Name("get one Permission").Do(func() []ctr.H {
 		param := &struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		}{}
 
 		return []ctr.H{
@@ -149,7 +149,7 @@ func (con *PermissionController) Update() *ctr.Route {
 	return ctr.PUT("/:id").Name("update one Permission").Do(func() []ctr.H {
 		body := new(dto.PermissionRequest)
 		param := &struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		}{}
 
 		return []ctr.H{
@@ -184,7 +184,7 @@ func (con *PermissionController) Update() *ctr.Route {
 func (con *PermissionController) Delete() *ctr.Route {
 	return ctr.DELETE("/:id").Name("delete one Permission").Do(func() []ctr.H {
 		param := &struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		}{}
 
 		return []ctr.H{

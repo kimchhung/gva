@@ -8,7 +8,7 @@ import (
 
 	permissions "github.com/gva/app/common/permission"
 	"github.com/gva/app/common/service"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
@@ -54,7 +54,7 @@ func (con *RouteController) Init() *ctr.Ctr {
 func (con *RouteController) List() *ctr.Route {
 	parser := request.MustRqlParser(rql.Config{
 		Model: struct {
-			ID xid.ID `json:"id" rql:"filter,sort"`
+			ID pxid.ID `json:"id" rql:"filter,sort"`
 		}{},
 	})
 
@@ -121,7 +121,7 @@ func (con *RouteController) EnableList() *ctr.Route {
 func (con *RouteController) Get() *ctr.Route {
 	return ctr.GET("/:id").Do(func() []ctr.H {
 		params := new(struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		})
 
 		return []ctr.H{
@@ -189,7 +189,7 @@ func (con *RouteController) Update() *ctr.Route {
 	return ctr.PUT("/:id").Do(func() []ctr.H {
 		body := new(dto.MenuRequest)
 		params := new(struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		})
 
 		return []ctr.H{
@@ -225,7 +225,7 @@ func (con *RouteController) Update() *ctr.Route {
 func (con *RouteController) Delete() *ctr.Route {
 	return ctr.DELETE("/:id").Do(func() []ctr.H {
 		params := new(struct {
-			ID xid.ID `param:"id" validate:"required"`
+			ID pxid.ID `param:"id" validate:"required"`
 		})
 
 		return []ctr.H{

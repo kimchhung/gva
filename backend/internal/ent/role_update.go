@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
@@ -154,14 +154,14 @@ func (ru *RoleUpdate) SetNillableIsChangeable(b *bool) *RoleUpdate {
 }
 
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
-func (ru *RoleUpdate) AddAdminIDs(ids ...xid.ID) *RoleUpdate {
+func (ru *RoleUpdate) AddAdminIDs(ids ...pxid.ID) *RoleUpdate {
 	ru.mutation.AddAdminIDs(ids...)
 	return ru
 }
 
 // AddAdmins adds the "admins" edges to the Admin entity.
 func (ru *RoleUpdate) AddAdmins(a ...*Admin) *RoleUpdate {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -169,14 +169,14 @@ func (ru *RoleUpdate) AddAdmins(a ...*Admin) *RoleUpdate {
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
-func (ru *RoleUpdate) AddPermissionIDs(ids ...xid.ID) *RoleUpdate {
+func (ru *RoleUpdate) AddPermissionIDs(ids ...pxid.ID) *RoleUpdate {
 	ru.mutation.AddPermissionIDs(ids...)
 	return ru
 }
 
 // AddPermissions adds the "permissions" edges to the Permission entity.
 func (ru *RoleUpdate) AddPermissions(p ...*Permission) *RoleUpdate {
-	ids := make([]xid.ID, len(p))
+	ids := make([]pxid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -184,14 +184,14 @@ func (ru *RoleUpdate) AddPermissions(p ...*Permission) *RoleUpdate {
 }
 
 // AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
-func (ru *RoleUpdate) AddRouteIDs(ids ...xid.ID) *RoleUpdate {
+func (ru *RoleUpdate) AddRouteIDs(ids ...pxid.ID) *RoleUpdate {
 	ru.mutation.AddRouteIDs(ids...)
 	return ru
 }
 
 // AddRoutes adds the "routes" edges to the Menu entity.
 func (ru *RoleUpdate) AddRoutes(m ...*Menu) *RoleUpdate {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -210,14 +210,14 @@ func (ru *RoleUpdate) ClearAdmins() *RoleUpdate {
 }
 
 // RemoveAdminIDs removes the "admins" edge to Admin entities by IDs.
-func (ru *RoleUpdate) RemoveAdminIDs(ids ...xid.ID) *RoleUpdate {
+func (ru *RoleUpdate) RemoveAdminIDs(ids ...pxid.ID) *RoleUpdate {
 	ru.mutation.RemoveAdminIDs(ids...)
 	return ru
 }
 
 // RemoveAdmins removes "admins" edges to Admin entities.
 func (ru *RoleUpdate) RemoveAdmins(a ...*Admin) *RoleUpdate {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -231,14 +231,14 @@ func (ru *RoleUpdate) ClearPermissions() *RoleUpdate {
 }
 
 // RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
-func (ru *RoleUpdate) RemovePermissionIDs(ids ...xid.ID) *RoleUpdate {
+func (ru *RoleUpdate) RemovePermissionIDs(ids ...pxid.ID) *RoleUpdate {
 	ru.mutation.RemovePermissionIDs(ids...)
 	return ru
 }
 
 // RemovePermissions removes "permissions" edges to Permission entities.
 func (ru *RoleUpdate) RemovePermissions(p ...*Permission) *RoleUpdate {
-	ids := make([]xid.ID, len(p))
+	ids := make([]pxid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -252,14 +252,14 @@ func (ru *RoleUpdate) ClearRoutes() *RoleUpdate {
 }
 
 // RemoveRouteIDs removes the "routes" edge to Menu entities by IDs.
-func (ru *RoleUpdate) RemoveRouteIDs(ids ...xid.ID) *RoleUpdate {
+func (ru *RoleUpdate) RemoveRouteIDs(ids ...pxid.ID) *RoleUpdate {
 	ru.mutation.RemoveRouteIDs(ids...)
 	return ru
 }
 
 // RemoveRoutes removes "routes" edges to Menu entities.
 func (ru *RoleUpdate) RemoveRoutes(m ...*Menu) *RoleUpdate {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -640,14 +640,14 @@ func (ruo *RoleUpdateOne) SetNillableIsChangeable(b *bool) *RoleUpdateOne {
 }
 
 // AddAdminIDs adds the "admins" edge to the Admin entity by IDs.
-func (ruo *RoleUpdateOne) AddAdminIDs(ids ...xid.ID) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) AddAdminIDs(ids ...pxid.ID) *RoleUpdateOne {
 	ruo.mutation.AddAdminIDs(ids...)
 	return ruo
 }
 
 // AddAdmins adds the "admins" edges to the Admin entity.
 func (ruo *RoleUpdateOne) AddAdmins(a ...*Admin) *RoleUpdateOne {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -655,14 +655,14 @@ func (ruo *RoleUpdateOne) AddAdmins(a ...*Admin) *RoleUpdateOne {
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
-func (ruo *RoleUpdateOne) AddPermissionIDs(ids ...xid.ID) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) AddPermissionIDs(ids ...pxid.ID) *RoleUpdateOne {
 	ruo.mutation.AddPermissionIDs(ids...)
 	return ruo
 }
 
 // AddPermissions adds the "permissions" edges to the Permission entity.
 func (ruo *RoleUpdateOne) AddPermissions(p ...*Permission) *RoleUpdateOne {
-	ids := make([]xid.ID, len(p))
+	ids := make([]pxid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -670,14 +670,14 @@ func (ruo *RoleUpdateOne) AddPermissions(p ...*Permission) *RoleUpdateOne {
 }
 
 // AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
-func (ruo *RoleUpdateOne) AddRouteIDs(ids ...xid.ID) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) AddRouteIDs(ids ...pxid.ID) *RoleUpdateOne {
 	ruo.mutation.AddRouteIDs(ids...)
 	return ruo
 }
 
 // AddRoutes adds the "routes" edges to the Menu entity.
 func (ruo *RoleUpdateOne) AddRoutes(m ...*Menu) *RoleUpdateOne {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -696,14 +696,14 @@ func (ruo *RoleUpdateOne) ClearAdmins() *RoleUpdateOne {
 }
 
 // RemoveAdminIDs removes the "admins" edge to Admin entities by IDs.
-func (ruo *RoleUpdateOne) RemoveAdminIDs(ids ...xid.ID) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) RemoveAdminIDs(ids ...pxid.ID) *RoleUpdateOne {
 	ruo.mutation.RemoveAdminIDs(ids...)
 	return ruo
 }
 
 // RemoveAdmins removes "admins" edges to Admin entities.
 func (ruo *RoleUpdateOne) RemoveAdmins(a ...*Admin) *RoleUpdateOne {
-	ids := make([]xid.ID, len(a))
+	ids := make([]pxid.ID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -717,14 +717,14 @@ func (ruo *RoleUpdateOne) ClearPermissions() *RoleUpdateOne {
 }
 
 // RemovePermissionIDs removes the "permissions" edge to Permission entities by IDs.
-func (ruo *RoleUpdateOne) RemovePermissionIDs(ids ...xid.ID) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) RemovePermissionIDs(ids ...pxid.ID) *RoleUpdateOne {
 	ruo.mutation.RemovePermissionIDs(ids...)
 	return ruo
 }
 
 // RemovePermissions removes "permissions" edges to Permission entities.
 func (ruo *RoleUpdateOne) RemovePermissions(p ...*Permission) *RoleUpdateOne {
-	ids := make([]xid.ID, len(p))
+	ids := make([]pxid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -738,14 +738,14 @@ func (ruo *RoleUpdateOne) ClearRoutes() *RoleUpdateOne {
 }
 
 // RemoveRouteIDs removes the "routes" edge to Menu entities by IDs.
-func (ruo *RoleUpdateOne) RemoveRouteIDs(ids ...xid.ID) *RoleUpdateOne {
+func (ruo *RoleUpdateOne) RemoveRouteIDs(ids ...pxid.ID) *RoleUpdateOne {
 	ruo.mutation.RemoveRouteIDs(ids...)
 	return ruo
 }
 
 // RemoveRoutes removes "routes" edges to Menu entities.
 func (ruo *RoleUpdateOne) RemoveRoutes(m ...*Menu) *RoleUpdateOne {
-	ids := make([]xid.ID, len(m))
+	ids := make([]pxid.ID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}

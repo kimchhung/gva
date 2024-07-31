@@ -5,8 +5,13 @@ import (
 	"errors"
 )
 
-type Payload any
+type Data any
 type Topic string
+
+type Payload struct {
+	Topic Topic
+	Data  Data
+}
 
 // SubResult represents the result of subscribing to a topic.
 //
@@ -14,7 +19,7 @@ type Topic string
 // receive payloads, and unsubscribe from the topic.
 type SubResult interface {
 	// Payload returns a channel that receives payloads published to this topic.
-	Payload() <-chan Payload
+	Data() <-chan Data
 
 	// UnSub unsubscribes from the topic, stopping further payload reception.
 	UnSub() error
@@ -26,7 +31,7 @@ type Broker interface {
 }
 
 type Publisher interface {
-	Pub(ctx context.Context, topic Topic, m Payload) error
+	Pub(ctx context.Context, topic Topic, data Data) error
 }
 
 type Pubsub interface {

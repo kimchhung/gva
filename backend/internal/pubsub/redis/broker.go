@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gva/app/database/schema/xid"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/pubsub"
 	"github.com/redis/go-redis/v9"
 )
@@ -14,8 +14,8 @@ import (
 var _ pubsub.Broker = (*redisBroker)(nil)
 
 type redisBroker struct {
-	client       *redis.Client
-	redisChannel string
+	client       redis.UniversalClient
+	redisChannel []string
 	isStarted    bool
 
 	topics           map[pubsub.Topic]topicSubscribers // topicName => topicSubscribers
@@ -25,22 +25,28 @@ type redisBroker struct {
 	opts []redis.ChannelOption
 }
 
-type PublishRequest struct {
-	Topic   pubsub.Topic   `json:"topic"`
-	Payload pubsub.Payload `json:"payload"`
+func NewBroker(client redis.UniversalClient, channels []string, opts ...redis.ChannelOption) *redisBroker {
+	return &redisBroker{
+		client:           client,
+		redisChannel:     channels,
+		topics:           map[pubsub.Topic]topicSubscribers{},
+		addSubscriber:    make(chan Subscriber),
+		removeSubscriber: make(chan Subscriber),
+		opts:             opts,
+	}
 }
 
 type Subscriber struct {
 	topic           pubsub.Topic
-	subId           xid.ID
-	payloadChan     chan pubsub.Payload
+	subId           pxid.ID
+	payload         chan pubsub.Data
 	unsubscribeFunc func() error
 }
 
-type topicSubscribers map[xid.ID]Subscriber
+type topicSubscribers map[pxid.ID]Subscriber
 
-func (ms Subscriber) Payload() <-chan pubsub.Payload {
-	return ms.payloadChan
+func (ms Subscriber) Data() <-chan pubsub.Data {
+	return ms.payload
 }
 
 func (ms Subscriber) UnSub() error {
@@ -48,11 +54,11 @@ func (ms Subscriber) UnSub() error {
 }
 
 func (b *redisBroker) Sub(ctx context.Context, topic pubsub.Topic) (pubsub.SubResult, error) {
-	ch := make(chan pubsub.Payload, 1)
+	ch := make(chan pubsub.Data, 1)
 	subscriber := Subscriber{
-		topic:       topic,
-		subId:       xid.MustNew(fmt.Sprintln(topic)),
-		payloadChan: ch,
+		topic:   topic,
+		subId:   pxid.New("sub"),
+		payload: ch,
 	}
 
 	subscriber.unsubscribeFunc = func() error {
@@ -69,13 +75,16 @@ func (m *redisBroker) Listen(ctx context.Context) error {
 	}
 
 	m.isStarted = true
-	pubsub := m.client.Subscribe(ctx, m.redisChannel)
-	_, err := pubsub.Receive(ctx)
+	rpsub := m.client.Subscribe(ctx, m.redisChannel...)
+	_, err := rpsub.Receive(ctx)
 	if err != nil {
 		return err
 	}
 
 	go func() {
+		defer close(m.addSubscriber)
+		defer close(m.removeSubscriber)
+
 		for {
 			select {
 			case <-ctx.Done():
@@ -84,9 +93,10 @@ func (m *redisBroker) Listen(ctx context.Context) error {
 			case sub := <-m.addSubscriber:
 				_, ok := m.topics[sub.topic]
 				if !ok {
-					m.topics[sub.topic] = topicSubscribers{
-						sub.subId: sub,
+					m.topics = map[pubsub.Topic]topicSubscribers{
+						sub.topic: {sub.subId: sub},
 					}
+
 					continue
 				}
 
@@ -98,28 +108,40 @@ func (m *redisBroker) Listen(ctx context.Context) error {
 					continue
 				}
 				delete(topicSub, sub.subId)
-				close(sub.payloadChan)
+				close(sub.payload)
 			}
 		}
 	}()
 
-	for msgFromPublish := range pubsub.Channel(m.opts...) {
-		var msgdata PublishRequest
-		err := json.Unmarshal([]byte(msgFromPublish.Payload), &msgdata)
-		if err != nil {
-			panic(fmt.Errorf("invalid json.Unmarshal %v", err))
-		}
+	for msg := range rpsub.Channel(m.opts...) {
+		m.processMessage(msg)
+	}
 
-		subs, ok := m.topics[msgdata.Topic]
+	return rpsub.Close()
+}
+
+func (m *redisBroker) processMessage(msg *redis.Message) {
+	var msgdata struct {
+		Topic pubsub.Topic
+		Data  []byte
+	}
+
+	err := json.Unmarshal([]byte(msg.Payload), &msgdata)
+	if err != nil {
+		panic(fmt.Errorf("invalid json.Unmarshal %v", err))
+	}
+
+	subs, ok := m.topics[msgdata.Topic]
+	if !ok {
+		return
+	}
+
+	for subId := range subs {
+		sub, ok := subs[subId]
 		if !ok {
 			continue
 		}
 
-		for subId := range subs {
-			sub := subs[subId]
-			sub.payloadChan <- msgdata.Payload
-		}
+		sub.payload <- string(msgdata.Data)
 	}
-
-	return pubsub.Close()
 }

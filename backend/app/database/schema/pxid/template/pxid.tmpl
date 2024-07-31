@@ -1,19 +1,19 @@
-{{ define "xid" }}
+{{ define "pxid" }}
 
 {{ $pkg := base $.Config.Package }}
 {{ template "header" $ }}
 
-// prefixMap maps XID prefixes to table names.
+// prefixMap maps PXID prefixes to table names.
 var prefixMap = map[string]string{
 	{{- range $node := $.Nodes }}
-		{{- if $annotation := $node.Annotations.XID }}
+		{{- if $annotation := $node.Annotations.PXID }}
 			"{{ $annotation.Prefix }}": {{ $node.Package }}.Table,
 		{{- end }}
 	{{- end }}
 }
 
-// IDToType maps a xid.ID to the underlying table.
-func IDToType(ctx context.Context, id xid.ID) (string, error) {
+// IDToType maps a pxid.ID to the underlying table.
+func IDToType(ctx context.Context, id pxid.ID) (string, error) {
 	prefix:=id.Prefix()
 	typ := prefixMap[prefix]
 	if typ == "" {
