@@ -2,44 +2,56 @@ package pubsub
 
 import (
 	"context"
-	"errors"
+	"io"
+	"log"
+	"reflect"
 )
 
-type Data any
-type Topic string
-
-type Payload struct {
-	Topic Topic
-	Data  Data
-}
-
-// SubResult represents the result of subscribing to a topic.
-//
-// Methods allow the subscriber to retrieve the topic they are subscribed to,
-// receive payloads, and unsubscribe from the topic.
-type SubResult interface {
-	// Payload returns a channel that receives payloads published to this topic.
-	Data() <-chan Data
-
-	// UnSub unsubscribes from the topic, stopping further payload reception.
-	UnSub() error
+type Pubsub interface {
+	Broker
+	Publisher
 }
 
 type Broker interface {
-	Sub(ctx context.Context, topic Topic) (SubResult, error)
-	Listen(ctx context.Context) error
+	// Subscribe subscribes messages by topic. It will handle payload, then send handled message to subscription channel.
+	Subscribe(topic string, channel interface{}, payloadHandler PayloadHandler) (Unsubscriber, error)
+	// Receive blocks to receive data from Publisher
+	Receive(ctx context.Context) error
 }
 
+// Publisher ...
 type Publisher interface {
-	Pub(ctx context.Context, topic Topic, data Data) error
+	// Publish publishes payload data to channel
+	Publish(ctx context.Context, topic string, data any) error
 }
 
-type Pubsub interface {
-	Publisher
-	Broker
+type Payload struct {
+	Topic string
+	Data  any
 }
 
-var (
-	ErrContextCancel = errors.New("context cancel")
-	ErrTopicNotFound = errors.New("topic not found")
-)
+// PayloadHandler represents function that returns message to subscription channel from payload
+type PayloadHandler func(sid string, payload Payload) (any, error)
+
+// Unsubscriber is the interface the wrap the Close method to unsubscribe
+type Unsubscriber io.Closer
+
+// CloserFunc is an adapter to allow use of ordinary functions as io.Closer
+type CloserFunc func() error
+
+// Close calls c
+func (c CloserFunc) Close() error {
+	return c()
+}
+
+func CloseSubscription(ctx context.Context, u Unsubscriber, channel interface{}) {
+	<-ctx.Done()
+	u.Close()
+
+	cValue := reflect.ValueOf(channel)
+	if cValue.Kind() == reflect.Chan {
+		cValue.Close()
+	} else {
+		log.Printf("type of channel is not channel but %s", cValue.Kind())
+	}
+}

@@ -2,41 +2,45 @@ package service
 
 import (
 	"context"
+	"time"
 
-	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/pubsub"
-	pubsubchannel "github.com/gva/internal/pubsub/channel"
+	"github.com/gva/internal/pubsub/gochannel"
+
+	"github.com/gva/utils"
 	"github.com/rs/zerolog"
 )
 
 type PubsubService struct {
-	log   zerolog.Logger
-	redis *database.Redis
+	log zerolog.Logger
 
 	localPubsub pubsub.Pubsub
 }
 
-func NewPubsubService(log *zerolog.Logger, redis *database.Redis) *PubsubService {
+func NewPubsubService(log *zerolog.Logger) *PubsubService {
 	s := &PubsubService{
-		localPubsub: pubsubchannel.NewMemoryPubsub(),
-
-		redis: redis,
-		log:   log.With().Str("service", "PubsubService").Logger(),
+		localPubsub: gochannel.NewPubsub(make(chan pubsub.Payload), func() string {
+			return string(pxid.New(""))
+		}),
+		log: log.With().Str("service", "PubsubService").Logger(),
 	}
 	return s
 }
 
 func (s *PubsubService) Listen() {
 	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				s.log.Error().Any("recover", r).Msg("Listen")
-			}
-		}()
+		reties := 20
+		delay := time.Second
 
-		if err := s.localPubsub.Listen(context.TODO()); err != nil {
-			s.log.Error().Err(err).Msg("Listen")
-		}
+		utils.Retry(func() error {
+			if err := s.localPubsub.Receive(context.TODO()); err != nil {
+				s.log.Error().Err(err).Msg("Listen")
+				return err
+			}
+
+			return nil
+		}, reties, delay)
 	}()
 }
 

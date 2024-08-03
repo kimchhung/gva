@@ -6,6 +6,7 @@ import (
 
 	"github.com/gva/app/common/service"
 	"github.com/gva/internal/bootstrap/database"
+	"github.com/gva/internal/pubsub"
 )
 
 type DatetimeService struct {
@@ -40,24 +41,15 @@ func (s *DatetimeService) Now(ctx context.Context) (*time.Time, error) {
 
 func (s *DatetimeService) NowChannel(ctx context.Context) (<-chan *time.Time, error) {
 	ch := make(chan *time.Time)
-	sub, err := s.pubsub_s.Local().Sub(ctx, "now")
+
+	sub, err := s.pubsub_s.Local().Subscribe("now", ch,
+		func(_ string, payload pubsub.Payload) (interface{}, error) {
+			return payload.Data.(*time.Time), nil
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
-
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				sub.UnSub()
-				return
-			case payload := <-sub.Data():
-				if time, ok := payload.(time.Time); ok {
-					ch <- &time
-				}
-			}
-		}
-	}()
-
+	go pubsub.CloseSubscription(ctx, sub, ch)
 	return ch, nil
 }

@@ -1,4 +1,4 @@
-package gqlgen
+package redispubsub
 
 import (
 	"context"
@@ -8,43 +8,44 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/gva/app/database/schema/pxid"
+	"github.com/gva/internal/pubsub"
+
 	"github.com/redis/go-redis/v9"
 )
 
-var _ Broker = (*redisBroker)(nil)
+var _ pubsub.Broker = (*redisBroker)(nil)
 
 type redisBroker struct {
 	client        *redis.Client
 	redisChannel  string
-	subscriptions sync.Map // channelName => channelSubscriptions
+	subscriptions sync.Map // Topic => TopicSubscriptions
+	generateId    func() string
 }
 
-// NewRedisBroker new broker using redis
-func NewRedisBroker(client *redis.Client, redisChannel string) Broker {
+// NewBroker new broker using redis
+func NewBroker(client *redis.Client, redisChannel string, generateId func() string) pubsub.Broker {
 	return &redisBroker{
 		client:       client,
 		redisChannel: redisChannel,
+		generateId:   generateId,
 	}
 }
 
-func (b *redisBroker) Receive() error {
-	pubsub := b.client.Subscribe(context.TODO(), b.redisChannel)
-
-	_, err := pubsub.Receive(context.TODO())
+func (b *redisBroker) Receive(ctx context.Context) error {
+	rpubsub := b.client.Subscribe(ctx, b.redisChannel)
+	_, err := rpubsub.Receive(ctx)
 	if err != nil {
 		return err
 	}
 
-	redisChannel := pubsub.Channel()
-	for msg := range redisChannel {
-		var payload Payload
+	for msg := range rpubsub.Channel() {
+		var payload pubsub.Payload
 		err := json.Unmarshal([]byte(msg.Payload), &payload)
 		if err != nil {
 			return err
 		}
 
-		chValue, exist := b.subscriptions.Load(payload.ChannelName)
+		chValue, exist := b.subscriptions.Load(payload.Topic)
 		if !exist {
 			continue
 		}
@@ -66,10 +67,10 @@ func (b *redisBroker) Receive() error {
 		ch.RUnlock()
 	}
 
-	return pubsub.Close()
+	return rpubsub.Close()
 }
 
-func (b *redisBroker) Subscribe(channelName string, channel interface{}, handler PayloadHandler) (Unsubscriber, error) {
+func (b *redisBroker) Subscribe(channelName string, channel interface{}, handler pubsub.PayloadHandler) (pubsub.Unsubscriber, error) {
 	value := reflect.ValueOf(channel)
 	if kind := value.Kind(); kind != reflect.Chan {
 		return nil, fmt.Errorf("channel must be channel, but %v", kind)
@@ -82,13 +83,14 @@ func (b *redisBroker) Subscribe(channelName string, channel interface{}, handler
 	}
 
 	ch, _ := chValue.(*channelSubscriptions)
-	return ch.append(channelName, value, handler), nil
+	id := b.generateId()
+	return ch.append(channelName, value, id, handler), nil
 }
 
 type subscription struct {
-	channelName string
-	channel     reflect.Value
-	handler     PayloadHandler
+	topic   string
+	channel reflect.Value
+	handler pubsub.PayloadHandler
 }
 
 type channelSubscriptions struct {
@@ -96,17 +98,16 @@ type channelSubscriptions struct {
 	subscriptions map[string]*subscription // subscription id => subscription
 }
 
-func (c *channelSubscriptions) append(channelName string, channel reflect.Value, handler PayloadHandler) Unsubscriber {
+func (c *channelSubscriptions) append(topic string, channel reflect.Value, id string, handler pubsub.PayloadHandler) pubsub.Unsubscriber {
 	c.Lock()
 	defer c.Unlock()
-	id := string(pxid.New("id"))
 	c.subscriptions[id] = &subscription{
-		channelName: channelName,
-		channel:     channel,
-		handler:     handler,
+		topic:   topic,
+		channel: channel,
+		handler: handler,
 	}
 
-	return CloserFunc(func() error {
+	return pubsub.CloserFunc(func() error {
 		c.remove(id)
 		return nil
 	})
