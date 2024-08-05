@@ -1,0 +1,39 @@
+{
+  "name": "@gva/layouts",
+  "version": "5.0.0",
+  "homepage": "https://github.com/vbenjs/vue-gva-admin",
+  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "directory": "packages/effects/layouts"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@gva-core/layout-ui": "workspace:*",
+    "@gva-core/menu-ui": "workspace:*",
+    "@gva-core/shadcn-ui": "workspace:*",
+    "@gva-core/tabs-ui": "workspace:*",
+    "@gva/constants": "workspace:*",
+    "@gva/hooks": "workspace:*",
+    "@gva/icons": "workspace:*",
+    "@gva/locales": "workspace:*",
+    "@gva/preferences": "workspace:*",
+    "@gva/stores": "workspace:*",
+    "@gva/types": "workspace:*",
+    "@gva/utils": "workspace:*",
+    "@vueuse/core": "^10.11.0",
+    "vue": "^3.4.35",
+    "vue-router": "^4.4.2"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@gva-core/shadcn-ui",
+  "version": "5.0.0",
+  "homepage": "https://github.com/vbenjs/vue-gva-admin",
+  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "directory": "packages/@gva-core/uikit/shadcn-ui"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm unbuild",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./*": {
+      "types": "./src/*/index.ts",
+      "development": "./src/*/index.ts",
+      "default": "./dist/*/index.mjs"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.mjs"
+      }
+    }
+  },
+  "dependencies": {
+    "@radix-icons/vue": "^1.0.0",
+    "@gva-core/icons": "workspace:*",
+    "@gva-core/shared": "workspace:*",
+    "@gva-core/typings": "workspace:*",
+    "@vueuse/core": "^10.11.0",
+    "class-variance-authority": "^0.7.0",
+    "lucide-vue-next": "^0.424.0",
+    "radix-vue": "^1.9.2",
+    "vue": "^3.4.35"
+  }
+}

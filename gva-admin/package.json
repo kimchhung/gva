@@ -1,0 +1,132 @@
+{
+  "name": "@gva/web-antd",
+  "version": "5.0.0",
+  "homepage": "https://gva.pro",
+  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "directory": "apps/web-antd"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "gva",
+    "email": "ann.gva@gmail.com",
+    "url": "https://github.com/anncwb"
+  },
+  "type": "module",
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "build": "pnpm vite build --mode production",
+    "build:analyze": "pnpm vite build --mode analyze",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck",
+    "dev": "pnpm vite --mode development",
+    "changeset": "pnpm exec changeset",
+    "prepare": "is-ci || husky",
+    "reinstall": "pnpm clean --del-lock && pnpm bootstrap",
+    "test:unit": "vitest",
+    "update:deps": " pnpm update --latest --recursive",
+    "version": "pnpm exec changeset version && pnpm install --no-frozen-lockfile"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "dependencies": {
+    "@gva/access": "workspace:*",
+    "@gva/common-ui": "workspace:*",
+    "@gva/constants": "workspace:*",
+    "@gva/hooks": "workspace:*",
+    "@gva/icons": "workspace:*",
+    "@gva/layouts": "workspace:*",
+    "@gva/locales": "workspace:*",
+    "@gva/preferences": "workspace:*",
+    "@gva/stores": "workspace:*",
+    "@gva/styles": "workspace:*",
+    "@gva/types": "workspace:*",
+    "@gva/utils": "workspace:*",
+    "@vueuse/core": "^10.11.0",
+    "ant-design-vue": "^4.2.3",
+    "axios": "^1.7.3",
+    "dayjs": "^1.11.12",
+    "pinia": "2.2.0",
+    "qs": "^6.11.2",
+    "vue": "^3.4.35",
+    "vue-router": "^4.4.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "{!(package)*.json,*.code-snippets,.!(browserslist)*rc}": [
+      "prettier --write--parser json"
+    ],
+    "package.json": [
+      "prettier --write"
+    ],
+    "*.vue": [
+      "eslint --fix",
+      "stylelint --fix"
+    ],
+    "*.{scss,less,styl,html}": [
+      "stylelint --fix"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.7",
+    "@ls-lint/ls-lint": "^2.2.3",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.1.0",
+    "@types/qs": "^6.9.15",
+    "@gva/commitlint-config": "workspace:*",
+    "@gva/eslint-config": "workspace:*",
+    "@gva/prettier-config": "workspace:*",
+    "@gva/stylelint-config": "workspace:*",
+    "@gva/tailwind-config": "workspace:*",
+    "@gva/tsconfig": "workspace:*",
+    "@gva/vite-config": "workspace:*",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.19",
+    "cross-env": "^7.0.3",
+    "cspell": "^8.13.0",
+    "husky": "^9.1.4",
+    "is-ci": "^3.0.1",
+    "jsdom": "^24.1.1",
+    "lint-staged": "^15.2.7",
+    "rimraf": "^6.0.1",
+    "root": "^3.2.0",
+    "tailwindcss": "^3.4.7",
+    "turbo": "^2.0.11",
+    "typescript": "^5.5.4",
+    "unbuild": "^2.0.0",
+    "vite": "^5.3.5",
+    "vitest": "^2.0.5",
+    "vue-tsc": "^2.0.29"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.6.0",
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "eslint": "*"
+      }
+    },
+    "overrides": {
+      "@ctrl/tinycolor": "^4.1.0",
+      "clsx": "^2.1.1",
+      "vue": "^3.4.35"
+    },
+    "neverBuiltDependencies": [
+      "canvas",
+      "node-gyp",
+      "playwright"
+    ]
+  }
+}

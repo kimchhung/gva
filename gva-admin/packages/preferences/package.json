@@ -1,0 +1,26 @@
+{
+  "name": "@gva/preferences",
+  "version": "5.0.0",
+  "homepage": "https://github.com/vbenjs/vue-gva-admin",
+  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "directory": "packages/preferences"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@gva-core/preferences": "workspace:*",
+    "@gva-core/typings": "workspace:*"
+  }
+}

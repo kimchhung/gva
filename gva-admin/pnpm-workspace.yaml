@@ -1,0 +1,9 @@
+packages:
+  - "internal/*"
+  - "internal/lint-configs/*"
+  - "packages/*"
+  - "packages/@core/base/*"
+  - "packages/@core/ui-kit/*"
+  - "packages/@core/forward/*"
+  - "packages/@core/*"
+  - "packages/effects/*"

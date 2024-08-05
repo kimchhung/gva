@@ -1,0 +1,3 @@
+# After git pull each time, install dependencies
+
+pnpm install

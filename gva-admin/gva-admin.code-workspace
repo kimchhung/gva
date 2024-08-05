@@ -1,0 +1,128 @@
+{
+  "folders": [
+    {
+      "name": "@gva/commitlint-config",
+      "path": "internal/lint-configs/commitlint-config",
+    },
+    {
+      "name": "@gva/eslint-config",
+      "path": "internal/lint-configs/eslint-config",
+    },
+    {
+      "name": "@gva/prettier-config",
+      "path": "internal/lint-configs/prettier-config",
+    },
+    {
+      "name": "@gva/stylelint-config",
+      "path": "internal/lint-configs/stylelint-config",
+    },
+    {
+      "name": "@gva/node-utils",
+      "path": "internal/node-utils",
+    },
+    {
+      "name": "@gva/tailwind-config",
+      "path": "internal/tailwind-config",
+    },
+    {
+      "name": "@gva/tsconfig",
+      "path": "internal/tsconfig",
+    },
+    {
+      "name": "@gva/vite-config",
+      "path": "internal/vite-config",
+    },
+    {
+      "name": "@gva-core/design",
+      "path": "packages/@core/base/design",
+    },
+    {
+      "name": "@gva-core/icons",
+      "path": "packages/@core/base/icons",
+    },
+    {
+      "name": "@gva-core/shared",
+      "path": "packages/@core/base/shared",
+    },
+    {
+      "name": "@gva-core/typings",
+      "path": "packages/@core/base/typings",
+    },
+    {
+      "name": "@gva-core/composables",
+      "path": "packages/@core/composables",
+    },
+    {
+      "name": "@gva-core/preferences",
+      "path": "packages/@core/preferences",
+    },
+    {
+      "name": "@gva-core/layout-ui",
+      "path": "packages/@core/ui-kit/layout-ui",
+    },
+    {
+      "name": "@gva-core/menu-ui",
+      "path": "packages/@core/ui-kit/menu-ui",
+    },
+    {
+      "name": "@gva-core/shadcn-ui",
+      "path": "packages/@core/ui-kit/shadcn-ui",
+    },
+    {
+      "name": "@gva-core/tabs-ui",
+      "path": "packages/@core/ui-kit/tabs-ui",
+    },
+    {
+      "name": "@gva/constants",
+      "path": "packages/constants",
+    },
+    {
+      "name": "@gva/access",
+      "path": "packages/effects/access",
+    },
+    {
+      "name": "@gva/common-ui",
+      "path": "packages/effects/common-ui",
+    },
+    {
+      "name": "@gva/hooks",
+      "path": "packages/effects/hooks",
+    },
+    {
+      "name": "@gva/layouts",
+      "path": "packages/effects/layouts",
+    },
+    {
+      "name": "@gva/icons",
+      "path": "packages/icons",
+    },
+    {
+      "name": "@gva/locales",
+      "path": "packages/locales",
+    },
+    {
+      "name": "@gva/preferences",
+      "path": "packages/preferences",
+    },
+    {
+      "name": "@gva/stores",
+      "path": "packages/stores",
+    },
+    {
+      "name": "@gva/styles",
+      "path": "packages/styles",
+    },
+    {
+      "name": "@gva/types",
+      "path": "packages/types",
+    },
+    {
+      "name": "@gva/utils",
+      "path": "packages/utils",
+    },
+    {
+      "name": "root",
+      "path": ".",
+    },
+  ],
+}
