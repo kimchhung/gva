@@ -1,0 +1,297 @@
+[
+  {
+    "id": "menu_cqedv8g98oia3a0bqk50",
+    "createdAt": "2024-07-22T08:25:57Z",
+    "updatedAt": "2024-07-22T09:29:15Z",
+    "isEnable": true,
+    "path": "/dashboard",
+    "component": "#",
+    "redirect": "/dashboard/home",
+    "name": "Dashboard",
+    "order": 0,
+    "type": "cata_log",
+    "meta": {
+      "alwaysShow": false,
+      "title": "router.dashboard",
+      "icon": "ep:home-filled",
+      "activeMenu": ""
+    },
+    "edges": {
+      "children": [
+        {
+          "id": "menu_cqedv8g98oia3a0bqk40",
+          "createdAt": "2024-07-22T08:25:57Z",
+          "updatedAt": "2024-07-22T09:29:38Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqk50",
+          "path": "icon",
+          "component": "views/Dashboard/Icon",
+          "name": "Icon",
+          "order": 1,
+          "type": "menu",
+          "meta": {
+            "hidden": false,
+            "alwaysShow": false,
+            "title": "Icon",
+            "icon": "ep:brush",
+            "breadcrumb": true
+          },
+          "edges": {}
+        },
+        {
+          "id": "menu_cqf1k384uq1pnqs14r2g",
+          "createdAt": "2024-07-22T08:36:29Z",
+          "updatedAt": "2024-07-22T09:21:14Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqk50",
+          "path": "home",
+          "component": "views/Dashboard/Home",
+          "name": "Home",
+          "order": 0,
+          "type": "menu",
+          "meta": {
+            "alwaysShow": false,
+            "title": "router.home",
+            "icon": "ep:home-filled",
+            "breadcrumb": true,
+            "affix": false,
+            "activeMenu": "",
+            "canTo": true
+          },
+          "edges": {}
+        }
+      ]
+    }
+  },
+  {
+    "id": "menu_cqedv8g98oia3a0bqkc0",
+    "createdAt": "2024-07-22T08:25:57Z",
+    "updatedAt": "2024-07-22T08:25:57Z",
+    "isEnable": true,
+    "path": "/authorization",
+    "component": "#",
+    "redirect": "/authorization/admin",
+    "name": "Authorization",
+    "order": 0,
+    "type": "cata_log",
+    "meta": {
+      "alwaysShow": true,
+      "title": "router.authorization",
+      "icon": "eos-icons:role-binding"
+    },
+    "edges": {
+      "children": [
+        {
+          "id": "menu_cqedv8g98oia3a0bqk60",
+          "createdAt": "2024-07-22T08:25:57Z",
+          "updatedAt": "2024-07-22T09:34:25Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
+          "path": "admin",
+          "component": "views/Authorization/Admin/Admin",
+          "name": "User",
+          "order": 0,
+          "type": "menu",
+          "meta": {
+            "title": "router.admin",
+            "icon": "ep:avatar",
+            "noCache": false,
+            "breadcrumb": true,
+            "affix": true,
+            "canTo": true,
+            "permissions": ["admin:super", "admin:view"]
+          },
+          "edges": {}
+        },
+        {
+          "id": "menu_cqedv8g98oia3a0bqka0",
+          "createdAt": "2024-07-22T08:25:57Z",
+          "updatedAt": "2024-07-22T10:30:33Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
+          "path": "menu",
+          "component": "views/Authorization/Menu/Menu",
+          "name": "Menu",
+          "order": 0,
+          "type": "menu",
+          "meta": {
+            "title": "router.menu",
+            "icon": "ant-design:cluster-outlined",
+            "noCache": false,
+            "breadcrumb": true,
+            "canTo": true,
+            "permissions": ["menu:super", "menu:view"]
+          },
+          "edges": {
+            "children": [
+              {
+                "id": "menu_cqedv8g98oia3a0bqk70",
+                "createdAt": "2024-07-22T08:25:57Z",
+                "updatedAt": "2024-07-22T10:27:30Z",
+                "isEnable": true,
+                "pid": "menu_cqedv8g98oia3a0bqka0",
+                "path": "add",
+                "component": "views/Authorization/Menu/Add",
+                "name": "Menu add",
+                "order": 0,
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "button.add",
+                  "noCache": true,
+                  "noTagsView": true,
+                  "canTo": true,
+                  "permissions": ["menu:super", "menu:add"]
+                },
+                "edges": {}
+              },
+              {
+                "id": "menu_cqedv8g98oia3a0bqk80",
+                "createdAt": "2024-07-22T08:25:57Z",
+                "updatedAt": "2024-07-22T10:27:40Z",
+                "isEnable": true,
+                "pid": "menu_cqedv8g98oia3a0bqka0",
+                "path": "edit",
+                "component": "views/Authorization/Menu/Edit",
+                "name": "Menu edit",
+                "order": 0,
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "button.edit",
+                  "noCache": true,
+                  "noTagsView": true,
+                  "canTo": true,
+                  "permissions": ["menu:super", "menu:edit"]
+                },
+                "edges": {}
+              },
+              {
+                "id": "menu_cqedv8g98oia3a0bqk90",
+                "createdAt": "2024-07-22T08:25:57Z",
+                "updatedAt": "2024-07-22T10:27:54Z",
+                "isEnable": true,
+                "pid": "menu_cqedv8g98oia3a0bqka0",
+                "path": "detail",
+                "component": "views/Authorization/Menu/Detail",
+                "name": "Menu detail",
+                "order": 0,
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "button.detail",
+                  "noCache": true,
+                  "noTagsView": true,
+                  "canTo": true,
+                  "permissions": ["menu:super", "menu:view"]
+                },
+                "edges": {}
+              }
+            ]
+          }
+        },
+        {
+          "id": "menu_cqedv8g98oia3a0bqkb0",
+          "createdAt": "2024-07-22T08:25:57Z",
+          "updatedAt": "2024-07-22T08:25:57Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
+          "path": "role",
+          "component": "views/Authorization/Role/Role",
+          "name": "Role",
+          "order": 0,
+          "type": "menu",
+          "meta": {
+            "title": "router.role",
+            "icon": "ep:briefcase",
+            "canTo": true
+          },
+          "edges": {}
+        },
+        {
+          "id": "menu_cqee4b898oianu1tv270",
+          "createdAt": "2024-07-22T08:25:57Z",
+          "updatedAt": "2024-07-22T08:25:57Z",
+          "isEnable": true,
+          "pid": "menu_cqedv8g98oia3a0bqkc0",
+          "path": "department",
+          "component": "views/Authorization/Department/Department",
+          "name": "Department",
+          "order": 0,
+          "type": "menu",
+          "meta": {
+            "title": "router.department",
+            "icon": "tdesign:usergroup",
+            "breadcrumb": true,
+            "canTo": true
+          },
+          "edges": {
+            "children": [
+              {
+                "id": "menu_cqee65o98oianu1tv280",
+                "createdAt": "2024-07-22T08:25:57Z",
+                "updatedAt": "2024-07-22T10:10:10Z",
+                "isEnable": true,
+                "pid": "menu_cqee4b898oianu1tv270",
+                "path": "add",
+                "component": "views/Authorization/Department/Add",
+                "name": "Add",
+                "order": 0,
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "button.add",
+                  "icon": "tdesign:usergroup",
+                  "breadcrumb": true,
+                  "noTagsView": true,
+                  "canTo": true
+                },
+                "edges": {}
+              },
+              {
+                "id": "menu_cqee6m898oianu1tv290",
+                "createdAt": "2024-07-22T08:25:57Z",
+                "updatedAt": "2024-07-22T10:09:57Z",
+                "isEnable": true,
+                "pid": "menu_cqee4b898oianu1tv270",
+                "path": "edit",
+                "component": "views/Authorization/Department/Edit",
+                "name": "Edit",
+                "order": 0,
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "button.edit",
+                  "breadcrumb": true,
+                  "noTagsView": true,
+                  "canTo": true
+                },
+                "edges": {}
+              },
+              {
+                "id": "menu_cqee73098oianu1tv2a0",
+                "createdAt": "2024-07-22T08:25:57Z",
+                "updatedAt": "2024-07-22T10:09:50Z",
+                "isEnable": true,
+                "pid": "menu_cqee4b898oianu1tv270",
+                "path": "detail",
+                "component": "views/Authorization/Department/Detail",
+                "name": "Detail",
+                "order": 0,
+                "type": "menu",
+                "meta": {
+                  "hidden": true,
+                  "title": "button.detail",
+                  "breadcrumb": true,
+                  "noTagsView": true,
+                  "canTo": true
+                },
+                "edges": {}
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

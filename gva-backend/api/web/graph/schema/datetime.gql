@@ -1,0 +1,7 @@
+extend type Query {
+  now: Time!
+}
+
+type Subscription {
+  now: Time!
+}

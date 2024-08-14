@@ -1,0 +1,74 @@
+# Default Configuration
+# run cli below to generate env
+# make admincmd.gen.env
+[app]
+env = "dev"           # dev | staging | prod
+name = "Go Vue Admin"
+port = ":8080"
+idle_timeout = 5      # As seconds
+shutdown_timeout = 10 # As seconds
+print_routes = true
+production = false
+
+[app.tls]
+auto = false
+enable = false
+cert_file = "./storage/selfsigned.crt"
+key_file = "./storage/selfsigned.key"
+
+[db.mysql]
+dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true" # <username>:<password>@tcp(<host>:<port>)/<dbname>
+
+[db.redis]
+addr = "localhost:6379"
+password = "123456"
+
+[seed]
+enable = true
+
+[seed.super_admin]
+username = "admin"
+password = "123456"
+
+[api.web]
+enable = true
+base_path = "/web/v1"
+
+[api.admin]
+enable = true
+base_path = "/admin/v1"
+
+[api.bot]
+enable = true
+base_path = "/bot/v1"
+
+[logger]
+time_format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10
+level = 0        # panic -> 5, fatal -> 4, error -> 3, warn -> 2, info -> 1, debug -> 0, trace -> -1
+prettier = true
+
+[middleware.compress]
+enable = true
+level = 1
+
+[middleware.monitor]
+enable = true
+path = "/monitor"
+
+[middleware.pprof]
+enable = true
+
+[middleware.limiter]
+enable = true
+max = 20
+expiration_seconds = 60
+
+[middleware.swagger]
+enable = true
+path = "/docs"
+
+[Jwt]
+secret = '123'
+
+[Password]
+hash_cost = 10

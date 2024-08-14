@@ -1,0 +1,30 @@
+version: '3.8'
+
+networks:
+  app:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: gva
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - "3336:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6390:6379"
+    command: redis-server --loglevel warning --requirepass  123456
+    volumes:
+      - redis:/data
+
+volumes:
+  mysql: 
+  redis:

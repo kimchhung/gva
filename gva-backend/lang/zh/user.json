@@ -1,0 +1,17 @@
+[
+  {
+    "locale": "zh",
+    "key": "wrong_password",
+    "trans": "密码错误"
+  },
+  {
+    "locale": "zh",
+    "key": "username_already_exists",
+    "trans": "此用户名已存在"
+  },
+  {
+    "locale": "zh",
+    "key": "invalid_otp_code",
+    "trans": "Invalid otp code"
+  }
+]

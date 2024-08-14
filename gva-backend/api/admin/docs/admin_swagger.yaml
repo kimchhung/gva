@@ -1,0 +1,1499 @@
+basePath: /admin/v1
+definitions:
+  dto.AdminRequest:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      departmentId:
+        description: DepartmentID holds the value of the "department_id" field.
+        type: string
+      displayName:
+        description: DisplayName holds the value of the "display_name" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AdminQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
+      whitelistIps:
+        description: WhitelistIps holds the value of the "whitelist_ips" field.
+        items:
+          type: string
+        type: array
+    type: object
+  dto.AdminResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      departmentId:
+        description: DepartmentID holds the value of the "department_id" field.
+        type: string
+      displayName:
+        description: DisplayName holds the value of the "display_name" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AdminQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
+      whitelistIps:
+        description: WhitelistIps holds the value of the "whitelist_ips" field.
+        items:
+          type: string
+        type: array
+    type: object
+  dto.DepartmentRequest:
+    properties:
+      isEnable:
+        type: boolean
+      name:
+        type: string
+      nameId:
+        type: string
+      pid:
+        type: string
+    required:
+    - name
+    - nameId
+    type: object
+  dto.DepartmentResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.DepartmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the DepartmentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      nameId:
+        description: NameID holds the value of the "name_id" field.
+        type: string
+      pid:
+        description: Pid holds the value of the "pid" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        maxLength: 30
+        minLength: 6
+        type: string
+      username:
+        maxLength: 30
+        minLength: 5
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.LoginResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/ent.Admin'
+      token:
+        type: string
+    type: object
+  dto.MenuRequest:
+    properties:
+      component:
+        type: string
+      isEnable:
+        type: boolean
+      meta:
+        $ref: '#/definitions/types.MenuMeta'
+      name:
+        type: string
+      order:
+        type: integer
+      path:
+        type: string
+      pid:
+        type: string
+      redirect:
+        description: optionals
+        type: string
+      type:
+        $ref: '#/definitions/menu.Type'
+    required:
+    - component
+    - isEnable
+    - meta
+    - name
+    - path
+    - type
+    type: object
+  dto.MenuResponse:
+    properties:
+      component:
+        description: Component holds the value of the "component" field.
+        type: string
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.MenuEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the MenuQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      meta:
+        allOf:
+        - $ref: '#/definitions/types.MenuMeta'
+        description: Meta holds the value of the "meta" field.
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      pid:
+        description: Pid holds the value of the "pid" field.
+        type: string
+      redirect:
+        description: Redirect holds the value of the "redirect" field.
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/menu.Type'
+        description: Type holds the value of the "type" field.
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  dto.PermissionRequest:
+    properties:
+      group:
+        type: string
+      name:
+        type: string
+      order:
+        type: integer
+      scope:
+        type: string
+    required:
+    - group
+    - name
+    - order
+    - scope
+    type: object
+  dto.PermissionResponse:
+    properties:
+      group:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      order:
+        type: integer
+      scope:
+        type: string
+    type: object
+  dto.RegisterRequest:
+    properties:
+      displayName:
+        type: string
+      password:
+        maxLength: 30
+        minLength: 6
+        type: string
+      username:
+        maxLength: 30
+        minLength: 5
+        type: string
+    required:
+    - displayName
+    - password
+    - username
+    type: object
+  dto.RegisterResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/ent.Admin'
+      token:
+        type: string
+    type: object
+  dto.TodoRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  dto.TodoResponse:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.Admin:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      departmentId:
+        description: DepartmentID holds the value of the "department_id" field.
+        type: string
+      displayName:
+        description: DisplayName holds the value of the "display_name" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AdminEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AdminQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
+      whitelistIps:
+        description: WhitelistIps holds the value of the "whitelist_ips" field.
+        items:
+          type: string
+        type: array
+    type: object
+  ent.AdminEdges:
+    properties:
+      department:
+        allOf:
+        - $ref: '#/definitions/ent.Department'
+        description: Department holds the value of the department edge.
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  ent.Department:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.DepartmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the DepartmentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      nameId:
+        description: NameID holds the value of the "name_id" field.
+        type: string
+      pid:
+        description: Pid holds the value of the "pid" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.DepartmentEdges:
+    properties:
+      children:
+        description: Children holds the value of the children edge.
+        items:
+          $ref: '#/definitions/ent.Department'
+        type: array
+      members:
+        description: Members holds the value of the members edge.
+        items:
+          $ref: '#/definitions/ent.Admin'
+        type: array
+      parent:
+        allOf:
+        - $ref: '#/definitions/ent.Department'
+        description: Parent holds the value of the parent edge.
+    type: object
+  ent.Menu:
+    properties:
+      component:
+        description: Component holds the value of the "component" field.
+        type: string
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.MenuEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the MenuQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      meta:
+        allOf:
+        - $ref: '#/definitions/types.MenuMeta'
+        description: Meta holds the value of the "meta" field.
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      pid:
+        description: Pid holds the value of the "pid" field.
+        type: string
+      redirect:
+        description: Redirect holds the value of the "redirect" field.
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/menu.Type'
+        description: Type holds the value of the "type" field.
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.MenuEdges:
+    properties:
+      children:
+        description: Children holds the value of the children edge.
+        items:
+          $ref: '#/definitions/ent.Menu'
+        type: array
+      parent:
+        allOf:
+        - $ref: '#/definitions/ent.Menu'
+        description: Parent holds the value of the parent edge.
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  ent.Permission:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.PermissionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PermissionQuery when eager-loading is set.
+      group:
+        description: Group holds the value of the "group" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      key:
+        allOf:
+        - $ref: '#/definitions/permission.Type'
+        description: Type holds the value of the "type" field.
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      scope:
+        description: Scope holds the value of the "scope" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.PermissionEdges:
+    properties:
+      roles:
+        description: Roles holds the value of the roles edge.
+        items:
+          $ref: '#/definitions/ent.Role'
+        type: array
+    type: object
+  ent.Role:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.RoleEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RoleQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      isChangeable:
+        description: IsChangeable holds the value of the "is_changeable" field.
+        type: boolean
+      isEnable:
+        description: IsEnable holds the value of the "is_enable" field.
+        type: boolean
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      order:
+        description: Order holds the value of the "order" field.
+        type: integer
+      updatedAt:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.RoleEdges:
+    properties:
+      admins:
+        description: Admins holds the value of the admins edge.
+        items:
+          $ref: '#/definitions/ent.Admin'
+        type: array
+      permissions:
+        description: Permissions holds the value of the permissions edge.
+        items:
+          $ref: '#/definitions/ent.Permission'
+        type: array
+      routes:
+        description: Routes holds the value of the routes edge.
+        items:
+          $ref: '#/definitions/ent.Menu'
+        type: array
+    type: object
+  menu.Type:
+    enum:
+    - cata_log
+    - cata_log
+    - menu
+    - button
+    - external_link
+    type: string
+    x-enum-varnames:
+    - DefaultType
+    - TypeCataLog
+    - TypeMenu
+    - TypeButton
+    - TypeExternalLink
+  pagi.Meta:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  permission.Type:
+    enum:
+    - dynamic
+    - dynamic
+    - static
+    type: string
+    x-enum-varnames:
+    - DefaultType
+    - TypeDynamic
+    - TypeStatic
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        description: The Data field contains the actual response data
+      message:
+        type: string
+      meta:
+        description: Meta provides additional information about the data, such as
+          its type or kind.y.
+    type: object
+  types.MenuMeta:
+    properties:
+      activeMenu:
+        type: string
+      affix:
+        type: boolean
+      alwaysShow:
+        type: boolean
+      breadcrumb:
+        type: boolean
+      canTo:
+        type: boolean
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      noCache:
+        type: boolean
+      noTagsView:
+        type: boolean
+      permissions:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: GO VUE ADMIN Boilerplate
+  title: GVA admin API
+  version: "1.0"
+paths:
+  /admin:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Admins
+      operationId: list-all-Admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admins
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ent.Admin'
+                  type: array
+                meta:
+                  $ref: '#/definitions/pagi.Meta'
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Admins
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create a new Admin with the provided details
+      operationId: create-Admin
+      parameters:
+      - description: Admin data
+        in: body
+        name: Admin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Admin
+      tags:
+      - Admin
+  /admin/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Admin by ID
+      operationId: delete-Admin-by-id
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Admin
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Admin
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Get a Admin by ID
+      operationId: get-Admin-by-id
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      - Bearer: []
+      summary: Get a Admin
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      description: Update a Admin by ID
+      operationId: update-Admin-by-id
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin data
+        in: body
+        name: Admin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Admin
+      tags:
+      - Admin
+  /admin/permission:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of permissionissions for an Admin by ID
+      operationId: get-Admin-permissionissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admin permissionissions
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Admin permissionissions
+      tags:
+      - Admin
+  /admin/route:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of routes for an Admin by ID
+      operationId: get-Admin-routes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Admin routes
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Admin Routes
+      tags:
+      - Admin
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a admin with the provided credentials
+      operationId: create-Auth
+      parameters:
+      - description: Auth data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Auth
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LoginResponse'
+              type: object
+      summary: Authenticate a admin
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: get admin data by token
+      operationId: create-Auth-me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/ent.Admin'
+              type: object
+      security:
+      - Bearer: []
+      summary: query your self after login
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new admin with the provided credentials
+      operationId: create-Auth-register
+      parameters:
+      - description: Registration data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.RegisterResponse'
+              type: object
+      summary: Register a new admin
+      tags:
+      - Auth
+  /department:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Departments
+      operationId: list-all-Departments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved Departments
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.DepartmentResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.DepartmentResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Departments
+      tags:
+      - Department
+    post:
+      consumes:
+      - application/json
+      description: Create a new Department with the provided details
+      operationId: create-Department
+      parameters:
+      - description: Department data
+        in: body
+        name: Department
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Department
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DepartmentResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Department
+      tags:
+      - Department
+  /department/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Department by ID
+      operationId: delete-Department-by-id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Department
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Department
+      tags:
+      - Department
+    get:
+      consumes:
+      - application/json
+      description: Get a Department by ID
+      operationId: get-Department-by-id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DepartmentResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Department
+      tags:
+      - Department
+    patch:
+      consumes:
+      - application/json
+      description: Update a Department by ID
+      operationId: update-Department-by-id
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Department data
+        in: body
+        name: Department
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Department
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.DepartmentResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Department
+      tags:
+      - Department
+  /menu:
+    get:
+      description: Get a list of all Menus
+      operationId: list-all-Menus
+      parameters:
+      - description: string default
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.MenuResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.MenuResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Menus
+      tags:
+      - Menu
+    post:
+      consumes:
+      - application/json
+      description: Create a Menu
+      operationId: create-a-menu
+      parameters:
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MenuResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Menu
+      tags:
+      - Menu
+  /menu/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Menu
+      operationId: Delete-a-Menu
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Menu
+      tags:
+      - Menu
+    put:
+      consumes:
+      - application/json
+      description: Update a Menu
+      operationId: Update-a-Menu
+      parameters:
+      - description: Route Info
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MenuRequest'
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MenuResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Menu
+      tags:
+      - Menu
+  /menu/enabled-list:
+    get:
+      description: Get a list of all Enabled Menus
+      operationId: list-all-public-menus
+      parameters:
+      - description: string default
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.MenuResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.MenuResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Menus
+      tags:
+      - Menu
+  /now:
+    get:
+      operationId: now
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Current Server Time
+      tags:
+      - Time
+  /permission:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Permissions
+      operationId: list-all-Permissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.PermissionResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.PermissionResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Permissions
+      tags:
+      - Permission
+    post:
+      consumes:
+      - application/json
+      description: Create a new Permission with the provided details
+      operationId: create-Permission
+      parameters:
+      - description: Permission data
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Permission
+      tags:
+      - Permission
+  /permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Permission by ID
+      operationId: delete-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The permission deleted successfully!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Permission
+      tags:
+      - Permission
+    get:
+      consumes:
+      - application/json
+      description: Get a Permission by ID
+      operationId: get-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Permission
+      tags:
+      - Permission
+    patch:
+      consumes:
+      - application/json
+      description: Update a Permission by ID
+      operationId: update-Permission-by-id
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission data
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Permission
+      tags:
+      - Permission
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all Todos
+      operationId: list-all-Todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    allOf:
+                    - $ref: '#/definitions/dto.TodoResponse'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/dto.TodoResponse'
+                          type: array
+                      type: object
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: List all Todos
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create a new Todo with the provided details
+      operationId: create-Todo
+      parameters:
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a Todo
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Todo by ID
+      operationId: delete-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The todo deleted successfully!
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete a Todo
+      tags:
+      - Todo
+    get:
+      consumes:
+      - application/json
+      description: Get a Todo by ID
+      operationId: get-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a Todo
+      tags:
+      - Todo
+    patch:
+      consumes:
+      - application/json
+      description: Update a Todo by ID
+      operationId: update-Todo-by-id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Todo data
+        in: body
+        name: Todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TodoResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a Todo
+      tags:
+      - Todo
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
