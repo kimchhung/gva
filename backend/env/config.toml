@@ -1,8 +1,8 @@
 # Configuration vars for cmd/app
 [app]
-env = "dev"           # dev | staging | prod
+env = "dev"           # dev | stage | prod
 name = "Go Vue Admin"
-port = ":8080"
+port = ":4000"
 idle_timeout = 5      # As seconds
 shutdown_timeout = 10 # As seconds
 print_routes = true
@@ -15,7 +15,8 @@ cert_file = "./storage/selfsigned.crt"
 key_file = "./storage/selfsigned.key"
 
 [db.mysql]
-dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true" # <username>:<password>@tcp(<host>:<port>)/<dbname>
+#dns = # <username>:<password>@tcp(<host>:<port>)/<dbname>
+dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true"
 
 [db.redis]
 addr = "localhost:6379"
@@ -28,10 +29,6 @@ enable = true
 username = "admin"
 password = "123456"
 
-[api.web]
-enable = true
-base_path = "/web/v1"
-
 [api.admin]
 enable = true
 base_path = "/admin/v1"
@@ -41,7 +38,7 @@ enable = true
 base_path = "/bot/v1"
 
 [logger]
-time_format = "" # https://pkg.go.dev/time#pkg-constants, https://github.com/rs/zerolog/blob/master/api.go#L10
+time_format = "" # https://pkg.go.dev/time#pkg-constants
 level = 0        # panic -> 5, fatal -> 4, error -> 3, warn -> 2, info -> 1, debug -> 0, trace -> -1
 prettier = true
 
@@ -64,3 +61,9 @@ expiration_seconds = 60
 [middleware.swagger]
 enable = true
 path = "/docs"
+
+[jwt]
+secret = "jwt_secret"
+
+[password]
+hash_cost = "10"

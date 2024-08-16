@@ -55,7 +55,7 @@ func (m *Middleware) Register() {
 				middleware.RateLimiterMemoryStoreConfig{
 					Rate:      rate.Limit(mdCfg.Limiter.Max),
 					Burst:     int(mdCfg.Limiter.Max + 30),
-					ExpiresIn: time.Duration(mdCfg.Limiter.ExpSecs) * time.Second,
+					ExpiresIn: time.Duration(mdCfg.Limiter.ExpirationSeconds) * time.Second,
 				},
 			),
 			IdentifierExtractor: func(ctx echo.Context) (string, error) {

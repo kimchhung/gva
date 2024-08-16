@@ -1,18 +1,17 @@
 package env
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/pelletier/go-toml/v2"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 const (
-	Dev     = "dev"
-	Staging = "staging"
-	Prod    = "prod"
+	Dev  = "dev"
+	Stag = "stag"
+	Prod = "prod"
 )
 
 func (c *Config) IsProd() bool {
@@ -23,62 +22,62 @@ func (c *Config) IsDev() bool {
 	return c.App.Env == Dev
 }
 
-func (c *Config) IsStaging() bool {
-	return c.App.Env == Staging
+func (c *Config) IsStag() bool {
+	return c.App.Env == Stag
 }
 
 type (
 	app = struct {
-		Name            string `toml:"name"`
-		Port            string `toml:"port"`
-		PrintRoutes     bool   `toml:"print_routes"`
-		Env             string `toml:"env"`
-		IdleTimeout     int64  `toml:"idle_timeout"`
-		ShutdownTimeout int64  `toml:"shutdown_timeout"`
+		Name            string
+		Port            string
+		PrintRoutes     bool `mapstructure:"print_routes"`
+		Env             string
+		IdleTimeout     int64 `mapstructure:"idle_timeout"`
+		ShutdownTimeout int64 `mapstructure:"shutdown_timeout"`
 		TLS             struct {
 			Auto     bool
 			Enable   bool
-			CertFile string `toml:"cert_file"`
-			KeyFile  string `toml:"key_file"`
+			CertFile string `mapstructure:"cert_file"`
+			KeyFile  string `mapstructure:"key_file"`
 		}
 	}
 	db = struct {
 		Mysql struct {
-			DSN string `toml:"dsn"`
+			DSN string
 		}
 		Redis struct {
-			Addr     string `toml:"addr"`
-			Password string `toml:"password"`
+			Addr     string
+			Password string
 		}
 	}
 	seed struct {
 		Enable     bool
 		SuperAdmin struct {
-			Username string `toml:"username"`
-			Password string `toml:"password"`
-		} `toml:"super_admin"`
+			Username string
+			Password string
+		} `mapstructure:"super_admin"`
 	}
 	api struct {
 		Web struct {
 			Enable   bool
 			Port     string
-			BasePath string `toml:"base_path"`
+			BasePath string `mapstructure:"base_path"`
 		}
 		Admin struct {
 			Enable   bool
 			Port     string
-			BasePath string `toml:"base_path"`
+			BasePath string `mapstructure:"base_path"`
 		}
 		Bot struct {
 			Enable   bool
 			Port     string
-			BasePath string `toml:"base_path"`
+			BasePath string `mapstructure:"base_path"`
 		}
 	}
 	logger = struct {
-		TimeFormat string        `toml:"time_format"`
-		Level      zerolog.Level `toml:"level"`
-		Prettier   bool          `toml:"prettier"`
+		TimeFormat string `mapstructure:"time_format"`
+		Level      int8
+		Prettier   bool
 	}
 	middleware = struct {
 		Swagger struct {
@@ -97,9 +96,9 @@ type (
 			Enable bool
 		}
 		Limiter struct {
-			Enable  bool
-			Max     int
-			ExpSecs int64 `toml:"expiration_seconds"`
+			Enable            bool
+			Max               int
+			ExpirationSeconds int64 `mapstructure:"expiration_seconds"`
 		}
 	}
 
@@ -107,7 +106,7 @@ type (
 		Secret string
 	}
 	password struct {
-		HashCost int `toml:"hash_cost"`
+		HashCost int `mapstructure:"hash_cost"`
 	}
 )
 
@@ -125,7 +124,19 @@ type Config struct {
 func ParseEnv(name string) (*Config, error) {
 	var contents *Config
 
-	file, err := os.ReadFile("./env/." + name + "_env.toml")
+	file, err := os.ReadFile("./env/" + name + ".toml")
+	if err != nil {
+		return &Config{}, err
+	}
+
+	err = toml.Unmarshal(file, &contents)
+	return contents, err
+}
+
+func ParsePath(path string) (*Config, error) {
+	var contents *Config
+
+	file, err := os.ReadFile(path)
 	if err != nil {
 		return &Config{}, err
 	}
@@ -135,17 +146,10 @@ func ParseEnv(name string) (*Config, error) {
 }
 
 func NewConfig() *Config {
-	filename := "dev"
-	envName := os.Getenv("APP_ENV")
-
-	switch envName {
-	case "local", "dev", "staging", "prod":
-		filename = envName
-	}
-
-	config, err := ParseEnv(filename)
+	// generate .env if not exist
+	config, err := ReadEnvOrGenerate()
 	if err != nil {
-		log.Panic().Err(err).Msg("failed to parse config")
+		panic(fmt.Errorf("ReadEnvOrGenerate %v", err))
 	}
 
 	return config
