@@ -36,7 +36,7 @@ function log_message() {
     else
         echo "docker image with tag '${IMAGE_NAME}' built sussessfully. Use below sample command to run the container"
         echo ""
-        echo "docker run -d -p 8010:8080 --name ${IMAGE_NAME} ${IMAGE_NAME}"
+        echo "docker run -d -p 8010:4000 --name ${IMAGE_NAME} ${IMAGE_NAME}"
     fi
 }
 
