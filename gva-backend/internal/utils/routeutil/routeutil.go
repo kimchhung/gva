@@ -6,7 +6,7 @@ import (
 
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
-	"github.com/gva/utils/color"
+	"github.com/gva/internal/utils/color"
 
 	"github.com/gosuri/uitable"
 	"github.com/labstack/echo/v4"

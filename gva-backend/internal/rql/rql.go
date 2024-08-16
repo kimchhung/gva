@@ -14,7 +14,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/gva/internal/logger"
+	"github.com/gva/internal/logging"
 )
 
 //go:generate easyjson -omit_empty -disallow_unknown_fields -snake_case rql.go
@@ -192,7 +192,7 @@ func (p *Parser) Parse(b []byte) (pr *Params, err error) {
 		return nil, err
 	}
 
-	logger.Log("q", q, r)
+	logging.Log("q", q, r)
 
 	return r, nil
 }

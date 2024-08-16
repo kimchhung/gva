@@ -8,7 +8,7 @@ import (
 	apperror "github.com/gva/app/common/error"
 	"github.com/gva/env"
 	"github.com/gva/internal/lang"
-	"github.com/gva/utils"
+	"github.com/gva/internal/utils"
 
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"

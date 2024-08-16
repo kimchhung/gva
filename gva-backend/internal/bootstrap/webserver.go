@@ -6,7 +6,7 @@ import (
 
 	appctx "github.com/gva/app/common/context"
 	"github.com/gva/env"
-	"github.com/gva/utils/color"
+	"github.com/gva/internal/utils/color"
 
 	"github.com/gosuri/uitable"
 

@@ -4,14 +4,14 @@ import (
 	"github.com/gva/api/web/docs"
 	"github.com/gva/app/common/controller"
 	"github.com/gva/env"
-	"github.com/gva/utils/swagger"
+	"github.com/gva/internal/utils/swagger"
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	"github.com/gva/internal/ctr"
 
-	"github.com/gva/utils"
+	"github.com/gva/internal/utils"
 )
 
 var _ interface{ ctr.ModuleRouter } = (*Router)(nil)

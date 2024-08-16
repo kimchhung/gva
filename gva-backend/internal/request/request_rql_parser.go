@@ -9,10 +9,10 @@ import (
 
 	appctx "github.com/gva/app/common/context"
 	app_err "github.com/gva/app/common/error"
+	"github.com/gva/internal/json"
 	"github.com/gva/internal/rql"
-	"github.com/gva/utils"
-	"github.com/gva/utils/json"
-	ustrings "github.com/gva/utils/strings"
+	"github.com/gva/internal/utils"
+	ustrings "github.com/gva/internal/utils/strings"
 
 	"github.com/labstack/echo/v4"
 

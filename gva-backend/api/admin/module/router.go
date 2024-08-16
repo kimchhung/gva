@@ -7,8 +7,8 @@ import (
 	"github.com/gva/app/common/controller"
 	"github.com/gva/env"
 	"github.com/gva/internal/ctr"
-	"github.com/gva/utils"
-	"github.com/gva/utils/swagger"
+	"github.com/gva/internal/utils"
+	"github.com/gva/internal/utils/swagger"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 )

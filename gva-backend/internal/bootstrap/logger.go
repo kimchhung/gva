@@ -16,6 +16,6 @@ func NewLogger(cfg *env.Config) *zerolog.Logger {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 	}
 
-	zerolog.SetGlobalLevel(cfg.Logger.Level)
+	zerolog.SetGlobalLevel(zerolog.Level(cfg.Logger.Level))
 	return &log.Logger
 }

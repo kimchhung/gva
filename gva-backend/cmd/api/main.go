@@ -7,8 +7,6 @@ import (
 	"github.com/gva/app"
 	"github.com/gva/app/router"
 	"github.com/gva/env"
-
-	_ "github.com/gva/internal/ent/runtime"
 )
 
 var (

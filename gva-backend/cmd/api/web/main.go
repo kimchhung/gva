@@ -1,7 +1,7 @@
 package main
 
 import (
-	bot "github.com/gva/api/bot/module"
+	web "github.com/gva/api/web/module"
 	"github.com/gva/app"
 	"github.com/gva/app/router"
 	"github.com/gva/env"
@@ -15,11 +15,11 @@ var (
 	cfg = env.NewConfig()
 )
 
-// @title					    GVA bot API
+// @title					    GVA Web API
 // @version				     	1.0
 // @description				    GO VUE ADMIN Boilerplate
-// @host						localhost:8080
-// @BasePath					/bot/v1
+// @host						localhost:4000
+// @BasePath					/web/v1
 // @securityDefinitions.apikey	Bearer
 // @in							header
 // @name						Authorization
@@ -28,9 +28,9 @@ func Run() {
 	// * Run only web api
 
 	// force app to enable only web module
-	cfg.API.Web.Enable = false
+	cfg.API.Web.Enable = true
 	cfg.API.Admin.Enable = false
-	cfg.API.Bot.Enable = true
+	cfg.API.Bot.Enable = false
 
 	// overwrite app port
 	if cfg.API.Web.Port != "" {
@@ -38,7 +38,7 @@ func Run() {
 	}
 
 	/* Web |> module <| */
-	modules := router.WithRouter(bot.NewbotModules)
+	modules := router.WithRouter(web.NewWebModules)
 
 	app.New(
 		/* global config */

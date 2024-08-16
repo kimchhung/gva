@@ -11,8 +11,8 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/{{.EntityAllLower}}"
-	"github.com/gva/utils"
-	"github.com/gva/utils/pagi"
+	"github.com/gva/internal/utils"
+	"github.com/gva/internal/utils/pagi"
 )
 
 type {{.EntityPascal}}Service struct {

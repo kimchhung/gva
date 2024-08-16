@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
-	"github.com/gva/utils/pagi"
+	"github.com/gva/internal/utils/pagi"
 )
 
 type PermissionRepository struct {
@@ -28,4 +28,3 @@ func (r *PermissionRepository) Q(opts ...pagi.InterceptorOption) *ent.Permission
 
 	return pagi.WithInterceptor(r.C().Query(), opts...)
 }
-

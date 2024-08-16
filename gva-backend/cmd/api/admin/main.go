@@ -21,7 +21,7 @@ var (
 // @title						GVA admin API
 // @version						1.0
 // @description					GO VUE ADMIN Boilerplate
-// @host						localhost:8080
+// @host						localhost:4000
 // @BasePath					/admin/v1
 // @securityDefinitions.apikey	Bearer
 // @in							header

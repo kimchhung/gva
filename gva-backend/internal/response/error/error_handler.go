@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	apperror "github.com/gva/app/common/error"
-	in_validator "github.com/gva/utils/validator"
+	in_validator "github.com/gva/internal/validator"
 
 	"github.com/gva/internal/lang"
 	"github.com/gva/internal/response"

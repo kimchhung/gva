@@ -7,8 +7,8 @@ import (
 	apperror "github.com/gva/app/common/error"
 	"github.com/gva/app/common/repository"
 	"github.com/gva/app/database/schema/pxid"
-	"github.com/gva/utils"
-	"github.com/gva/utils/pagi"
+	"github.com/gva/internal/utils"
+	"github.com/gva/internal/utils/pagi"
 
 	"context"
 

@@ -12,8 +12,8 @@ import (
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/lang"
 	"github.com/gva/internal/treeprint"
-	"github.com/gva/utils/color"
-	"github.com/gva/utils/validator"
+	"github.com/gva/internal/utils/color"
+	"github.com/gva/internal/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -93,9 +93,9 @@ func (b *Bootstrap) start(ctx context.Context) {
 		b.log.Panic().Err(err).Msg("")
 	}
 
-	if err := b.redis.Connect(); err != nil {
-		b.log.Panic().Err(err).Msg("")
-	}
+	// if err := b.redis.Connect(); err != nil {
+	// 	b.log.Panic().Err(err).Msg("")
+	// }
 
 	// Register middlewares & routes
 	b.middlewares.Register()

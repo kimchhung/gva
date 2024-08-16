@@ -11,8 +11,8 @@ import (
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/menu"
-	"github.com/gva/utils/json"
-	"github.com/gva/utils/routeutil"
+	"github.com/gva/internal/json"
+	"github.com/gva/internal/utils/routeutil"
 )
 
 func LoadMenuFromFile(filePath string) (menus []*ent.Menu) {

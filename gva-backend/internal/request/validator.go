@@ -5,7 +5,7 @@ import (
 
 	appctx "github.com/gva/app/common/context"
 	"github.com/gva/internal/ent"
-	"github.com/gva/utils/validator"
+	"github.com/gva/internal/validator"
 )
 
 // use as middleware Validate(BodyParser(&body),ParamsParser(out))

@@ -87,7 +87,7 @@ const docTemplateweb = `{
 // SwaggerInfoweb holds exported Swagger Info so clients can modify it
 var SwaggerInfoweb = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:4000",
 	BasePath:         "/web/v1",
 	Schemes:          []string{},
 	Title:            "GVA Web API",

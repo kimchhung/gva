@@ -1,76 +1,72 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "GO VUE ADMIN Boilerplate",
-        "title": "GVA bot API",
-        "contact": {},
-        "version": "1.0"
-    },
-    "host": "localhost:8080",
-    "basePath": "/bot/v1",
-    "paths": {
-        "/now": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
+  "swagger": "2.0",
+  "info": {
+    "description": "GO VUE ADMIN Boilerplate",
+    "title": "GVA bot API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "host": "localhost:4000",
+  "basePath": "/bot/v1",
+  "paths": {
+    "/now": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "produces": ["application/json"],
+        "tags": ["Time"],
+        "summary": "Current Server Time",
+        "operationId": "now",
+        "responses": {
+          "200": {
+            "description": "format time.RFC3339",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/response.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
                     }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Time"
-                ],
-                "summary": "Current Server Time",
-                "operationId": "now",
-                "responses": {
-                    "200": {
-                        "description": "format time.RFC3339",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
+                  }
                 }
+              ]
             }
+          }
         }
-    },
-    "definitions": {
-        "response.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "description": "The Data field contains the actual response data"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "meta": {
-                    "description": "Meta provides additional information about the data, such as its type or kind.y."
-                }
-            }
-        }
-    },
-    "securityDefinitions": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
+      }
     }
+  },
+  "definitions": {
+    "response.Response": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "data": {
+          "description": "The Data field contains the actual response data"
+        },
+        "message": {
+          "type": "string"
+        },
+        "meta": {
+          "description": "Meta provides additional information about the data, such as its type or kind.y."
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/gva/internal/bootstrap/database"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/region"
-	"github.com/gva/utils/json"
+	"github.com/gva/internal/json"
 )
 
 type RegionSeeder struct {

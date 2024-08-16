@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gva/app/database/schema/pxid"
-	"github.com/gva/internal/logger"
+	"github.com/gva/internal/logging"
 	"github.com/gva/internal/pubsub"
 )
 
@@ -35,7 +35,7 @@ func BenchmarkHighLoadPublish(b *testing.B) {
 		}
 		go func() {
 			msg := <-ch
-			logger.Log(msg)
+			logging.Log(msg)
 			if msg != "test-value" {
 				b.Errorf("wrong value")
 			}

@@ -7,7 +7,7 @@ import (
 	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
 	"github.com/gva/internal/response"
-	"github.com/gva/utils/sse"
+	"github.com/gva/internal/utils/sse"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"

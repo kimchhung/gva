@@ -8,7 +8,7 @@ import (
 	"github.com/gva/internal/pubsub"
 	"github.com/gva/internal/pubsub/gochannel"
 
-	"github.com/gva/utils"
+	"github.com/gva/internal/utils"
 	"github.com/rs/zerolog"
 )
 

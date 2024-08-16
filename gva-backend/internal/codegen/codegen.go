@@ -8,7 +8,7 @@ import (
 	"text/template"
 
 	module_template "github.com/gva/internal/codegen/module"
-	ustrings "github.com/gva/utils/strings"
+	ustrings "github.com/gva/internal/utils/strings"
 )
 
 type CodeGenParams struct {

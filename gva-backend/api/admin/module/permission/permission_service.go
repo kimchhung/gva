@@ -9,8 +9,8 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/utils"
-	"github.com/gva/utils/pagi"
+	"github.com/gva/internal/utils"
+	"github.com/gva/internal/utils/pagi"
 )
 
 type PermissionService struct {

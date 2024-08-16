@@ -1,18 +1,17 @@
 package env
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/pelletier/go-toml/v2"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 const (
-	Dev     = "dev"
-	Staging = "staging"
-	Prod    = "prod"
+	Dev  = "dev"
+	Stag = "stag"
+	Prod = "prod"
 )
 
 func (c *Config) IsProd() bool {
@@ -23,8 +22,8 @@ func (c *Config) IsDev() bool {
 	return c.App.Env == Dev
 }
 
-func (c *Config) IsStaging() bool {
-	return c.App.Env == Staging
+func (c *Config) IsStag() bool {
+	return c.App.Env == Stag
 }
 
 type (
@@ -77,7 +76,7 @@ type (
 	}
 	logger = struct {
 		TimeFormat string `mapstructure:"time_format"`
-		Level      zerolog.Level
+		Level      int8
 		Prettier   bool
 	}
 	middleware = struct {
@@ -125,7 +124,19 @@ type Config struct {
 func ParseEnv(name string) (*Config, error) {
 	var contents *Config
 
-	file, err := os.ReadFile("./env/." + name + "_env.toml")
+	file, err := os.ReadFile("./env/" + name + ".toml")
+	if err != nil {
+		return &Config{}, err
+	}
+
+	err = toml.Unmarshal(file, &contents)
+	return contents, err
+}
+
+func ParsePath(path string) (*Config, error) {
+	var contents *Config
+
+	file, err := os.ReadFile(path)
 	if err != nil {
 		return &Config{}, err
 	}
@@ -135,17 +146,10 @@ func ParseEnv(name string) (*Config, error) {
 }
 
 func NewConfig() *Config {
-	filename := "dev"
-	envName := os.Getenv("APP_ENV")
-
-	switch envName {
-	case "local", "dev", "staging", "prod":
-		filename = envName
-	}
-
-	config, err := ParseEnv(filename)
+	// generate .env if not exist
+	config, err := ReadEnvOrGenerate()
 	if err != nil {
-		log.Panic().Err(err).Msg("failed to parse config")
+		panic(fmt.Errorf("ReadEnvOrGenerate %v", err))
 	}
 
 	return config

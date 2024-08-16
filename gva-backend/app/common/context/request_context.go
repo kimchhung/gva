@@ -72,8 +72,8 @@ func (c *RequestContext) IsDev() bool {
 	return c.appEnv == env.Dev
 }
 
-func (c *RequestContext) IsStaging() bool {
-	return c.appEnv == env.Staging
+func (c *RequestContext) IsStag() bool {
+	return c.appEnv == env.Stag
 }
 
 func (ctx *RequestContext) PrintLog() {

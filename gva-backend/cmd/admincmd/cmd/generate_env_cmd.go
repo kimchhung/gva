@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gva/env"
-	"github.com/gva/internal/logger"
+	"github.com/gva/internal/logging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -68,7 +68,7 @@ var generateEnvCmd = &cobra.Command{
 		}
 		var envConfig env.Config
 		envfile.Unmarshal(&envConfig)
-		logger.Log(envConfig)
+		logging.Log(envConfig)
 	},
 }
 

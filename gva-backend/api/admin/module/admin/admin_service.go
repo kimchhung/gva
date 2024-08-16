@@ -13,8 +13,8 @@ import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/utils/pagi"
-	"github.com/gva/utils/routeutil"
+	"github.com/gva/internal/utils/pagi"
+	"github.com/gva/internal/utils/routeutil"
 )
 
 type AdminService struct {

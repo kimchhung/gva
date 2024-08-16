@@ -1,16 +1,6 @@
 # Makefile for some commands.
-include cmd/migrate.mk
-include cmd/admin_cmd.mk
-include cmd/serve_cmd.mk
-include cmd/swag_cmd.mk
+include cmd/makefiles/*.mk
 
-# Generate Ent
-gen:
-	go generate cmd/ent/generate.go
-
-# Generate EntGql
-gen.gql:
-	go generate cmd/ent/generategql.go
 
 
 # Run application inside Docker
