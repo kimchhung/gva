@@ -93,9 +93,9 @@ func (b *Bootstrap) start(ctx context.Context) {
 		b.log.Panic().Err(err).Msg("")
 	}
 
-	// if err := b.redis.Connect(); err != nil {
-	// 	b.log.Panic().Err(err).Msg("")
-	// }
+	if err := b.redis.Connect(); err != nil {
+		b.log.Panic().Err(err).Msg("")
+	}
 
 	// Register middlewares & routes
 	b.middlewares.Register()
