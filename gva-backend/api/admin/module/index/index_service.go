@@ -2,6 +2,7 @@ package index
 
 import (
 	"context"
+	"time"
 
 	"github.com/gva/internal/bootstrap/database"
 )
@@ -16,7 +17,7 @@ func NewIndexService(db *database.Database) *IndexService {
 	}
 }
 
-func (s *IndexService) Now(ctx context.Context) (string, error) {
+func (s *IndexService) Now(ctx context.Context) (*time.Time, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT NOW()")
 	if err != nil {
 		panic(err)
@@ -29,5 +30,10 @@ func (s *IndexService) Now(ctx context.Context) (string, error) {
 		}
 	}
 
-	return nowString, nil
+	now, err := time.Parse(time.DateTime, nowString)
+	if err != nil {
+		return nil, nil
+	}
+
+	return &now, nil
 }

@@ -17,7 +17,7 @@ func NewIndexService(db *database.Database) *IndexService {
 	}
 }
 
-func (s *IndexService) Now(ctx context.Context) (time.Time, error) {
+func (s *IndexService) Now(ctx context.Context) (*time.Time, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT NOW()")
 	if err != nil {
 		panic(err)
@@ -32,8 +32,8 @@ func (s *IndexService) Now(ctx context.Context) (time.Time, error) {
 
 	now, err := time.Parse(time.DateTime, nowString)
 	if err != nil {
-		return time.Time{}, nil
+		return nil, nil
 	}
 
-	return now, nil
+	return &now, nil
 }
