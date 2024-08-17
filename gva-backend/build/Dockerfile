@@ -12,16 +12,11 @@ COPY . .
 # Build your application to binary
 RUN go build -o /bin/api-binary ./cmd/api/main.go
 
-# Compress the binary
-RUN apk add --no-cache upx
-RUN upx -9 /bin/api-binary
-
 
 # Copy necessary config file
-FROM gcr.io/distroless/static:nonroot
+FROM alpine:latest
 WORKDIR /app/
 COPY --from=builder /bin/api-binary /bin/api-binary
-COPY --from=builder --chown=nonroot /app/internal/geo2 /app/internal/geo2
 COPY --from=builder --chown=nonroot /app/lang /app/lang
 COPY --from=builder --chown=nonroot /app/env /app/env
 ENTRYPOINT ["/bin/api-binary"]
