@@ -7,7 +7,7 @@ ENV GO111MODULE=on
 RUN go mod download
 
 # Copy the rest of your application
-COPY lottery-backend/. .
+COPY ./. .
 
 # Build your application to binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/api-binary ./api/main.go
