@@ -30,7 +30,7 @@ func (s *IndexService) Now(ctx context.Context) (time.Time, error) {
 		}
 	}
 
-	now, err := time.Parse(time.RFC3339, nowString)
+	now, err := time.Parse(time.DateTime, nowString)
 	if err != nil {
 		return time.Time{}, nil
 	}

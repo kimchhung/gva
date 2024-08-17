@@ -23,18 +23,7 @@ func NewIndexService(db *database.Database, pubsub_s *service.PubsubService) *Da
 }
 
 func (s *DatetimeService) Now(ctx context.Context) (*time.Time, error) {
-	rows, err := s.db.QueryContext(ctx, "SELECT NOW()")
-	if err != nil {
-		panic(err)
-	}
-
-	var now time.Time
-	for rows.Next() {
-		if err := rows.Scan(&now); err != nil {
-			panic(err)
-		}
-	}
-
+	now := time.Now()
 	return &now, nil
 }
 
