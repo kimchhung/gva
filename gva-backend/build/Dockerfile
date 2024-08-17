@@ -7,10 +7,10 @@ ENV GO111MODULE=on
 RUN go mod download
 
 # Copy the rest of your application
-COPY ./. .
+COPY . .
 
 # Build your application to binary
-RUN go build -o /bin/api-binary ./api/main.go
+RUN go build -o /bin/api-binary ./cmd/api/main.go
 
 # Compress the binary
 RUN apk add --no-cache upx
