@@ -1,6 +1,7 @@
-package admin
+package main
 
 import (
+	"github.com/gva/api/admin/docs"
 	admin "github.com/gva/api/admin/module"
 	"github.com/gva/env"
 
@@ -34,9 +35,12 @@ func Run() {
 	cfg.API.Admin.Enable = true
 	cfg.API.Bot.Enable = false
 
-	if cfg.API.Admin.Port != "" {
-		cfg.App.Port = cfg.API.Admin.Port
+	if cfg.API.Admin.Address != "" {
+		cfg.App.Address = cfg.API.Admin.Address
 	}
+
+	docs.SwaggerInfoadmin.Host = cfg.Middleware.Swagger.Host
+	docs.SwaggerInfoadmin.BasePath = cfg.API.Admin.BasePath
 
 	/* Admin |> module <| */
 	modules := router.WithRouter(
@@ -48,4 +52,8 @@ func Run() {
 		cfg,
 		modules...,
 	).Run()
+}
+
+func main() {
+	Run()
 }

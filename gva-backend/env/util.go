@@ -2,10 +2,13 @@ package env
 
 import (
 	"fmt"
+	"sort"
+
 	"os"
 	"strings"
 
 	"github.com/spf13/viper"
+	"golang.org/x/exp/maps"
 )
 
 func ReadToml(filename string, path ...string) (tomlFile *viper.Viper, config *Config, err error) {
@@ -110,21 +113,29 @@ func GenerateEnvFromToml(overwrite bool) error {
 	}
 
 	flats := flatNestMap(tomlFile.AllSettings())
+
+	keys := maps.Keys(flats)
+	sort.Strings(keys)
+
 	envString := ""
 
-	i := 0
-	for group, kv := range GroupMapAny(flats) {
+	for i, envKey := range keys {
+		prefix := strings.Split(envKey, ".")[0]
+
+		if i == 0 {
+			envString += fmt.Sprintf("# %s\n", prefix)
+		}
+
 		if i > 0 {
-			envString += "\n"
+			oldPrefix := strings.Split(keys[i-1], ".")[0]
+			if prefix != oldPrefix {
+				envString += "\n"
+				envString += fmt.Sprintf("# %s\n", prefix)
+			}
 		}
 
-		envString += fmt.Sprintf("# %s", group)
-		envString += "\n"
-
-		for k, v := range kv {
-			envString += fmt.Sprintf("%s=%v \n", strings.ToUpper(k), v)
-		}
-		i++
+		envVal := flats[envKey]
+		envString += fmt.Sprintf("%s=%v \n", strings.ToUpper(envKey), envVal)
 	}
 
 	if err := os.WriteFile(envFileName, []byte(envString), 0644); err != nil {

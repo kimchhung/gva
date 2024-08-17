@@ -1,6 +1,7 @@
-package web
+package main
 
 import (
+	"github.com/gva/api/web/docs"
 	web "github.com/gva/api/web/module"
 	"github.com/gva/app"
 	"github.com/gva/app/router"
@@ -33,9 +34,12 @@ func Run() {
 	cfg.API.Bot.Enable = false
 
 	// overwrite app port
-	if cfg.API.Web.Port != "" {
-		cfg.App.Port = cfg.API.Web.Port
+	if cfg.API.Web.Address != "" {
+		cfg.App.Address = cfg.API.Web.Address
 	}
+
+	docs.SwaggerInfoweb.Host = cfg.Middleware.Swagger.Host
+	docs.SwaggerInfoweb.BasePath = cfg.API.Web.BasePath
 
 	/* Web |> module <| */
 	modules := router.WithRouter(web.NewWebModules)
@@ -45,4 +49,8 @@ func Run() {
 		cfg,
 		modules...,
 	).Run()
+}
+
+func main() {
+	Run()
 }

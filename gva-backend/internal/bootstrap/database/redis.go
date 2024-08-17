@@ -26,7 +26,7 @@ func NewRedis(cfg *env.Config, log *zerolog.Logger) *Redis {
 
 func (db *Redis) Connect() error {
 	db.Client = redis.NewClient(&redis.Options{
-		Addr:     db.Cfg.DB.Redis.Addr,
+		Addr:     db.Cfg.DB.Redis.Address,
 		Password: db.Cfg.DB.Redis.Password,
 	})
 

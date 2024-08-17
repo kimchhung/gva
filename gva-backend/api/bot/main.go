@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"github.com/gva/api/bot/docs"
 	bot "github.com/gva/api/bot/module"
 	"github.com/gva/app"
 	"github.com/gva/app/router"
@@ -33,9 +34,12 @@ func Run() {
 	cfg.API.Bot.Enable = true
 
 	// overwrite app port
-	if cfg.API.Web.Port != "" {
-		cfg.App.Port = cfg.API.Web.Port
+	if cfg.API.Web.Address != "" {
+		cfg.App.Address = cfg.API.Web.Address
 	}
+
+	docs.SwaggerInfobot.Host = cfg.Middleware.Swagger.Host
+	docs.SwaggerInfobot.BasePath = cfg.API.Bot.BasePath
 
 	/* Web |> module <| */
 	modules := router.WithRouter(bot.NewbotModules)

@@ -127,7 +127,7 @@ func (b *Bootstrap) start(ctx context.Context) {
 		log.Info().Msg("Auto TLS support was enabled.")
 
 		go func() {
-			if err := b.app.StartAutoTLS(b.cfg.App.Port); err != nil && !b.isShuttingdown {
+			if err := b.app.StartAutoTLS(b.cfg.App.Address); err != nil && !b.isShuttingdown {
 				log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
 			}
 		}()
@@ -135,13 +135,13 @@ func (b *Bootstrap) start(ctx context.Context) {
 		log.Info().Msg("TLS support was enabled.")
 
 		go func() {
-			if err := b.app.StartTLS(b.cfg.App.Port, b.cfg.App.TLS.CertFile, b.cfg.App.TLS.KeyFile); err != nil && !b.isShuttingdown {
+			if err := b.app.StartTLS(b.cfg.App.Address, b.cfg.App.TLS.CertFile, b.cfg.App.TLS.KeyFile); err != nil && !b.isShuttingdown {
 				log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
 			}
 		}()
 	} else {
 		go func() {
-			if err := b.app.Start(b.cfg.App.Port); err != nil && !b.isShuttingdown {
+			if err := b.app.Start(b.cfg.App.Address); err != nil && !b.isShuttingdown {
 				log.Panic().Err(err).Msg("An unknown error occurred when to run server!")
 			}
 		}()

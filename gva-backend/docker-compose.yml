@@ -5,29 +5,53 @@ networks:
     driver: bridge
 
 services:
-  mysql:
-      image: mysql:lts
-      environment:
-        MYSQL_ROOT_PASSWORD: root_password
-        MYSQL_DATABASE: gva
-        MYSQL_USER: user
-        MYSQL_PASSWORD: user_password
-      volumes:
+  gva-mysql:
+    image: mysql:8.4.2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: gva
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - "3336:3306"
+    volumes:
       - mysql:/var/lib/mysql
-      networks:
-        - app
-      ports:
-        - "3306:3306"
+    networks:
+      - app
 
-  example:
+  gva-redis:
+    image: redis:7.2-alpine
+    restart: always
+    ports:
+      - "6663:6379"
+    command: redis-server --loglevel warning --requirepass  password
+    volumes:
+      - redis:/data
+    networks:
+      - app
+
+  gva-api:
     build:
       context: .
       dockerfile: build/Dockerfile${CUSTOM}
+    env_file:
+      - .env
+    environment:
+      DB.REDIS.ADDR: host.docker.internal:6663 
+      DB.MYSQL.DSN: root:password@tcp(host.docker.internal:3336)/gva?parseTime=true 
+      DB.REDIS.PASSWORD: password 
     volumes:
       - .:/app
     networks:
       - app
+    depends_on:
+      - gva-mysql
+      - gva-redis
+    links:
+      - gva-mysql
+      - gva-redis
     ports:
       - 4000:4000
 volumes:
   mysql: 
+  redis:

@@ -9,7 +9,7 @@ docker:
 
 # Run application inside Docker with Air
 air:
-	CUSTOM="Air" docker-compose -f docker-compose.yml up --build example
+	CUSTOM="Air" docker-compose -f docker-compose.yml up --build air
 
 # Tidy
 tidy:

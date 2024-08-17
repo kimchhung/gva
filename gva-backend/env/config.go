@@ -29,7 +29,7 @@ func (c *Config) IsStag() bool {
 type (
 	app = struct {
 		Name            string
-		Port            string
+		Address         string
 		PrintRoutes     bool `mapstructure:"print_routes"`
 		Env             string
 		IdleTimeout     int64 `mapstructure:"idle_timeout"`
@@ -46,7 +46,7 @@ type (
 			DSN string
 		}
 		Redis struct {
-			Addr     string
+			Address  string
 			Password string
 		}
 	}
@@ -60,17 +60,17 @@ type (
 	api struct {
 		Web struct {
 			Enable   bool
-			Port     string
+			Address  string
 			BasePath string `mapstructure:"base_path"`
 		}
 		Admin struct {
 			Enable   bool
-			Port     string
+			Address  string
 			BasePath string `mapstructure:"base_path"`
 		}
 		Bot struct {
 			Enable   bool
-			Port     string
+			Address  string
 			BasePath string `mapstructure:"base_path"`
 		}
 	}
@@ -83,6 +83,7 @@ type (
 		Swagger struct {
 			Enable bool
 			Path   string
+			Host   string
 		}
 		Compress struct {
 			Enable bool
@@ -155,7 +156,7 @@ func NewConfig() *Config {
 	return config
 }
 
-func ParseAddr(raw string) (host, port string) {
+func ParseAddress(raw string) (host, port string) {
 	if i := strings.LastIndex(raw, ":"); i != -1 {
 		return raw[:i], raw[i+1:]
 	}

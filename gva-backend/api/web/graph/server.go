@@ -79,7 +79,7 @@ var Module = fx.Module("graph-module",
 				<-b.Done()
 				gqlserver.Register(cfg.API.Web.BasePath)
 
-				host, port := env.ParseAddr(cfg.App.Port)
+				host, port := env.ParseAddress(cfg.App.Address)
 				if host == "" {
 					host = "http://localhost"
 				}

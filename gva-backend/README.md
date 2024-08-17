@@ -95,10 +95,10 @@ You can run that commands to run project:
 
 ### Docker
 ```shell
-docker-compose build
-docker-compose up
+docker compose build
+docker compose up
 
-CUSTOM="Air" docker-compose up # Use with Air
+CUSTOM="Air" docker compose up # Use with Air
 ```
 
 

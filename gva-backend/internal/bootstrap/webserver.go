@@ -31,18 +31,16 @@ func NewEcho(cfg *env.Config) *echo.Echo {
 }
 
 func printStartupMessage(cfg *env.Config) {
-
 	// Custom Startup Messages
-	host, port := env.ParseAddr(cfg.App.Port)
-	if host == "" {
-		host = "http://localhost"
-	}
+	// host, port := env.ParseAddress(cfg.App.Address)
 
 	table := uitable.New()
 	table.AddRow("API Module", "BasePath", "Document")
 
+	fmt.Println("what", cfg.API)
+
 	if cfg.API.Web.Enable {
-		url := host + ":" + port + cfg.API.Web.BasePath
+		url := cfg.App.Address + cfg.API.Web.BasePath
 		row := []any{"Web", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
@@ -53,7 +51,7 @@ func printStartupMessage(cfg *env.Config) {
 	}
 
 	if cfg.API.Admin.Enable {
-		url := host + ":" + port + cfg.API.Admin.BasePath
+		url := cfg.App.Address + cfg.API.Admin.BasePath
 		row := []any{"Admin", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
