@@ -7,7 +7,7 @@ services:
       context: ./../gva-backend
       dockerfile: ./build/Dockerfile
     environment:
-      APP.PORT: ":4001"
+      APP.PORT: ":4000"
       APP.PRODUCTION: "false"
       APP.PRINT_ROUTES: "true"
       APP.TLS_CERT_FILE: "./storage/selfsigned.crt"
