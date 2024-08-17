@@ -4,13 +4,20 @@ WORKDIR /app
 
 COPY ./go.* ./
 ENV GO111MODULE=on
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=bind,source=go.sum,target=go.sum \
+    --mount=type=bind,source=go.mod,target=go.mod \
+    go mod download -x
 
 # Copy the rest of your application
 COPY . .
 
 # Build your application to binary
-RUN go build -o /bin/api-binary ./cmd/api/main.go
+ENV GOCACHE=/root/.cache/go-build
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=cache,target="/root/.cache/go-build" \
+    --mount=type=bind,target=. \
+    go build -o /bin/api-binary ./cmd/api/main.go
 
 
 # Copy necessary config file
