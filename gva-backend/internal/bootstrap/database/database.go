@@ -43,11 +43,10 @@ func NewDatabase(cfg *env.Config, log *zerolog.Logger) *Database {
 func (db *Database) Connect() error {
 	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
 	if err != nil {
-		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
+		return fmt.Errorf("dns %s, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}
 
 	db.sql = drv
-
 	db.Client = ent.NewClient(
 		ent.Driver(drv),
 		ent.Debug(),
@@ -55,10 +54,11 @@ func (db *Database) Connect() error {
 	)
 
 	if err := drv.DB().Ping(); err != nil {
-		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
+		return fmt.Errorf("ping dns %s, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}
 
 	db.Log.Info().Msg("Database is connected")
+
 	return nil
 }
 
@@ -81,8 +81,6 @@ func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
 		return
 	}
 
-	defer db.Log.Info().Msg("Seeding was completed!")
-
 	for _, v := range seeder {
 		name := reflect.TypeOf(v).Elem().Name()
 		count, err := v.Count(ctx, db.Client)
@@ -102,6 +100,8 @@ func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
 
 		db.Log.Debug().Str("name", name).Msg("Table has seeded successfully.")
 	}
+
+	db.Log.Info().Msg("Seeding was completed!")
 }
 
 func WithTx(ctx context.Context, client *ent.Client, fns ...func(tx *ent.Tx) error) error {

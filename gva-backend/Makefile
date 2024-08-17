@@ -5,11 +5,11 @@ include cmd/makefiles/*.mk
 
 # Run application inside Docker
 docker:
-	docker-compose up
+	docker compose -f docker-compose.yml up
 
 # Run application inside Docker with Air
 air:
-	CUSTOM="Air" docker-compose up --build example
+	CUSTOM="Air" docker-compose -f docker-compose.yml up --build example
 
 # Tidy
 tidy:

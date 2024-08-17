@@ -16,7 +16,7 @@ key_file = "./storage/selfsigned.key"
 
 [db.mysql]
 #dns = # <username>:<password>@tcp(<host>:<port>)/<dbname>
-dsn = "root:password@tcp(localhost:3336)/gva?parseTime=true"
+dsn = "user:user_password@tcp(localhost:3306)/gva?parseTime=true"
 
 [db.redis]
 addr = "localhost:6379"
