@@ -10,7 +10,7 @@ RUN go mod download
 COPY ./. .
 
 # Build your application to binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/api-binary ./api/main.go
+RUN go build -o /bin/api-binary ./api/main.go
 
 # Compress the binary
 RUN apk add --no-cache upx
