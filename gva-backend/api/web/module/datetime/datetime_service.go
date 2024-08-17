@@ -28,16 +28,11 @@ func (s *DatetimeService) Now(ctx context.Context) (*time.Time, error) {
 		panic(err)
 	}
 
-	var nowString string
+	var now time.Time
 	for rows.Next() {
-		if err := rows.Scan(&nowString); err != nil {
+		if err := rows.Scan(&now); err != nil {
 			panic(err)
 		}
-	}
-
-	now, err := time.Parse(time.RFC3339, nowString)
-	if err != nil {
-		return nil, nil
 	}
 
 	return &now, nil
