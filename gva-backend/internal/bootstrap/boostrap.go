@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gva/app/database/seeds"
 	"github.com/gva/app/middleware"
 	"github.com/gva/app/router"
 	"github.com/gva/env"
@@ -94,13 +93,9 @@ func (b *Bootstrap) start(ctx context.Context) {
 		b.log.Panic().Err(err).Msg("")
 	}
 
-	if b.cfg.Seed.Enable {
-		b.db.SeedModels(ctx, seeds.AllSeeders()...)
+	if err := b.redis.Connect(); err != nil {
+		b.log.Panic().Err(err).Msg("")
 	}
-
-	// if err := b.redis.Connect(); err != nil {
-	// 	b.log.Panic().Err(err).Msg("")
-	// }
 
 	// Register middlewares & routes
 	b.middlewares.Register()

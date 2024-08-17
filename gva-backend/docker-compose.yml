@@ -6,7 +6,7 @@ networks:
 
 services:
   mysql:
-      image: mysql:latest
+      image: mysql:lts
       environment:
         MYSQL_ROOT_PASSWORD: root_password
         MYSQL_DATABASE: gva
