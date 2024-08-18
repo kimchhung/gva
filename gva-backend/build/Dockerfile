@@ -17,7 +17,7 @@ ENV GOCACHE=/root/.cache/go-build
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=cache,target="/root/.cache/go-build" \
     --mount=type=bind,target=. \
-    go build -o /bin/api-binary ./api/main.go
+    CGO_ENABLED=0 GOOS=linux go build -o /bin/api-binary ./api/main.go
 
 
 # Copy necessary config file
