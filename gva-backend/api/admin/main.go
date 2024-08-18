@@ -16,6 +16,7 @@ import (
 
 var (
 	cfg = env.NewConfig()
+	version = "0.001"
 )
 
 // @title						GVA admin API
@@ -40,6 +41,7 @@ func Run() {
 
 	docs.SwaggerInfoadmin.Host = cfg.Middleware.Swagger.Host
 	docs.SwaggerInfoadmin.BasePath = cfg.API.Admin.BasePath
+	docs.SwaggerInfoadmin.Version = version
 
 	/* Admin |> module <| */
 	modules := router.WithRouter(

@@ -13,6 +13,7 @@ import (
 
 var (
 	cfg = env.NewConfig()
+	version = "0.001"
 )
 
 // @title					    GVA Web API
@@ -39,6 +40,7 @@ func Run() {
 
 	docs.SwaggerInfoweb.Host = cfg.Middleware.Swagger.Host
 	docs.SwaggerInfoweb.BasePath = cfg.API.Web.BasePath
+	docs.SwaggerInfoweb.Version = version
 
 	/* Web |> module <| */
 	modules := router.WithRouter(web.NewWebModules)

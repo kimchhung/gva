@@ -13,6 +13,7 @@ import (
 
 var (
 	cfg = env.NewConfig()
+	version = "0.001"
 )
 
 // @title					    GVA bot API
@@ -39,6 +40,7 @@ func Run() {
 
 	docs.SwaggerInfobot.Host = cfg.Middleware.Swagger.Host
 	docs.SwaggerInfobot.BasePath = cfg.API.Bot.BasePath
+	docs.SwaggerInfobot.Version = version 
 
 	/* Web |> module <| */
 	modules := router.WithRouter(bot.NewbotModules)
