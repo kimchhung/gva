@@ -1,7 +1,8 @@
 FROM node:20-alpine AS builder
 
 WORKDIR /app
-COPY /app/dist ./dist
+COPY /app/dist.tar.gz .
+RUN tar -xzvf dist.tar.gz -C /app
 
 FROM nginx:stable-alpine as production
 
