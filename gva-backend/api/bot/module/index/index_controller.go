@@ -1,6 +1,7 @@
 package index
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gva/internal/ctr"
@@ -59,7 +60,7 @@ func (con *IndexController) HealthCheck() *ctr.Route {
 	return ctr.GET("/health-check").Do(func() []ctr.H {
 		return []ctr.H{
 			func(c echo.Context) error {
-				return c.String(200,"ok")
+				return c.String(http.StatusOK,http.StatusText(http.StatusOK))
 			},
 		}
 	})
