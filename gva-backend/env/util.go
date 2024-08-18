@@ -47,7 +47,7 @@ func Environ() map[string]string {
 		if eqIndex < 0{
 			continue
 		}
-		key,value := s[:eqIndex],s[eqIndex:]
+		key,value := s[:eqIndex],s[eqIndex+1:]
 		if key != "" {
 			m[key] = value
 		}
