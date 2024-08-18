@@ -33,7 +33,7 @@ const tokenTheme = computed(() => {
 <template>
   <ConfigProvider :locale="antdLocale" :theme="tokenTheme">
     <App>
-      <div>111111</div>
+      <div>1111112</div>
       <RouterView />
     </App>
   </ConfigProvider>
