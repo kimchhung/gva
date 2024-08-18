@@ -88,7 +88,7 @@ const defaultPreferences: Preferences = {
     colorPrimary: 'hsl(231 98% 65%)',
     colorSuccess: 'hsl(144 57% 58%)',
     colorWarning: 'hsl(42 84% 61%)',
-    mode: 'dark',
+    mode: 'light',
     radius: '0.5',
     semiDarkMenu: true,
   },
