@@ -8,7 +8,6 @@ import (
 	"github.com/gva/env"
 
 	_ "github.com/gva/internal/ent/runtime"
-
 	_ "github.com/swaggo/swag"
 )
 
