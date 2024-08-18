@@ -58,7 +58,7 @@ func (db *Database) Connect() error {
 		return fmt.Errorf("ping dns %s, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}
 
-	db.Log.Info().Str("dns",db.Cfg.DB.Mysql.DSN).Msg("Database is connected")
+	db.Log.Info().Msg("Database is connected")
 	return nil
 }
 
