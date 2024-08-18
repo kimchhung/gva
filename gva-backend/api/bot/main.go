@@ -1,4 +1,4 @@
-package bot
+package main
 
 import (
 	"github.com/gva/api/bot/docs"
@@ -16,15 +16,15 @@ var (
 	version = "0.001"
 )
 
-// @title					    GVA bot API
-// @version				     	1.0
-// @description				    GO VUE ADMIN Boilerplate
-// @host						localhost:4000
-// @BasePath					/bot/v1
+// @title										    GVA bot API
+// @version				 				    	1.0
+// @description							    GO VUE ADMIN Boilerplate
+// @host												localhost:4000
+// @BasePath										/bot/v1
 // @securityDefinitions.apikey	Bearer
-// @in							header
-// @name						Authorization
-// @Param   accept-language  header     string     false  "some description"
+// @in													header
+// @name												Authorization
+// @Param  											accept-language  header     string     false  "some description"
 func Run() {
 	// * Run only web api
 
@@ -34,8 +34,8 @@ func Run() {
 	cfg.API.Bot.Enable = true
 
 	// overwrite app port
-	if cfg.API.Web.Address != "" {
-		cfg.App.Address = cfg.API.Web.Address
+	if cfg.API.Bot.Address != "" {
+		cfg.App.Address = cfg.API.Bot.Address
 	}
 
 	docs.SwaggerInfobot.Host = cfg.Middleware.Swagger.Host
@@ -50,4 +50,8 @@ func Run() {
 		cfg,
 		modules...,
 	).Run()
+}
+
+func main(){
+	Run()
 }

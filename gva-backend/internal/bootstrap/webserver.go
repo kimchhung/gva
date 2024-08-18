@@ -30,17 +30,21 @@ func NewEcho(cfg *env.Config) *echo.Echo {
 	return e
 }
 
+
+
 func printStartupMessage(cfg *env.Config) {
-	// Custom Startup Messages
-	// host, port := env.ParseAddress(cfg.App.Address)
+	host, port := env.ParseAddress(cfg.App.Address)
+	baseUrl := host+":"+port
+	if host == ""{
+		baseUrl = "http://localhost:"+port
+	}
+
 
 	table := uitable.New()
 	table.AddRow("API Module", "BasePath", "Document")
 
-	fmt.Println("what", cfg.API)
-
 	if cfg.API.Web.Enable {
-		url := cfg.App.Address + cfg.API.Web.BasePath
+		url := baseUrl + cfg.API.Web.BasePath
 		row := []any{"Web", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
@@ -51,8 +55,19 @@ func printStartupMessage(cfg *env.Config) {
 	}
 
 	if cfg.API.Admin.Enable {
-		url := cfg.App.Address + cfg.API.Admin.BasePath
+		url := baseUrl + cfg.API.Admin.BasePath
 		row := []any{"Admin", color.Cyan(url)}
+
+		if cfg.Middleware.Swagger.Enable {
+			row = append(row, color.Cyan(url+cfg.Middleware.Swagger.Path))
+		}
+
+		table.AddRow(row...)
+	}
+
+	if cfg.API.Bot.Enable {
+		url := baseUrl + cfg.API.Bot.BasePath
+		row := []any{"Bot", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
 			row = append(row, color.Cyan(url+cfg.Middleware.Swagger.Path))

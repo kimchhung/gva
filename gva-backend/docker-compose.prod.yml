@@ -1,0 +1,44 @@
+version: "3.8"
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  web-data:
+  admin-data:
+  bot-data:
+
+services:
+  gva-backend-web:
+    build:
+      context: .
+      dockerfile: ./build/Dockerfile.web
+    volumes:
+      - web-data:/app
+    networks:
+      - app
+    ports:
+      - 5500:5500
+
+  gva-backend-admin:
+    build:
+      context: .
+      dockerfile: ./build/Dockerfile.admin
+    volumes:
+      - admin-data:/app
+    networks:
+      - app
+    ports:
+      - 5501:5501
+
+  gva-backend-bot:
+    build:
+      context: .
+      dockerfile: ./build/Dockerfile.bot
+    volumes:
+      - bot-data:/app
+    networks:
+      - app
+    ports:
+      - 5502:5502

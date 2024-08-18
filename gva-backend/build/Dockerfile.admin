@@ -17,14 +17,14 @@ ENV GOCACHE=/root/.cache/go-build
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=cache,target="/root/.cache/go-build" \
     --mount=type=bind,target=. \
-    CGO_ENABLED=0 GOOS=linux go build -o /bin/api-admin-binary ./api/admin/main.go
+    CGO_ENABLED=0 GOOS=linux go build -o /admin/bin/api-binary ./api/admin/main.go
 
 
 # Copy necessary config file
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /app/
-COPY --from=builder /bin/api-admin-binary /bin/api-admin-binary
+COPY --from=builder /admin/bin/api-binary /admin/bin/api-binary
 COPY --from=builder --chown=nonroot /app/lang /app/lang
 COPY --from=builder --chown=nonroot /app/env /app/env
-ENTRYPOINT ["/bin/api-admin-binary"]
-EXPOSE 4000
+ENTRYPOINT ["/admin/bin/api-binary"]
+EXPOSE 5501

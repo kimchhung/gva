@@ -2,7 +2,7 @@
 [app]
 env = "dev"                # dev | stage | prod
 name = "Go Vue Admin"
-address = "localhost:4000"
+address = ":5500"
 idle_timeout = 5           # As seconds
 shutdown_timeout = 10      # As seconds
 print_routes = true
@@ -10,17 +10,17 @@ production = false
 
 [api.web]
 enable = true
-address = "localhost:4000"
+address = ":5500"
 base_path = "/web/v1"
 
 [api.admin]
 enable = true
-address = "localhost:4001"
+address = ":5501"
 base_path = "/admin/v1"
 
 [api.bot]
 enable = true
-address = "localhost:4002"
+address = ":5502"
 base_path = "/bot/v1"
 
 [app.tls]
