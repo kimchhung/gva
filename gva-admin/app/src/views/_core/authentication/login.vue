@@ -9,10 +9,13 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  <AuthenticationLogin
-    :loading="authStore.loginLoading"
-    password-placeholder="123456"
-    username-placeholder="admin"
-    @submit="authStore.authLogin"
-  />
+  <div>
+    login
+    <AuthenticationLogin
+      :loading="authStore.loginLoading"
+      password-placeholder="123456"
+      username-placeholder="admin"
+      @submit="authStore.authLogin"
+    />
+  </div>
 </template>
