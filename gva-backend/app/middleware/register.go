@@ -9,13 +9,11 @@ import (
 	"github.com/gva/env"
 	"github.com/gva/internal/lang"
 	"github.com/gva/internal/utils"
-
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"golang.org/x/time/rate"
-
 	"github.com/rs/zerolog"
+	"golang.org/x/time/rate"
 )
 
 type Middleware struct {
@@ -80,6 +78,7 @@ func (m *Middleware) Register() {
 	// monitor
 	if mdCfg.Monitor.Enable {
 		m.app.Use(echoprometheus.NewMiddlewareWithConfig(echoprometheus.MiddlewareConfig{
+			Namespace: "gva",
 			Skipper: func(c echo.Context) bool {
 				return strings.Contains(c.Path(), mdCfg.Monitor.Path)
 			},
@@ -87,5 +86,7 @@ func (m *Middleware) Register() {
 		m.app.GET(mdCfg.Monitor.Path, echoprometheus.NewHandler()) // adds route to serve gathered metrics
 	}
 
+
 	m.app.Use(TraceDebug(m.cfg))
 }
+

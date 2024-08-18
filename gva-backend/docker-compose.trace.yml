@@ -5,12 +5,6 @@ networks:
     driver: bridge
 
 volumes:
-  web-data:
-  admin-data:
-  bot-data:
-  mysql-data:
-  redis-data:
-  grafana-data:
   prom-data:
 
 services:
@@ -116,67 +110,3 @@ services:
       - "collect.perf_schema.tablelocks=true"
     depends_on:
       - gva-mysql
-
-  gva-mysql:
-    image: mysql:8.4.2
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_DATABASE: gva
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - app
-
-  gva-redis:
-    image: redis:7.2-alpine
-    restart: always
-    ports:
-      - "6379:6379"
-    command: redis-server --loglevel warning --requirepass  password
-    volumes:
-      - redis-data:/data
-    networks:
-      - app
-
-  gva-backend-web:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: ./build/Dockerfile.web
-    volumes:
-      - web-data:/app
-    networks:
-      - app
-    ports:
-      - 5500:5500
-
-  gva-backend-admin:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: ./build/Dockerfile.admin
-    volumes:
-      - admin-data:/app
-    networks:
-      - app
-    ports:
-      - 5501:5501
-
-  gva-backend-bot:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: ./build/Dockerfile.bot
-    volumes:
-      - bot-data:/app
-    networks:
-      - app
-    ports:
-      - 5502:5502
