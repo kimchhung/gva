@@ -10,7 +10,6 @@ const authStore = useAuthStore();
 
 <template>
   <div>
-    login
     <AuthenticationLogin
       :loading="authStore.loginLoading"
       password-placeholder="123456"
