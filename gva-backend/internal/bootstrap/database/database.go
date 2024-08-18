@@ -41,7 +41,8 @@ func NewDatabase(cfg *env.Config, log *zerolog.Logger) *Database {
 }
 
 func (db *Database) Connect() error {
-	drv, err := sql.Open(dialect.MySQL, db.Cfg.DB.Mysql.DSN)
+	dbDns := fmt.Sprintf("%s?parseTime=true",db.Cfg.DB.Mysql.DSN)
+	drv, err := sql.Open(dialect.MySQL, dbDns)
 	if err != nil {
 		return fmt.Errorf("dns %s, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
 	}

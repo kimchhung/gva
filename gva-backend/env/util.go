@@ -43,7 +43,7 @@ const (
 func Environ() map[string]string {
 	m := make(map[string]string)
 	for _, s := range os.Environ() {
-		a := strings.Split(s, "=")
+		a := strings.SplitN(s, "=",1)
 		key, value := a[0], a[1]
 		if key != "" {
 			m[key] = value
