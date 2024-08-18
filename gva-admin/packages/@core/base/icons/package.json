@@ -1,12 +1,12 @@
 {
-  "name": "@gva-core/icons",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben-core/icons",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
-    "directory": "packages/@gva-core/base/icons"
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "packages/@vben-core/base/icons"
   },
   "license": "MIT",
   "type": "module",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^4.1.2",
-    "lucide-vue-next": "^0.424.0",
-    "vue": "^3.4.35"
+    "lucide-vue-next": "^0.427.0",
+    "vue": "^3.4.37"
   }
 }

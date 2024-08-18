@@ -1,12 +1,16 @@
-import type { DeepPartial } from '@gva-core/typings';
+import type { DeepPartial } from '@vben-core/typings';
 
 import type { InitialOptions, Preferences } from './types';
 
 import { markRaw, reactive, readonly, watch } from 'vue';
 
-import { isMacOs, merge, StorageManager } from '@gva-core/shared';
+import { isMacOs, merge, StorageManager } from '@vben-core/shared';
 
-import { breakpointsTailwind, useBreakpoints, useDebounceFn } from '@vueuse/core';
+import {
+  breakpointsTailwind,
+  useBreakpoints,
+  useDebounceFn,
+} from '@vueuse/core';
 
 import { defaultPreferences } from './config';
 import { updateCSSVariables } from './update-css-variables';
@@ -30,7 +34,7 @@ class PreferenceManager {
     // 避免频繁的操作缓存
     this.savePreferences = useDebounceFn(
       (preference: Preferences) => this._savePreferences(preference),
-      150
+      150,
     );
   }
 
@@ -56,7 +60,10 @@ class PreferenceManager {
       updateCSSVariables(this.state);
     }
 
-    if (Reflect.has(appUpdates, 'colorGrayMode') || Reflect.has(appUpdates, 'colorWeakMode')) {
+    if (
+      Reflect.has(appUpdates, 'colorGrayMode') ||
+      Reflect.has(appUpdates, 'colorWeakMode')
+    ) {
       this.updateColorMode(this.state);
     }
   }
@@ -99,7 +106,7 @@ class PreferenceManager {
           app: { isMobile: val },
         });
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     // 监听系统主题偏好设置变化
@@ -123,8 +130,12 @@ class PreferenceManager {
       const dom = document.documentElement;
       const COLOR_WEAK = 'invert-mode';
       const COLOR_GRAY = 'grayscale-mode';
-      colorWeakMode ? dom.classList.add(COLOR_WEAK) : dom.classList.remove(COLOR_WEAK);
-      colorGrayMode ? dom.classList.add(COLOR_GRAY) : dom.classList.remove(COLOR_GRAY);
+      colorWeakMode
+        ? dom.classList.add(COLOR_WEAK)
+        : dom.classList.remove(COLOR_WEAK);
+      colorGrayMode
+        ? dom.classList.add(COLOR_GRAY)
+        : dom.classList.remove(COLOR_GRAY);
     }
   }
 
@@ -161,7 +172,7 @@ class PreferenceManager {
     const mergedPreference = merge(
       {},
       overrides,
-      this.loadCachedPreferences() || defaultPreferences
+      this.loadCachedPreferences() || defaultPreferences,
     );
 
     // 更新偏好设置

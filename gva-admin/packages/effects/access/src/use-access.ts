@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 
-import { preferences, updatePreferences } from '@gva/preferences';
-import { useAccessStore, useUserStore } from '@gva/stores';
+import { preferences, updatePreferences } from '@vben/preferences';
+import { useAccessStore, useUserStore } from '@vben/stores';
 
 function useAccess() {
   const accessStore = useAccessStore();
@@ -11,7 +11,7 @@ function useAccess() {
   });
 
   /**
-   * Determine whether there is permissions based on character judgment
+   * 基于角色判断是否有权限
    * @description: Determine whether there is permission，The role is judged by the user's role
    * @param roles
    */
@@ -22,7 +22,7 @@ function useAccess() {
   }
 
   /**
-   * Based on the permissions code to judge whether there is permissions
+   * 基于权限码判断是否有权限
    * @description: Determine whether there is permission，The permission code is judged by the user's permission code
    * @param codes
    */
@@ -36,7 +36,8 @@ function useAccess() {
   async function toggleAccessMode() {
     updatePreferences({
       app: {
-        accessMode: preferences.app.accessMode === 'frontend' ? 'backend' : 'frontend',
+        accessMode:
+          preferences.app.accessMode === 'frontend' ? 'backend' : 'frontend',
       },
     });
   }

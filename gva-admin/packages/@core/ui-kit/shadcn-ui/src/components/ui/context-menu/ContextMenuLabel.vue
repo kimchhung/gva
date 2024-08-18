@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { ContextMenuLabel, type ContextMenuLabelProps } from 'radix-vue';
 
@@ -19,7 +19,13 @@ const delegatedProps = computed(() => {
 <template>
   <ContextMenuLabel
     v-bind="delegatedProps"
-    :class="cn('text-foreground px-2 py-1.5 text-sm font-semibold', inset && 'pl-8', props.class)"
+    :class="
+      cn(
+        'text-foreground px-2 py-1.5 text-sm font-semibold',
+        inset && 'pl-8',
+        props.class,
+      )
+    "
   >
     <slot></slot>
   </ContextMenuLabel>

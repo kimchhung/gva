@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { AnyFunction } from '@gva/types';
+import type { AnyFunction } from '@vben/types';
 
 import type { Component } from 'vue';
 import { computed, ref } from 'vue';
 
-import { LockKeyhole, LogOut, SwatchBook } from '@gva/icons';
-import { $t } from '@gva/locales';
-import { preferences, usePreferences } from '@gva/preferences';
-import { useLockStore } from '@gva/stores';
-import { isWindowsOs } from '@gva/utils';
+import { LockKeyhole, LogOut, SwatchBook } from '@vben/icons';
+import { $t } from '@vben/locales';
+import { preferences, usePreferences } from '@vben/preferences';
+import { useLockStore } from '@vben/stores';
+import { isWindowsOs } from '@vben/utils';
 import {
   Badge,
   DropdownMenu,
@@ -21,7 +21,7 @@ import {
   VbenAlertDialog,
   VbenAvatar,
   VbenIcon,
-} from '@gva-core/shadcn-ui';
+} from '@vben-core/shadcn-ui';
 
 import { useMagicKeys, whenever } from '@vueuse/core';
 
@@ -75,8 +75,11 @@ const openPopover = ref(false);
 const openDialog = ref(false);
 const openLock = ref(false);
 
-const { globalLockScreenShortcutKey, globalLogoutShortcutKey, globalPreferencesShortcutKey } =
-  usePreferences();
+const {
+  globalLockScreenShortcutKey,
+  globalLogoutShortcutKey,
+  globalPreferencesShortcutKey,
+} = usePreferences();
 const lockStore = useLockStore();
 const { handleOpenPreference } = useOpenPreferences();
 
@@ -102,7 +105,11 @@ function handleOpenLock() {
   openLock.value = true;
 }
 
-function handleSubmitLock({ lockScreenPassword }: { lockScreenPassword: string }) {
+function handleSubmitLock({
+  lockScreenPassword,
+}: {
+  lockScreenPassword: string;
+}) {
   openLock.value = false;
   lockStore.lockScreen(lockScreenPassword);
 }
@@ -119,19 +126,19 @@ function handleSubmitLogout() {
 
 if (enableShortcutKey.value) {
   const keys = useMagicKeys();
-  whenever(keys['Alt+KeyQ'], () => {
+  whenever(keys['Alt+KeyQ']!, () => {
     if (enableLogoutShortcutKey.value) {
       handleLogout();
     }
   });
 
-  whenever(keys['Alt+Comma'], () => {
+  whenever(keys['Alt+Comma']!, () => {
     if (enablePreferencesShortcutKey.value) {
       handleOpenPreference();
     }
   });
 
-  whenever(keys['Alt+KeyL'], () => {
+  whenever(keys['Alt+KeyL']!, () => {
     if (enableLockScreenShortcutKey.value) {
       handleOpenLock();
     }
@@ -174,7 +181,9 @@ if (enableShortcutKey.value) {
           dot-class="bottom-0 right-1 border-2 size-4 bg-green-500"
         />
         <div class="ml-2 w-full">
-          <div class="text-foreground mb-1 flex items-center text-sm font-medium">
+          <div
+            class="text-foreground mb-1 flex items-center text-sm font-medium"
+          >
             {{ text }}
             <Badge class="ml-2 text-green-400">
               {{ tagText }}

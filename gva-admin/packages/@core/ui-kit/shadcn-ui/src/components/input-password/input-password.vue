@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, useSlots } from 'vue';
 
-import { Eye, EyeOff } from '@gva-core/icons';
-import { type InputProps, VbenInput } from '@gva-core/shadcn-ui/components/input';
+import { Eye, EyeOff } from '@vben-core/icons';
 
 import { useForwardProps } from 'radix-vue';
 
+import { type InputProps, VbenInput } from '../input';
 import PasswordStrength from './password-strength.vue';
 
 interface Props extends InputProps {}
@@ -33,7 +33,10 @@ const show = ref(false);
     >
       <template v-if="passwordStrength">
         <PasswordStrength :password="modelValue" />
-        <p v-if="slots.strengthText" class="text-muted-foreground mt-1.5 text-xs">
+        <p
+          v-if="slots.strengthText"
+          class="text-muted-foreground mt-1.5 text-xs"
+        >
           <slot name="strengthText"> </slot>
         </p>
       </template>

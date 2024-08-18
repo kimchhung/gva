@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import type { BuiltinThemeType } from '@gva/types';
+import type { BuiltinThemeType } from '@vben/types';
 
 import { computed, ref } from 'vue';
 
-import { UserRoundPen } from '@gva/icons';
-import { $t } from '@gva/locales';
-import { BUILT_IN_THEME_PRESETS, type BuiltinThemePreset } from '@gva/preferences';
-import { convertToHsl, TinyColor } from '@gva/utils';
+import { UserRoundPen } from '@vben/icons';
+import { $t } from '@vben/locales';
+import {
+  BUILT_IN_THEME_PRESETS,
+  type BuiltinThemePreset,
+} from '@vben/preferences';
+import { convertToHsl, TinyColor } from '@vben/utils';
 
 defineOptions({
   name: 'PreferenceBuiltinTheme',
@@ -19,17 +22,11 @@ const modelValue = defineModel<BuiltinThemeType>({ default: 'default' });
 const themeColorPrimary = defineModel<string>('themeColorPrimary');
 
 const inputValue = computed(() => {
-  return new TinyColor(themeColorPrimary.value).toHexString();
+  return new TinyColor(themeColorPrimary.value || '').toHexString();
 });
 
 const builtinThemePresets = computed(() => {
-  return [
-    // {
-    //   color: 'hsl(231 98% 65%)',
-    //   type: 'default',
-    // },
-    ...BUILT_IN_THEME_PRESETS,
-  ];
+  return [...BUILT_IN_THEME_PRESETS];
 });
 
 function typeView(name: BuiltinThemeType) {
@@ -121,7 +118,9 @@ function selectColor() {
           <template v-else>
             <div class="size-full px-10 py-2" @click.stop="selectColor">
               <div class="flex-center relative size-5 rounded-sm">
-                <UserRoundPen class="absolute z-10 size-5 opacity-60 group-hover:opacity-100" />
+                <UserRoundPen
+                  class="absolute z-10 size-5 opacity-60 group-hover:opacity-100"
+                />
                 <input
                   ref="colorInput"
                   :value="inputValue"

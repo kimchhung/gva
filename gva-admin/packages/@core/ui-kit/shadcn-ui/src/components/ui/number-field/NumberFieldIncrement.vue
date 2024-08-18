@@ -3,12 +3,14 @@ import type { NumberFieldIncrementProps } from 'radix-vue';
 
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { Plus } from 'lucide-vue-next';
 import { NumberFieldIncrement, useForwardProps } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & NumberFieldIncrementProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & NumberFieldIncrementProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -26,7 +28,7 @@ const forwarded = useForwardProps(delegatedProps);
     :class="
       cn(
         'absolute right-0 top-1/2 -translate-y-1/2 p-3 disabled:cursor-not-allowed disabled:opacity-20',
-        props.class
+        props.class,
       )
     "
   >

@@ -1,11 +1,11 @@
 {
-  "name": "@gva/constants",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben/constants",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "packages/constants"
   },
   "license": "MIT",
@@ -20,6 +20,6 @@
     }
   },
   "dependencies": {
-    "@gva-core/shared": "workspace:*"
+    "@vben-core/shared": "workspace:*"
   }
 }

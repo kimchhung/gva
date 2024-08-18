@@ -1,29 +1,47 @@
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
+import type { MenuRecordRaw } from '@vben/types';
 
-import { useWatermark } from '@gva/hooks';
-import { $t } from '@gva/locales';
-import { preferences, updatePreferences, usePreferences } from '@gva/preferences';
-import { useLockStore, useUserStore } from '@gva/stores';
-import { MenuRecordRaw } from '@gva/types';
-import { mapTree } from '@gva/utils';
-import { VbenAdminLayout } from '@gva-core/layout-ui';
-import { Toaster, VbenBackTop, VbenLogo } from '@gva-core/shadcn-ui';
+import { computed, useSlots, watch } from 'vue';
+
+import { useWatermark } from '@vben/hooks';
+import { $t } from '@vben/locales';
+import {
+  preferences,
+  updatePreferences,
+  usePreferences,
+} from '@vben/preferences';
+import { useLockStore, useUserStore } from '@vben/stores';
+import { mapTree } from '@vben/utils';
+import { VbenAdminLayout } from '@vben-core/layout-ui';
+import { SideBarLogo, Toaster, VbenBackTop } from '@vben-core/shadcn-ui';
 
 import { Breadcrumb, CheckUpdates, Preferences } from '../widgets';
 import { LayoutContent } from './content';
 import { Copyright } from './copyright';
 import { LayoutFooter } from './footer';
 import { LayoutHeader } from './header';
-import { LayoutExtraMenu, LayoutMenu, LayoutMixedMenu, useExtraMenu, useMixedMenu } from './menu';
+import {
+  LayoutExtraMenu,
+  LayoutMenu,
+  LayoutMixedMenu,
+  useExtraMenu,
+  useMixedMenu,
+} from './menu';
 import { LayoutTabbar } from './tabbar';
 
 defineOptions({ name: 'BasicLayout' });
 
 const emit = defineEmits<{ clearPreferencesAndLogout: [] }>();
 
-const { isDark, isHeaderNav, isMixedNav, isMobile, isSideMixedNav, layout, sidebarCollapsed } =
-  usePreferences();
+const {
+  isDark,
+  isHeaderNav,
+  isMixedNav,
+  isMobile,
+  isSideMixedNav,
+  layout,
+  sidebarCollapsed,
+} = usePreferences();
 const userStore = useUserStore();
 const { updateWatermark } = useWatermark();
 const lockStore = useLockStore();
@@ -87,8 +105,14 @@ const {
   sidebarExtraVisible,
 } = useExtraMenu();
 
-const { handleMenuSelect, headerActive, headerMenus, sidebarActive, sidebarMenus, sidebarVisible } =
-  useMixedMenu();
+const {
+  handleMenuSelect,
+  headerActive,
+  headerMenus,
+  sidebarActive,
+  sidebarMenus,
+  sidebarVisible,
+} = useMixedMenu();
 
 function wrapperMenus(menus: MenuRecordRaw[]) {
   return mapTree(menus, (item) => {
@@ -112,18 +136,20 @@ watch(
   () => preferences.app.watermark,
   async (val) => {
     if (val) {
-      // await nextTick();
-
-      updateWatermark({
+      await updateWatermark({
         content: `${preferences.app.name} 用户名: ${userStore.userInfo?.username}`,
-        // parent: contentRef.value,
       });
     }
   },
   {
     immediate: true,
-  }
+  },
 );
+
+const slots = useSlots();
+const headerSlots = computed(() => {
+  return Object.keys(slots).filter((key) => key.startsWith('header-'));
+});
 </script>
 
 <template>
@@ -176,7 +202,7 @@ watch(
 
     <!-- logo -->
     <template #logo>
-      <VbenLogo
+      <SideBarLogo
         v-if="preferences.logo.enable"
         :class="logoClass"
         :collapsed="logoCollapsed"
@@ -188,7 +214,10 @@ watch(
     <!-- 头部区域 -->
     <template #header>
       <LayoutHeader :theme="theme">
-        <template v-if="!showHeaderNav && preferences.breadcrumb.enable" #breadcrumb>
+        <template
+          v-if="!showHeaderNav && preferences.breadcrumb.enable"
+          #breadcrumb
+        >
           <Breadcrumb
             :hide-when-only-one="preferences.breadcrumb.hideOnlyOne"
             :show-home="preferences.breadcrumb.showHome"
@@ -212,6 +241,9 @@ watch(
         </template>
         <template #notification>
           <slot name="notification"></slot>
+        </template>
+        <template v-for="item in headerSlots" #[item]>
+          <slot :name="item"></slot>
         </template>
       </LayoutHeader>
     </template>
@@ -252,7 +284,11 @@ watch(
       />
     </template>
     <template #side-extra-title>
-      <VbenLogo v-if="preferences.logo.enable" :text="preferences.app.name" :theme="theme" />
+      <SideBarLogo
+        v-if="preferences.logo.enable"
+        :text="preferences.app.name"
+        :theme="theme"
+      />
     </template>
 
     <template #tabbar>
@@ -271,7 +307,10 @@ watch(
     <!-- 页脚 -->
     <template v-if="preferences.footer.enable" #footer>
       <LayoutFooter>
-        <Copyright v-if="preferences.copyright.enable" v-bind="preferences.copyright" />
+        <Copyright
+          v-if="preferences.copyright.enable"
+          v-bind="preferences.copyright"
+        />
       </LayoutFooter>
     </template>
 

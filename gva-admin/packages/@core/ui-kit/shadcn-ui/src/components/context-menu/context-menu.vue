@@ -7,8 +7,9 @@ import type {
 
 import type { IContextMenuItem } from './interface';
 
-import type { HTMLAttributes } from 'vue';
 import { computed } from 'vue';
+
+import { useForwardPropsEmits } from 'radix-vue';
 
 import {
   ContextMenu,
@@ -17,17 +18,15 @@ import {
   ContextMenuSeparator,
   ContextMenuShortcut,
   ContextMenuTrigger,
-} from '@gva-core/shadcn-ui/components/ui/context-menu';
-
-import { useForwardPropsEmits } from 'radix-vue';
+} from '../ui/context-menu';
 
 const props = defineProps<
   {
-    class?: HTMLAttributes['class'];
-    contentClass?: HTMLAttributes['class'];
+    class?: any;
+    contentClass?: any;
     contentProps?: ContextMenuContentProps;
     handlerData?: Record<string, any>;
-    itemClass?: HTMLAttributes['class'];
+    itemClass?: any;
     menus: (data: any) => IContextMenuItem[];
   } & ContextMenuRootProps
 >();
@@ -65,7 +64,11 @@ function handleClick(menu: IContextMenuItem) {
     <ContextMenuTrigger as-child>
       <slot></slot>
     </ContextMenuTrigger>
-    <ContextMenuContent :class="contentClass" v-bind="contentProps" class="side-content z-[1000]">
+    <ContextMenuContent
+      :class="contentClass"
+      v-bind="contentProps"
+      class="side-content z-[1000]"
+    >
       <template v-for="menu in menusView" :key="menu.key">
         <ContextMenuItem
           :class="itemClass"
@@ -74,7 +77,11 @@ function handleClick(menu: IContextMenuItem) {
           class="cursor-pointer"
           @click="handleClick(menu)"
         >
-          <component :is="menu.icon" v-if="menu.icon" class="mr-2 size-4 text-lg" />
+          <component
+            :is="menu.icon"
+            v-if="menu.icon"
+            class="mr-2 size-4 text-lg"
+          />
 
           {{ menu.text }}
           <ContextMenuShortcut v-if="menu.shortcut">

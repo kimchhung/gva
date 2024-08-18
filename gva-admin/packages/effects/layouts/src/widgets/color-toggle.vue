@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import type { BuiltinThemeType } from '@gva/types';
+import type { BuiltinThemeType } from '@vben/types';
 
-import { Palette } from '@gva/icons';
-import { COLOR_PRESETS, preferences, updatePreferences } from '@gva/preferences';
-import { VbenIconButton } from '@gva-core/shadcn-ui';
+import { Palette } from '@vben/icons';
+import {
+  COLOR_PRESETS,
+  preferences,
+  updatePreferences,
+} from '@vben/preferences';
+import { VbenIconButton } from '@vben-core/shadcn-ui';
 
 defineOptions({
   name: 'AuthenticationColorToggle',
@@ -20,9 +24,14 @@ function handleUpdate(value: BuiltinThemeType) {
 
 <template>
   <div class="group relative flex items-center overflow-hidden">
-    <div class="ease-ou flex w-0 overflow-hidden transition-all duration-500 group-hover:w-60">
+    <div
+      class="ease-ou flex w-0 overflow-hidden transition-all duration-500 group-hover:w-60"
+    >
       <template v-for="preset in COLOR_PRESETS" :key="preset.color">
-        <VbenIconButton class="flex-center flex-shrink-0" @click="handleUpdate(preset.type)">
+        <VbenIconButton
+          class="flex-center flex-shrink-0"
+          @click="handleUpdate(preset.type)"
+        >
           <div
             :style="{ backgroundColor: preset.color }"
             class="flex-center relative size-5 rounded-full hover:scale-110"

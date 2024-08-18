@@ -2,9 +2,11 @@ import type { PluginOption } from 'vite';
 
 import type { PrintPluginOptions } from '../typing';
 
-import { colors } from '@gva/node-utils';
+import { colors } from '@vben/node-utils';
 
-export const vitePrintPlugin = (options: PrintPluginOptions = {}): PluginOption => {
+export const vitePrintPlugin = (
+  options: PrintPluginOptions = {},
+): PluginOption => {
   const { infoMap = {} } = options;
 
   return {
@@ -14,7 +16,9 @@ export const vitePrintPlugin = (options: PrintPluginOptions = {}): PluginOption 
         _printUrls();
 
         for (const [key, value] of Object.entries(infoMap)) {
-          console.log(`  ${colors.green('➜')}  ${colors.bold(key)}: ${colors.cyan(value)}`);
+          console.log(
+            `  ${colors.green('➜')}  ${colors.bold(key)}: ${colors.cyan(value)}`,
+          );
         }
       };
     },

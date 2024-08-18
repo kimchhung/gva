@@ -1,12 +1,12 @@
 {
-  "name": "@gva-core/design",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben-core/design",
+  "version": "5.1.0",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
-    "directory": "packages/@gva-core/base/design"
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "packages/@vben-core/base/design"
   },
   "license": "MIT",
   "type": "module",
@@ -37,5 +37,8 @@
         "default": "./dist/index.mjs"
       }
     }
+  },
+  "devDependencies": {
+    "@ast-grep/napi-linux-arm64-musl": "^0.26.1"
   }
 }

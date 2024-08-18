@@ -1,5 +1,12 @@
 <script lang="ts" setup>
-import type { MenuItemClicked, MenuItemRegistered, MenuProps, MenuProvider } from '../interface';
+import type { UseResizeObserverReturn } from '@vueuse/core';
+
+import type {
+  MenuItemClicked,
+  MenuItemRegistered,
+  MenuProps,
+  MenuProvider,
+} from '../interface';
 
 import {
   computed,
@@ -13,13 +20,17 @@ import {
   watchEffect,
 } from 'vue';
 
-import { useNamespace } from '@gva-core/composables';
-import { Ellipsis } from '@gva-core/icons';
-import { isHttpUrl } from '@gva-core/shared';
+import { useNamespace } from '@vben-core/composables';
+import { Ellipsis } from '@vben-core/icons';
+import { isHttpUrl } from '@vben-core/shared';
 
-import { useResizeObserver, UseResizeObserverReturn } from '@vueuse/core';
+import { useResizeObserver } from '@vueuse/core';
 
-import { createMenuContext, createSubMenuContext, useMenuStyle } from '../hooks';
+import {
+  createMenuContext,
+  createSubMenuContext,
+  useMenuStyle,
+} from '../hooks';
 import { flattedChildren } from '../utils';
 import SubMenu from './sub-menu.vue';
 
@@ -47,7 +58,7 @@ const slots = useSlots();
 const menu = ref<HTMLUListElement>();
 const sliceIndex = ref(-1);
 const openedMenus = ref<MenuProvider['openedMenus']>(
-  props.defaultOpeneds && !props.collapse ? [...props.defaultOpeneds] : []
+  props.defaultOpeneds && !props.collapse ? [...props.defaultOpeneds] : [],
 );
 const activePath = ref<MenuProvider['activePath']>(props.defaultActive);
 const items = ref<MenuProvider['items']>({});
@@ -56,15 +67,20 @@ const mouseInChild = ref(false);
 const defaultSlots: VNodeArrayChildren = slots.default?.() ?? [];
 
 const isMenuPopup = computed<MenuProvider['isMenuPopup']>(() => {
-  return props.mode === 'horizontal' || (props.mode === 'vertical' && props.collapse);
+  return (
+    props.mode === 'horizontal' || (props.mode === 'vertical' && props.collapse)
+  );
 });
 
 const getSlot = computed(() => {
   const originalSlot = flattedChildren(defaultSlots) as VNodeArrayChildren;
   const slotDefault =
-    sliceIndex.value === -1 ? originalSlot : originalSlot.slice(0, sliceIndex.value);
+    sliceIndex.value === -1
+      ? originalSlot
+      : originalSlot.slice(0, sliceIndex.value);
 
-  const slotMore = sliceIndex.value === -1 ? [] : originalSlot.slice(sliceIndex.value);
+  const slotMore =
+    sliceIndex.value === -1 ? [] : originalSlot.slice(sliceIndex.value);
 
   return { showSlotMore: slotMore.length > 0, slotDefault, slotMore };
 });
@@ -73,7 +89,7 @@ watch(
   () => props.collapse,
   (value) => {
     if (value) openedMenus.value = [];
-  }
+  },
 );
 
 watch(items.value, initMenu);
@@ -85,7 +101,7 @@ watch(
       activePath.value = '';
     }
     updateActiveName(currentActive);
-  }
+  },
 );
 
 let resizeStopper: UseResizeObserverReturn['stop'];
@@ -115,7 +131,7 @@ createMenuContext(
     subMenus,
     theme: toRef(props, 'theme'),
     items,
-  })
+  }),
 );
 
 createSubMenuContext({
@@ -139,7 +155,8 @@ function calcSliceIndex() {
   const items = [...(menu.value?.childNodes ?? [])].filter(
     (item) =>
       // remove comment type node #12634
-      item.nodeName !== '#comment' && (item.nodeName !== '#text' || item.nodeValue)
+      item.nodeName !== '#comment' &&
+      (item.nodeName !== '#text' || item.nodeValue),
   ) as HTMLElement[];
 
   const moreItemWidth = 46;
@@ -258,7 +275,7 @@ function close(path: string) {
  */
 function closeMenu(path: string, parentPaths: string[]) {
   if (props.accordion) {
-    openedMenus.value = subMenus.value[path]?.parentPaths;
+    openedMenus.value = subMenus.value[path]?.parentPaths ?? [];
   }
 
   close(path);
@@ -279,7 +296,9 @@ function openMenu(path: string, parentPaths: string[]) {
     if (activeParentPaths.includes(path)) {
       parentPaths = activeParentPaths;
     }
-    openedMenus.value = openedMenus.value.filter((path: string) => parentPaths.includes(path));
+    openedMenus.value = openedMenus.value.filter((path: string) =>
+      parentPaths.includes(path),
+    );
   }
   openedMenus.value.push(path);
   emit('open', path, parentPaths);
@@ -335,7 +354,7 @@ function removeMenuItem(item: MenuItemRegistered) {
 </template>
 
 <style lang="scss">
-$namespace: gva;
+$namespace: vben;
 
 @mixin menu-item-active {
   color: var(--menu-item-active-color);
@@ -351,7 +370,8 @@ $namespace: gva;
   align-items: center;
   height: var(--menu-item-height);
   padding: var(--menu-item-padding-y) var(--menu-item-padding-x);
-  margin: 0 var(--menu-item-margin-x) var(--menu-item-margin-y) var(--menu-item-margin-x);
+  margin: 0 var(--menu-item-margin-x) var(--menu-item-margin-y)
+    var(--menu-item-margin-x);
   font-size: var(--menu-font-size);
   color: var(--menu-item-color);
   text-decoration: none;
@@ -361,7 +381,11 @@ $namespace: gva;
   background: var(--menu-item-background-color);
   border: none;
   border-radius: var(--menu-item-radius);
-  transition: background 0.15s ease, color 0.15s ease, padding 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    padding 0.15s ease,
+    border-color 0.15s ease;
 
   &.is-disabled {
     cursor: not-allowed;
@@ -465,7 +489,7 @@ $namespace: gva;
     --menu-item-padding-x: 12px;
   }
 
-  // .gva-menu__popup,
+  // .vben-menu__popup,
   &.is-horizontal {
     --menu-item-padding-y: 0px;
     --menu-item-padding-x: 10px;
@@ -511,7 +535,9 @@ $namespace: gva;
       & .#{$namespace}-menu-item,
       & .#{$namespace}-sub-menu-content,
       & .#{$namespace}-menu-item-group__title {
-        padding-left: calc(var(--menu-item-indent) + var(--menu-level) * var(--menu-item-indent));
+        padding-left: calc(
+          var(--menu-item-indent) + var(--menu-level) * var(--menu-item-indent)
+        );
         white-space: nowrap;
       }
 
@@ -528,7 +554,8 @@ $namespace: gva;
         & > .#{$namespace}-menu {
           & > .#{$namespace}-menu-item {
             padding-left: calc(
-              0px + var(--menu-item-indent) + var(--menu-level) * var(--menu-item-indent)
+              0px + var(--menu-item-indent) + var(--menu-level) *
+                var(--menu-item-indent)
             );
           }
         }
@@ -624,8 +651,10 @@ $namespace: gva;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--menu-item-collapse-padding-y) var(--menu-item-collapse-padding-x);
-      margin: var(--menu-item-collapse-margin-y) var(--menu-item-collapse-margin-x);
+      padding: var(--menu-item-collapse-padding-y)
+        var(--menu-item-collapse-padding-x);
+      margin: var(--menu-item-collapse-margin-y)
+        var(--menu-item-collapse-margin-x);
       transition: all 0.3s;
 
       &.is-active {

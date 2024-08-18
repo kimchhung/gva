@@ -1,11 +1,11 @@
 {
-  "name": "@gva/layouts",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben/layouts",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "packages/effects/layouts"
   },
   "license": "MIT",
@@ -20,20 +20,20 @@
     }
   },
   "dependencies": {
-    "@gva-core/layout-ui": "workspace:*",
-    "@gva-core/menu-ui": "workspace:*",
-    "@gva-core/shadcn-ui": "workspace:*",
-    "@gva-core/tabs-ui": "workspace:*",
-    "@gva/constants": "workspace:*",
-    "@gva/hooks": "workspace:*",
-    "@gva/icons": "workspace:*",
-    "@gva/locales": "workspace:*",
-    "@gva/preferences": "workspace:*",
-    "@gva/stores": "workspace:*",
-    "@gva/types": "workspace:*",
-    "@gva/utils": "workspace:*",
-    "@vueuse/core": "^10.11.0",
-    "vue": "^3.4.35",
-    "vue-router": "^4.4.2"
+    "@vben-core/layout-ui": "workspace:*",
+    "@vben-core/menu-ui": "workspace:*",
+    "@vben-core/shadcn-ui": "workspace:*",
+    "@vben-core/tabs-ui": "workspace:*",
+    "@vben/constants": "workspace:*",
+    "@vben/hooks": "workspace:*",
+    "@vben/icons": "workspace:*",
+    "@vben/locales": "workspace:*",
+    "@vben/preferences": "workspace:*",
+    "@vben/stores": "workspace:*",
+    "@vben/types": "workspace:*",
+    "@vben/utils": "workspace:*",
+    "@vueuse/core": "^10.11.1",
+    "vue": "^3.4.37",
+    "vue-router": "^4.4.3"
   }
 }

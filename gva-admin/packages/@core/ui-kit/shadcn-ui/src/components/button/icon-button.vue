@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { computed, type HTMLAttributes, useSlots } from 'vue';
+import type { ButtonVariants } from '../ui/button';
 
-import { VbenTooltip } from '@gva-core/shadcn-ui/components/tooltip';
-import { ButtonVariants } from '@gva-core/shadcn-ui/components/ui/button';
-import { cn } from '@gva-core/shared';
+import { computed, useSlots } from 'vue';
+
+import { cn } from '@vben-core/shared';
 
 import { type PrimitiveProps } from 'radix-vue';
 
+import { VbenTooltip } from '../tooltip';
 import VbenButton from './button.vue';
 
 interface Props extends PrimitiveProps {
-  class?: HTMLAttributes['class'];
+  class?: any;
   disabled?: boolean;
   onClick?: () => void;
   tooltip?: string;

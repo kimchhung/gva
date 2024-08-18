@@ -3,7 +3,7 @@ import type { Preferences } from './types';
 import {
   updateCSSVariables as executeUpdateCSSVariables,
   generatorColorVariables,
-} from '@gva-core/shared';
+} from '@vben-core/shared';
 
 import { BUILT_IN_THEME_PRESETS } from './constants';
 
@@ -37,7 +37,9 @@ function updateCSSVariables(preferences: Preferences) {
   }
 
   // 获取当前的内置主题
-  const currentBuiltType = [...BUILT_IN_THEME_PRESETS].find((item) => item.type === builtinType);
+  const currentBuiltType = [...BUILT_IN_THEME_PRESETS].find(
+    (item) => item.type === builtinType,
+  );
 
   let builtinTypeColorPrimary: string | undefined = '';
 
@@ -76,7 +78,8 @@ function updateMainColorVariables(preference: Preferences) {
   if (!preference.theme) {
     return;
   }
-  const { colorDestructive, colorPrimary, colorSuccess, colorWarning } = preference.theme;
+  const { colorDestructive, colorPrimary, colorSuccess, colorWarning } =
+    preference.theme;
 
   const colorVariables = generatorColorVariables([
     { color: colorPrimary, name: 'primary' },
@@ -86,7 +89,9 @@ function updateMainColorVariables(preference: Preferences) {
   ]);
 
   if (colorPrimary) {
-    document.documentElement.style.setProperty('--primary', colorVariables['--primary-500']);
+    const mainColor = colorVariables['--primary-500'];
+    mainColor &&
+      document.documentElement.style.setProperty('--primary', mainColor);
   }
 
   if (colorVariables['--green-500']) {

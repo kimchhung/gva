@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Fullscreen, Minimize2 } from '@gva-core/icons';
+import { Fullscreen, Minimize2 } from '@vben-core/icons';
 
 const screen = defineModel<boolean>('screen');
 

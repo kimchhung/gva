@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue';
+import type { TooltipContentProps } from 'radix-vue';
+
+import type { StyleValue } from 'vue';
 
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@gva-core/shadcn-ui/components/ui/tooltip';
-
-import { TooltipContentProps } from 'radix-vue';
+} from '../ui/tooltip';
 
 interface Props {
-  contentClass?: HTMLAttributes['class'];
+  contentClass?: any;
+  contentStyle?: StyleValue;
   delayDuration?: number;
   side: TooltipContentProps['side'];
 }
@@ -31,6 +32,7 @@ withDefaults(defineProps<Props>(), {
       <TooltipContent
         :class="contentClass"
         :side="side"
+        :style="contentStyle"
         class="side-content text-popover-foreground bg-popover"
       >
         <slot></slot>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { CheckIcon } from '@radix-icons/vue';
 import {
@@ -12,7 +12,9 @@ import {
   useForwardPropsEmits,
 } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & ContextMenuCheckboxItemProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & ContextMenuCheckboxItemProps
+>();
 const emits = defineEmits<ContextMenuCheckboxItemEmits>();
 
 const delegatedProps = computed(() => {
@@ -30,7 +32,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     :class="
       cn(
         'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-        props.class
+        props.class,
       )
     "
   >

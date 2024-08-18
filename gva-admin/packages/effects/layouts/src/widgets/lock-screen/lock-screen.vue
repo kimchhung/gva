@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watchEffect } from 'vue';
 
-import { LockKeyhole } from '@gva/icons';
-import { $t, useI18n } from '@gva/locales';
-import { storeToRefs, useLockStore } from '@gva/stores';
-import { VbenAvatar, VbenButton, VbenInputPassword } from '@gva-core/shadcn-ui';
+import { LockKeyhole } from '@vben/icons';
+import { $t, useI18n } from '@vben/locales';
+import { storeToRefs, useLockStore } from '@vben/stores';
+import {
+  VbenAvatar,
+  VbenButton,
+  VbenInputPassword,
+} from '@vben-core/shadcn-ui';
 
 import { useDateFormat, useNow } from '@vueuse/core';
 
@@ -89,7 +93,9 @@ function toggleUnlockForm() {
           class="flex-col-center text-foreground/80 hover:text-foreground group my-4 cursor-pointer text-xl font-semibold"
           @click="toggleUnlockForm"
         >
-          <LockKeyhole class="size-5 transition-all duration-300 group-hover:scale-125" />
+          <LockKeyhole
+            class="size-5 transition-all duration-300 group-hover:scale-125"
+          />
           <span>{{ $t('widgets.lockScreen.unlock') }}</span>
         </div>
         <div class="flex h-full justify-center px-[10%]">
@@ -134,17 +140,27 @@ function toggleUnlockForm() {
           <VbenButton class="enter-x w-full" @click="handleSubmit">
             {{ $t('widgets.lockScreen.entry') }}
           </VbenButton>
-          <VbenButton class="enter-x my-2 w-full" variant="ghost" @click="$emit('toLogin')">
+          <VbenButton
+            class="enter-x my-2 w-full"
+            variant="ghost"
+            @click="$emit('toLogin')"
+          >
             {{ $t('widgets.lockScreen.backToLogin') }}
           </VbenButton>
-          <VbenButton class="enter-x mr-2 w-full" variant="ghost" @click="toggleUnlockForm">
+          <VbenButton
+            class="enter-x mr-2 w-full"
+            variant="ghost"
+            @click="toggleUnlockForm"
+          >
             {{ $t('common.back') }}
           </VbenButton>
         </div>
       </div>
     </transition>
 
-    <div class="enter-y absolute bottom-5 w-full text-center text-gray-300 xl:text-xl 2xl:text-3xl">
+    <div
+      class="enter-y absolute bottom-5 w-full text-center text-gray-300 xl:text-xl 2xl:text-3xl"
+    >
       <div v-if="showUnlockForm" class="enter-x mb-2 text-3xl">
         {{ hour }}:{{ minute }} <span class="text-lg">{{ meridiem }}</span>
       </div>

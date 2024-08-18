@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 const props = defineProps<{
   class?: HTMLAttributes['class'];
@@ -13,7 +13,7 @@ const props = defineProps<{
     :class="
       cn(
         'text-muted-foreground flex flex-wrap items-center gap-1.5 break-words text-sm sm:gap-2.5',
-        props.class
+        props.class,
       )
     "
   >

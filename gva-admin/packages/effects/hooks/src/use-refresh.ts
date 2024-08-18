@@ -1,6 +1,6 @@
 import { useRouter } from 'vue-router';
 
-import { useTabbarStore } from '@gva/stores';
+import { useTabbarStore } from '@vben/stores';
 
 export function useRefresh() {
   const router = useRouter();

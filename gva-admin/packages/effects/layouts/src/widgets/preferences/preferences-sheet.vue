@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SupportedLanguagesType } from '@gva/locales';
+import type { SupportedLanguagesType } from '@vben/locales';
 import type {
   BreadcrumbStyleType,
   BuiltinThemeType,
@@ -8,26 +8,26 @@ import type {
   LayoutType,
   NavigationStyleType,
   ThemeModeType,
-} from '@gva/types';
-import type { SegmentedItem } from '@gva-core/shadcn-ui';
+} from '@vben/types';
+import type { SegmentedItem } from '@vben-core/shadcn-ui';
 
 import { computed, ref } from 'vue';
 
-import { Copy, RotateCw, SwatchBook } from '@gva/icons';
-import { $t, loadLocaleMessages } from '@gva/locales';
+import { Copy, RotateCw, SwatchBook } from '@vben/icons';
+import { $t, loadLocaleMessages } from '@vben/locales';
 import {
   clearPreferencesCache,
   preferences,
   resetPreferences,
   usePreferences,
-} from '@gva/preferences';
+} from '@vben/preferences';
 import {
   useToast,
   VbenButton,
   VbenIconButton,
   VbenSegmented,
   VbenSheet,
-} from '@gva-core/shadcn-ui';
+} from '@vben-core/shadcn-ui';
 
 import { useClipboard } from '@vueuse/core';
 
@@ -78,7 +78,9 @@ const themeSemiDarkMenu = defineModel<boolean>('themeSemiDarkMenu');
 const sidebarEnable = defineModel<boolean>('sidebarEnable');
 const sidebarWidth = defineModel<number>('sidebarWidth');
 const sidebarCollapsed = defineModel<boolean>('sidebarCollapsed');
-const sidebarCollapsedShowTitle = defineModel<boolean>('sidebarCollapsedShowTitle');
+const sidebarCollapsedShowTitle = defineModel<boolean>(
+  'sidebarCollapsedShowTitle',
+);
 
 const headerEnable = defineModel<boolean>('headerEnable');
 const headerMode = defineModel<LayoutHeaderModeType>('headerMode');
@@ -86,7 +88,9 @@ const headerMode = defineModel<LayoutHeaderModeType>('headerMode');
 const breadcrumbEnable = defineModel<boolean>('breadcrumbEnable');
 const breadcrumbShowIcon = defineModel<boolean>('breadcrumbShowIcon');
 const breadcrumbShowHome = defineModel<boolean>('breadcrumbShowHome');
-const breadcrumbStyleType = defineModel<BreadcrumbStyleType>('breadcrumbStyleType');
+const breadcrumbStyleType = defineModel<BreadcrumbStyleType>(
+  'breadcrumbStyleType',
+);
 const breadcrumbHideOnlyOne = defineModel<boolean>('breadcrumbHideOnlyOne');
 
 const tabbarEnable = defineModel<boolean>('tabbarEnable');
@@ -98,7 +102,9 @@ const tabbarPersist = defineModel<boolean>('tabbarPersist');
 const tabbarDragable = defineModel<boolean>('tabbarDragable');
 const tabbarStyleType = defineModel<string>('tabbarStyleType');
 
-const navigationStyleType = defineModel<NavigationStyleType>('navigationStyleType');
+const navigationStyleType = defineModel<NavigationStyleType>(
+  'navigationStyleType',
+);
 const navigationSplit = defineModel<boolean>('navigationSplit');
 const navigationAccordion = defineModel<boolean>('navigationAccordion');
 
@@ -109,16 +115,26 @@ const footerFixed = defineModel<boolean>('footerFixed');
 
 const copyrightEnable = defineModel<boolean>('copyrightEnable');
 const copyrightCompanyName = defineModel<string>('copyrightCompanyName');
-const copyrightCompanySiteLink = defineModel<string>('copyrightCompanySiteLink');
+const copyrightCompanySiteLink = defineModel<string>(
+  'copyrightCompanySiteLink',
+);
 const copyrightDate = defineModel<string>('copyrightDate');
 const copyrightIcp = defineModel<string>('copyrightIcp');
 const copyrightIcpLink = defineModel<string>('copyrightIcpLink');
 
 const shortcutKeysEnable = defineModel<boolean>('shortcutKeysEnable');
-const shortcutKeysGlobalSearch = defineModel<boolean>('shortcutKeysGlobalSearch');
-const shortcutKeysGlobalLogout = defineModel<boolean>('shortcutKeysGlobalLogout');
-const shortcutKeysGlobalPreferences = defineModel<boolean>('shortcutKeysGlobalPreferences');
-const shortcutKeysGlobalLockScreen = defineModel<boolean>('shortcutKeysGlobalLockScreen');
+const shortcutKeysGlobalSearch = defineModel<boolean>(
+  'shortcutKeysGlobalSearch',
+);
+const shortcutKeysGlobalLogout = defineModel<boolean>(
+  'shortcutKeysGlobalLogout',
+);
+const shortcutKeysGlobalPreferences = defineModel<boolean>(
+  'shortcutKeysGlobalPreferences',
+);
+const shortcutKeysGlobalLockScreen = defineModel<boolean>(
+  'shortcutKeysGlobalLockScreen',
+);
 
 const widgetGlobalSearch = defineModel<boolean>('widgetGlobalSearch');
 const widgetFullscreen = defineModel<boolean>('widgetFullscreen');
@@ -165,7 +181,10 @@ const tabs = computed((): SegmentedItem[] => {
 
 const showBreadcrumbConfig = computed(() => {
   return (
-    !isFullContent.value && !isMixedNav.value && !isHeaderNav.value && preferences.header.enable
+    !isFullContent.value &&
+    !isMixedNav.value &&
+    !isHeaderNav.value &&
+    preferences.header.enable
   );
 });
 
@@ -253,14 +272,11 @@ async function handleReset() {
           </template>
           <template #appearance>
             <Block :title="$t('preferences.theme.title')">
-              <Theme v-model="themeMode" v-model:theme-semi-dark-menu="themeSemiDarkMenu" />
-            </Block>
-            <!-- <Block :title="$t('preferences.theme-color')">
-              <ThemeColor
-                v-model="themeColorPrimary"
-                :color-primary-presets="colorPrimaryPresets"
+              <Theme
+                v-model="themeMode"
+                v-model:theme-semi-dark-menu="themeSemiDarkMenu"
               />
-            </Block> -->
+            </Block>
             <Block :title="$t('preferences.theme.builtin.title')">
               <BuiltinTheme
                 v-model="themeBuiltinType"
@@ -321,7 +337,9 @@ async function handleReset() {
                 v-model:breadcrumb-show-home="breadcrumbShowHome"
                 v-model:breadcrumb-show-icon="breadcrumbShowIcon"
                 v-model:breadcrumb-style-type="breadcrumbStyleType"
-                :disabled="!showBreadcrumbConfig || !(isSideNav || isSideMixedNav)"
+                :disabled="
+                  !showBreadcrumbConfig || !(isSideNav || isSideMixedNav)
+                "
               />
             </Block>
             <Block :title="$t('preferences.tabbar.title')">
@@ -348,7 +366,10 @@ async function handleReset() {
               />
             </Block>
             <Block :title="$t('preferences.footer.title')">
-              <Footer v-model:footer-enable="footerEnable" v-model:footer-fixed="footerFixed" />
+              <Footer
+                v-model:footer-enable="footerEnable"
+                v-model:footer-fixed="footerFixed"
+              />
             </Block>
             <Block :title="$t('preferences.copyright.title')">
               <Copyright
@@ -370,7 +391,9 @@ async function handleReset() {
                 v-model:shortcut-keys-global-search="shortcutKeysGlobalSearch"
                 v-model:shortcut-keys-lock-screen="shortcutKeysGlobalLockScreen"
                 v-model:shortcut-keys-logout="shortcutKeysGlobalLogout"
-                v-model:shortcut-keys-preferences="shortcutKeysGlobalPreferences"
+                v-model:shortcut-keys-preferences="
+                  shortcutKeysGlobalPreferences
+                "
               />
             </Block>
           </template>

@@ -1,5 +1,5 @@
-// import { createIconifyIcon } from '@gva-core/icons';
+// import { createIconifyIcon } from '@vben-core/icons';
 
-export * from '@gva-core/icons';
+export * from '@vben-core/icons';
 
 // export const MdiKeyboardEsc = createIconifyIcon('mdi:keyboard-esc');

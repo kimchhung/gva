@@ -1,2 +1,2 @@
 export type * from './user';
-export type * from '@gva-core/typings';
+export type * from '@vben-core/typings';

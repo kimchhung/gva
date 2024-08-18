@@ -1,11 +1,11 @@
 {
-  "name": "@gva/locales",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben/locales",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "packages/locales"
   },
   "license": "MIT",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@intlify/core-base": "^9.13.1",
-    "vue": "^3.4.35",
+    "vue": "^3.4.37",
     "vue-i18n": "^9.13.1"
   }
 }

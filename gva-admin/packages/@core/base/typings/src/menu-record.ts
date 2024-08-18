@@ -11,62 +11,62 @@ type ExRouteRecordRaw = {
 
 interface MenuRecordBadgeRaw {
   /**
-   * Label
+   * 徽标
    */
   badge?: string;
   /**
-   * Logo
+   * 徽标类型
    */
   badgeType?: 'dot' | 'normal';
   /**
-   * Logo color
+   * 徽标颜色
    */
   badgeVariants?: 'destructive' | 'primary' | string;
 }
 
 /**
- * Menu original object
+ * 菜单原始对象
  */
 interface MenuRecordRaw extends MenuRecordBadgeRaw {
   /**
-   * Icon name when activation
+   * 激活时的图标名
    */
   activeIcon?: string;
   /**
-   * Submenu
+   * 子菜单
    */
   children?: MenuRecordRaw[];
   /**
-   * Whether to disable the menu
+   * 是否禁用菜单
    * @default false
    */
   disabled?: boolean;
   /**
-   * Icon name
+   * 图标名
    */
   icon?: string;
   /**
-   * Menu name
+   * 菜单名
    */
   name: string;
   /**
-   * queue number
+   * 排序号
    */
   order?: number;
   /**
-   * Parent -level path
+   * 父级路径
    */
   parent?: string;
   /**
-   * All parent path
+   * 所有父级路径
    */
   parents?: string[];
   /**
-   * Menu path, the only one, can be used as key
+   * 菜单路径，唯一，可当作key
    */
   path: string;
   /**
-   * Whether to display the menu
+   * 是否显示菜单
    * @default true
    */
   show?: boolean;

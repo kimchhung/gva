@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-import { loadLocaleMessages } from '@gva/locales';
-import { preferences, updatePreferences } from '@gva/preferences';
-import { capitalizeFirstLetter } from '@gva/utils';
+import { loadLocaleMessages } from '@vben/locales';
+import { preferences, updatePreferences } from '@vben/preferences';
+import { capitalizeFirstLetter } from '@vben/utils';
 
 import Preferences from './preferences-sheet.vue';
 
@@ -30,7 +30,9 @@ const listen = computed(() => {
   for (const [key, value] of Object.entries(preferences)) {
     if (typeof value === 'object') {
       for (const subKey of Object.keys(value)) {
-        result[`update:${key}${capitalizeFirstLetter(subKey)}`] = (val: any) => {
+        result[`update:${key}${capitalizeFirstLetter(subKey)}`] = (
+          val: any,
+        ) => {
           updatePreferences({ [key]: { [subKey]: val } });
           if (key === 'app' && subKey === 'locale') {
             loadLocaleMessages(val);

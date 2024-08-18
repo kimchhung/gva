@@ -12,74 +12,72 @@ import type {
   PageTransitionType,
   TabsStyleType,
   ThemeModeType,
-} from '@gva-core/typings';
+} from '@vben-core/typings';
 
 type SupportedLanguagesType = 'en-US' | 'zh-CN';
 
 interface AppPreferences {
-  /** 权限模式 */
+  /** Permissions */
   accessMode: AccessModeType;
-  /** 登录注册页面布局 */
+  /** Login registration page layout */
   authPageLayout: AuthPageLayoutType;
-  /** 检查更新轮询时间 */
+  /** Check the update rotation time */
   checkUpdatesInterval: number;
-  /** 是否开启灰色模式 */
+  /** Whether to turn on the gray mode */
   colorGrayMode: boolean;
-  /** 是否开启色弱模式 */
+  /** Whether to open the weak mode */
   colorWeakMode: boolean;
-  /** 是否开启紧凑模式 */
+  /** Whether to turn on a compact mode */
   compact: boolean;
-  /** 是否开启内容紧凑模式 */
+  /** Whether to open the compact mode of content */
   contentCompact: ContentCompactType;
-  // /** 应用默认头像 */
+  // /** Application default avatar */
   defaultAvatar: string;
-  // /** 开启动态标题 */
+  // /** Start the dynamic title */
   dynamicTitle: boolean;
-  /** 是否开启检查更新 */
+  /** Whether to open a check and update */
   enableCheckUpdates: boolean;
-  /** 是否显示偏好设置 */
+  /** Whether to display preference settings */
   enablePreferences: boolean;
-  /** 是否移动端 */
+  /** Whether to move */
   isMobile: boolean;
-  /** 布局方式 */
+  /** Layout */
   layout: LayoutType;
-  /** 支持的语言 */
+  /** Support language */
   locale: SupportedLanguagesType;
-  /** 登录过期模式 */
+  /** Log in the expiration mode */
   loginExpiredMode: LoginExpiredModeType;
-  /** 应用名 */
+  /** App */
   name: string;
-  /**
-   * @zh_CN 是否开启水印
-   */
+  /** Whether to open the watermark */
   watermark: boolean;
 }
 
 interface BreadcrumbPreferences {
-  /** 面包屑是否启用 */
+  /** Whether the bread dandruff is enabled */
   enable: boolean;
-  /** 面包屑是否只有一个时隐藏 */
+  /** Is the bread dandruff only hidden when there is only one */
   hideOnlyOne: boolean;
-  /** 面包屑首页图标是否可见 */
+  /** Whether the bread crumbs homepage icon is visible */
   showHome: boolean;
-  /** 面包屑图标是否可见 */
+  /** Whether the bread dandruff icon is visible */
   showIcon: boolean;
-  /** 面包屑风格 */
+  /** Bread crumb style */
   styleType: BreadcrumbStyleType;
 }
 
 interface CopyrightPreferences {
-  /** 版权公司名 */
+  /** Copyright company name */
   companyName: string;
-  /** 版权公司名链接 */
+  /** Copyright company name link */
   companySiteLink: string;
-  /** 版权日期 */
+  /** Copyright date */
   date: string;
-  /** 版权是否可见 */
+  /** Whether the copyright is visible */
   enable: boolean;
-  /** 备案号 */
+  /** Filing number */
   icp: string;
-  /** 备案号链接 */
+  /** Link to the filing number */
   icpLink: string;
 }
 

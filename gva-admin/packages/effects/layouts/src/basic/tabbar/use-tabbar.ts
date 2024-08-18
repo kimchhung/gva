@@ -1,11 +1,11 @@
-import type { TabDefinition } from '@gva/types';
-import type { IContextMenuItem } from '@gva-core/tabs-ui';
-import type { RouteLocationNormalized, RouteLocationNormalizedGeneric } from 'vue-router';
+import type { TabDefinition } from '@vben/types';
+import type { IContextMenuItem } from '@vben-core/tabs-ui';
+import type { RouteLocationNormalizedGeneric } from 'vue-router';
 
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { useContentMaximize, useTabs } from '@gva/hooks';
+import { useContentMaximize, useTabs } from '@vben/hooks';
 import {
   ArrowLeftToLine,
   ArrowRightLeft,
@@ -18,10 +18,10 @@ import {
   Minimize2,
   RotateCw,
   X,
-} from '@gva/icons';
-import { $t, useI18n } from '@gva/locales';
-import { useAccessStore, useTabbarStore } from '@gva/stores';
-import { filterTree } from '@gva/utils';
+} from '@vben/icons';
+import { $t, useI18n } from '@vben/locales';
+import { useAccessStore, useTabbarStore } from '@vben/stores';
+import { filterTree } from '@vben/utils';
 
 export function useTabbar() {
   const router = useRouter();
@@ -48,9 +48,16 @@ export function useTabbar() {
 
   const { locale } = useI18n();
   const currentTabs = ref<RouteLocationNormalizedGeneric[]>();
-  watch([() => tabbarStore.getTabs, () => tabbarStore.updateTime, () => locale.value], ([tabs]) => {
-    currentTabs.value = tabs.map((item) => wrapperTabLocale(item));
-  });
+  watch(
+    [
+      () => tabbarStore.getTabs,
+      () => tabbarStore.updateTime,
+      () => locale.value,
+    ],
+    ([tabs]) => {
+      currentTabs.value = tabs.map((item) => wrapperTabLocale(item));
+    },
+  );
 
   /**
    * 初始化固定标签页
@@ -87,15 +94,19 @@ export function useTabbar() {
     () => {
       initAffixTabs();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   watch(
     () => route.path,
     () => {
-      tabbarStore.addTab(route as RouteLocationNormalized);
+      const meta = route.matched?.[route.matched.length - 1]?.meta;
+      tabbarStore.addTab({
+        ...route,
+        meta: meta || route.meta,
+      });
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   const createContextMenus = (tab: TabDefinition) => {

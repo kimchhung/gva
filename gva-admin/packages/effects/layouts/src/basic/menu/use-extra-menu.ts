@@ -1,11 +1,11 @@
-import type { MenuRecordRaw } from '@gva/types';
+import type { MenuRecordRaw } from '@vben/types';
 
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { preferences } from '@gva/preferences';
-import { useAccessStore } from '@gva/stores';
-import { findRootMenuByPath } from '@gva/utils';
+import { preferences } from '@vben/preferences';
+import { useAccessStore } from '@vben/stores';
+import { findRootMenuByPath } from '@vben/utils';
 
 import { useNavigation } from './use-navigation';
 
@@ -40,7 +40,10 @@ function useExtraMenu() {
    * @param menu
    * @param rootMenu
    */
-  const handleDefaultSelect = (menu: MenuRecordRaw, rootMenu?: MenuRecordRaw) => {
+  const handleDefaultSelect = (
+    menu: MenuRecordRaw,
+    rootMenu?: MenuRecordRaw,
+  ) => {
     extraMenus.value = rootMenu?.children ?? [];
     extraActiveMenu.value = menu.parents?.[0] ?? menu.path;
 
@@ -58,7 +61,10 @@ function useExtraMenu() {
     }
     sidebarExtraVisible.value = false;
 
-    const { findMenu, rootMenu, rootMenuPath } = findRootMenuByPath(menus.value, route.path);
+    const { findMenu, rootMenu, rootMenuPath } = findRootMenuByPath(
+      menus.value,
+      route.path,
+    );
     extraActiveMenu.value = rootMenuPath ?? findMenu?.path ?? '';
     extraMenus.value = rootMenu?.children ?? [];
   };
@@ -75,15 +81,18 @@ function useExtraMenu() {
   watch(
     () => route.path,
     (path) => {
-      const currentPath = path;
+      const currentPath = route.meta?.activePath || path;
       // if (preferences.sidebar.expandOnHover) {
       //   return;
       // }
-      const { findMenu, rootMenu, rootMenuPath } = findRootMenuByPath(menus.value, currentPath);
+      const { findMenu, rootMenu, rootMenuPath } = findRootMenuByPath(
+        menus.value,
+        currentPath,
+      );
       extraActiveMenu.value = rootMenuPath ?? findMenu?.path ?? '';
       extraMenus.value = rootMenu?.children ?? [];
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   return {

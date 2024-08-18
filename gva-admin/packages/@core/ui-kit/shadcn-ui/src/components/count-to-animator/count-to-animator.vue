@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, unref, watch, watchEffect } from 'vue';
 
-import { isNumber } from '@gva-core/shared';
+import { isNumber } from '@vben-core/shared';
 
 import { TransitionPresets, useTransition } from '@vueuse/core';
 
@@ -75,7 +75,9 @@ function run() {
     duration: props.duration,
     onFinished: () => emit('onFinished'),
     onStarted: () => emit('onStarted'),
-    ...(props.useEasing ? { transition: TransitionPresets[props.transition] } : {}),
+    ...(props.useEasing
+      ? { transition: TransitionPresets[props.transition] }
+      : {}),
   });
 }
 
@@ -92,7 +94,7 @@ function formatNumber(num: number | string) {
   const x2 = x.length > 1 ? decimal + x[1] : '';
 
   const rgx = /(\d+)(\d{3})/;
-  if (separator && !isNumber(separator)) {
+  if (separator && !isNumber(separator) && x1) {
     while (rgx.test(x1)) {
       x1 = x1.replace(rgx, `$1${separator}$2`);
     }

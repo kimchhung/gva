@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, nextTick } from 'vue';
 
-import { VbenButton } from '@gva-core/shadcn-ui';
+import { VbenButton } from '@vben-core/shadcn-ui';
 
 interface Props {
   /**
@@ -42,21 +42,28 @@ const bindProps = computed(() => {
 function toggleTheme(event: MouseEvent) {
   const isAppearanceTransition =
     // @ts-expect-error
-    document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.startViewTransition &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!isAppearanceTransition || !event) {
     isDark.value = !isDark.value;
     return;
   }
   const x = event.clientX;
   const y = event.clientY;
-  const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const endRadius = Math.hypot(
+    Math.max(x, innerWidth - x),
+    Math.max(y, innerHeight - y),
+  );
   // @ts-expect-error: Transition API
   const transition = document.startViewTransition(async () => {
     isDark.value = !isDark.value;
     await nextTick();
   });
   transition.ready.then(() => {
-    const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`];
+    const clipPath = [
+      `circle(0px at ${x}px ${y}px)`,
+      `circle(${endRadius}px at ${x}px ${y}px)`,
+    ];
     document.documentElement.animate(
       {
         clipPath: isDark.value ? [...clipPath].reverse() : clipPath,
@@ -64,8 +71,10 @@ function toggleTheme(event: MouseEvent) {
       {
         duration: 450,
         easing: 'ease-in',
-        pseudoElement: isDark.value ? '::view-transition-old(root)' : '::view-transition-new(root)',
-      }
+        pseudoElement: isDark.value
+          ? '::view-transition-old(root)'
+          : '::view-transition-new(root)',
+      },
     );
   });
 }
@@ -134,7 +143,8 @@ function toggleTheme(event: MouseEvent) {
   &__sun-beams {
     @apply stroke-foreground/70 stroke-[2px];
 
-    transition: transform 1.6s cubic-bezier(0.5, 1.5, 0.75, 1.25),
+    transition:
+      transform 1.6s cubic-bezier(0.5, 1.5, 0.75, 1.25),
       opacity 0.6s cubic-bezier(0.25, 0, 0.3, 1);
     transform-origin: center center;
 

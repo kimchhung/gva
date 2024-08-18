@@ -9,9 +9,10 @@
     },
     "dashboard": {
       "title": "Dashboard",
-      "home": "Home"
+      "analytics": "Analytics",
+      "workspace": "Workspace"
     },
-    "gva": {
+    "vben": {
       "title": "Project",
       "about": "About",
       "document": "Document",

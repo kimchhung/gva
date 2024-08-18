@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { MenuRecordRaw } from '@gva-core/typings';
+import type { MenuRecordRaw } from '@vben-core/typings';
 
-import { useForwardProps } from '@gva-core/composables';
+import type { MenuProps } from './interface';
+
+import { useForwardProps } from '@vben-core/composables';
 
 import { Menu } from './components';
-import { MenuProps } from './interface';
 import SubMenu from './sub-menu.vue';
 
 interface Props extends MenuProps {

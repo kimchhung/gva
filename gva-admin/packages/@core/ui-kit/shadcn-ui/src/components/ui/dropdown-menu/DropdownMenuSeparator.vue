@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
-import { DropdownMenuSeparator, type DropdownMenuSeparatorProps } from 'radix-vue';
+import {
+  DropdownMenuSeparator,
+  type DropdownMenuSeparatorProps,
+} from 'radix-vue';
 
 const props = defineProps<
   {

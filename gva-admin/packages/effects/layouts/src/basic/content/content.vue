@@ -7,10 +7,10 @@ import type {
 import { type VNode } from 'vue';
 import { RouterView } from 'vue-router';
 
-import { useContentHeight } from '@gva/hooks';
-import { preferences, usePreferences } from '@gva/preferences';
-import { storeToRefs, useTabbarStore } from '@gva/stores';
-import { Spinner } from '@gva-core/shadcn-ui';
+import { useContentHeight } from '@vben/hooks';
+import { preferences, usePreferences } from '@vben/preferences';
+import { storeToRefs, useTabbarStore } from '@vben/stores';
+import { Spinner } from '@vben-core/shadcn-ui';
 
 import { IFrameRouterView } from '../../iframe';
 import { useContentSpinner } from './use-content-spinner';
@@ -22,7 +22,8 @@ const { keepAlive } = usePreferences();
 const { spinning } = useContentSpinner();
 const { contentStyles } = useContentHeight();
 
-const { getCachedTabs, getExcludeCachedTabs, renderRouteView } = storeToRefs(tabbarStore);
+const { getCachedTabs, getExcludeCachedTabs, renderRouteView } =
+  storeToRefs(tabbarStore);
 
 // 页面切换动画
 function getTransitionName(_route: RouteLocationNormalizedLoaded) {
@@ -53,7 +54,10 @@ function getTransitionName(_route: RouteLocationNormalizedLoaded) {
  * 转换组件，自动添加 name
  * @param component
  */
-function transformComponent(component: VNode, route: RouteLocationNormalizedLoadedGeneric) {
+function transformComponent(
+  component: VNode,
+  route: RouteLocationNormalizedLoadedGeneric,
+) {
   const routeName = route.name as string;
   // 如果组件没有 name，则直接返回
   if (!routeName) {
@@ -82,11 +86,19 @@ function transformComponent(component: VNode, route: RouteLocationNormalizedLoad
 
 <template>
   <div class="relative h-full">
-    <Spinner v-if="preferences.transition.loading" :spinning="spinning" :style="contentStyles" />
+    <Spinner
+      v-if="preferences.transition.loading"
+      :spinning="spinning"
+      :style="contentStyles"
+    />
     <IFrameRouterView />
     <RouterView v-slot="{ Component, route }">
       <Transition :name="getTransitionName(route)" appear mode="out-in">
-        <KeepAlive v-if="keepAlive" :exclude="getExcludeCachedTabs" :include="getCachedTabs">
+        <KeepAlive
+          v-if="keepAlive"
+          :exclude="getExcludeCachedTabs"
+          :include="getCachedTabs"
+        >
           <component
             :is="transformComponent(Component, route)"
             v-if="renderRouteView"
@@ -94,7 +106,11 @@ function transformComponent(component: VNode, route: RouteLocationNormalizedLoad
             :key="route.fullPath"
           />
         </KeepAlive>
-        <component :is="Component" v-else-if="renderRouteView" :key="route.fullPath" />
+        <component
+          :is="Component"
+          v-else-if="renderRouteView"
+          :key="route.fullPath"
+        />
       </Transition>
     </RouterView>
   </div>

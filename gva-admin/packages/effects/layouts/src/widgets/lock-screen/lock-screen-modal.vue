@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { RegisterEmits } from './typings';
-
 import { computed, reactive } from 'vue';
 
 import {
@@ -12,11 +10,19 @@ import {
   VbenAvatar,
   VbenButton,
   VbenInputPassword,
-} from '@gva-core/shadcn-ui';
+} from '@vben-core/shadcn-ui';
 
 interface Props {
   avatar?: string;
   text?: string;
+}
+
+interface LockAndRegisterParams {
+  lockScreenPassword: string;
+}
+
+interface RegisterEmits {
+  submit: [LockAndRegisterParams];
 }
 
 defineOptions({
@@ -35,7 +41,9 @@ const formState = reactive({
 });
 const openModal = defineModel<boolean>('open');
 const passwordStatus = computed(() => {
-  return formState.submitted && !formState.lockScreenPassword ? 'error' : 'default';
+  return formState.submitted && !formState.lockScreenPassword
+    ? 'error'
+    : 'default';
 });
 
 function handleClose() {
@@ -62,11 +70,16 @@ function handleSubmit() {
       >
         <DialogDescription />
         <DialogHeader>
-          <DialogTitle class="border-border flex h-8 items-center px-5 font-normal">
+          <DialogTitle
+            class="border-border flex h-8 items-center px-5 font-normal"
+          >
             {{ $t('widgets.lockScreen.title') }}
           </DialogTitle>
         </DialogHeader>
-        <div class="mb-10 flex w-full flex-col items-center" @keypress.enter.prevent="handleSubmit">
+        <div
+          class="mb-10 flex w-full flex-col items-center"
+          @keypress.enter.prevent="handleSubmit"
+        >
           <div class="w-2/3">
             <div class="ml-2 flex w-full flex-col items-center">
               <VbenAvatar

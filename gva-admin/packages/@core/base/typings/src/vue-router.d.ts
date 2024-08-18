@@ -4,7 +4,7 @@ import type { Component } from 'vue';
 
 interface RouteMeta {
   /**
-   * Activate icon (menu/tab)
+   * Activation icon (menu (menu/tab）
    */
   activeIcon?: string;
   /**
@@ -70,7 +70,7 @@ interface RouteMeta {
    */
   icon?: string;
   /**
-   * iframe address
+   * iframe 地址
    */
   iframeSrc?: string;
   /**
@@ -109,7 +109,7 @@ interface RouteMeta {
   title: string;
 }
 
-// 定义递归类型以将 RouteRecordRaw 的 component 属性更改为 string
+// Define the recursive type to change the component property of RoutereCordraw to String
 type RouteRecordStringComponent<T = string> = {
   children?: RouteRecordStringComponent<T>[];
   component: T;

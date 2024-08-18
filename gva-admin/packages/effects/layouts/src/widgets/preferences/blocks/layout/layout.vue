@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import type { LayoutType } from '@gva/types';
+import type { LayoutType } from '@vben/types';
 
 import { type Component, computed } from 'vue';
 
-import { CircleHelp } from '@gva/icons';
-import { $t } from '@gva/locales';
-import { VbenTooltip } from '@gva-core/shadcn-ui';
+import { CircleHelp } from '@vben/icons';
+import { $t } from '@vben/locales';
+import { VbenTooltip } from '@vben-core/shadcn-ui';
 
-import { FullContent, HeaderNav, MixedNav, SidebarMixedNav, SidebarNav } from '../../icons';
+import {
+  FullContent,
+  HeaderNav,
+  MixedNav,
+  SidebarMixedNav,
+  SidebarNav,
+} from '../../icons';
 
 interface PresetItem {
   name: string;
@@ -65,7 +71,10 @@ function activeClass(theme: string): string[] {
 <template>
   <div class="flex w-full flex-wrap gap-5">
     <template v-for="theme in PRESET" :key="theme.name">
-      <div class="flex w-[100px] cursor-pointer flex-col" @click="modelValue = theme.type">
+      <div
+        class="flex w-[100px] cursor-pointer flex-col"
+        @click="modelValue = theme.type"
+      >
         <div :class="activeClass(theme.type)" class="outline-box flex-center">
           <component :is="components[theme.type]" />
         </div>

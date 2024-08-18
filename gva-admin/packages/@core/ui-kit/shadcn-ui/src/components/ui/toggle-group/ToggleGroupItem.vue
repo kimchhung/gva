@@ -3,10 +3,15 @@ import type { VariantProps } from 'class-variance-authority';
 
 import { computed, type HTMLAttributes, inject } from 'vue';
 
-import { toggleVariants } from '@gva-core/shadcn-ui/components/ui/toggle';
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
-import { ToggleGroupItem, type ToggleGroupItemProps, useForwardProps } from 'radix-vue';
+import {
+  ToggleGroupItem,
+  type ToggleGroupItemProps,
+  useForwardProps,
+} from 'radix-vue';
+
+import { toggleVariants } from '../toggle';
 
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>;
 
@@ -37,7 +42,7 @@ const forwardedProps = useForwardProps(delegatedProps);
           variant: context?.variant || variant,
           size: context?.size || size,
         }),
-        props.class
+        props.class,
       )
     "
   >

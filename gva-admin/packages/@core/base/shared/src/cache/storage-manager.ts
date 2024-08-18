@@ -26,9 +26,9 @@ class StorageManager {
   }
 
   /**
-   * Get the complete storage key
-   * @param key Primitive key
-   * @returns Full key with prefix
+   * 获取完整的存储键
+   * @param key 原始键
+   * @returns 带前缀的完整键
    */
   private getFullKey(key: string): string {
     return `${this.prefix}-${key}`;
@@ -49,23 +49,23 @@ class StorageManager {
   }
 
   /**
-   * Clear all expired storage items
+   * 清除所有过期的存储项
    */
   clearExpiredItems(): void {
     for (let i = 0; i < this.storage.length; i++) {
       const key = this.storage.key(i);
       if (key && key.startsWith(this.prefix)) {
         const shortKey = key.replace(this.prefix, '');
-        this.getItem(shortKey); //Call the getItem method to check and remove the expiration item
+        this.getItem(shortKey); // 调用 getItem 方法检查并移除过期项
       }
     }
   }
 
   /**
-   * Get the storage item
+   * 获取存储项
    * @param key 键
-   * @param defaultValue The default value that does not exist or returns when it has expired
-   * @returnsValue, if the item has expired or the analytical error returns the silent recognition
+   * @param defaultValue 当项不存在或已过期时返回的默认值
+   * @returns 值，如果项已过期或解析错误则返回默认值
    */
   getItem<T>(key: string, defaultValue: null | T = null): null | T {
     const fullKey = this.getFullKey(key);
@@ -83,13 +83,13 @@ class StorageManager {
       return item.value;
     } catch (error) {
       console.error(`Error parsing item with key "${fullKey}":`, error);
-      this.storage.removeItem(fullKey); // If the analysis fails, delete this item
+      this.storage.removeItem(fullKey); // 如果解析失败，删除该项
       return defaultValue;
     }
   }
 
   /**
-   * Remove the storage item
+   * 移除存储项
    * @param key 键
    */
   removeItem(key: string): void {
@@ -98,10 +98,10 @@ class StorageManager {
   }
 
   /**
-   * Set the storage item
+   * 设置存储项
    * @param key 键
    * @param value 值
-   * @param ttl Survival time (millisecond)
+   * @param ttl 存活时间（毫秒）
    */
   setItem<T>(key: string, value: T, ttl?: number): void {
     const fullKey = this.getFullKey(key);

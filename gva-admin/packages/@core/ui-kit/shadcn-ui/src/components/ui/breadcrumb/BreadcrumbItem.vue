@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 const props = defineProps<{
   class?: HTMLAttributes['class'];
@@ -9,7 +9,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <li :class="cn('hover:text-foreground inline-flex items-center gap-1.5', props.class)">
+  <li
+    :class="
+      cn('hover:text-foreground inline-flex items-center gap-1.5', props.class)
+    "
+  >
     <slot></slot>
   </li>
 </template>

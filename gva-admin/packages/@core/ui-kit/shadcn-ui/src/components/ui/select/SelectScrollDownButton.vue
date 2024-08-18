@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { ChevronDownIcon } from '@radix-icons/vue';
 import {
@@ -10,7 +10,9 @@ import {
   useForwardProps,
 } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & SelectScrollDownButtonProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & SelectScrollDownButtonProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -24,7 +26,9 @@ const forwardedProps = useForwardProps(delegatedProps);
 <template>
   <SelectScrollDownButton
     v-bind="forwardedProps"
-    :class="cn('flex cursor-default items-center justify-center py-1', props.class)"
+    :class="
+      cn('flex cursor-default items-center justify-center py-1', props.class)
+    "
   >
     <slot>
       <ChevronDownIcon />

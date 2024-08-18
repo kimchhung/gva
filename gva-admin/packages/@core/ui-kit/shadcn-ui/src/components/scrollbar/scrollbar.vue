@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue';
 import { ref } from 'vue';
 
-import { ScrollArea, ScrollBar } from '@gva-core/shadcn-ui/components/ui/scroll-area';
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
+
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface Props {
-  class?: HTMLAttributes['class'];
+  class?: any;
   horizontal?: boolean;
-  scrollBarClass?: HTMLAttributes['class'];
+  scrollBarClass?: any;
   shadow?: boolean;
   shadowBorder?: boolean;
 }
@@ -34,7 +34,11 @@ function handleScroll(event: Event) {
 </script>
 
 <template>
-  <ScrollArea :class="[cn(props.class)]" :on-scroll="handleScroll" class="relative">
+  <ScrollArea
+    :class="[cn(props.class)]"
+    :on-scroll="handleScroll"
+    class="relative"
+  >
     <div
       v-if="shadow"
       :class="{
@@ -52,16 +56,28 @@ function handleScroll(event: Event) {
       }"
       class="scrollbar-bottom-shadow pointer-events-none absolute bottom-0 z-10 h-12 w-full opacity-0 transition-opacity duration-300 ease-in-out will-change-[opacity]"
     ></div>
-    <ScrollBar v-if="horizontal" :class="scrollBarClass" orientation="horizontal" />
+    <ScrollBar
+      v-if="horizontal"
+      :class="scrollBarClass"
+      orientation="horizontal"
+    />
   </ScrollArea>
 </template>
 
 <style scoped>
 .scrollbar-top-shadow {
-  background: linear-gradient(to bottom, hsl(var(--scroll-shadow, var(--background))), transparent);
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--scroll-shadow, var(--background))),
+    transparent
+  );
 }
 
 .scrollbar-bottom-shadow {
-  background: linear-gradient(to top, hsl(var(--scroll-shadow, var(--background))), transparent);
+  background: linear-gradient(
+    to top,
+    hsl(var(--scroll-shadow, var(--background))),
+    transparent
+  );
 }
 </style>

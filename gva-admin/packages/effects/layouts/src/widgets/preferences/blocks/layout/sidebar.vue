@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $t } from '@gva/locales';
+import { $t } from '@vben/locales';
 
 import NumberFieldItem from '../number-field-item.vue';
 import SwitchItem from '../switch-item.vue';
@@ -12,7 +12,9 @@ defineProps<{ disabled: boolean }>();
 
 const sidebarEnable = defineModel<boolean>('sidebarEnable');
 const sidebarWidth = defineModel<number>('sidebarWidth');
-const sidebarCollapsedShowTitle = defineModel<boolean>('sidebarCollapsedShowTitle');
+const sidebarCollapsedShowTitle = defineModel<boolean>(
+  'sidebarCollapsedShowTitle',
+);
 const sidebarCollapsed = defineModel<boolean>('sidebarCollapsed');
 </script>
 

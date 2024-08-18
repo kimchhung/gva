@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { SelectOption } from '@gva/types';
+import type { SelectOption } from '@vben/types';
 
 import { useSlots } from 'vue';
 
-import { CircleHelp } from '@gva/icons';
-import { Input, VbenTooltip } from '@gva-core/shadcn-ui';
+import { CircleHelp } from '@vben/icons';
+import { Input, VbenTooltip } from '@vben-core/shadcn-ui';
 
 defineOptions({
   name: 'PreferenceSelectItem',
@@ -20,7 +20,7 @@ withDefaults(
     disabled: false,
     placeholder: '',
     items: () => [],
-  }
+  },
 );
 
 const inputValue = defineModel<string>();

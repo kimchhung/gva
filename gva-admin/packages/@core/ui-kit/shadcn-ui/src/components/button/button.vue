@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue';
 import { computed } from 'vue';
 
-import { LoaderCircle } from '@gva-core/icons';
-import { type ButtonVariants, buttonVariants } from '@gva-core/shadcn-ui/components/ui/button';
-import { cn } from '@gva-core/shared';
+import { LoaderCircle } from '@vben-core/icons';
+import { cn } from '@vben-core/shared';
 
 import { Primitive, type PrimitiveProps } from 'radix-vue';
 
+import { type ButtonVariants, buttonVariants } from '../ui/button';
+
 interface Props extends PrimitiveProps {
-  class?: HTMLAttributes['class'];
+  class?: any;
   disabled?: boolean;
   loading?: boolean;
   size?: ButtonVariants['size'];
@@ -37,7 +37,10 @@ const isDisabled = computed(() => {
     :class="cn(buttonVariants({ variant, size }), props.class)"
     :disabled="isDisabled"
   >
-    <LoaderCircle v-if="loading" class="text-md mr-2 size-4 flex-shrink-0 animate-spin" />
+    <LoaderCircle
+      v-if="loading"
+      class="text-md mr-2 size-4 flex-shrink-0 animate-spin"
+    />
     <slot></slot>
   </Primitive>
 </template>

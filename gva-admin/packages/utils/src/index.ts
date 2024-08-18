@@ -1,3 +1,3 @@
 export * from './helpers';
-export * from '@gva-core/shared/colorful';
-export * from '@gva-core/shared/utils';
+export * from '@vben-core/shared/color';
+export * from '@vben-core/shared/utils';

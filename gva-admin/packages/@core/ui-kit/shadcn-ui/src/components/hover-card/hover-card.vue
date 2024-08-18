@@ -1,28 +1,37 @@
 <script setup lang="ts">
-import type { HoverCardRootEmits, HoverCardRootProps } from 'radix-vue';
+import type {
+  HoverCardContentProps,
+  HoverCardRootEmits,
+  HoverCardRootProps,
+} from 'radix-vue';
 
-import { computed, HTMLAttributes } from 'vue';
+import { computed } from 'vue';
+
+import { useForwardPropsEmits } from 'radix-vue';
 
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@gva-core/shadcn-ui/components/ui/hover-card';
+} from '../ui/hover-card';
 
-import { HoverCardContentProps, useForwardPropsEmits } from 'radix-vue';
+interface Props extends HoverCardRootProps {
+  class?: any;
+  contentClass?: any;
+  contentProps?: HoverCardContentProps;
+}
 
-const props = defineProps<
-  {
-    class?: HTMLAttributes['class'];
-    contentClass?: HTMLAttributes['class'];
-    contentProps?: HoverCardContentProps;
-  } & HoverCardRootProps
->();
+const props = defineProps<Props>();
 
 const emits = defineEmits<HoverCardRootEmits>();
 
 const delegatedProps = computed(() => {
-  const { class: _cls, contentClass: _, contentProps: _cProps, ...delegated } = props;
+  const {
+    class: _cls,
+    contentClass: _,
+    contentProps: _cProps,
+    ...delegated
+  } = props;
 
   return delegated;
 });
@@ -37,7 +46,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
         <slot name="trigger"></slot>
       </div>
     </HoverCardTrigger>
-    <HoverCardContent :class="contentClass" v-bind="contentProps" class="side-content z-[1000]">
+    <HoverCardContent
+      :class="contentClass"
+      v-bind="contentProps"
+      class="side-content z-[1000]"
+    >
       <slot></slot>
     </HoverCardContent>
   </HoverCard>

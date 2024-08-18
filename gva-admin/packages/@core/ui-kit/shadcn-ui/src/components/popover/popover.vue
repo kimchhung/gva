@@ -1,31 +1,37 @@
 <script setup lang="ts">
-import type { PopoverContentProps, PopoverRootEmits, PopoverRootProps } from 'radix-vue';
+import type {
+  PopoverContentProps,
+  PopoverRootEmits,
+  PopoverRootProps,
+} from 'radix-vue';
 
-import { computed, HTMLAttributes } from 'vue';
+import { computed } from 'vue';
+
+import { useForwardPropsEmits } from 'radix-vue';
 
 import {
   PopoverContent,
   Popover as PopoverRoot,
   PopoverTrigger,
-} from '@gva-core/shadcn-ui/components/ui/popover';
+} from '../ui/popover';
 
-import { useForwardPropsEmits } from 'radix-vue';
+interface Props extends PopoverRootProps {
+  class?: any;
+  contentClass?: any;
+  contentProps?: PopoverContentProps;
+}
 
-const props = withDefaults(
-  defineProps<
-    {
-      class?: HTMLAttributes['class'];
-      contentClass?: HTMLAttributes['class'];
-      contentProps?: PopoverContentProps;
-    } & PopoverRootProps
-  >(),
-  {}
-);
+const props = withDefaults(defineProps<Props>(), {});
 
 const emits = defineEmits<PopoverRootEmits>();
 
 const delegatedProps = computed(() => {
-  const { class: _cls, contentClass: _, contentProps: _cProps, ...delegated } = props;
+  const {
+    class: _cls,
+    contentClass: _,
+    contentProps: _cProps,
+    ...delegated
+  } = props;
 
   return delegated;
 });
@@ -38,7 +44,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     <PopoverTrigger>
       <slot name="trigger"></slot>
 
-      <PopoverContent :class="contentClass" class="side-content z-[1000]" v-bind="contentProps">
+      <PopoverContent
+        :class="contentClass"
+        class="side-content z-[1000]"
+        v-bind="contentProps"
+      >
         <slot></slot>
       </PopoverContent>
     </PopoverTrigger>

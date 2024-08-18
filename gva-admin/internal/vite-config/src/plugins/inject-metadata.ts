@@ -1,8 +1,12 @@
 import type { PluginOption } from 'vite';
 
-import { dateUtil, getPackages, readPackageJSON } from '@gva/node-utils';
+import { dateUtil, getPackages, readPackageJSON } from '@vben/node-utils';
 
-function resolvePackageVersion(pkgsMeta: Record<string, string>, name: string, value: string) {
+function resolvePackageVersion(
+  pkgsMeta: Record<string, string>,
+  name: string,
+  value: string,
+) {
   if (value.includes('workspace')) {
     return pkgsMeta[name];
   }
@@ -12,8 +16,8 @@ function resolvePackageVersion(pkgsMeta: Record<string, string>, name: string, v
 async function resolveMonorepoDependencies() {
   const { packages } = await getPackages();
 
-  const resultDevDependencies: Record<string, string> = {};
-  const resultDependencies: Record<string, string> = {};
+  const resultDevDependencies: Record<string, string | undefined> = {};
+  const resultDependencies: Record<string, string | undefined> = {};
   const pkgsMeta: Record<string, string> = {};
 
   for (const { packageJson } of packages) {
@@ -38,14 +42,18 @@ async function resolveMonorepoDependencies() {
 /**
  * 用于注入项目信息
  */
-async function viteMetadataPlugin(root = process.cwd()): Promise<PluginOption | undefined> {
-  const { author, description, homepage, license, version } = await readPackageJSON(root);
+async function viteMetadataPlugin(
+  root = process.cwd(),
+): Promise<PluginOption | undefined> {
+  const { author, description, homepage, license, version } =
+    await readPackageJSON(root);
 
   const buildTime = dateUtil().format('YYYY-MM-DD HH:mm:ss');
 
   return {
     async config() {
-      const { dependencies, devDependencies } = await resolveMonorepoDependencies();
+      const { dependencies, devDependencies } =
+        await resolveMonorepoDependencies();
 
       const isAuthorObject = typeof author === 'object';
       const authorName = isAuthorObject ? author.name : author;

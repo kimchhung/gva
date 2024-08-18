@@ -1,12 +1,12 @@
 {
-  "name": "@gva-core/menu-ui",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben-core/menu-ui",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
-    "directory": "packages/@gva-core/uikit/menu-ui"
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "packages/@vben-core/uikit/menu-ui"
   },
   "license": "MIT",
   "type": "module",
@@ -37,12 +37,12 @@
     }
   },
   "dependencies": {
-    "@gva-core/composables": "workspace:*",
-    "@gva-core/icons": "workspace:*",
-    "@gva-core/shadcn-ui": "workspace:*",
-    "@gva-core/shared": "workspace:*",
-    "@gva-core/typings": "workspace:*",
-    "@vueuse/core": "^10.11.0",
-    "vue": "^3.4.35"
+    "@vben-core/composables": "workspace:*",
+    "@vben-core/icons": "workspace:*",
+    "@vben-core/shadcn-ui": "workspace:*",
+    "@vben-core/shared": "workspace:*",
+    "@vben-core/typings": "workspace:*",
+    "@vueuse/core": "^10.11.1",
+    "vue": "^3.4.37"
   }
 }

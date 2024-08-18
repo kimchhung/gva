@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ToggleGroup, ToggleGroupItem } from '@gva-core/shadcn-ui';
+import { ToggleGroup, ToggleGroupItem } from '@vben-core/shadcn-ui';
 
 defineOptions({
   name: 'PreferenceColorMode',
@@ -19,7 +19,13 @@ const items = [
 </script>
 
 <template>
-  <ToggleGroup v-model="modelValue" class="gap-2" size="sm" type="single" variant="outline">
+  <ToggleGroup
+    v-model="modelValue"
+    class="gap-2"
+    size="sm"
+    type="single"
+    variant="outline"
+  >
     <template v-for="item in items" :key="item.value">
       <ToggleGroupItem
         :value="item.value"

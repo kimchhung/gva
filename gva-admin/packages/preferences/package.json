@@ -1,11 +1,11 @@
 {
-  "name": "@gva/preferences",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben/preferences",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "packages/preferences"
   },
   "license": "MIT",
@@ -20,7 +20,7 @@
     }
   },
   "dependencies": {
-    "@gva-core/preferences": "workspace:*",
-    "@gva-core/typings": "workspace:*"
+    "@vben-core/preferences": "workspace:*",
+    "@vben-core/typings": "workspace:*"
   }
 }

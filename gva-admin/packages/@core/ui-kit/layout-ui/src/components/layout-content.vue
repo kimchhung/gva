@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { ContentCompactType } from '@gva-core/typings';
+import type { ContentCompactType } from '@vben-core/typings';
 
 import type { CSSProperties } from 'vue';
 import { computed } from 'vue';
 
-import { useContentHeightListener } from '@gva-core/composables';
+import { useContentHeightListener } from '@vben-core/composables';
 
 interface Props {
   /**
@@ -27,7 +27,14 @@ const props = withDefaults(defineProps<Props>(), {});
 const { contentElement } = useContentHeightListener();
 
 const style = computed((): CSSProperties => {
-  const { contentCompact, padding, paddingBottom, paddingLeft, paddingRight, paddingTop } = props;
+  const {
+    contentCompact,
+    padding,
+    paddingBottom,
+    paddingLeft,
+    paddingRight,
+    paddingTop,
+  } = props;
 
   const compactStyle: CSSProperties =
     contentCompact === 'compact'

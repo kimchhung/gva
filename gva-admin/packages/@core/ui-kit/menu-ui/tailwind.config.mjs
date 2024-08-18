@@ -1,1 +1,1 @@
-export { default } from '@gva/tailwind-config';
+export { default } from '@vben/tailwind-config';

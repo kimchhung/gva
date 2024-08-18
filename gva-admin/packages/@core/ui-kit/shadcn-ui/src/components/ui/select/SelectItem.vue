@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { CheckIcon } from '@radix-icons/vue';
 import {
@@ -12,7 +12,9 @@ import {
   useForwardProps,
 } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & SelectItemProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & SelectItemProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -29,7 +31,7 @@ const forwardedProps = useForwardProps(delegatedProps);
     :class="
       cn(
         'focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-        props.class
+        props.class,
       )
     "
   >

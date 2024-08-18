@@ -1,7 +1,7 @@
 import {
   addIcon,
   // addCollection
-} from '@gva-core/icons';
+} from '@vben-core/icons';
 
 let loaded = false;
 if (!loaded) {
@@ -53,6 +53,6 @@ async function loadSvgIcons() {
       return addIcon(`svg:${iconName}`, {
         body: typeof body === 'object' ? body.default : body,
       });
-    })
+    }),
   );
 }

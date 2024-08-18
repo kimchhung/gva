@@ -1,41 +1,41 @@
-import type { TabDefinition } from '@gva-core/typings';
+import type { TabDefinition } from '@vben-core/typings';
 import type { Router, RouteRecordNormalized } from 'vue-router';
 
 import { toRaw } from 'vue';
 
-import { openWindow, startProgress, stopProgress } from '@gva-core/shared';
+import { openWindow, startProgress, stopProgress } from '@vben-core/shared';
 
 import { acceptHMRUpdate, defineStore } from 'pinia';
 
 interface TabbarState {
   /**
-   * The currently opened tab list cache
+   * @zh_CN The currently opened tab list cache
    */
   cachedTabs: Set<string>;
   /**
-   * The index of dragging and dragging
+   * @zh_CN The index of dragging and dragging
    */
   dragEndIndex: number;
   /**
-   * The tab need to exclude the cache
+   * @zh_CN The tab need to exclude the cache
    */
   excludeCachedTabs: Set<string>;
   /**
-   * Whether to refresh
+   * @zh_CN Whether to refresh
    */
   renderRouteView?: boolean;
   /**
-   * List of the currently opened tab
+   * @zh_CN List of the currently opened tab
    */
   tabs: TabDefinition[];
   /**
-   * Update time, for some update scenarios, use Watch in -depth monitoring, will lose performance
+   * @zh_CN Update time, for some update scenarios, use Watch in -depth monitoring, will lose performance
    */
   updateTime?: number;
 }
 
 /**
- * View permissions related
+ * @zh_CN View permissions related
  */
 export const useTabbarStore = defineStore('core-tabbar', {
   actions: {
@@ -50,7 +50,7 @@ export const useTabbarStore = defineStore('core-tabbar', {
       this.updateCacheTab();
     },
     /**
-     * Close tab pages
+     * @zh_CN Close tab pages
      * @param tab
      */
     _close(tab: TabDefinition) {
@@ -62,19 +62,22 @@ export const useTabbarStore = defineStore('core-tabbar', {
       index !== -1 && this.tabs.splice(index, 1);
     },
     /**
-     * Jump to the default tab page
+     * @zh_CN 跳转到默认标签页
      */
     async _goToDefaultTab(router: Router) {
       if (this.getTabs.length <= 0) {
-        // TODO: Jump homepage
+        // TODO: 跳转首页
         return;
       }
       const firstTab = this.getTabs[0];
-      await this._goToTab(firstTab, router);
+      if (firstTab) {
+        await this._goToTab(firstTab, router);
+      }
     },
     /**
-     * Jump to the tab page
+     * @zh_CN 跳转到标签页
      * @param tab
+     * @param router
      */
     async _goToTab(tab: TabDefinition, router: Router) {
       const { params, path, query } = tab;
@@ -86,7 +89,7 @@ export const useTabbarStore = defineStore('core-tabbar', {
       await router.replace(toParams);
     },
     /**
-     * @zh_CN Add tab pages
+     * @zh_CN 添加标签页
      * @param routeTab
      */
     addTab(routeTab: TabDefinition) {
@@ -100,25 +103,29 @@ export const useTabbarStore = defineStore('core-tabbar', {
       });
 
       if (tabIndex === -1) {
-        //Get the dynamic route opening number, exceeding 0 means that the number of open numbers need to be controlled
-        const maxNumOfOpenTab = (routeTab?.meta?.maxNumOfOpenTab ?? -1) as number;
-        // If the dynamic routing level is greater than 0, then the number of openings of the route must be limited.
-        // Get the number of dynamic routing that has been opened to determine whether it is greater than a certain value
+        // 获取动态路由打开数，超过 0 即代表需要控制打开数
+        const maxNumOfOpenTab = (routeTab?.meta?.maxNumOfOpenTab ??
+          -1) as number;
+        // 如果动态路由层级大于 0 了，那么就要限制该路由的打开数限制了
+        // 获取到已经打开的动态路由数, 判断是否大于某一个值
         if (
           maxNumOfOpenTab > 0 &&
-          this.tabs.filter((tab) => tab.name === routeTab.name).length >= maxNumOfOpenTab
+          this.tabs.filter((tab) => tab.name === routeTab.name).length >=
+            maxNumOfOpenTab
         ) {
           // 关闭第一个
-          const index = this.tabs.findIndex((item) => item.name === routeTab.name);
+          const index = this.tabs.findIndex(
+            (item) => item.name === routeTab.name,
+          );
           index !== -1 && this.tabs.splice(index, 1);
         }
 
         this.tabs.push(tab);
       } else {
-        //The page has already existed, and the tab is not repeated, only update the tab parameter
+        // 页面已经存在，不重复添加选项卡，只更新选项卡参数
         const currentTab = toRaw(this.tabs)[tabIndex];
         const mergedTab = { ...currentTab, ...tab };
-        if (Reflect.has(currentTab.meta, 'affixTab')) {
+        if (currentTab && Reflect.has(currentTab.meta, 'affixTab')) {
           mergedTab.meta.affixTab = currentTab.meta.affixTab;
         }
         this.tabs.splice(tabIndex, 1, mergedTab);
@@ -126,7 +133,7 @@ export const useTabbarStore = defineStore('core-tabbar', {
       this.updateCacheTab();
     },
     /**
-     * Turn off all tab pages
+     * @zh_CN 关闭所有标签页
      */
     async closeAllTabs(router: Router) {
       this.tabs = this.tabs.filter((tab) => isAffixTab(tab));
@@ -134,11 +141,13 @@ export const useTabbarStore = defineStore('core-tabbar', {
       this.updateCacheTab();
     },
     /**
-     * Turn off the left tab page
+     * @zh_CN 关闭左侧标签页
      * @param tab
      */
     async closeLeftTabs(tab: TabDefinition) {
-      const index = this.tabs.findIndex((item) => getTabPath(item) === getTabPath(tab));
+      const index = this.tabs.findIndex(
+        (item) => getTabPath(item) === getTabPath(tab),
+      );
 
       if (index < 1) {
         return;
@@ -155,7 +164,7 @@ export const useTabbarStore = defineStore('core-tabbar', {
       await this._bulkCloseByPaths(paths);
     },
     /**
-     * @zh_CN Turn off other tag pages
+     * @zh_CN 关闭其他标签页
      * @param tab
      */
     async closeOtherTabs(tab: TabDefinition) {
@@ -177,11 +186,13 @@ export const useTabbarStore = defineStore('core-tabbar', {
       await this._bulkCloseByPaths(paths);
     },
     /**
-     * @zh_CN Turn off the right tab page
+     * @zh_CN 关闭右侧标签页
      * @param tab
      */
     async closeRightTabs(tab: TabDefinition) {
-      const index = this.tabs.findIndex((item) => getTabPath(item) === getTabPath(tab));
+      const index = this.tabs.findIndex(
+        (item) => getTabPath(item) === getTabPath(tab),
+      );
 
       if (index >= 0 && index < this.tabs.length - 1) {
         const rightTabs = this.tabs.slice(index + 1);
@@ -197,31 +208,31 @@ export const useTabbarStore = defineStore('core-tabbar', {
     },
 
     /**
-     * @zh_CN Close tab pages
+     * @zh_CN 关闭标签页
      * @param tab
      * @param router
      */
     async closeTab(tab: TabDefinition, router: Router) {
       const { currentRoute } = router;
 
-      // Closing is not the activation tab
+      // 关闭不是激活选项卡
       if (getTabPath(currentRoute.value) !== getTabPath(tab)) {
         this._close(tab);
         this.updateCacheTab();
         return;
       }
       const index = this.getTabs.findIndex(
-        (item) => getTabPath(item) === getTabPath(currentRoute.value)
+        (item) => getTabPath(item) === getTabPath(currentRoute.value),
       );
 
       const before = this.getTabs[index - 1];
       const after = this.getTabs[index + 1];
 
-      // The next TAB exists, jump to the next one
+      // 下一个tab存在，跳转到下一个
       if (after) {
         this._close(currentRoute.value);
         await this._goToTab(after, router);
-        // The previous TAB exists, jump to the previous one
+        // 上一个tab存在，跳转到上一个
       } else if (before) {
         this._close(currentRoute.value);
         await this._goToTab(before, router);
@@ -231,43 +242,54 @@ export const useTabbarStore = defineStore('core-tabbar', {
     },
 
     /**
-     * Close the tab via Key
+     * @zh_CN 通过key关闭标签页
      * @param key
+     * @param router
      */
     async closeTabByKey(key: string, router: Router) {
-      const index = this.tabs.findIndex((item) => getTabPath(item) === key);
+      const originKey = decodeURIComponent(key);
+      const index = this.tabs.findIndex(
+        (item) => getTabPath(item) === originKey,
+      );
       if (index === -1) {
         return;
       }
 
-      await this.closeTab(this.tabs[index], router);
+      const tab = this.tabs[index];
+      if (tab) {
+        await this.closeTab(tab, router);
+      }
     },
 
     /**
-     * Get the tab page according to the path
+     * 根据路径获取标签页
      * @param path
      */
     getTabByPath(path: string) {
-      return this.getTabs.find((item) => getTabPath(item) === path) as TabDefinition;
+      return this.getTabs.find(
+        (item) => getTabPath(item) === path,
+      ) as TabDefinition;
     },
     /**
-     * @zh_CN New window open tab
+     * @zh_CN 新窗口打开标签页
      * @param tab
      */
     async openTabInNewWindow(tab: TabDefinition) {
       const { hash, origin } = location;
-      const path = tab.fullPath;
+      const path = tab.fullPath || tab.path;
       const fullPath = path.startsWith('/') ? path : `/${path}`;
       const url = `${origin}${hash ? '/#' : ''}${fullPath}`;
       openWindow(url, { target: '_blank' });
     },
 
     /**
-     * @zh_CN Fixed tab page
+     * @zh_CN 固定标签页
      * @param tab
      */
     async pinTab(tab: TabDefinition) {
-      const index = this.tabs.findIndex((item) => getTabPath(item) === getTabPath(tab));
+      const index = this.tabs.findIndex(
+        (item) => getTabPath(item) === getTabPath(tab),
+      );
       if (index !== -1) {
         tab.meta.affixTab = true;
         // this.addTab(tab);
@@ -300,7 +322,9 @@ export const useTabbarStore = defineStore('core-tabbar', {
       if (!tab?.meta?.newTabTitle) {
         return;
       }
-      const findTab = this.tabs.find((item) => getTabPath(item) === getTabPath(tab));
+      const findTab = this.tabs.find(
+        (item) => getTabPath(item) === getTabPath(tab),
+      );
       if (findTab) {
         findTab.meta.newTabTitle = undefined;
         await this.updateCacheTab();
@@ -324,7 +348,9 @@ export const useTabbarStore = defineStore('core-tabbar', {
      * @param title
      */
     async setTabTitle(tab: TabDefinition, title: string) {
-      const findTab = this.tabs.find((item) => getTabPath(item) === getTabPath(tab));
+      const findTab = this.tabs.find(
+        (item) => getTabPath(item) === getTabPath(tab),
+      );
 
       if (findTab) {
         findTab.meta.newTabTitle = title;
@@ -343,6 +369,9 @@ export const useTabbarStore = defineStore('core-tabbar', {
      */
     async sortTabs(oldIndex: number, newIndex: number) {
       const currentTab = this.tabs[oldIndex];
+      if (!currentTab) {
+        return;
+      }
       this.tabs.splice(oldIndex, 1);
       this.tabs.splice(newIndex, 0, currentTab);
       this.dragEndIndex = this.dragEndIndex + 1;
@@ -362,7 +391,9 @@ export const useTabbarStore = defineStore('core-tabbar', {
      * @param tab
      */
     async unpinTab(tab: TabDefinition) {
-      const index = this.tabs.findIndex((item) => getTabPath(item) === getTabPath(tab));
+      const index = this.tabs.findIndex(
+        (item) => getTabPath(item) === getTabPath(tab),
+      );
 
       if (index !== -1) {
         tab.meta.affixTab = false;

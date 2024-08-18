@@ -1,12 +1,12 @@
 /**
- * @zh_CN Landing page URL address
+ * @zh_CN 登陆页面 url 地址
  */
 export const LOGIN_PATH = '/auth/login';
 
 /**
- * @zh_CN Default homepage address
+ * @zh_CN 默认首页地址
  */
-export const DEFAULT_HOME_PATH = '/home';
+export const DEFAULT_HOME_PATH = '/analytics';
 
 export interface LanguageOption {
   label: string;

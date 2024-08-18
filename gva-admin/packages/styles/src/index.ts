@@ -1,1 +1,1 @@
-import '@gva-core/design';
+import '@vben-core/design';

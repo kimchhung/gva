@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 
-import { getPackagesSync } from '@gva/node-utils';
+import { getPackagesSync } from '@vben/node-utils';
 
 const { packages } = getPackagesSync();
 
@@ -145,7 +145,6 @@ const userConfig = {
         'revert',
         'types',
         'release',
-        'improvement',
       ],
     ],
   },

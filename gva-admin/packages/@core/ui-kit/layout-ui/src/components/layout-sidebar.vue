@@ -2,7 +2,7 @@
 import type { CSSProperties } from 'vue';
 import { computed, shallowRef, useSlots, watchEffect } from 'vue';
 
-import { VbenScrollbar } from '@gva-core/shadcn-ui';
+import { VbenScrollbar } from '@vben-core/shadcn-ui';
 
 import { SidebarCollapseButton, SidebarFixedButton } from './widgets';
 
@@ -195,9 +195,7 @@ watchEffect(() => {
 function calcMenuWidthStyle(isHiddenDom: boolean): CSSProperties {
   const { extraWidth, fixedExtra, isSidebarMixed, show, width } = props;
 
-  let widthValue = `${
-    width + (isSidebarMixed && fixedExtra && extraVisible.value ? extraWidth : 0)
-  }px`;
+  let widthValue = `${width + (isSidebarMixed && fixedExtra && extraVisible.value ? extraWidth : 0)}px`;
 
   const { collapseWidth } = props;
 
@@ -289,7 +287,10 @@ function handleMouseleave() {
         v-model:collapsed="extraCollapse"
       />
 
-      <SidebarFixedButton v-if="!extraCollapse" v-model:expand-on-hover="expandOnHover" />
+      <SidebarFixedButton
+        v-if="!extraCollapse"
+        v-model:expand-on-hover="expandOnHover"
+      />
       <div v-if="!extraCollapse" :style="extraTitleStyle" class="pl-2">
         <slot name="extra-title"></slot>
       </div>

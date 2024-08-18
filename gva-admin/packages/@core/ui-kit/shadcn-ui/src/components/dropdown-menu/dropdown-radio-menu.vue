@@ -7,7 +7,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@gva-core/shadcn-ui/components/ui/dropdown-menu';
+} from '../ui/dropdown-menu';
 
 interface Props extends DropdownMenuProps {}
 
@@ -29,7 +29,11 @@ function handleItemClick(value: string) {
       <DropdownMenuGroup>
         <template v-for="menu in menus" :key="menu.key">
           <DropdownMenuItem
-            :class="menu.value === modelValue ? 'bg-accent text-accent-foreground' : ''"
+            :class="
+              menu.value === modelValue
+                ? 'bg-accent text-accent-foreground'
+                : ''
+            "
             class="data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground text-foreground/80 mb-1 cursor-pointer"
             @click="handleItemClick(menu.value)"
           >

@@ -13,13 +13,17 @@ interface BasicUserInfo {
    */
   avatar: string;
   /**
-   * User's Nickname
+   * User nickname
    */
-  name: string;
+  realName: string;
+  /**
+   * User role
+   */
+  roles?: string[];
   /**
    * User ID
    */
-  id: string;
+  userId: string;
   /**
    * username
    */

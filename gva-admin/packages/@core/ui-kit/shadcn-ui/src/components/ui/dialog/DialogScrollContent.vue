@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import {
   DialogClose,
@@ -13,7 +13,9 @@ import {
   useForwardPropsEmits,
 } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & DialogContentProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & DialogContentProps
+>();
 const emits = defineEmits<DialogContentEmits>();
 
 const delegatedProps = computed(() => {
@@ -34,7 +36,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
         :class="
           cn(
             'border-border bg-background relative z-50 my-8 grid w-full max-w-lg gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg md:w-full',
-            props.class
+            props.class,
           )
         "
         v-bind="forwarded"

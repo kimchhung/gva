@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import type { PinInputProps } from './interface';
+import type { PinInputProps } from './types';
 
 import { computed, ref, watch } from 'vue';
 
-import { VbenButton } from '@gva-core/shadcn-ui/components/button';
-import {
-  PinInput,
-  PinInputGroup,
-  PinInputInput,
-} from '@gva-core/shadcn-ui/components/ui/pin-input';
+import { VbenButton } from '../button';
+import { PinInput, PinInputGroup, PinInputInput } from '../ui/pin-input';
 
 defineOptions({
   inheritAttrs: false,
@@ -39,7 +35,7 @@ watch(
   () => modelValue.value,
   () => {
     inputValue.value = modelValue.value?.split('') ?? [];
-  }
+  },
 );
 
 function handleComplete(e: string[]) {
@@ -64,7 +60,11 @@ function handleComplete(e: string[]) {
       @complete="handleComplete"
     >
       <PinInputGroup>
-        <PinInputInput v-for="(id, index) in codeLength" :key="id" :index="index" />
+        <PinInputInput
+          v-for="(id, index) in codeLength"
+          :key="id"
+          :index="index"
+        />
       </PinInputGroup>
       <VbenButton
         :loading="btnLoading"
@@ -76,7 +76,10 @@ function handleComplete(e: string[]) {
         {{ btnText }}
       </VbenButton>
     </PinInput>
-    <p v-if="status === 'error'" class="text-destructive bottom-130 absolute mt-1 text-xs">
+    <p
+      v-if="status === 'error'"
+      class="text-destructive bottom-130 absolute mt-1 text-xs"
+    >
       {{ errorTip }}
     </p>
   </div>

@@ -1,17 +1,20 @@
-import type { BasicUserInfo } from '@gva-core/typings';
+import type { BasicUserInfo } from '@vben-core/typings';
 
-/** User Info */
+/** 用户信息 */
 interface UserInfo extends BasicUserInfo {
-  id: string;
-
-  // default redirect
-  homePath?: string;
+  /**
+   * User description
+   */
+  desc: string;
+  /**
+   * Home address
+   */
+  homePath: string;
 
   /**
    * accessToken
    */
-  token?: string;
-  [key: string]: any;
+  token: string;
 }
 
 export type { UserInfo };

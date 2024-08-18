@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MdiPin, MdiPinOff } from '@gva-core/icons';
+import { MdiPin, MdiPinOff } from '@vben-core/icons';
 
 const expandOnHover = defineModel<boolean>('expandOnHover');
 

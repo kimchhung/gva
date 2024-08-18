@@ -1,4 +1,4 @@
-import type { MenuRecordRaw } from '@gva-core/typings';
+import type { MenuRecordRaw } from '@vben-core/typings';
 import type { RouteRecordRaw } from 'vue-router';
 
 import { acceptHMRUpdate, defineStore } from 'pinia';
@@ -57,7 +57,7 @@ export const useAccessStore = defineStore('core-access', {
     },
   },
   persist: {
-    // Endurance
+    // 持久化
     paths: ['accessToken', 'refreshToken', 'accessCodes'],
   },
   state: (): AccessState => ({
@@ -70,7 +70,7 @@ export const useAccessStore = defineStore('core-access', {
   }),
 });
 
-// Solve the problem of hot updates
+// 解决热更新问题
 const hot = import.meta.hot;
 if (hot) {
   hot.accept(acceptHMRUpdate(useAccessStore, hot));

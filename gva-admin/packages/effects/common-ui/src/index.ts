@@ -1,4 +1,3 @@
-
-export * from './authentication';
-export * from './fallback';
-export { useToast } from '@gva-core/shadcn-ui';
+export * from './components';
+export * from './ui';
+export { useToast } from '@vben-core/shadcn-ui';

@@ -3,7 +3,7 @@ import type { Config } from 'tailwindcss';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { getPackagesSync } from '@gva/node-utils';
+import { getPackagesSync } from '@vben/node-utils';
 
 import { addDynamicIconSelectors } from '@iconify/tailwind';
 import typographyPlugin from '@tailwindcss/typography';
@@ -18,7 +18,7 @@ const { packages } = getPackagesSync();
 const tailwindPackages: string[] = [];
 
 packages.forEach((pkg) => {
-  // apps目录下和 @gva-core/tailwind-ui 包需要使用到 tailwindcss ui
+  // apps目录下和 @vben-core/tailwind-ui 包需要使用到 tailwindcss ui
   if (fs.existsSync(path.join(pkg.dir, 'tailwind.config.mjs'))) {
     tailwindPackages.push(pkg.dir);
   }
@@ -76,12 +76,12 @@ const shadcnUiColors = {
 };
 
 const customColors = {
-  authentication: {
-    DEFAULT: 'hsl(var(--authentication))',
-  },
   green: {
     ...createColorsPalette('green'),
     foreground: 'hsl(var(--success-foreground))',
+  },
+  header: {
+    DEFAULT: 'hsl(var(--header))',
   },
   heavy: {
     DEFAULT: 'hsl(var(--heavy))',
@@ -117,11 +117,16 @@ export default {
   content: [
     './index.html',
     ...tailwindPackages.map((item) =>
-      path.join(item, 'src/**/*.{vue,js,ts,jsx,tsx,svelte,astro,html}')
+      path.join(item, 'src/**/*.{vue,js,ts,jsx,tsx,svelte,astro,html}'),
     ),
   ],
   darkMode: 'selector',
-  plugins: [animate, typographyPlugin, addDynamicIconSelectors(), enterAnimationPlugin],
+  plugins: [
+    animate,
+    typographyPlugin,
+    addDynamicIconSelectors(),
+    enterAnimationPlugin,
+  ],
   prefix: '',
   safelist: ['dark'],
   theme: {
@@ -140,6 +145,7 @@ export default {
         'collapsible-up': 'collapsible-up 0.2s ease-in-out',
         float: 'float 5s linear 0ms infinite',
       },
+
       animationDuration: {
         '2000': '2000ms',
         '3000': '3000ms',
@@ -149,6 +155,11 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
         xl: 'calc(var(--radius) + 4px)',
+      },
+      boxShadow: {
+        float: `0 6px 16px 0 rgb(0 0 0 / 8%),
+          0 3px 6px -4px rgb(0 0 0 / 12%),
+          0 9px 28px 8px rgb(0 0 0 / 5%)`,
       },
       colors: {
         ...customColors,

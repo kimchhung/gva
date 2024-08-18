@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MdiMenuClose, MdiMenuOpen } from '@gva-core/icons';
+import { MdiMenuClose, MdiMenuOpen } from '@vben-core/icons';
 
 const collapsed = defineModel<boolean>('collapsed');
 

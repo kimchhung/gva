@@ -6,9 +6,9 @@ interface BasicUserInfo {
    */
   avatar: string;
   /**
-   * User's Nickname
+   * User nickname
    */
-  name: string;
+  realName: string;
   /**
    * User role
    */
@@ -16,7 +16,7 @@ interface BasicUserInfo {
   /**
    * User ID
    */
-  id: string;
+  userId: string;
   /**
    * username
    */
@@ -25,7 +25,7 @@ interface BasicUserInfo {
 
 interface AccessState {
   /**
-   * User Info
+   * User information
    */
   userInfo: BasicUserInfo | null;
   /**
@@ -35,7 +35,7 @@ interface AccessState {
 }
 
 /**
- *  User information related
+ * @zh_CN User information related
  */
 export const useUserStore = defineStore('core-user', {
   actions: {

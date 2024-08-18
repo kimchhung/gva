@@ -1,11 +1,11 @@
 {
-  "name": "@gva-core/composables",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben-core/composables",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "packages/@core/composables"
   },
   "license": "MIT",
@@ -35,11 +35,11 @@
     }
   },
   "dependencies": {
-    "@gva-core/shared": "workspace:*",
-    "@vueuse/core": "^10.11.0",
-    "radix-vue": "^1.9.2",
+    "@vben-core/shared": "workspace:*",
+    "@vueuse/core": "^10.11.1",
+    "radix-vue": "^1.9.3",
     "sortablejs": "^1.15.2",
-    "vue": "^3.4.35"
+    "vue": "^3.4.37"
   },
   "devDependencies": {
     "@types/sortablejs": "^1.15.8"

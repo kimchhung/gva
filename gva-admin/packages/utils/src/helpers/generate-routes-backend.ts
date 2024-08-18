@@ -1,17 +1,17 @@
-import type { RouteRecordRaw } from 'vue-router';
-
-import { mapTree } from '@gva-core/shared';
-import {
+import type {
   ComponentRecordType,
   GenerateMenuAndRoutesOptions,
   RouteRecordStringComponent,
-} from '@gva-core/typings';
+} from '@vben-core/typings';
+import type { RouteRecordRaw } from 'vue-router';
+
+import { mapTree } from '@vben-core/shared';
 
 /**
  * 动态生成路由 - 后端方式
  */
 async function generateRoutesByBackend(
-  options: GenerateMenuAndRoutesOptions
+  options: GenerateMenuAndRoutesOptions,
 ): Promise<RouteRecordRaw[]> {
   const { fetchMenuListAsync, layoutMap = {}, pageMap = {} } = options;
 
@@ -39,7 +39,7 @@ async function generateRoutesByBackend(
 function convertRoutes(
   routes: RouteRecordStringComponent[],
   layoutMap: ComponentRecordType,
-  pageMap: ComponentRecordType
+  pageMap: ComponentRecordType,
 ): RouteRecordRaw[] {
   return mapTree(routes, (node) => {
     const route = node as unknown as RouteRecordRaw;
@@ -56,7 +56,11 @@ function convertRoutes(
     } else if (component) {
       const normalizePath = normalizeViewPath(component);
       route.component =
-        pageMap[normalizePath.endsWith('.vue') ? normalizePath : `${normalizePath}.vue`];
+        pageMap[
+          normalizePath.endsWith('.vue')
+            ? normalizePath
+            : `${normalizePath}.vue`
+        ];
     }
 
     return route;
@@ -68,7 +72,9 @@ function normalizeViewPath(path: string): string {
   const normalizedPath = path.replace(/^(\.\/|\.\.\/)+/, '');
 
   // 确保路径以 '/' 开头
-  const viewPath = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+  const viewPath = normalizedPath.startsWith('/')
+    ? normalizedPath
+    : `/${normalizedPath}`;
 
   // TODO: 这里耦合了vben-admin的目录结构
   return viewPath.replace(/^\/views/, '');

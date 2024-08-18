@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
-import { DialogDescription, type DialogDescriptionProps, useForwardProps } from 'radix-vue';
+import {
+  DialogDescription,
+  type DialogDescriptionProps,
+  useForwardProps,
+} from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & DialogDescriptionProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & DialogDescriptionProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;

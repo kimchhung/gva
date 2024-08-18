@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { SelectGroup, type SelectGroupProps } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & SelectGroupProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & SelectGroupProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;

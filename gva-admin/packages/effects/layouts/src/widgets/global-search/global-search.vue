@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import type { MenuRecordRaw } from '@gva/types';
+import type { MenuRecordRaw } from '@vben/types';
 
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
-import { ArrowDown, ArrowUp, CornerDownLeft, MdiKeyboardEsc, Search } from '@gva/icons';
-import { $t } from '@gva/locales';
-import { isWindowsOs } from '@gva/utils';
+import {
+  ArrowDown,
+  ArrowUp,
+  CornerDownLeft,
+  MdiKeyboardEsc,
+  Search,
+} from '@vben/icons';
+import { $t } from '@vben/locales';
+import { isWindowsOs } from '@vben/utils';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@gva-core/shadcn-ui';
+} from '@vben-core/shadcn-ui';
 
 import { useMagicKeys, useToggle, whenever } from '@vueuse/core';
 
@@ -24,10 +30,13 @@ defineOptions({
   name: 'GlobalSearch',
 });
 
-const props = withDefaults(defineProps<{ enableShortcutKey?: boolean; menus: MenuRecordRaw[] }>(), {
-  enableShortcutKey: true,
-  menus: () => [],
-});
+const props = withDefaults(
+  defineProps<{ enableShortcutKey?: boolean; menus: MenuRecordRaw[] }>(),
+  {
+    enableShortcutKey: true,
+    menus: () => [],
+  },
+);
 
 const [open, toggleOpen] = useToggle();
 const keyword = ref('');
@@ -40,7 +49,7 @@ function handleClose() {
 
 const keys = useMagicKeys();
 const cmd = isWindowsOs() ? keys['ctrl+k'] : keys['cmd+k'];
-whenever(cmd, () => {
+whenever(cmd!, () => {
   if (props.enableShortcutKey) {
     open.value = true;
   }
@@ -108,7 +117,9 @@ onMounted(() => {
         @close="handleClose"
       >
         <DialogHeader>
-          <DialogTitle class="border-border flex h-12 items-center gap-3 border-b px-5 font-normal">
+          <DialogTitle
+            class="border-border flex h-12 items-center gap-3 border-b px-5 font-normal"
+          >
             <Search class="text-muted-foreground size-4" />
             <input
               ref="searchInputRef"

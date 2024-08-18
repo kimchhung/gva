@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 
-import { diff } from '@gva-core/shared';
+import { diff } from '@vben-core/shared';
 
 import { preferencesManager } from './preferences';
 import { isDarkTheme } from './update-css-variables';
@@ -39,32 +39,44 @@ function usePreferences() {
   /**
    * @zh_CN 布局方式
    */
-  const layout = computed(() => (isMobile.value ? 'sidebar-nav' : appPreferences.value.layout));
+  const layout = computed(() =>
+    isMobile.value ? 'sidebar-nav' : appPreferences.value.layout,
+  );
 
   /**
    * @zh_CN 是否全屏显示content，不需要侧边、底部、顶部、tab区域
    */
-  const isFullContent = computed(() => appPreferences.value.layout === 'full-content');
+  const isFullContent = computed(
+    () => appPreferences.value.layout === 'full-content',
+  );
 
   /**
    * @zh_CN 是否侧边导航模式
    */
-  const isSideNav = computed(() => appPreferences.value.layout === 'sidebar-nav');
+  const isSideNav = computed(
+    () => appPreferences.value.layout === 'sidebar-nav',
+  );
 
   /**
    * @zh_CN 是否侧边混合模式
    */
-  const isSideMixedNav = computed(() => appPreferences.value.layout === 'sidebar-mixed-nav');
+  const isSideMixedNav = computed(
+    () => appPreferences.value.layout === 'sidebar-mixed-nav',
+  );
 
   /**
    * @zh_CN 是否为头部导航模式
    */
-  const isHeaderNav = computed(() => appPreferences.value.layout === 'header-nav');
+  const isHeaderNav = computed(
+    () => appPreferences.value.layout === 'header-nav',
+  );
 
   /**
    * @zh_CN 是否为混合导航模式
    */
-  const isMixedNav = computed(() => appPreferences.value.layout === 'mixed-nav');
+  const isMixedNav = computed(
+    () => appPreferences.value.layout === 'mixed-nav',
+  );
 
   /**
    * @zh_CN 是否包含侧边导航模式
@@ -81,7 +93,9 @@ function usePreferences() {
    * @zh_CN 是否开启keep-alive
    * 在tabs可见以及开启keep-alive的情况下才开启
    */
-  const keepAlive = computed(() => preferences.tabbar.enable && preferences.tabbar.keepAlive);
+  const keepAlive = computed(
+    () => preferences.tabbar.enable && preferences.tabbar.keepAlive,
+  );
 
   /**
    * @zh_CN 登录注册页面布局是否为左侧

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { MenuRecordRaw } from '@gva-core/typings';
+import type { MenuRecordRaw } from '@vben-core/typings';
 
 import { computed } from 'vue';
 
-import { VbenMenuBadge } from '@gva-core/shadcn-ui';
+import { VbenMenuBadge } from '@vben-core/shadcn-ui';
 
 import { MenuItem, SubMenu as SubMenuComp } from './components';
 // eslint-disable-next-line import/no-self-import
@@ -27,7 +27,9 @@ const props = withDefaults(defineProps<Props>(), {});
  */
 const hasChildren = computed(() => {
   const { menu } = props;
-  return Reflect.has(menu, 'children') && !!menu.children && menu.children.length > 0;
+  return (
+    Reflect.has(menu, 'children') && !!menu.children && menu.children.length > 0
+  );
 });
 
 // function menuIcon(menu: MenuRecordRaw) {

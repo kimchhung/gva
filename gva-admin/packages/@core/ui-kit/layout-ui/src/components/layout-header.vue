@@ -2,8 +2,8 @@
 import type { CSSProperties } from 'vue';
 import { computed, useSlots } from 'vue';
 
-import { Menu } from '@gva-core/icons';
-import { VbenIconButton } from '@gva-core/shadcn-ui';
+import { Menu } from '@vben-core/icons';
+import { VbenIconButton } from '@vben-core/shadcn-ui';
 
 interface Props {
   /**

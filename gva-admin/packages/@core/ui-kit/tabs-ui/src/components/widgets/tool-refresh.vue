@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { RotateCw } from '@gva-core/icons';
+import { RotateCw } from '@vben-core/icons';
 
 const emit = defineEmits<{ refresh: [] }>();
 

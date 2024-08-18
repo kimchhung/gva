@@ -3,9 +3,9 @@ import type { MenuItemProps } from '../interface';
 
 import { computed } from 'vue';
 
-import { useNamespace } from '@gva-core/composables';
-import { ChevronDown, ChevronRight } from '@gva-core/icons';
-import { VbenIcon } from '@gva-core/shadcn-ui';
+import { useNamespace } from '@vben-core/composables';
+import { ChevronDown, ChevronRight } from '@vben-core/icons';
+import { VbenIcon } from '@vben-core/shadcn-ui';
 
 import { useMenuContext } from '../hooks';
 
@@ -39,7 +39,9 @@ const isFirstLevel = computed(() => {
 });
 
 const getCollapseShowTitle = computed(() => {
-  return rootMenu.props.collapseShowTitle && isFirstLevel.value && collapse.value;
+  return (
+    rootMenu.props.collapseShowTitle && isFirstLevel.value && collapse.value
+  );
 });
 
 const mode = computed(() => {
@@ -52,7 +54,10 @@ const showArrowIcon = computed(() => {
 
 const hiddenTitle = computed(() => {
   return (
-    mode.value === 'vertical' && isFirstLevel.value && collapse.value && !getCollapseShowTitle.value
+    mode.value === 'vertical' &&
+    isFirstLevel.value &&
+    collapse.value &&
+    !getCollapseShowTitle.value
   );
 });
 
@@ -68,10 +73,21 @@ const iconArrowStyle = computed(() => {
 });
 </script>
 <template>
-  <div :class="[b(), is('collapse-show-title', getCollapseShowTitle), is('more', isMenuMore)]">
+  <div
+    :class="[
+      b(),
+      is('collapse-show-title', getCollapseShowTitle),
+      is('more', isMenuMore),
+    ]"
+  >
     <slot></slot>
 
-    <VbenIcon v-if="!isMenuMore" :class="nsMenu.e('icon')" :icon="icon" fallback />
+    <VbenIcon
+      v-if="!isMenuMore"
+      :class="nsMenu.e('icon')"
+      :icon="icon"
+      fallback
+    />
 
     <div v-if="!hiddenTitle" :class="[e('title')]">
       <slot name="title"></slot>

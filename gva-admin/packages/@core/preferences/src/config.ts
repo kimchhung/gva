@@ -9,7 +9,8 @@ const defaultPreferences: Preferences = {
     colorWeakMode: false,
     compact: false,
     contentCompact: 'wide',
-    defaultAvatar: 'https://unpkg.com/@vbenjs/static-source@0.1.5/source/avatar-v1.webp',
+    defaultAvatar:
+      'https://unpkg.com/@vbenjs/static-source@0.1.5/source/avatar-v1.webp',
     dynamicTitle: true,
     enableCheckUpdates: true,
     enablePreferences: true,
@@ -28,8 +29,8 @@ const defaultPreferences: Preferences = {
     styleType: 'normal',
   },
   copyright: {
-    companyName: 'Vben',
-    companySiteLink: 'https://www.gva.pro',
+    companyName: 'Lottery Data',
+    companySiteLink: '#',
     date: '2024',
     enable: true,
     icp: '',
@@ -46,7 +47,7 @@ const defaultPreferences: Preferences = {
   },
   logo: {
     enable: true,
-    source: 'https://unpkg.com/@vbenjs/static-source@0.1.5/source/logo-v1.webp',
+    source: '/src/assets/eastlottery_ico.png',
   },
   navigation: {
     accordion: true,

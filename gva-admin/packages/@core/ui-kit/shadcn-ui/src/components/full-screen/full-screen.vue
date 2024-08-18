@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Maximize, Minimize } from '@gva-core/icons';
+import { Maximize, Minimize } from '@vben-core/icons';
 
 import { useFullscreen } from '@vueuse/core';
 

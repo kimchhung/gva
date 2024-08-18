@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 import type { NotificationItem } from './types';
 
-import { Bell, MailCheck } from '@gva/icons';
-import { $t } from '@gva/locales';
-import { VbenButton, VbenIconButton, VbenPopover, VbenScrollbar } from '@gva-core/shadcn-ui';
+import { Bell, MailCheck } from '@vben/icons';
+import { $t } from '@vben/locales';
+import {
+  VbenButton,
+  VbenIconButton,
+  VbenPopover,
+  VbenScrollbar,
+} from '@vben-core/shadcn-ui';
 
 import { useToggle } from '@vueuse/core';
 
@@ -56,11 +61,17 @@ function handleClick(item: NotificationItem) {
 }
 </script>
 <template>
-  <VbenPopover v-model:open="open" content-class="relative right-2 w-[360px] p-0">
+  <VbenPopover
+    v-model:open="open"
+    content-class="relative right-2 w-[360px] p-0"
+  >
     <template #trigger>
       <div class="flex-center mr-2 h-full" @click.stop="toggle()">
         <VbenIconButton class="bell-button relative">
-          <span v-if="dot" class="bg-primary absolute right-0.5 top-0.5 h-2 w-2 rounded"></span>
+          <span
+            v-if="dot"
+            class="bg-primary absolute right-0.5 top-0.5 h-2 w-2 rounded"
+          ></span>
           <Bell class="size-4" />
         </VbenIconButton>
       </div>
@@ -69,7 +80,10 @@ function handleClick(item: NotificationItem) {
     <div class="relative">
       <div class="flex items-center justify-between p-4 py-3">
         <div class="text-foreground">{{ $t('widgets.notifications') }}</div>
-        <VbenIconButton :tooltip="$t('widgets.markAllAsRead')" @click="handleMakeAll">
+        <VbenIconButton
+          :tooltip="$t('widgets.markAllAsRead')"
+          @click="handleMakeAll"
+        >
           <MailCheck class="size-4" />
         </VbenIconButton>
       </div>
@@ -85,7 +99,9 @@ function handleClick(item: NotificationItem) {
                 class="bg-primary absolute right-2 top-2 h-2 w-2 rounded"
               ></span>
 
-              <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+              <span
+                class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+              >
                 <img
                   :src="item.avatar"
                   class="aspect-square h-full w-full object-cover"
@@ -112,7 +128,9 @@ function handleClick(item: NotificationItem) {
         </div>
       </template>
 
-      <div class="border-border flex items-center justify-between border-t px-4 py-3">
+      <div
+        class="border-border flex items-center justify-between border-t px-4 py-3"
+      >
         <VbenButton size="sm" variant="ghost" @click="handleClear">
           {{ $t('widgets.clearNotifications') }}
         </VbenButton>

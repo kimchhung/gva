@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import {
   ScrollAreaCorner,
@@ -22,7 +22,7 @@ const props = withDefaults(
   >(),
   {
     onScroll: () => {},
-  }
+  },
 );
 
 const delegatedProps = computed(() => {
@@ -32,8 +32,15 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <ScrollAreaRoot v-bind="delegatedProps" :class="cn('relative overflow-hidden', props.class)">
-    <ScrollAreaViewport as-child class="h-full w-full rounded-[inherit]" @scroll="onScroll">
+  <ScrollAreaRoot
+    v-bind="delegatedProps"
+    :class="cn('relative overflow-hidden', props.class)"
+  >
+    <ScrollAreaViewport
+      as-child
+      class="h-full w-full rounded-[inherit]"
+      @scroll="onScroll"
+    >
       <slot></slot>
     </ScrollAreaViewport>
     <ScrollBar />

@@ -1,11 +1,11 @@
 {
-  "name": "@gva/hooks",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben/hooks",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "packages/effects/hooks"
   },
   "license": "MIT",
@@ -20,13 +20,13 @@
     }
   },
   "dependencies": {
-    "@gva-core/composables": "workspace:*",
-    "@gva/preferences": "workspace:*",
-    "@gva/stores": "workspace:*",
-    "@gva/types": "workspace:*",
-    "@gva/utils": "workspace:*",
-    "vue": "^3.4.35",
-    "vue-router": "^4.4.2",
+    "@vben-core/composables": "workspace:*",
+    "@vben/preferences": "workspace:*",
+    "@vben/stores": "workspace:*",
+    "@vben/types": "workspace:*",
+    "@vben/utils": "workspace:*",
+    "vue": "^3.4.37",
+    "vue-router": "^4.4.3",
     "watermark-js-plus": "^1.5.2"
   }
 }

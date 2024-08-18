@@ -20,13 +20,13 @@ async function loadLocaleMessages(lang: SupportedLanguagesType) {
 }
 
 async function setupI18n(app: App, options: LocaleSetupOptions = {}) {
-  const { defaultLocale = 'en-US' } = options;
-  // APP can expand the internationalization of some third -party libraries and component libraries by itself
+  const { defaultLocale = 'zh-CN' } = options;
+  // app可以自行扩展一些第三方库和组件库的国际化
   loadMessages = options.loadMessages || (async () => ({}));
   app.use(i18n);
   await loadLocaleMessages(defaultLocale);
 
-  // Print warning at the console
+  // 在控制台打印警告
   i18n.global.setMissingHandler((locale, key) => {
     if (options.missingWarn && key.includes('.')) {
       console.warn(

@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { readPackageJSON } from '@gva/node-utils';
+import { readPackageJSON } from '@vben/node-utils';
 
 import { type PluginOption } from 'vite';
 
@@ -14,7 +14,7 @@ import { type PluginOption } from 'vite';
 async function viteInjectAppLoadingPlugin(
   isBuild: boolean,
   env: Record<string, any> = {},
-  loadingTemplate = 'loading.html'
+  loadingTemplate = 'loading.html',
 ): Promise<PluginOption | undefined> {
   const loadingHtml = await getLoadingRawByHtmlTemplate(loadingTemplate);
   const { version } = await readPackageJSON(process.cwd());

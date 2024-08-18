@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { TabDefinition } from '@gva-core/typings';
+import type { TabDefinition } from '@vben-core/typings';
 
 import type { TabConfig, TabsProps } from '../../types';
 
 import { computed, ref, watch } from 'vue';
 
-import { MdiPin, X } from '@gva-core/icons';
-import { VbenContextMenu, VbenIcon, VbenScrollbar } from '@gva-core/shadcn-ui';
+import { MdiPin, X } from '@vben-core/icons';
+import { VbenContextMenu, VbenIcon, VbenScrollbar } from '@vben-core/shadcn-ui';
 
 interface Props extends TabsProps {}
 
@@ -17,7 +17,7 @@ defineOptions({
 });
 
 const props = withDefaults(defineProps<Props>(), {
-  contentClass: 'gva-tabs-content',
+  contentClass: 'vben-tabs-content',
   contextMenus: () => [],
   gap: 7,
   maxWidth: 150,
@@ -44,7 +44,9 @@ const tabsView = computed((): TabConfig[] => {
     return {
       ...tab,
       affixTab: !!tab.meta?.affixTab,
-      closable: Reflect.has(tab.meta, 'tabClosable') ? !!tab.meta.tabClosable : true,
+      closable: Reflect.has(tab.meta, 'tabClosable')
+        ? !!tab.meta.tabClosable
+        : true,
       icon: tab.meta.icon as string,
       key: tab.fullPath || tab.path,
       title: (tab.meta?.newTabTitle || tab.meta?.title || tab.name) as string,
@@ -69,15 +71,25 @@ function scrollIntoView() {
 
 <template>
   <div :style="style" class="tabs-chrome size-full flex-1 overflow-hidden pt-1">
-    <VbenScrollbar class="tabs-chrome__scrollbar h-full" horizontal scroll-bar-class="z-10">
+    <VbenScrollbar
+      class="tabs-chrome__scrollbar h-full"
+      horizontal
+      scroll-bar-class="z-10"
+    >
       <!-- footer -> 4px -->
-      <div ref="contentRef" :class="contentClass" class="relative !flex h-full w-max">
+      <div
+        ref="contentRef"
+        :class="contentClass"
+        class="relative !flex h-full w-max"
+      >
         <TransitionGroup name="slide-left">
           <div
             v-for="(tab, i) in tabsView"
             :key="tab.key"
             ref="tabRef"
-            :class="[{ 'is-active': tab.key === active, dragable: !tab.affixTab }]"
+            :class="[
+              { 'is-active': tab.key === active, dragable: !tab.affixTab },
+            ]"
             :data-active-tab="active"
             :data-index="i"
             :style="{
@@ -128,7 +140,9 @@ function scrollIntoView() {
                 >
                   <!-- close-icon -->
                   <X
-                    v-show="!tab.affixTab && tabsView.length > 1 && tab.closable"
+                    v-show="
+                      !tab.affixTab && tabsView.length > 1 && tab.closable
+                    "
                     class="hover:bg-accent stroke-accent-foreground/80 hover:stroke-accent-foreground dark:group-[.is-active]:text-accent-foreground group-[.is-active]:text-primary mt-[2px] size-3 cursor-pointer rounded-full transition-all"
                     @click.stop="() => emit('close', tab.key)"
                   />
@@ -229,7 +243,12 @@ function scrollIntoView() {
 
   &__scrollbar,
   &__label {
-    mask-image: linear-gradient(90deg, #000 0%, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(
+      90deg,
+      #000 0%,
+      #000 calc(100% - 16px),
+      transparent
+    );
   }
 }
 </style>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { SelectOption } from '@gva/types';
+import type { SelectOption } from '@vben/types';
 
 import { useSlots } from 'vue';
 
-import { CircleHelp } from '@gva/icons';
+import { CircleHelp } from '@vben/icons';
 import {
   NumberField,
   NumberFieldContent,
@@ -11,7 +11,7 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
   VbenTooltip,
-} from '@gva-core/shadcn-ui';
+} from '@vben-core/shadcn-ui';
 
 defineOptions({
   name: 'PreferenceSelectItem',
@@ -27,7 +27,7 @@ withDefaults(
     disabled: false,
     placeholder: '',
     items: () => [],
-  }
+  },
 );
 
 const inputValue = defineModel<number>();

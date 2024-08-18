@@ -19,8 +19,12 @@
   --popover-foreground: 222.2 84% 4.9%;
 
   /* Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch /> */
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+
+  /* --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%; */
+
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
 
   /* 主题颜色 */
 
@@ -78,18 +82,15 @@
   /* 基本文字大小 */
   --font-size-base: 16px;
 
-  /* 主体内容背景色 */
-  --content: 240 11% 96%;
-
-  /* 登录背景色 */
-  --authentication: 231deg 61% 44%;
-
   /* =============component & UI============= */
 
   /* menu */
   --sidebar: 0 0% 100%;
-  --sidebar-deep: 210 11.11% 96.47%;
+  --sidebar-deep: 0 0% 100%;
   --menu: var(--sidebar);
+
+  /* header */
+  --header: 0 0% 100%;
 
   accent-color: var(--primary);
   color-scheme: light;

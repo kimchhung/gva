@@ -1,12 +1,12 @@
 {
-  "name": "@gva-core/shared",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben-core/shared",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
-    "directory": "packages/@gva-core/base/shared"
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "packages/@vben-core/base/shared"
   },
   "license": "MIT",
   "type": "module",
@@ -35,10 +35,10 @@
       "development": "./src/utils/index.ts",
       "default": "./dist/utils/index.mjs"
     },
-    "./colorful": {
-      "types": "./src/colorful/index.ts",
-      "development": "./src/colorful/index.ts",
-      "default": "./dist/colorful/index.mjs"
+    "./color": {
+      "types": "./src/color/index.ts",
+      "development": "./src/color/index.ts",
+      "default": "./dist/color/index.mjs"
     },
     "./cache": {
       "types": "./src/cache/index.ts",
@@ -56,12 +56,12 @@
   },
   "dependencies": {
     "@ctrl/tinycolor": "^4.1.0",
-    "@vue/shared": "^3.4.35",
+    "@vue/shared": "^3.4.37",
     "clsx": "^2.1.1",
     "defu": "^6.1.4",
     "lodash.clonedeep": "^4.5.0",
     "nprogress": "^0.2.0",
-    "tailwind-merge": "^2.4.0",
+    "tailwind-merge": "^2.5.2",
     "theme-colors": "^0.1.0"
   },
   "devDependencies": {

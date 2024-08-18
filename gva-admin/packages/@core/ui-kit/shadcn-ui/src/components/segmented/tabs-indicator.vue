@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { computed, type HTMLAttributes } from 'vue';
+import { computed } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
-import { TabsIndicator, type TabsIndicatorProps, useForwardProps } from 'radix-vue';
+import {
+  TabsIndicator,
+  type TabsIndicatorProps,
+  useForwardProps,
+} from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & TabsIndicatorProps>();
+const props = defineProps<{ class?: any } & TabsIndicatorProps>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -22,7 +26,7 @@ const forwardedProps = useForwardProps(delegatedProps);
     :class="
       cn(
         'absolute bottom-0 left-0 z-10 h-full w-1/2 translate-x-[--radix-tabs-indicator-position] rounded-full px-0 py-1 pr-1 transition-[width,transform] duration-300',
-        props.class
+        props.class,
       )
     "
   >

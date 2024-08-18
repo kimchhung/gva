@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import type { DropdownMenuProps, VbenDropdownMenuItem as IDropdownMenuItem } from './interface';
+import type {
+  DropdownMenuProps,
+  VbenDropdownMenuItem as IDropdownMenuItem,
+} from './interface';
 
 import {
   DropdownMenu,
@@ -8,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@gva-core/shadcn-ui/components/ui/dropdown-menu';
+} from '../ui/dropdown-menu';
 
 interface Props extends DropdownMenuProps {}
 

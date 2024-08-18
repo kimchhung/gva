@@ -1,10 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@gva/tsconfig/web.json",
+  "extends": "@vben/tsconfig/web.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@gva-core/shadcn-ui/*": ["./src/*"]
+      "@vben-core/shadcn-ui/*": ["./src/*"]
     }
   },
   "include": ["src"],

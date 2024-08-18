@@ -9,9 +9,10 @@
     },
     "dashboard": {
       "title": "概览",
-      "home": "家"
+      "analytics": "分析页",
+      "workspace": "工作台"
     },
-    "gva": {
+    "vben": {
       "title": "项目",
       "about": "关于",
       "document": "文档",

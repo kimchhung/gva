@@ -1,12 +1,12 @@
 {
-  "name": "@gva-core/typings",
-  "version": "5.0.0",
-  "homepage": "https://github.com/vbenjs/vue-gva-admin",
-  "bugs": "https://github.com/vbenjs/vue-gva-admin/issues",
+  "name": "@vben-core/typings",
+  "version": "5.0.1",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-gva-admin.git",
-    "directory": "packages/@gva-core/base/typings"
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "packages/@vben-core/base/typings"
   },
   "license": "MIT",
   "type": "module",
@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "vue": "^3.4.35",
-    "vue-router": "^4.4.2"
+    "vue": "^3.4.37",
+    "vue-router": "^4.4.3"
   }
 }

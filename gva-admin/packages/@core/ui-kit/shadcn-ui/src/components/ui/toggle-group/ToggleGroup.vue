@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { toggleVariants } from '@gva-core/shadcn-ui/components/ui/toggle';
 import type { VariantProps } from 'class-variance-authority';
+
+import type { toggleVariants } from '../toggle';
 
 import { computed, type HTMLAttributes, provide } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import {
   ToggleGroupRoot,

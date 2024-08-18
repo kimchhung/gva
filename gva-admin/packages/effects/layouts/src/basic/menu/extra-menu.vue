@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import type { MenuRecordRaw } from '@gva/types';
+import type { MenuRecordRaw } from '@vben/types';
+import type { MenuProps } from '@vben-core/menu-ui';
 
 import { useRoute } from 'vue-router';
 
-import { Menu, MenuProps } from '@gva-core/menu-ui';
+import { Menu } from '@vben-core/menu-ui';
 
 import { useNavigation } from './use-navigation';
 
@@ -29,7 +30,7 @@ async function handleSelect(key: string) {
   <Menu
     :accordion="accordion"
     :collapse="collapse"
-    :default-active="route.path"
+    :default-active="route.meta?.activePath || route.path"
     :menus="menus"
     :rounded="rounded"
     :theme="theme"

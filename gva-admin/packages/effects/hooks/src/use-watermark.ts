@@ -2,7 +2,7 @@ import type { Watermark, WatermarkOptions } from 'watermark-js-plus';
 
 import { nextTick, onUnmounted, ref, watch } from 'vue';
 
-import { preferences } from '@gva/preferences';
+import { preferences } from '@vben/preferences';
 
 const watermark = ref<Watermark>();
 const cachedOptions = ref<Partial<WatermarkOptions>>({
@@ -73,7 +73,7 @@ export function useWatermark() {
       if (!enable) {
         destroyWatermark();
       }
-    }
+    },
   );
 
   onUnmounted(() => {

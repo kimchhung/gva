@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
-import { ContextMenuSeparator, type ContextMenuSeparatorProps } from 'radix-vue';
+import {
+  ContextMenuSeparator,
+  type ContextMenuSeparatorProps,
+} from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & ContextMenuSeparatorProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & ContextMenuSeparatorProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;

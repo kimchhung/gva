@@ -2,9 +2,9 @@ import type { UserConfig } from 'vite';
 
 import type { DefineApplicationOptions } from '../typing';
 
-import { relative } from 'node:path';
+import path, { relative } from 'node:path';
 
-import { findMonorepoRoot } from '@gva/node-utils';
+import { findMonorepoRoot } from '@vben/node-utils';
 
 import { defineConfig, loadEnv, mergeConfig } from 'vite';
 
@@ -41,7 +41,7 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
       nitroMockOptions: {},
       print: !isBuild,
       printInfoMap: {
-        'Vben Admin Docs': 'https://doc.gva.pro',
+        'Vben Admin Docs': 'https://doc.vben.pro',
       },
       pwa: true,
       pwaOptions: getDefaultPwaOptions(appTitle),
@@ -84,7 +84,10 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
       },
     };
 
-    const mergedCommonConfig = mergeConfig(await getCommonConfig(), applicationConfig);
+    const mergedCommonConfig = mergeConfig(
+      await getCommonConfig(),
+      applicationConfig,
+    );
     return mergeConfig(mergedCommonConfig, vite);
   });
 }
@@ -98,8 +101,8 @@ function createCssOptions(injectGlobalScss = true) {
             additionalData: (content: string, filepath: string) => {
               const relativePath = relative(root, filepath);
               // apps下的包注入全局样式
-              if (relativePath.startsWith('apps/')) {
-                return `@import "@gva/styles/global";\n${content}`;
+              if (relativePath.startsWith(`apps${path.sep}`)) {
+                return `@import "@vben/styles/global";\n${content}`;
               }
               return content;
             },

@@ -1,11 +1,11 @@
-<div align="center"> <a href="https://github.com/anncwb/vue-gva-admin"> <img alt="VbenAdmin Logo" width="200" height="200" src="https://unpkg.com/@vbenjs/static-source@0.1.5/source/logo-v1.webp"> </a> <br> <br>
+<div align="center"> <a href="https://github.com/anncwb/vue-vben-admin"> <img alt="VbenAdmin Logo" width="215" src="https://unpkg.com/@vbenjs/static-source@0.1.6/source/logo-v1.webp"> </a> <br> <br>
 
-[![license](https://img.shields.io/github/license/anncwb/vue-gva-admin.svg)](LICENSE)
+[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
 
 <h1>Vue Vben Admin</h1>
 </div>
 
-**中文** | [English](./README.md)
+**中文** | [English](./README.md) | [日本語](./README.ja-JP.md)
 
 ## 简介
 
@@ -13,7 +13,7 @@ Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的�
 
 ## 升级提示
 
-该版本为最新版本`5.0`, 与其他版本不兼容，如果你是新项目，建议使用最新版本。如果你想查看旧版本，请使用 [v2 分支](https://github.com/vbenjs/vue-gva-admin/tree/v2)
+该版本为最新版本`5.0`, 与其他版本不兼容，如果你是新项目，建议使用最新版本。如果你想查看旧版本，请使用 [v2 分支](https://github.com/vbenjs/vue-vben-admin/tree/v2)
 
 ## 特性
 
@@ -25,9 +25,9 @@ Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的�
 
 ## 预览
 
-- [Vben Admin](https://gva.pro/) - 完整版中文站点
+- [Vben Admin](https://vben.pro/) - 完整版中文站点
 
-测试账号: gva/123456
+测试账号: vben/123456
 
 <p align="center">
     <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview1.png">
@@ -39,29 +39,28 @@ Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的�
 
 在 Gitpod（适用于 GitHub 的免费在线开发环境）中打开项目，并立即开始编码.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-gva-admin)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-vben-admin)
 
 ## 文档
 
-[文档地址](https://doc.gva.pro/)
+[文档地址](https://doc.vben.pro/)
 
 ## 安装使用
 
 - 获取项目代码
 
 ```bash
-git clone https://github.com/vbenjs/vue-gva-admin.git
+git clone https://github.com/vbenjs/vue-vben-admin.git
 ```
 
 - 安装依赖
 
 ```bash
-cd vue-gva-admin
+cd vue-vben-admin
 
 corepack enable
 
 pnpm install
-
 ```
 
 - 运行
@@ -78,7 +77,7 @@ pnpm build
 
 ## 如何贡献
 
-非常欢迎你的加入！[提一个 Issue](https://github.com/anncwb/vue-gva-admin/issues/new/choose) 或者提交一个 Pull Request。
+非常欢迎你的加入！[提一个 Issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) 或者提交一个 Pull Request。
 
 **Pull Request:**
 
@@ -112,8 +111,8 @@ pnpm build
 支持现代浏览器, 不支持 IE
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                                             not support                                                                                              |                                                                                            last 2 versions                                                                                             |                                                                                                  last 2 versions                                                                                                  |                                                                                                last 2 versions                                                                                                |                                                                                                last 2 versions                                                                                                |
+| :-: | :-: | :-: | :-: | :-: |
+| not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
 ## 维护者
 
@@ -123,13 +122,20 @@ pnpm build
 
 如果你觉得这个项目对你有帮助，你可以帮作者买一杯咖啡表示支持!
 
-![donate](https://unpkg.com/@vbenjs/static-source@0.1.5/source/sponsor.png)
+![donate](https://unpkg.com/@vbenjs/static-source@0.1.6/source/sponsor.png)
 
 <a style="display: block;width: 100px;height: 50px;line-height: 50px; color: #fff;text-align: center; background: #408aed;border-radius: 4px;" href="https://www.paypal.com/paypalme/cvvben">Paypal Me</a>
 
+## Contributor
+
+<a href="https://github.com/vbenjs/vue-vben-admin/graphs/contributors">
+  <img alt="Contributors"
+        src="https://opencollective.com/vbenjs/contributors.svg?button=false" />
+</a>
+
 ## Discord
 
-- [Github Discussions](https://github.com/anncwb/vue-gva-admin/discussions)
+- [Github Discussions](https://github.com/anncwb/vue-vben-admin/discussions)
 
 ## License
 

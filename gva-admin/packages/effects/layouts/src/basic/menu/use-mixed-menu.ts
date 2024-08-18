@@ -1,11 +1,11 @@
-import type { MenuRecordRaw } from '@gva/types';
+import type { MenuRecordRaw } from '@vben/types';
 
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { preferences, usePreferences } from '@gva/preferences';
-import { useAccessStore } from '@gva/stores';
-import { findRootMenuByPath } from '@gva/utils';
+import { preferences, usePreferences } from '@vben/preferences';
+import { useAccessStore } from '@vben/stores';
+import { findRootMenuByPath } from '@vben/utils';
 
 import { useNavigation } from './use-navigation';
 
@@ -18,7 +18,9 @@ function useMixedMenu() {
 
   const { isMixedNav } = usePreferences();
 
-  const needSplit = computed(() => preferences.navigation.split && isMixedNav.value);
+  const needSplit = computed(
+    () => preferences.navigation.split && isMixedNav.value,
+  );
 
   const sidebarVisible = computed(() => {
     const enableSidebar = preferences.sidebar.enable;
@@ -106,12 +108,12 @@ function useMixedMenu() {
       const currentPath = (route?.meta?.activePath as string) ?? path;
       calcSideMenus(currentPath);
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   // 初始化计算侧边菜单
   onBeforeMount(() => {
-    calcSideMenus();
+    calcSideMenus(route.meta?.activePath || route.path);
   });
 
   return {

@@ -15,6 +15,13 @@ const customConfig: Linter.Config[] = [
     },
   },
   {
+    files: ['packages/effects/**/**', 'packages/types/**/**'],
+    ignores: restrictedImportIgnores,
+    rules: {
+      'perfectionist/sort-interfaces': 'off',
+    },
+  },
+  {
     // apps内部的一些基础规则
     files: ['apps/**/**'],
     ignores: restrictedImportIgnores,
@@ -25,7 +32,8 @@ const customConfig: Linter.Config[] = [
           patterns: [
             {
               group: ['#/api/*'],
-              message: 'The #/api package cannot be imported, please use the @core package itself',
+              message:
+                'The #/api package cannot be imported, please use the @core package itself',
             },
             {
               group: ['#/layouts/*'],
@@ -45,10 +53,11 @@ const customConfig: Linter.Config[] = [
           ],
         },
       ],
+      'perfectionist/sort-interfaces': 'off',
     },
   },
   {
-    // @core内部组件，不能引入@gva/* 里面的包
+    // @core内部组件，不能引入@vben/* 里面的包
     files: ['packages/@core/**/**'],
     ignores: restrictedImportIgnores,
     rules: {
@@ -57,9 +66,9 @@ const customConfig: Linter.Config[] = [
         {
           patterns: [
             {
-              group: ['@gva/*'],
+              group: ['@vben/*'],
               message:
-                'The @core package cannot import the @gva package, please use the @core package itself',
+                'The @core package cannot import the @vben package, please use the @core package itself',
             },
           ],
         },
@@ -67,7 +76,7 @@ const customConfig: Linter.Config[] = [
     },
   },
   {
-    // @core/shared内部组件，不能引入@gva/* 或者 @gva-core/* 里面的包
+    // @core/shared内部组件，不能引入@vben/* 或者 @vben-core/* 里面的包
     files: ['packages/@core/base/**/**'],
     ignores: restrictedImportIgnores,
     rules: {
@@ -76,9 +85,9 @@ const customConfig: Linter.Config[] = [
         {
           patterns: [
             {
-              group: ['@gva/*', '@gva-core/*'],
+              group: ['@vben/*', '@vben-core/*'],
               message:
-                'The @gva-core/shared package cannot import the @gva package, please use the @core/shared package itself',
+                'The @vben-core/shared package cannot import the @vben package, please use the @core/shared package itself',
             },
           ],
         },
@@ -86,7 +95,7 @@ const customConfig: Linter.Config[] = [
     },
   },
   {
-    // 不能引入@gva/*里面的包
+    // 不能引入@vben/*里面的包
     files: [
       'packages/types/**/**',
       'packages/utils/**/**',
@@ -104,8 +113,9 @@ const customConfig: Linter.Config[] = [
         {
           patterns: [
             {
-              group: ['@gva/*'],
-              message: 'The @gva package cannot be imported, please use the @core package itself',
+              group: ['@vben/*'],
+              message:
+                'The @vben package cannot be imported, please use the @core package itself',
             },
           ],
         },

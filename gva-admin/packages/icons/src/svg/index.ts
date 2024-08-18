@@ -1,4 +1,4 @@
-import { createIconifyIcon } from '@gva-core/icons';
+import { createIconifyIcon } from '@vben-core/icons';
 
 import './load';
 

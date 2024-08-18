@@ -1,11 +1,11 @@
-<div align="center"> <a href="https://github.com/anncwb/vue-gva-admin"> <img alt="VbenAdmin Logo" width="200" height="200" src="https://unpkg.com/@vbenjs/static-source@0.1.5/source/logo-v1.webp"> </a> <br> <br>
+<div align="center"> <a href="https://github.com/anncwb/vue-vben-admin"> <img alt="VbenAdmin Logo" width="215" src="https://unpkg.com/@vbenjs/static-source@0.1.6/source/logo-v1.webp"> </a> <br> <br>
 
-[![license](https://img.shields.io/github/license/anncwb/vue-gva-admin.svg)](LICENSE)
+[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
 
 <h1>Vue Vben Admin</h1>
 </div>
 
-**English** | [中文](./README.zh-CN.md)
+**English** | [中文](./README.zh-CN.md) | [日本語](./README.ja-JP.md)
 
 ## Introduction
 
@@ -13,7 +13,7 @@ Vue Vben Admin is a free and open source middle and back-end template. Using the
 
 ## Upgrade Notice
 
-This is the latest version, 5.0, and it is not compatible with previous versions. If you are starting a new project, it is recommended to use the latest version. If you wish to view the old version, please use the [v2 branch](https://github.com/vbenjs/vue-gva-admin/tree/v2).
+This is the latest version, 5.0, and it is not compatible with previous versions. If you are starting a new project, it is recommended to use the latest version. If you wish to view the old version, please use the [v2 branch](https://github.com/vbenjs/vue-vben-admin/tree/v2).
 
 ## Feature
 
@@ -25,9 +25,9 @@ This is the latest version, 5.0, and it is not compatible with previous versions
 
 ## Preview
 
-- [Vben Admin](https://gva.pro/) - Full version Chinese site
+- [Vben Admin](https://vben.pro/) - Full version Chinese site
 
-Test Account: gva/123456
+Test Account: vben/123456
 
 <p align="center">
     <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview1.png">
@@ -39,29 +39,28 @@ Test Account: gva/123456
 
 Open the project in Gitpod (free online dev environment for GitHub) and start coding immediately.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-gva-admin)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-vben-admin)
 
 ## Documentation
 
-[Document](https://doc.gva.pro/)
+[Document](https://doc.vben.pro/)
 
 ## Install and use
 
 - Get the project code
 
 ```bash
-git clone https://github.com/vbenjs/vue-gva-admin.git
+git clone https://github.com/vbenjs/vue-vben-admin.git
 ```
 
 - Installation dependencies
 
 ```bash
-cd vue-gva-admin
+cd vue-vben-admin
 
 corepack enable
 
 pnpm install
-
 ```
 
 - run
@@ -82,7 +81,7 @@ pnpm build
 
 ## How to contribute
 
-You are very welcome to join！[Raise an issue](https://github.com/anncwb/vue-gva-admin/issues/new/choose) Or submit a Pull Request。
+You are very welcome to join！[Raise an issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) Or submit a Pull Request。
 
 **Pull Request:**
 
@@ -116,8 +115,8 @@ The `Chrome 80+` browser is recommended for local development
 Support modern browsers, not IE
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                                             not support                                                                                              |                                                                                            last 2 versions                                                                                             |                                                                                                  last 2 versions                                                                                                  |                                                                                                last 2 versions                                                                                                |                                                                                                last 2 versions                                                                                                |
+| :-: | :-: | :-: | :-: | :-: |
+| not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
 ## Maintainer
 
@@ -127,19 +126,20 @@ Support modern browsers, not IE
 
 If you think this project is helpful to you, you can help the author buy a cup of coffee to show your support!
 
-![donate](https://unpkg.com/@vbenjs/static-source@0.1.5/source/sponsor.png)
+![donate](https://unpkg.com/@vbenjs/static-source@0.1.6/source/sponsor.png)
 
 <a style="display: block;width: 100px;height: 50px;line-height: 50px; color: #fff;text-align: center; background: #408aed;border-radius: 4px;" href="https://www.paypal.com/paypalme/cvvben">Paypal Me</a>
 
 ## Contributor
 
-<a href="https://github.com/vbenjs/vue-gva-admin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=vbenjs/vue-gva-admin" />
+<a href="https://github.com/vbenjs/vue-vben-admin/graphs/contributors">
+  <img alt="Contributors"
+        src="https://opencollective.com/vbenjs/contributors.svg?button=false" />
 </a>
 
 ## Discord
 
-- [Github Discussions](https://github.com/anncwb/vue-gva-admin/discussions)
+- [Github Discussions](https://github.com/anncwb/vue-vben-admin/discussions)
 
 ## License
 

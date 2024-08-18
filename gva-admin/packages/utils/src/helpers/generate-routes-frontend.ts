@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
 
-import { filterTree, mapTree } from '@gva-core/shared';
+import { filterTree, mapTree } from '@vben-core/shared';
 
 /**
  * 动态生成路由 - 前端方式
@@ -8,7 +8,7 @@ import { filterTree, mapTree } from '@gva-core/shared';
 async function generateRoutesByFrontend(
   routes: RouteRecordRaw[],
   roles: string[],
-  forbiddenComponent?: RouteRecordRaw['component']
+  forbiddenComponent?: RouteRecordRaw['component'],
 ): Promise<RouteRecordRaw[]> {
   // 根据角色标识过滤路由表,判断当前用户是否拥有指定权限
   const finalRoutes = filterTree(routes, (route) => {

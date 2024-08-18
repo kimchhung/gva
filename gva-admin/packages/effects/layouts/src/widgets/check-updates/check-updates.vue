@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { h, onMounted, onUnmounted, ref } from 'vue';
 
-import { $t } from '@gva/locales';
-import { ToastAction, useToast } from '@gva-core/shadcn-ui';
+import { $t } from '@vben/locales';
+import { ToastAction, useToast } from '@vben-core/shadcn-ui';
 
 interface Props {
   // 轮训时间，分钟
@@ -22,7 +22,10 @@ const { toast } = useToast();
 
 async function getVersionTag() {
   try {
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    if (
+      location.hostname === 'localhost' ||
+      location.hostname === '127.0.0.1'
+    ) {
       return null;
     }
     const response = await fetch('/', {
@@ -30,7 +33,9 @@ async function getVersionTag() {
       method: 'HEAD',
     });
 
-    return response.headers.get('etag') || response.headers.get('last-modified');
+    return (
+      response.headers.get('etag') || response.headers.get('last-modified')
+    );
   } catch {
     console.error('Failed to fetch version tag');
     return null;
@@ -65,7 +70,7 @@ function handleNotice(versionTag: string) {
         },
         {
           default: () => $t('common.cancel'),
-        }
+        },
       ),
       h(
         ToastAction,
@@ -79,7 +84,7 @@ function handleNotice(versionTag: string) {
         },
         {
           default: () => $t('common.refresh'),
-        }
+        },
       ),
     ]),
     description: $t('widgets.checkUpdatesDescription'),
@@ -90,7 +95,10 @@ function handleNotice(versionTag: string) {
 
 function start() {
   // 每5分钟检查一次
-  timer.value = setInterval(checkForUpdates, props.checkUpdatesInterval * 60 * 1000);
+  timer.value = setInterval(
+    checkForUpdates,
+    props.checkUpdatesInterval * 60 * 1000,
+  );
 }
 
 function handleVisibilitychange() {

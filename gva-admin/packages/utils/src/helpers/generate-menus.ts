@@ -1,17 +1,20 @@
-import type { ExRouteRecordRaw, MenuRecordRaw } from '@gva-core/typings';
+import type { ExRouteRecordRaw, MenuRecordRaw } from '@vben-core/typings';
 import type { Router, RouteRecordRaw } from 'vue-router';
 
-import { filterTree, mapTree } from '@gva-core/shared';
+import { filterTree, mapTree } from '@vben-core/shared';
 
 /**
  * 根据 routes 生成菜单列表
  * @param routes
  */
-async function generateMenus(routes: RouteRecordRaw[], router: Router): Promise<MenuRecordRaw[]> {
+async function generateMenus(
+  routes: RouteRecordRaw[],
+  router: Router,
+): Promise<MenuRecordRaw[]> {
   // 将路由列表转换为一个以 name 为键的对象映射
   // 获取所有router最终的path及name
   const finalRoutesMap: { [key: string]: string } = Object.fromEntries(
-    router.getRoutes().map(({ name, path }) => [name, path])
+    router.getRoutes().map(({ name, path }) => [name, path]),
   );
 
   let menus = mapTree<ExRouteRecordRaw, MenuRecordRaw>(routes, (route) => {
@@ -36,7 +39,9 @@ async function generateMenus(routes: RouteRecordRaw[], router: Router): Promise<
     const name = (title || routeName || '') as string;
 
     // 隐藏子菜单
-    const resultChildren = hideChildrenInMenu ? [] : (children as MenuRecordRaw[]);
+    const resultChildren = hideChildrenInMenu
+      ? []
+      : (children as MenuRecordRaw[]);
 
     // 将菜单的所有父级和父级菜单记录到菜单项内
     if (resultChildren && resultChildren.length > 0) {

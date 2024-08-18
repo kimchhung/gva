@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { LayoutHeaderModeType, SelectOption } from '@gva/types';
+import type { LayoutHeaderModeType, SelectOption } from '@vben/types';
 
-import { $t } from '@gva/locales';
+import { $t } from '@vben/locales';
 
 import SelectItem from '../select-item.vue';
 import SwitchItem from '../switch-item.vue';
@@ -39,7 +39,11 @@ const localeItems: SelectOption[] = [
   <SwitchItem v-model="headerEnable" :disabled="disabled">
     {{ $t('preferences.header.visible') }}
   </SwitchItem>
-  <SelectItem v-model="headerMode" :disabled="!headerEnable" :items="localeItems">
+  <SelectItem
+    v-model="headerMode"
+    :disabled="!headerEnable"
+    :items="localeItems"
+  >
     {{ $t('preferences.mode') }}
   </SelectItem>
 </template>

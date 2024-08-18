@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import type { Sortable } from '@gva-core/composables';
-import type { TabDefinition } from '@gva-core/typings';
+import type { Sortable } from '@vben-core/composables';
+import type { TabDefinition } from '@vben-core/typings';
+
+import type { TabsProps } from './types';
 
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
-import { useForwardPropsEmits, useSortable } from '@gva-core/composables';
+import { useForwardPropsEmits, useSortable } from '@vben-core/composables';
 
 import { Tabs, TabsChrome } from './components';
-import { TabsProps } from './types';
 
 interface Props extends TabsProps {}
 
@@ -16,7 +17,7 @@ defineOptions({
 });
 
 const props = withDefaults(defineProps<Props>(), {
-  contentClass: 'gva-tabs-content',
+  contentClass: 'vben-tabs-content',
   dragable: true,
   styleType: 'chrome',
 });
@@ -34,7 +35,9 @@ const sortableInstance = ref<null | Sortable>(null);
 // 可能会找到拖拽的子元素，这里需要确保拖拽的dom时tab元素
 function findParentElement(element: HTMLElement) {
   const parentCls = 'group';
-  return element.classList.contains(parentCls) ? element : element.closest(`.${parentCls}`);
+  return element.classList.contains(parentCls)
+    ? element
+    : element.closest(`.${parentCls}`);
 }
 
 async function initTabsSortable() {
@@ -108,7 +111,7 @@ watch(
   () => {
     sortableInstance.value?.destroy();
     initTabsSortable();
-  }
+  },
 );
 
 onUnmounted(() => {

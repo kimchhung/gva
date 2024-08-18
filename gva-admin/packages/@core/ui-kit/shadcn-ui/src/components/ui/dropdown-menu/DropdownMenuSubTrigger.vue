@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue';
 
-import { cn } from '@gva-core/shared';
+import { cn } from '@vben-core/shared';
 
 import { ChevronRightIcon } from '@radix-icons/vue';
 import {
@@ -10,7 +10,9 @@ import {
   useForwardProps,
 } from 'radix-vue';
 
-const props = defineProps<{ class?: HTMLAttributes['class'] } & DropdownMenuSubTriggerProps>();
+const props = defineProps<
+  { class?: HTMLAttributes['class'] } & DropdownMenuSubTriggerProps
+>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -27,7 +29,7 @@ const forwardedProps = useForwardProps(delegatedProps);
     :class="
       cn(
         'focus:bg-accent data-[state=open]:bg-accent flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
-        props.class
+        props.class,
       )
     "
   >

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { SelectOption } from '@gva/types';
+import type { SelectOption } from '@vben/types';
 
-import { $t } from '@gva/locales';
+import { $t } from '@vben/locales';
 
 import SwitchItem from '../switch-item.vue';
 import ToggleItem from '../toggle-item.vue';
@@ -23,10 +23,17 @@ const stylesItems: SelectOption[] = [
 </script>
 
 <template>
-  <ToggleItem v-model="navigationStyleType" :disabled="disabled" :items="stylesItems">
+  <ToggleItem
+    v-model="navigationStyleType"
+    :disabled="disabled"
+    :items="stylesItems"
+  >
     {{ $t('preferences.navigationMenu.style') }}
   </ToggleItem>
-  <SwitchItem v-model="navigationSplit" :disabled="disabledNavigationSplit || disabled">
+  <SwitchItem
+    v-model="navigationSplit"
+    :disabled="disabledNavigationSplit || disabled"
+  >
     {{ $t('preferences.navigationMenu.split') }}
     <template #tip>
       {{ $t('preferences.navigationMenu.splitTip') }}

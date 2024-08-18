@@ -27,7 +27,7 @@ interface Props {
 }
 
 defineOptions({
-  name: 'VbenLogo',
+  name: 'SideBarLogo',
 });
 
 withDefaults(defineProps<Props>(), {

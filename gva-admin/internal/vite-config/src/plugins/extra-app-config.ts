@@ -1,6 +1,10 @@
 import type { PluginOption } from 'vite';
 
-import { colors, generatorContentHash, readPackageJSON } from '@gva/node-utils';
+import {
+  colors,
+  generatorContentHash,
+  readPackageJSON,
+} from '@vben/node-utils';
 
 import { loadEnv } from '../utils/env';
 
@@ -13,7 +17,7 @@ const GLOBAL_CONFIG_FILE_NAME = '_app.config.js';
 const VBEN_ADMIN_PRO_APP_CONF = '_VBEN_ADMIN_PRO_APP_CONF_';
 
 /**
- * Used to pull out the configuration file and inject it into the project
+ * 用于将配置文件抽离出来并注入到项目中
  * @returns
  */
 
@@ -46,7 +50,9 @@ async function viteExtraAppConfigPlugin({
         console.log(colors.cyan(`✨configuration file is build successfully!`));
       } catch (error) {
         console.log(
-          colors.red(`configuration file configuration file failed to package:\n${error}`)
+          colors.red(
+            `configuration file configuration file failed to package:\n${error}`,
+          ),
         );
       }
     },
@@ -67,7 +73,7 @@ async function viteExtraAppConfigPlugin({
 async function getConfigSource() {
   const config = await loadEnv();
   const windowVariable = `window.${VBEN_ADMIN_PRO_APP_CONF}`;
-  // Make sure the variable will not be modified
+  // 确保变量不会被修改
   let source = `${windowVariable}=${JSON.stringify(config)};`;
   source += `
     Object.freeze(${windowVariable});

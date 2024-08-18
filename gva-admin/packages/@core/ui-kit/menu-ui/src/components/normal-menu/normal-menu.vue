@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { MenuRecordRaw } from '@gva-core/typings';
+import type { MenuRecordRaw } from '@vben-core/typings';
 
 import type { NormalMenuProps } from './normal-menu';
 
-import { useNamespace } from '@gva-core/composables';
-import { VbenIcon } from '@gva-core/shadcn-ui';
+import { useNamespace } from '@vben-core/composables';
+import { VbenIcon } from '@vben-core/shadcn-ui';
 
 interface Props extends NormalMenuProps {}
 
@@ -27,13 +27,21 @@ const emit = defineEmits<{
 const { b, e, is } = useNamespace('normal-menu');
 
 function menuIcon(menu: MenuRecordRaw) {
-  return props.activePath === menu.path ? menu.activeIcon || menu.icon : menu.icon;
+  return props.activePath === menu.path
+    ? menu.activeIcon || menu.icon
+    : menu.icon;
 }
 </script>
 
 <template>
   <ul
-    :class="[theme, b(), is('collapse', collapse), is(theme, true), is('rounded', rounded)]"
+    :class="[
+      theme,
+      b(),
+      is('collapse', collapse),
+      is(theme, true),
+      is('rounded', rounded),
+    ]"
     class="relative"
   >
     <template v-for="menu in menus" :key="menu.path">
@@ -50,7 +58,7 @@ function menuIcon(menu: MenuRecordRaw) {
   </ul>
 </template>
 <style lang="scss" scoped>
-$namespace: gva;
+$namespace: vben;
 
 .#{$namespace}-normal-menu {
   --menu-item-margin-y: 4px;
@@ -111,7 +119,10 @@ $namespace: gva;
     color: hsl(var(--foreground) / 90%);
     cursor: pointer;
     border-radius: var(--menu-item-radius);
-    transition: background 0.15s ease, padding 0.15s ease, border-color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      padding 0.15s ease,
+      border-color 0.15s ease;
 
     &.is-active {
       @apply text-primary bg-primary dark:bg-accent;

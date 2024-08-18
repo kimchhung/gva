@@ -1,4 +1,4 @@
-import type { MenuRecordBadgeRaw, ThemeModeType } from '@gva-core/typings';
+import type { MenuRecordBadgeRaw, ThemeModeType } from '@vben-core/typings';
 
 import type { Ref } from 'vue';
 

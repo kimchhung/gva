@@ -1,5 +1,5 @@
-import type { IContextMenuItem } from '@gva-core/shadcn-ui';
-import type { TabDefinition, TabsStyleType } from '@gva-core/typings';
+import type { IContextMenuItem } from '@vben-core/shadcn-ui';
+import type { TabDefinition, TabsStyleType } from '@vben-core/typings';
 
 interface TabsProps {
   /**
