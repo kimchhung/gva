@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine3.20 AS builder
+FROM golang:1.23.0 AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 
 
 # Copy necessary config file
-FROM alpine:latest
+FROM gcr.io/distroless/static:nonroot
 WORKDIR /app/
 COPY --from=builder /bin/api-binary /bin/api-binary
 COPY --from=builder --chown=nonroot /app/lang /app/lang
