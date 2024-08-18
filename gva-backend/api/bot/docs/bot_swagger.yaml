@@ -19,6 +19,21 @@ info:
   title: GVA bot API
   version: "1.0"
 paths:
+  /health-check:
+    get:
+      operationId: health-check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Health Check
+      tags:
+      - Index
   /now:
     get:
       operationId: now
@@ -38,7 +53,7 @@ paths:
       - Bearer: []
       summary: Current Server Time
       tags:
-      - Time
+      - Index
 securityDefinitions:
   Bearer:
     in: header

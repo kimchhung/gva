@@ -15,6 +15,31 @@ const docTemplatebot = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/health-check": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Index"
+                ],
+                "summary": "Health Check",
+                "operationId": "health-check",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/now": {
             "get": {
                 "security": [
@@ -26,7 +51,7 @@ const docTemplatebot = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Time"
+                    "Index"
                 ],
                 "summary": "Current Server Time",
                 "operationId": "now",

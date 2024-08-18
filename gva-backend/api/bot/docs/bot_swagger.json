@@ -9,6 +9,31 @@
     "host": "localhost:4000",
     "basePath": "/bot/v1",
     "paths": {
+        "/health-check": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Index"
+                ],
+                "summary": "Health Check",
+                "operationId": "health-check",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/now": {
             "get": {
                 "security": [
@@ -20,7 +45,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Time"
+                    "Index"
                 ],
                 "summary": "Current Server Time",
                 "operationId": "now",

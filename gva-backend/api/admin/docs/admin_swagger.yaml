@@ -999,6 +999,21 @@ paths:
       summary: Update a Department
       tags:
       - Department
+  /health-check:
+    get:
+      operationId: health-check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Health Check
+      tags:
+      - Index
   /menu:
     get:
       description: Get a list of all Menus
@@ -1175,7 +1190,7 @@ paths:
       - Bearer: []
       summary: Current Server Time
       tags:
-      - Time
+      - Index
   /permission:
     get:
       consumes:

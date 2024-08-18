@@ -24,7 +24,7 @@ func NewIndexController(index_s *IndexService) *IndexController {
 	}
 }
 
-// @Tags        Time
+// @Tags        Index
 // @Summary     Current Server Time
 // @ID          now
 // @Produce     json
@@ -41,6 +41,23 @@ func (con *IndexController) Now() *ctr.Route {
 				}
 
 				return request.Response(c, response.Data(now))
+			},
+		}
+	})
+}
+
+// @Tags        Index
+// @Summary     Health Check
+// @ID          health-check
+// @Produce     json
+// @Success     200 {object} string "ok"
+// @Router      /health-check [get]
+// @Security    Bearer
+func (con *IndexController) HealthCheck() *ctr.Route {
+	return ctr.GET("/health-check").Do(func() []ctr.H {
+		return []ctr.H{
+			func(c echo.Context) error {
+				return c.String(200,"ok")
 			},
 		}
 	})

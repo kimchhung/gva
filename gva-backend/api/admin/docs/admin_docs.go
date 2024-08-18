@@ -703,6 +703,31 @@ const docTemplateadmin = `{
                 }
             }
         },
+        "/health-check": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Index"
+                ],
+                "summary": "Health Check",
+                "operationId": "health-check",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/menu": {
             "get": {
                 "security": [
@@ -987,7 +1012,7 @@ const docTemplateadmin = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Time"
+                    "Index"
                 ],
                 "summary": "Current Server Time",
                 "operationId": "now",
