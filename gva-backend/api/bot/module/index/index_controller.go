@@ -2,7 +2,6 @@ package index
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gva/internal/ctr"
 	"github.com/gva/internal/request"
@@ -43,7 +42,7 @@ func (con *IndexController) Now() *ctr.Route {
 					return err
 				}
 
-				return request.Response(c, response.Data(now.UTC().Format(time.RFC3339)))
+				return request.Response(c, response.Data(now))
 			},
 		}
 	})
