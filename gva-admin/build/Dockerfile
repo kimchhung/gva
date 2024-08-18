@@ -3,8 +3,8 @@ FROM node:20-alpine AS builder
 # --max-old-space-size
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV NODE_OPTIONS=--max-old-space-size=8192
-ENV TZ=Asia/Shanghai
+ENV NODE_OPTIONS=--max-old-space-size=1024
+
 
 RUN corepack enable
 
