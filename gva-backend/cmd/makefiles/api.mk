@@ -1,11 +1,11 @@
 api.run.admin:
-	go run cmd/api/admin/main.go
+	go run api/admin/main.go
 
 api.run.web:
-	go run cmd/api/web/main.go 
+	go run api/web/main.go 
 
 api.run.bot:
-	go run cmd/api/bot/main.go
+	go run api/bot/main.go
 
 api.run:
-	go run cmd/api/main.go
+	go run api/main.go
