@@ -20,8 +20,8 @@ async function loadLocaleMessages(lang: SupportedLanguagesType) {
 }
 
 async function setupI18n(app: App, options: LocaleSetupOptions = {}) {
-  const { defaultLocale = 'zh-CN' } = options;
-  // app可以自行扩展一些第三方库和组件库的国际化
+  const { defaultLocale = 'en-US' } = options;
+  // aPP can expand the internationalization of some third -party libraries and component libraries by itself
   loadMessages = options.loadMessages || (async () => ({}));
   app.use(i18n);
   await loadLocaleMessages(defaultLocale);

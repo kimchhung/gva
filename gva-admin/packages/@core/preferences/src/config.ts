@@ -16,7 +16,7 @@ const defaultPreferences: Preferences = {
     enablePreferences: true,
     isMobile: false,
     layout: 'sidebar-nav',
-    locale: 'zh-CN',
+    locale: 'en-US',
     loginExpiredMode: 'modal',
     name: 'Vben Admin',
     watermark: false,
@@ -47,7 +47,7 @@ const defaultPreferences: Preferences = {
   },
   logo: {
     enable: true,
-    source: '/src/assets/eastlottery_ico.png',
+    source: '/logo.png',
   },
   navigation: {
     accordion: true,
@@ -103,7 +103,7 @@ const defaultPreferences: Preferences = {
     globalSearch: true,
     languageToggle: true,
     lockScreen: true,
-    notification: true,
+    notification: false,
     sidebarToggle: true,
     themeToggle: true,
   },

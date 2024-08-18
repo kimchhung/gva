@@ -18,6 +18,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "build:dist": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
     "preview": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]

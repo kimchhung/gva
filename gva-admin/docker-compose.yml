@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  lottery-admin:
+  gva-admin:
     restart: always
     build:
       context: .
       dockerfile: ./build/Dockerfile
     environment:
       VITE_APP_TITLE: GVA
-      VITE_APP_NAMESPACE: lottery-data
+      VITE_APP_NAMESPACE: gva-data
       VITE_PORT: 3000
       VITE_BASE: /
       VITE_GLOB_API_URL: http://localhost:8080/admin/v1
@@ -21,7 +21,7 @@ services:
     networks:
       - webnet
     labels:
-      - "com.lottery_data.description=Lottery Admin"
+      - "com.gva_data.description=gva Admin"
     ports:
       - "3000:3000"
 
