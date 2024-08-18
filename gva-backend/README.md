@@ -1,7 +1,8 @@
 # GVA GO VUE ADMIN Boilerplate
+
 [![Go Reference](https://pkg.go.dev/badge/api.svg)](https://pkg.go.dev/api)
 
-Simple and scalable boilerplate to build powerful and organized REST projects with [Fiber](https://github.com/gofiber/fiber). 
+Simple and scalable boilerplate to build powerful and organized REST projects with [Fiber](https://github.com/gofiber/fiber).
 
 ## Backend Directory Structure
 
@@ -87,13 +88,15 @@ Simple and scalable boilerplate to build powerful and organized REST projects wi
 ```
 
 ## Usage
+
 You can run that commands to run project:
 
-```go mod download```
+`go mod download`
 
-```go run main.go``` or ```air -c .air.toml``` if you want to use air
+`go run main.go` or `air -c .air.toml` if you want to use air
 
 ### Docker
+
 ```shell
 docker compose build
 docker compose up
@@ -101,12 +104,12 @@ docker compose up
 CUSTOM="Air" docker compose up # Use with Air
 ```
 
-
 ## CRUD generator
 
-```make admincmd.gen name="todo" ```
+`make admincmd.gen name="todo" `
 
 - example todo CRUD
+
 ```
 │── docs
 │   ├── swagger.json
@@ -144,32 +147,33 @@ Generated app/database/schema/todo.go
 
 ## Migration
 
- - Install the Atlas CLI. You can find installation instructions [here](https://atlasgo.io/integrations/go-sdk).
- - Run ```make migrate.hash``` whenever got error hash mismatched
- - Check ```migrate.mk``` for more migration cli
-
+- Install the Atlas CLI. You can find installation instructions [here](https://atlasgo.io/integrations/go-sdk).
+- Run `make migrate.hash` whenever got error hash mismatched
+- Check `migrate.mk` for more migration cli
 
 ### Migration generate
 
 1. edit schema in "app/database/schema"
-2. genrate ent using ```make migrate.gen name="add_todo_index"```
-3. apply migrations ```make migrate.apply```
+2. genrate ent using `make migrate.gen name="add_todo_index"`
+3. apply migrations `make migrate.apply`
 
-### Create migration manually 
-1. create migration files ```make migrate.new name="add_user_data"```
-2. generate hash  ```make migrate.hash```
-3. apply migrations ```make migrate.apply```
+### Create migration manually
+
+1. create migration files `make migrate.new name="add_user_data"`
+2. generate hash `make migrate.hash`
+3. apply migrations `make migrate.apply`
 
 ### Migration roleback or reverse
 
 1. remove one or two latest migration files in "app/database/migrations"
-2. check different and apply by ```make migrate.schema.apply```
-3. set version migration to match current version in folder ``` make migrate.apply ```
-4. check current version by ```make migrate.status```
+2. check different and apply by `make migrate.schema.apply`
+3. set version migration to match current version in folder `make migrate.apply`
+4. check current version by `make migrate.status`
 
 ## Resources
- - https://github.com/efectn/fiber-boilerplate 
 
+- https://github.com/efectn/fiber-boilerplate
 
 ## License
+
 api is licensed under the terms of the **MIT License** (see [LICENSE](LICENSE)).

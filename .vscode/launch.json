@@ -6,7 +6,7 @@
       "type": "chrome",
       "name": "admin dev",
       "request": "launch",
-      "url": "http://localhost:5555",
+      "url": "http://localhost:3000",
       "env": { "NODE_ENV": "development" },
       "sourceMaps": true,
       "webRoot": "${workspaceFolder}/app/src"
