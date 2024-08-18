@@ -1,8 +1,8 @@
 dev.api:
-	cd ./backend && air
+	cd ./gva-backend && air
 
 dev.admin:
-	cd ./gva-admin && pnpm dev
+	cd ./gva-admin/app && pnpm dev
 
 format.admin:
 	cd ./gva-admin && pnpm format
