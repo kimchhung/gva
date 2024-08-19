@@ -88,9 +88,8 @@ services:
     networks:
       - app
     environment:
-      REDIS_ADDR: ${DB.REDIS.ADDRESS}
-      REDIS_USER: null
-      REDIS_PASSWORD: ${DB.REDIS.PASSWORD}
+      - REDIS_ADDR=${DB.REDIS.ADDRESS}
+      - REDIS_PASSWORD=${DB.REDIS.PASSWORD}
 
   mysqld-exporter:
     image: prom/mysqld-exporter:main
