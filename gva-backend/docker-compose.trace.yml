@@ -5,6 +5,12 @@ networks:
     driver: bridge
 
 volumes:
+  web-data:
+  admin-data:
+  bot-data:
+  mysql-data:
+  redis-data:
+  grafana-data:
   prom-data:
 
 services:
@@ -17,10 +23,9 @@ services:
       - app
     volumes:
       - "grafana-data:/var/lib/grafana"
-      - "./etc/grafana/provisioning/:/etc/grafana/provisioning/"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-      - GF_USERS_ALLOW_SIGN_UP=${GF_USERS_ALLOW_SIGN_UP}
+      - "./etc/grafana/:/etc/grafana/"
+    env_file:
+      - ./etc/grafana/grafana.env
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
@@ -30,8 +35,8 @@ services:
       - app
     volumes:
       - ./etc/alertmanager/:/etc/alertmanager/
-    environment:
-      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
+    env_file:
+      - ./etc/alertmanager/alertmanager.env
     command:
       - "--config.file=/etc/alertmanager/config.yml"
       - "--storage.path=/alertmanager"
@@ -45,7 +50,6 @@ services:
     networks:
       - app
     volumes:
-      - "./etc/alert.rules.yml:/etc/prometheus/rules.yml"
       - "./etc/prometheus/:/etc/prometheus/"
       - "prom-data:/prometheus"
 
@@ -67,17 +71,17 @@ services:
       - prometheus
 
   cortex:
-    image: cortexproject/cortex:v1.17.1
+    image: cortexproject/cortex:v0.1.0
     #image: ubuntu/cortex:latest
     ports:
       - "9009:9009"
     networks:
       - app
-    command: "-config.file=/etc/single-process-config.yaml"
+    volumes:
+      - "./etc/cortex/:/etc/cortex"
+    command: "-config.file=/etc/cortex/single-process-config.yaml"
     depends_on:
       - prometheus
-    volumes:
-      - "./etc/cortex/single-process-config.yaml:/etc/single-process-config.yaml"
 
   redis-exporter:
     image: oliver006/redis_exporter:alpine
@@ -85,11 +89,12 @@ services:
     ports:
       - 9121:9121
     restart: always
+    volumes:
+      - "./etc/redis_exporter/:/etc/redis_exporter"
+    env_file:
+      - ./etc/redis_exporter/redis_exporter.env
     networks:
       - app
-    environment:
-      - REDIS_ADDR=${DB.REDIS.ADDRESS}
-      - REDIS_PASSWORD=${DB.REDIS.PASSWORD}
 
   mysqld-exporter:
     image: prom/mysqld-exporter:main
@@ -100,10 +105,9 @@ services:
       - "9104:9104"
     volumes:
       - "./etc/mysqld_exporter/.my.cnf:/.my.cnf"
+    env_file:
+      - ./etc/mysqld_exporter/mysqld_exporter.env
     environment:
-      - "MYSQLD_EXPORTER_PASSWORD=${DB.MYSQL.PASSWORD}"
-      - "mysqld.address=${DB.MYSQL.ADDRESS}"
-      - "mysqld.username=${DB.MYSQL.USERNAME}"
       - "collect.info_schema.tablestats=true"
       - "collect.info_schema.userstats=true"
       - "collect.info_schema.query_response_time=true"
