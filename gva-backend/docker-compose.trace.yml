@@ -101,7 +101,7 @@ services:
     volumes:
       - "./etc/mysqld_exporter/.my.cnf:/.my.cnf"
     environment:
-      - "MYSQLD_EXPORTER_PASSWORD=${MYSQLD_EXPORTER_PASSWORD}"
+      - "MYSQLD_EXPORTER_PASSWORD=${DB.MYSQL.PASSWORD}"
       - "mysqld.address=${DB.MYSQL.ADDRESS}"
       - "mysqld.username=${DB.MYSQL.USERNAME}"
       - "collect.info_schema.tablestats=true"
