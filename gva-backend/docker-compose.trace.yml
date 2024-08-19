@@ -19,8 +19,8 @@ services:
       - "grafana-data:/var/lib/grafana"
       - "./etc/grafana/provisioning/:/etc/grafana/provisioning/"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=123456
-      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=${GF_USERS_ALLOW_SIGN_UP}
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
@@ -31,7 +31,7 @@ services:
     volumes:
       - ./etc/alertmanager/:/etc/alertmanager/
     environment:
-      - DISCORD_WEBHOOK_URL=""
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
     command:
       - "--config.file=/etc/alertmanager/config.yml"
       - "--storage.path=/alertmanager"
@@ -67,7 +67,7 @@ services:
       - prometheus
 
   cortex:
-    image: cortexproject/cortex:v0.1.0
+    image: cortexproject/cortex:v1.17.1
     #image: ubuntu/cortex:latest
     ports:
       - "9009:9009"
@@ -88,9 +88,9 @@ services:
     networks:
       - app
     environment:
-      REDIS_ADDR: gva-redis:6379
+      REDIS_ADDR: ${DB.REDIS.ADDRESS}
       REDIS_USER: null
-      REDIS_PASSWORD: password
+      REDIS_PASSWORD: ${DB.REDIS.PASSWORD}
 
   mysqld-exporter:
     image: prom/mysqld-exporter:main
@@ -102,6 +102,7 @@ services:
     volumes:
       - "./etc/mysqld_exporter/.my.cnf:/.my.cnf"
     environment:
+      - "MYSQLD_EXPORTER_PASSWORD=${MYSQLD_EXPORTER_PASSWORD}"
       - "collect.info_schema.tablestats=true"
       - "collect.info_schema.userstats=true"
       - "collect.info_schema.query_response_time=true"
