@@ -41,6 +41,7 @@
     "@vben/types": "workspace:*",
     "@vben/utils": "workspace:*",
     "@vueuse/core": "^10.11.1",
+    "@vben/vite-config": "workspace:*",
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.3",
     "dayjs": "^1.11.12",
