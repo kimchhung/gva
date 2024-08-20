@@ -1,14 +1,32 @@
 FROM node:20-alpine AS builder
 
+# --max-old-space-size
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_OPTIONS=--max-old-space-size=2048
+
+
+RUN corepack enable
+
 WORKDIR /app
-COPY /app/dist.tar.gz .
-RUN tar -xzvf dist.tar.gz -C /app
+
+# copy package.json and pnpm-lock.yaml to workspace
+COPY . /app
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install
+RUN pnpm run build
+
+RUN echo "Builder Success 🎉"
 
 FROM nginx:stable-alpine as production
 
-
 RUN echo "types { application/javascript js mjs; }" > /etc/nginx/conf.d/mjs.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/app/dist /usr/share/nginx/html
+
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 3000
+
+# start nginx
+CMD ["nginx", "-g", "daemon off;"]
