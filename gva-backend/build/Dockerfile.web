@@ -27,3 +27,4 @@ COPY --from=builder /web/bin/api-binary /web/bin/api-binary
 COPY --from=builder --chown=nonroot /app/lang /app/lang
 COPY --from=builder --chown=nonroot /app/env /app/env
 ENTRYPOINT ["/web/bin/api-binary"]
+EXPOSE 5500
