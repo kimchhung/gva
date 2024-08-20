@@ -27,4 +27,3 @@ COPY --from=builder /bot/bin/api-binary /bot/bin/api-binary
 COPY --from=builder --chown=nonroot /app/lang /app/lang
 COPY --from=builder --chown=nonroot /app/env /app/env
 ENTRYPOINT ["/bot/bin/api-binary"]
-EXPOSE 5502
