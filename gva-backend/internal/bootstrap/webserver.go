@@ -27,6 +27,10 @@ func NewEcho(cfg *env.Config) *echo.Echo {
 		appctx.ErrorHandler(err, c)
 	}
 
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!\n")
+	})
+	
 	return e
 }
 
