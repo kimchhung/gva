@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	appctx "github.com/gva/app/common/context"
@@ -27,18 +28,19 @@ func NewEcho(cfg *env.Config) *echo.Echo {
 		appctx.ErrorHandler(err, c)
 	}
 
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!\n")
+	})
+
 	return e
 }
 
-
-
 func printStartupMessage(cfg *env.Config) {
 	host, port := env.ParseAddress(cfg.App.Address)
-	baseUrl := host+":"+port
-	if host == ""{
-		baseUrl = "http://localhost:"+port
+	baseUrl := host + ":" + port
+	if host == "" {
+		baseUrl = "http://localhost:" + port
 	}
-
 
 	table := uitable.New()
 	table.AddRow("API Module", "BasePath", "Document")
