@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gva/internal/utils"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/maps"
 )
@@ -70,8 +71,8 @@ func ReadEnv(filename string, path ...string) (envFile *viper.Viper, config *Con
 			for k, v := range Environ() {
 				envFile.Set(k, v)
 			}
-		} else {
-			return nil, nil, fmt.Errorf("failed to read env %v", err)
+		} else if utils.IsEmpty(config) {
+			return nil, nil, fmt.Errorf("config is empty, failed to read env %v", err)
 		}
 	}
 
