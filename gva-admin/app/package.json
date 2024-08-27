@@ -17,7 +17,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm vite build --mode prod",
-    "build:dist": "pnpm vite build --mode prod && tar -czf dist.tar.gz dist && yarn run rimraf dist",
+    "build:dist": "pnpm vite build --mode prod && tar -czf dist.tar.gz dist && pnpm run rimraf dist",
     "build:analyze": "pnpm vite build --mode analyze",
     "dev": "pnpm vite --mode dev",
     "preview": "vite preview",
