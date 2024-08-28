@@ -109,6 +109,13 @@ type (
 	password struct {
 		HashCost int `mapstructure:"hash_cost"`
 	}
+
+	s3 struct {
+		BucketName string `mapstructure:"bucket_name"`
+		Address    string
+		AccessKey  string `mapstructure:"access_key"`
+		SecretKey  string `mapstructure:"secret_key"`
+	}
 )
 
 type Config struct {
@@ -120,6 +127,7 @@ type Config struct {
 	Middleware middleware
 	Jwt        jwt
 	Password   password
+	S3         s3
 }
 
 func ParseEnv(name string) (*Config, error) {

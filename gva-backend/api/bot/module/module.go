@@ -2,6 +2,7 @@ package module
 
 import (
 	"github.com/gva/api/bot/module/comic"
+	"github.com/gva/api/bot/module/file"
 	"github.com/gva/api/bot/module/index"
 	"github.com/gva/app/common/controller"
 	"github.com/gva/internal/ctr"
@@ -12,6 +13,7 @@ import (
 var NewbotModules = fx.Module("bot-module",
 	index.IndexModule,
 	comic.ComicModuleModule,
+	file.FileModuleModule,
 
 	fx.Provide(
 		fx.Annotate(NewRouter,

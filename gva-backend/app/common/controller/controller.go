@@ -60,6 +60,11 @@ func RegisterEcho(api *echo.Group, icontrollers []ctr.CTR) error {
 		}
 
 		for _, r := range c.Routes {
+			if r.Callback != nil {
+				r.Callback(group)
+				continue
+			}
+
 			handler := func(c echo.Context) (err error) {
 				for _, fn := range r.ScopeHandler() {
 					if err = fn(c); err != nil {

@@ -9,6 +9,7 @@ import (
 
 type H = echo.HandlerFunc
 type M = echo.MiddlewareFunc
+type R = func(*echo.Group)
 
 type ModuleRouter interface {
 	Register(args ...any)
@@ -29,6 +30,8 @@ type (
 
 		Middlewares  []M
 		ScopeHandler ScopeHandler
+
+		Callback R
 	}
 )
 
@@ -90,6 +93,12 @@ func (r *Route) Name(name string) *Route {
 
 func (r *Route) Do(scopeHandler func() []H) *Route {
 	r.ScopeHandler = scopeHandler
+	return r
+}
+
+func Add(callback R) *Route {
+	r := NewRoute()
+	r.Callback = callback
 	return r
 }
 

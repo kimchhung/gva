@@ -15,6 +15,63 @@ const docTemplatebot = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/file/static/img/{name}": {
+            "get": {
+                "description": "Serves files from ` + "`" + `storage/static` + "`" + ` directory",
+                "tags": [
+                    "File"
+                ],
+                "summary": "Serve static files",
+                "operationId": "serve-static-files",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filename",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/file/upload-img": {
+            "post": {
+                "description": "Upload a file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Upload a file",
+                "operationId": "upload-file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/health-check": {
             "get": {
                 "security": [
@@ -109,7 +166,7 @@ const docTemplatebot = `{
 // SwaggerInfobot holds exported Swagger Info so clients can modify it
 var SwaggerInfobot = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:4000",
+	Host:             "localhost:5500",
 	BasePath:         "/bot/v1",
 	Schemes:          []string{},
 	Title:            "GVA bot API",

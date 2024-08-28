@@ -1,10 +1,10 @@
 # Configuration vars for cmd/app
 [app]
-env = "dev"                # dev | stage | prod
+env = "dev"           # dev | stage | prod
 name = "Go Vue Admin"
 address = ":5500"
-idle_timeout = 5           # As seconds
-shutdown_timeout = 10      # As seconds
+idle_timeout = 5      # As seconds
+shutdown_timeout = 10 # As seconds
 print_routes = true
 production = false
 
@@ -31,10 +31,10 @@ key_file = "./storage/selfsigned.key"
 
 [db.mysql]
 #dns = # <username>:<password>@tcp(<host>:<port>)/<dbname>
-dsn = "root:password@tcp(localhost:3336)/gva"
+dsn = "root:password@tcp(localhost:3306)/gva"
 
 [db.redis]
-address = "localhost:6663"
+address = "localhost:6379"
 password = "password"
 
 [seed]
@@ -68,10 +68,15 @@ expiration_seconds = 60
 [middleware.swagger]
 enable = true
 path = "/docs"
-host = "localhost:4000"
+host = "localhost:5500"
 
 [jwt]
 secret = "jwt_secret"
 
 [password]
 hash_cost = "10"
+
+[s3]
+address = "https://console-ecsssockgcsk4wcowokc0wss.foxie.vip"
+access_Key = "RTysUARBMqR134RqEu6E"
+secret_Key = "O2oI8xFuFI7qn9LRj2tykDM6bzomkWN9sfPak9fi"

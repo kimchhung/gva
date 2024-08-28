@@ -15,7 +15,7 @@ var NewCommonModule = fx.Module("CommonModule",
 	fx.Provide(service.NewPubsubService),
 	fx.Provide(service.NewPasswordService),
 	fx.Provide(service.NewJwtService),
-
+	fx.Provide(service.NewS3Service),
 	// Database Repository | repositores
 	fx.Provide(repository.NewAdminRepository),
 	fx.Provide(repository.NewMenuRepository),

@@ -12,19 +12,19 @@ import (
 )
 
 var (
-	cfg = env.NewConfig()
+	cfg     = env.NewConfig()
 	version = "0.001"
 )
 
-// @title										    GVA bot API
-// @version				 				    	1.0
-// @description							    GO VUE ADMIN Boilerplate
-// @host												localhost:4000
-// @BasePath										/bot/v1
+// @title						GVA bot API
+// @version					    1.0
+// @description					GO VUE ADMIN Boilerplate
+// @host						localhost:5500
+// @BasePath					/bot/v1
 // @securityDefinitions.apikey	Bearer
-// @in													header
-// @name												Authorization
-// @Param  											accept-language  header     string     false  "some description"
+// @in							header
+// @name						Authorization
+// @Param  						accept-language  header     string     false  "some description"
 func Run() {
 	// * Run only web api
 
@@ -40,7 +40,7 @@ func Run() {
 
 	docs.SwaggerInfobot.Host = cfg.Middleware.Swagger.Host
 	docs.SwaggerInfobot.BasePath = cfg.API.Bot.BasePath
-	docs.SwaggerInfobot.Version = version 
+	docs.SwaggerInfobot.Version = version
 
 	/* Web |> module <| */
 	modules := router.WithRouter(bot.NewbotModules)
@@ -52,6 +52,6 @@ func Run() {
 	).Run()
 }
 
-func main(){
+func main() {
 	Run()
 }

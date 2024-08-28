@@ -12,13 +12,51 @@ definitions:
         description: Meta provides additional information about the data, such as
           its type or kind.y.
     type: object
-host: localhost:4000
+host: localhost:5500
 info:
   contact: {}
   description: GO VUE ADMIN Boilerplate
   title: GVA bot API
   version: "1.0"
 paths:
+  /file/static/img/{name}:
+    get:
+      description: Serves files from `storage/static` directory
+      operationId: serve-static-files
+      parameters:
+      - description: filename
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      summary: Serve static files
+      tags:
+      - File
+  /file/upload-img:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a file
+      operationId: upload-file
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Upload a file
+      tags:
+      - File
   /health-check:
     get:
       operationId: health-check

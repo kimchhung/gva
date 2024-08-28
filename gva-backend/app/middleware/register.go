@@ -86,7 +86,5 @@ func (m *Middleware) Register() {
 		m.app.GET(mdCfg.Monitor.Path, echoprometheus.NewHandler()) // adds route to serve gathered metrics
 	}
 
-
 	m.app.Use(TraceDebug(m.cfg))
 }
-

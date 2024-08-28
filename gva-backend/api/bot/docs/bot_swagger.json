@@ -6,9 +6,66 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:4000",
+    "host": "localhost:5500",
     "basePath": "/bot/v1",
     "paths": {
+        "/file/static/img/{name}": {
+            "get": {
+                "description": "Serves files from `storage/static` directory",
+                "tags": [
+                    "File"
+                ],
+                "summary": "Serve static files",
+                "operationId": "serve-static-files",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filename",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/file/upload-img": {
+            "post": {
+                "description": "Upload a file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Upload a file",
+                "operationId": "upload-file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/health-check": {
             "get": {
                 "security": [
