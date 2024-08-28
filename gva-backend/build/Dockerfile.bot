@@ -15,10 +15,7 @@ COPY . .
 # Build your application to binary
 ENV GOCACHE=/root/.cache/go-build
 RUN --mount=type=cache,target=/go/pkg/mod/ \
-    --mount=type=cache,target="/root/.cache/go-build" \
-    --mount=type=bind,target=. \
     CGO_ENABLED=0 GOOS=linux go build -o /bot/bin/api-binary ./api/bot/main.go
-
 
 # Copy necessary config file
 FROM gcr.io/distroless/static:nonroot
