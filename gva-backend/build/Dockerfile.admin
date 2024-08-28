@@ -15,7 +15,7 @@ COPY . .
 # Build your application to binary
 ENV GOCACHE=/root/.cache/go-build
 RUN --mount=type=cache,target=/go/pkg/mod/ \
-    --mount=type=cache,target="/root/.cache/go-build" \
+    --mount=type=cache,target="/root/.cache/go-build/admin" \
     --mount=type=bind,target=. \
     CGO_ENABLED=0 GOOS=linux go build -o /admin/bin/api-binary ./api/admin/main.go
 
