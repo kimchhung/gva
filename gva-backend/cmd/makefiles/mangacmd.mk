@@ -6,3 +6,5 @@ manganato.search:
 manganato.detail:
 	go run cmd/mangacmd/main.go manganato.detail id=${id}
 
+manganato.latest:
+	go run cmd/mangacmd/main.go manganato.latest

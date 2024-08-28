@@ -30,12 +30,24 @@ func NewManganatoApi(colly *colly.Collector, log zerolog.Logger) *ManganatoApi {
 
 type SearchDetail struct {
 	Domain         string   `json:"domain" validate:"required"`
-	LastChapterUrl string   `json:"chapterUrl" validate:"required"`
+	LastChapterUrl string   `json:"lastChapterUrl" validate:"required"`
 	MangaId        string   `json:"mangaId" validate:"required"`
 	DetailUrl      string   `json:"detailUrl" validate:"required"`
 	Title          string   `json:"title" validate:"required"`
 	Authors        []string `json:"authors" validate:"required"`
-	//Jul 05,2022 - 17:08
+	// Jul 05,2022 - 17:08
+	UpdatedAt string `json:"updatedAt" validate:"required"`
+	Thumpnail string `json:"thumpnail" validate:"required"`
+}
+
+type LatestDetail struct {
+	Domain         string   `json:"domain" validate:"required"`
+	LastChapterUrl string   `json:"lastChapterUrl" validate:"required"`
+	MangaId        string   `json:"mangaId" validate:"required"`
+	DetailUrl      string   `json:"detailUrl" validate:"required"`
+	Title          string   `json:"title" validate:"required"`
+	Authors        []string `json:"authors" validate:"required"`
+	// Aug 27,24
 	UpdatedAt string `json:"updatedAt" validate:"required"`
 	Thumpnail string `json:"thumpnail" validate:"required"`
 }
@@ -61,6 +73,57 @@ data example:
 type SearchResult struct {
 	Keyword string         `json:"keyword"`
 	Details []SearchDetail `json:"details" `
+}
+
+func (m *ManganatoApi) FetchLatestManga(ctx context.Context) ([]SearchDetail, []error) {
+	url := "https://manganato.com/genre-all"
+	log := zerolog.Ctx(ctx).With().Str("url", url).Logger()
+	collector := m.colly.Clone()
+	var (
+		errs          []error
+		searchdetails []SearchDetail
+	)
+	collector.OnHTML(".panel-content-genres .content-genres-item", func(h *colly.HTMLElement) {
+		detail := SearchDetail{}
+		detail.DetailUrl = h.ChildAttr("a.genres-item-img", "href")
+
+		paths := strings.SplitAfter(detail.DetailUrl, "/")
+		if len(paths) > 0 {
+			detail.MangaId = strings.Replace(paths[len(paths)-1], "manga-", "", 1)
+			detail.Domain = strings.Join(paths[0:len(paths)-1], "")
+		}
+		detail.Title = h.ChildAttr("a.genres-item-img", "title")
+		detail.Thumpnail = h.ChildAttr("img.img-loading", "src")
+
+		detail.Authors = strings.Split(h.ChildText(".genres-item-author"), ",")
+		for i, au := range detail.Authors {
+			detail.Authors[i] = strings.TrimSpace(au)
+		}
+		detail.UpdatedAt = h.ChildText(".genres-item-time")
+		detail.LastChapterUrl = h.ChildAttr("a.genres-item-chap", "href")
+		if detail.MangaId != "" {
+			searchdetails = append(searchdetails, detail)
+		}
+	})
+
+	collector.OnError(func(r *colly.Response, e error) {
+		errs = append(errs, e)
+	})
+
+	if err := collector.Visit(url); err != nil {
+		errs = append(errs, err)
+		return nil, errs
+	}
+
+	collector.Wait()
+
+	if isSucess := len(searchdetails) > 0; isSucess {
+		log.Info().Int("detailCount", len(searchdetails)).Msg("success")
+		return searchdetails, nil
+	}
+
+	errs = append(errs, errors.New("no manga found"))
+	return nil, nil
 }
 
 func (m *ManganatoApi) SearchManga(ctx context.Context, name string) (*SearchResult, []error) {
@@ -89,6 +152,7 @@ func (m *ManganatoApi) SearchManga(ctx context.Context, name string) (*SearchRes
 			detail.MangaId = strings.Replace(paths[len(paths)-1], "manga-", "", 1)
 			detail.Domain = strings.Join(paths[0:len(paths)-1], "")
 		}
+
 		detail.LastChapterUrl = h.ChildAttr(".item-right > a:nth-child(2)", "href")
 		detail.Title = h.ChildAttr(".item-right > a:nth-child(2)", "title")
 
@@ -144,7 +208,7 @@ type FetchDetailGenres struct {
 type FetchMangaDetailResult struct {
 	Title   string   `json:"title" validate:"required"`
 	Authors []string `json:"authors" validate:"required"`
-	//Jul 05,2022 - 17:08
+	// Jul 05,2022 - 17:08
 	UpdatedAt   string               `json:"updatedAt" validate:"required"`
 	Rating      string               `json:"Rating" validate:"required"`
 	Thumpnail   string               `json:"thumpnail" validate:"required"`

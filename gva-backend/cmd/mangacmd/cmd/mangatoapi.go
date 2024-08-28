@@ -50,6 +50,29 @@ var manganatoCmd = &cobra.Command{
 	},
 }
 
+var manganatoLatestCmd = &cobra.Command{
+	Use:   "manganato.latest",
+	Short: "search manga CLI",
+	Run: func(_ *cobra.Command, args []string) {
+		ctx := context.Background()
+		lang.InitializeTranslator()
+		validator.InitializeValidator()
+		collector := scrapper.NewCollector()
+
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+		mangaApi := mangatoapi.NewManganatoApi(collector, log.Logger)
+
+		t1 := time.Now()
+		mangas, errs := mangaApi.FetchLatestManga(ctx)
+
+		log.Debug().
+			Dur("latency_ms", time.Since(t1)).
+			Errs("errs", errs).
+			Any("mangas", mangas).
+			Msg("mangaApi.SearchManga ended.")
+	},
+}
+
 var manganatoDetailCmd = &cobra.Command{
 	Use:   "manganato.detail",
 	Short: "get manga detail CLI",
@@ -87,4 +110,5 @@ var manganatoDetailCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(manganatoCmd)
 	rootCmd.AddCommand(manganatoDetailCmd)
+	rootCmd.AddCommand(manganatoLatestCmd)
 }
