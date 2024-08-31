@@ -224,9 +224,7 @@ func (au *AdminUpdate) ClearDepartment() *AdminUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AdminUpdate) Save(ctx context.Context) (int, error) {
-	if err := au.defaults(); err != nil {
-		return 0, err
-	}
+	au.defaults()
 	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
@@ -253,15 +251,11 @@ func (au *AdminUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (au *AdminUpdate) defaults() error {
+func (au *AdminUpdate) defaults() {
 	if _, ok := au.mutation.UpdatedAt(); !ok {
-		if admin.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized admin.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := admin.UpdateDefaultUpdatedAt()
 		au.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -619,9 +613,7 @@ func (auo *AdminUpdateOne) Select(field string, fields ...string) *AdminUpdateOn
 
 // Save executes the query and returns the updated Admin entity.
 func (auo *AdminUpdateOne) Save(ctx context.Context) (*Admin, error) {
-	if err := auo.defaults(); err != nil {
-		return nil, err
-	}
+	auo.defaults()
 	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
@@ -648,15 +640,11 @@ func (auo *AdminUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *AdminUpdateOne) defaults() error {
+func (auo *AdminUpdateOne) defaults() {
 	if _, ok := auo.mutation.UpdatedAt(); !ok {
-		if admin.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized admin.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := admin.UpdateDefaultUpdatedAt()
 		auo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.

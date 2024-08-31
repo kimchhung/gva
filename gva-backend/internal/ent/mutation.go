@@ -12,15 +12,14 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/gva/app/database/schema/pxid"
-	"github.com/gva/app/database/schema/types"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 )
 
 const (
@@ -32,13 +31,13 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAdmin      = "Admin"
-	TypeDepartment = "Department"
-	TypeMenu       = "Menu"
-	TypePermission = "Permission"
-	TypeRegion     = "Region"
-	TypeRole       = "Role"
-	TypeTodo       = "Todo"
+	TypeAdmin        = "Admin"
+	TypeDepartment   = "Department"
+	TypeGenre        = "Genre"
+	TypeManga        = "Manga"
+	TypeMangaChapter = "MangaChapter"
+	TypePermission   = "Permission"
+	TypeRole         = "Role"
 )
 
 // AdminMutation represents an operation that mutates the Admin nodes in the graph.
@@ -1986,50 +1985,39 @@ func (m *DepartmentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Department edge %s", name)
 }
 
-// MenuMutation represents an operation that mutates the Menu nodes in the graph.
-type MenuMutation struct {
+// GenreMutation represents an operation that mutates the Genre nodes in the graph.
+type GenreMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *pxid.ID
-	created_at      *time.Time
-	updated_at      *time.Time
-	is_enable       *bool
-	deleted_at      *int
-	adddeleted_at   *int
-	_path           *string
-	component       *string
-	redirect        *string
-	name            *string
-	_order          *int
-	add_order       *int
-	_type           *menu.Type
-	meta            *types.MenuMeta
-	clearedFields   map[string]struct{}
-	parent          *pxid.ID
-	clearedparent   bool
-	children        map[pxid.ID]struct{}
-	removedchildren map[pxid.ID]struct{}
-	clearedchildren bool
-	roles           map[pxid.ID]struct{}
-	removedroles    map[pxid.ID]struct{}
-	clearedroles    bool
-	done            bool
-	oldValue        func(context.Context) (*Menu, error)
-	predicates      []predicate.Menu
+	op            Op
+	typ           string
+	id            *pxid.ID
+	created_at    *time.Time
+	updated_at    *time.Time
+	is_enable     *bool
+	deleted_at    *int
+	adddeleted_at *int
+	name          *string
+	name_id       *string
+	clearedFields map[string]struct{}
+	mangas        map[pxid.ID]struct{}
+	removedmangas map[pxid.ID]struct{}
+	clearedmangas bool
+	done          bool
+	oldValue      func(context.Context) (*Genre, error)
+	predicates    []predicate.Genre
 }
 
-var _ ent.Mutation = (*MenuMutation)(nil)
+var _ ent.Mutation = (*GenreMutation)(nil)
 
-// menuOption allows management of the mutation configuration using functional options.
-type menuOption func(*MenuMutation)
+// genreOption allows management of the mutation configuration using functional options.
+type genreOption func(*GenreMutation)
 
-// newMenuMutation creates new mutation for the Menu entity.
-func newMenuMutation(c config, op Op, opts ...menuOption) *MenuMutation {
-	m := &MenuMutation{
+// newGenreMutation creates new mutation for the Genre entity.
+func newGenreMutation(c config, op Op, opts ...genreOption) *GenreMutation {
+	m := &GenreMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeMenu,
+		typ:           TypeGenre,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -2038,20 +2026,20 @@ func newMenuMutation(c config, op Op, opts ...menuOption) *MenuMutation {
 	return m
 }
 
-// withMenuID sets the ID field of the mutation.
-func withMenuID(id pxid.ID) menuOption {
-	return func(m *MenuMutation) {
+// withGenreID sets the ID field of the mutation.
+func withGenreID(id pxid.ID) genreOption {
+	return func(m *GenreMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Menu
+			value *Genre
 		)
-		m.oldValue = func(ctx context.Context) (*Menu, error) {
+		m.oldValue = func(ctx context.Context) (*Genre, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Menu.Get(ctx, id)
+					value, err = m.Client().Genre.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -2060,10 +2048,10 @@ func withMenuID(id pxid.ID) menuOption {
 	}
 }
 
-// withMenu sets the old Menu of the mutation.
-func withMenu(node *Menu) menuOption {
-	return func(m *MenuMutation) {
-		m.oldValue = func(context.Context) (*Menu, error) {
+// withGenre sets the old Genre of the mutation.
+func withGenre(node *Genre) genreOption {
+	return func(m *GenreMutation) {
+		m.oldValue = func(context.Context) (*Genre, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -2072,7 +2060,7 @@ func withMenu(node *Menu) menuOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m MenuMutation) Client() *Client {
+func (m GenreMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -2080,7 +2068,7 @@ func (m MenuMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m MenuMutation) Tx() (*Tx, error) {
+func (m GenreMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -2090,14 +2078,14 @@ func (m MenuMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Menu entities.
-func (m *MenuMutation) SetID(id pxid.ID) {
+// operation is only accepted on creation of Genre entities.
+func (m *GenreMutation) SetID(id pxid.ID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MenuMutation) ID() (id pxid.ID, exists bool) {
+func (m *GenreMutation) ID() (id pxid.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2108,7 +2096,7 @@ func (m *MenuMutation) ID() (id pxid.ID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MenuMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
+func (m *GenreMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -2117,19 +2105,19 @@ func (m *MenuMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Menu.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().Genre.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *MenuMutation) SetCreatedAt(t time.Time) {
+func (m *GenreMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *MenuMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *GenreMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -2137,10 +2125,10 @@ func (m *MenuMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the Genre entity.
+// If the Genre object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *GenreMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -2155,17 +2143,17 @@ func (m *MenuMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *MenuMutation) ResetCreatedAt() {
+func (m *GenreMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *MenuMutation) SetUpdatedAt(t time.Time) {
+func (m *GenreMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *MenuMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *GenreMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -2173,10 +2161,10 @@ func (m *MenuMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the Genre entity.
+// If the Genre object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *GenreMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -2191,17 +2179,17 @@ func (m *MenuMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *MenuMutation) ResetUpdatedAt() {
+func (m *GenreMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
 // SetIsEnable sets the "is_enable" field.
-func (m *MenuMutation) SetIsEnable(b bool) {
+func (m *GenreMutation) SetIsEnable(b bool) {
 	m.is_enable = &b
 }
 
 // IsEnable returns the value of the "is_enable" field in the mutation.
-func (m *MenuMutation) IsEnable() (r bool, exists bool) {
+func (m *GenreMutation) IsEnable() (r bool, exists bool) {
 	v := m.is_enable
 	if v == nil {
 		return
@@ -2209,10 +2197,10 @@ func (m *MenuMutation) IsEnable() (r bool, exists bool) {
 	return *v, true
 }
 
-// OldIsEnable returns the old "is_enable" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// OldIsEnable returns the old "is_enable" field's value of the Genre entity.
+// If the Genre object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldIsEnable(ctx context.Context) (v bool, err error) {
+func (m *GenreMutation) OldIsEnable(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIsEnable is only allowed on UpdateOne operations")
 	}
@@ -2227,18 +2215,18 @@ func (m *MenuMutation) OldIsEnable(ctx context.Context) (v bool, err error) {
 }
 
 // ResetIsEnable resets all changes to the "is_enable" field.
-func (m *MenuMutation) ResetIsEnable() {
+func (m *GenreMutation) ResetIsEnable() {
 	m.is_enable = nil
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (m *MenuMutation) SetDeletedAt(i int) {
+func (m *GenreMutation) SetDeletedAt(i int) {
 	m.deleted_at = &i
 	m.adddeleted_at = nil
 }
 
 // DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *MenuMutation) DeletedAt() (r int, exists bool) {
+func (m *GenreMutation) DeletedAt() (r int, exists bool) {
 	v := m.deleted_at
 	if v == nil {
 		return
@@ -2246,10 +2234,10 @@ func (m *MenuMutation) DeletedAt() (r int, exists bool) {
 	return *v, true
 }
 
-// OldDeletedAt returns the old "deleted_at" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedAt returns the old "deleted_at" field's value of the Genre entity.
+// If the Genre object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldDeletedAt(ctx context.Context) (v int, err error) {
+func (m *GenreMutation) OldDeletedAt(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -2264,7 +2252,7 @@ func (m *MenuMutation) OldDeletedAt(ctx context.Context) (v int, err error) {
 }
 
 // AddDeletedAt adds i to the "deleted_at" field.
-func (m *MenuMutation) AddDeletedAt(i int) {
+func (m *GenreMutation) AddDeletedAt(i int) {
 	if m.adddeleted_at != nil {
 		*m.adddeleted_at += i
 	} else {
@@ -2273,7 +2261,7 @@ func (m *MenuMutation) AddDeletedAt(i int) {
 }
 
 // AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
-func (m *MenuMutation) AddedDeletedAt() (r int, exists bool) {
+func (m *GenreMutation) AddedDeletedAt() (r int, exists bool) {
 	v := m.adddeleted_at
 	if v == nil {
 		return
@@ -2282,188 +2270,18 @@ func (m *MenuMutation) AddedDeletedAt() (r int, exists bool) {
 }
 
 // ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *MenuMutation) ResetDeletedAt() {
+func (m *GenreMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	m.adddeleted_at = nil
 }
 
-// SetPid sets the "pid" field.
-func (m *MenuMutation) SetPid(px pxid.ID) {
-	m.parent = &px
-}
-
-// Pid returns the value of the "pid" field in the mutation.
-func (m *MenuMutation) Pid() (r pxid.ID, exists bool) {
-	v := m.parent
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPid returns the old "pid" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldPid(ctx context.Context) (v *pxid.ID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPid is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPid requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPid: %w", err)
-	}
-	return oldValue.Pid, nil
-}
-
-// ClearPid clears the value of the "pid" field.
-func (m *MenuMutation) ClearPid() {
-	m.parent = nil
-	m.clearedFields[menu.FieldPid] = struct{}{}
-}
-
-// PidCleared returns if the "pid" field was cleared in this mutation.
-func (m *MenuMutation) PidCleared() bool {
-	_, ok := m.clearedFields[menu.FieldPid]
-	return ok
-}
-
-// ResetPid resets all changes to the "pid" field.
-func (m *MenuMutation) ResetPid() {
-	m.parent = nil
-	delete(m.clearedFields, menu.FieldPid)
-}
-
-// SetPath sets the "path" field.
-func (m *MenuMutation) SetPath(s string) {
-	m._path = &s
-}
-
-// Path returns the value of the "path" field in the mutation.
-func (m *MenuMutation) Path() (r string, exists bool) {
-	v := m._path
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPath returns the old "path" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldPath(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPath is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPath requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPath: %w", err)
-	}
-	return oldValue.Path, nil
-}
-
-// ResetPath resets all changes to the "path" field.
-func (m *MenuMutation) ResetPath() {
-	m._path = nil
-}
-
-// SetComponent sets the "component" field.
-func (m *MenuMutation) SetComponent(s string) {
-	m.component = &s
-}
-
-// Component returns the value of the "component" field in the mutation.
-func (m *MenuMutation) Component() (r string, exists bool) {
-	v := m.component
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldComponent returns the old "component" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldComponent(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldComponent is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldComponent requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldComponent: %w", err)
-	}
-	return oldValue.Component, nil
-}
-
-// ResetComponent resets all changes to the "component" field.
-func (m *MenuMutation) ResetComponent() {
-	m.component = nil
-}
-
-// SetRedirect sets the "redirect" field.
-func (m *MenuMutation) SetRedirect(s string) {
-	m.redirect = &s
-}
-
-// Redirect returns the value of the "redirect" field in the mutation.
-func (m *MenuMutation) Redirect() (r string, exists bool) {
-	v := m.redirect
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRedirect returns the old "redirect" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldRedirect(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRedirect is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRedirect requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRedirect: %w", err)
-	}
-	return oldValue.Redirect, nil
-}
-
-// ClearRedirect clears the value of the "redirect" field.
-func (m *MenuMutation) ClearRedirect() {
-	m.redirect = nil
-	m.clearedFields[menu.FieldRedirect] = struct{}{}
-}
-
-// RedirectCleared returns if the "redirect" field was cleared in this mutation.
-func (m *MenuMutation) RedirectCleared() bool {
-	_, ok := m.clearedFields[menu.FieldRedirect]
-	return ok
-}
-
-// ResetRedirect resets all changes to the "redirect" field.
-func (m *MenuMutation) ResetRedirect() {
-	m.redirect = nil
-	delete(m.clearedFields, menu.FieldRedirect)
-}
-
 // SetName sets the "name" field.
-func (m *MenuMutation) SetName(s string) {
+func (m *GenreMutation) SetName(s string) {
 	m.name = &s
 }
 
 // Name returns the value of the "name" field in the mutation.
-func (m *MenuMutation) Name() (r string, exists bool) {
+func (m *GenreMutation) Name() (r string, exists bool) {
 	v := m.name
 	if v == nil {
 		return
@@ -2471,10 +2289,10 @@ func (m *MenuMutation) Name() (r string, exists bool) {
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// OldName returns the old "name" field's value of the Genre entity.
+// If the Genre object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *GenreMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldName is only allowed on UpdateOne operations")
 	}
@@ -2489,309 +2307,109 @@ func (m *MenuMutation) OldName(ctx context.Context) (v string, err error) {
 }
 
 // ResetName resets all changes to the "name" field.
-func (m *MenuMutation) ResetName() {
+func (m *GenreMutation) ResetName() {
 	m.name = nil
 }
 
-// SetOrder sets the "order" field.
-func (m *MenuMutation) SetOrder(i int) {
-	m._order = &i
-	m.add_order = nil
+// SetNameID sets the "name_id" field.
+func (m *GenreMutation) SetNameID(s string) {
+	m.name_id = &s
 }
 
-// Order returns the value of the "order" field in the mutation.
-func (m *MenuMutation) Order() (r int, exists bool) {
-	v := m._order
+// NameID returns the value of the "name_id" field in the mutation.
+func (m *GenreMutation) NameID() (r string, exists bool) {
+	v := m.name_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOrder returns the old "order" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// OldNameID returns the old "name_id" field's value of the Genre entity.
+// If the Genre object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldOrder(ctx context.Context) (v int, err error) {
+func (m *GenreMutation) OldNameID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOrder is only allowed on UpdateOne operations")
+		return v, errors.New("OldNameID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOrder requires an ID field in the mutation")
+		return v, errors.New("OldNameID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOrder: %w", err)
+		return v, fmt.Errorf("querying old value for OldNameID: %w", err)
 	}
-	return oldValue.Order, nil
+	return oldValue.NameID, nil
 }
 
-// AddOrder adds i to the "order" field.
-func (m *MenuMutation) AddOrder(i int) {
-	if m.add_order != nil {
-		*m.add_order += i
-	} else {
-		m.add_order = &i
-	}
+// ResetNameID resets all changes to the "name_id" field.
+func (m *GenreMutation) ResetNameID() {
+	m.name_id = nil
 }
 
-// AddedOrder returns the value that was added to the "order" field in this mutation.
-func (m *MenuMutation) AddedOrder() (r int, exists bool) {
-	v := m.add_order
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearOrder clears the value of the "order" field.
-func (m *MenuMutation) ClearOrder() {
-	m._order = nil
-	m.add_order = nil
-	m.clearedFields[menu.FieldOrder] = struct{}{}
-}
-
-// OrderCleared returns if the "order" field was cleared in this mutation.
-func (m *MenuMutation) OrderCleared() bool {
-	_, ok := m.clearedFields[menu.FieldOrder]
-	return ok
-}
-
-// ResetOrder resets all changes to the "order" field.
-func (m *MenuMutation) ResetOrder() {
-	m._order = nil
-	m.add_order = nil
-	delete(m.clearedFields, menu.FieldOrder)
-}
-
-// SetType sets the "type" field.
-func (m *MenuMutation) SetType(value menu.Type) {
-	m._type = &value
-}
-
-// GetType returns the value of the "type" field in the mutation.
-func (m *MenuMutation) GetType() (r menu.Type, exists bool) {
-	v := m._type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldType returns the old "type" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldType(ctx context.Context) (v menu.Type, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
-	}
-	return oldValue.Type, nil
-}
-
-// ResetType resets all changes to the "type" field.
-func (m *MenuMutation) ResetType() {
-	m._type = nil
-}
-
-// SetMeta sets the "meta" field.
-func (m *MenuMutation) SetMeta(tm types.MenuMeta) {
-	m.meta = &tm
-}
-
-// Meta returns the value of the "meta" field in the mutation.
-func (m *MenuMutation) Meta() (r types.MenuMeta, exists bool) {
-	v := m.meta
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMeta returns the old "meta" field's value of the Menu entity.
-// If the Menu object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldMeta(ctx context.Context) (v types.MenuMeta, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMeta requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMeta: %w", err)
-	}
-	return oldValue.Meta, nil
-}
-
-// ResetMeta resets all changes to the "meta" field.
-func (m *MenuMutation) ResetMeta() {
-	m.meta = nil
-}
-
-// SetParentID sets the "parent" edge to the Menu entity by id.
-func (m *MenuMutation) SetParentID(id pxid.ID) {
-	m.parent = &id
-}
-
-// ClearParent clears the "parent" edge to the Menu entity.
-func (m *MenuMutation) ClearParent() {
-	m.clearedparent = true
-	m.clearedFields[menu.FieldPid] = struct{}{}
-}
-
-// ParentCleared reports if the "parent" edge to the Menu entity was cleared.
-func (m *MenuMutation) ParentCleared() bool {
-	return m.PidCleared() || m.clearedparent
-}
-
-// ParentID returns the "parent" edge ID in the mutation.
-func (m *MenuMutation) ParentID() (id pxid.ID, exists bool) {
-	if m.parent != nil {
-		return *m.parent, true
-	}
-	return
-}
-
-// ParentIDs returns the "parent" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentID instead. It exists only for internal usage by the builders.
-func (m *MenuMutation) ParentIDs() (ids []pxid.ID) {
-	if id := m.parent; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetParent resets all changes to the "parent" edge.
-func (m *MenuMutation) ResetParent() {
-	m.parent = nil
-	m.clearedparent = false
-}
-
-// AddChildIDs adds the "children" edge to the Menu entity by ids.
-func (m *MenuMutation) AddChildIDs(ids ...pxid.ID) {
-	if m.children == nil {
-		m.children = make(map[pxid.ID]struct{})
+// AddMangaIDs adds the "mangas" edge to the Manga entity by ids.
+func (m *GenreMutation) AddMangaIDs(ids ...pxid.ID) {
+	if m.mangas == nil {
+		m.mangas = make(map[pxid.ID]struct{})
 	}
 	for i := range ids {
-		m.children[ids[i]] = struct{}{}
+		m.mangas[ids[i]] = struct{}{}
 	}
 }
 
-// ClearChildren clears the "children" edge to the Menu entity.
-func (m *MenuMutation) ClearChildren() {
-	m.clearedchildren = true
+// ClearMangas clears the "mangas" edge to the Manga entity.
+func (m *GenreMutation) ClearMangas() {
+	m.clearedmangas = true
 }
 
-// ChildrenCleared reports if the "children" edge to the Menu entity was cleared.
-func (m *MenuMutation) ChildrenCleared() bool {
-	return m.clearedchildren
+// MangasCleared reports if the "mangas" edge to the Manga entity was cleared.
+func (m *GenreMutation) MangasCleared() bool {
+	return m.clearedmangas
 }
 
-// RemoveChildIDs removes the "children" edge to the Menu entity by IDs.
-func (m *MenuMutation) RemoveChildIDs(ids ...pxid.ID) {
-	if m.removedchildren == nil {
-		m.removedchildren = make(map[pxid.ID]struct{})
+// RemoveMangaIDs removes the "mangas" edge to the Manga entity by IDs.
+func (m *GenreMutation) RemoveMangaIDs(ids ...pxid.ID) {
+	if m.removedmangas == nil {
+		m.removedmangas = make(map[pxid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.children, ids[i])
-		m.removedchildren[ids[i]] = struct{}{}
+		delete(m.mangas, ids[i])
+		m.removedmangas[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedChildren returns the removed IDs of the "children" edge to the Menu entity.
-func (m *MenuMutation) RemovedChildrenIDs() (ids []pxid.ID) {
-	for id := range m.removedchildren {
+// RemovedMangas returns the removed IDs of the "mangas" edge to the Manga entity.
+func (m *GenreMutation) RemovedMangasIDs() (ids []pxid.ID) {
+	for id := range m.removedmangas {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ChildrenIDs returns the "children" edge IDs in the mutation.
-func (m *MenuMutation) ChildrenIDs() (ids []pxid.ID) {
-	for id := range m.children {
+// MangasIDs returns the "mangas" edge IDs in the mutation.
+func (m *GenreMutation) MangasIDs() (ids []pxid.ID) {
+	for id := range m.mangas {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetChildren resets all changes to the "children" edge.
-func (m *MenuMutation) ResetChildren() {
-	m.children = nil
-	m.clearedchildren = false
-	m.removedchildren = nil
+// ResetMangas resets all changes to the "mangas" edge.
+func (m *GenreMutation) ResetMangas() {
+	m.mangas = nil
+	m.clearedmangas = false
+	m.removedmangas = nil
 }
 
-// AddRoleIDs adds the "roles" edge to the Role entity by ids.
-func (m *MenuMutation) AddRoleIDs(ids ...pxid.ID) {
-	if m.roles == nil {
-		m.roles = make(map[pxid.ID]struct{})
-	}
-	for i := range ids {
-		m.roles[ids[i]] = struct{}{}
-	}
-}
-
-// ClearRoles clears the "roles" edge to the Role entity.
-func (m *MenuMutation) ClearRoles() {
-	m.clearedroles = true
-}
-
-// RolesCleared reports if the "roles" edge to the Role entity was cleared.
-func (m *MenuMutation) RolesCleared() bool {
-	return m.clearedroles
-}
-
-// RemoveRoleIDs removes the "roles" edge to the Role entity by IDs.
-func (m *MenuMutation) RemoveRoleIDs(ids ...pxid.ID) {
-	if m.removedroles == nil {
-		m.removedroles = make(map[pxid.ID]struct{})
-	}
-	for i := range ids {
-		delete(m.roles, ids[i])
-		m.removedroles[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedRoles returns the removed IDs of the "roles" edge to the Role entity.
-func (m *MenuMutation) RemovedRolesIDs() (ids []pxid.ID) {
-	for id := range m.removedroles {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// RolesIDs returns the "roles" edge IDs in the mutation.
-func (m *MenuMutation) RolesIDs() (ids []pxid.ID) {
-	for id := range m.roles {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetRoles resets all changes to the "roles" edge.
-func (m *MenuMutation) ResetRoles() {
-	m.roles = nil
-	m.clearedroles = false
-	m.removedroles = nil
-}
-
-// Where appends a list predicates to the MenuMutation builder.
-func (m *MenuMutation) Where(ps ...predicate.Menu) {
+// Where appends a list predicates to the GenreMutation builder.
+func (m *GenreMutation) Where(ps ...predicate.Genre) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the MenuMutation builder. Using this method,
+// WhereP appends storage-level predicates to the GenreMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *MenuMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Menu, len(ps))
+func (m *GenreMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Genre, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -2799,60 +2417,42 @@ func (m *MenuMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *MenuMutation) Op() Op {
+func (m *GenreMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *MenuMutation) SetOp(op Op) {
+func (m *GenreMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (Menu).
-func (m *MenuMutation) Type() string {
+// Type returns the node type of this mutation (Genre).
+func (m *GenreMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *MenuMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+func (m *GenreMutation) Fields() []string {
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
-		fields = append(fields, menu.FieldCreatedAt)
+		fields = append(fields, genre.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, menu.FieldUpdatedAt)
+		fields = append(fields, genre.FieldUpdatedAt)
 	}
 	if m.is_enable != nil {
-		fields = append(fields, menu.FieldIsEnable)
+		fields = append(fields, genre.FieldIsEnable)
 	}
 	if m.deleted_at != nil {
-		fields = append(fields, menu.FieldDeletedAt)
-	}
-	if m.parent != nil {
-		fields = append(fields, menu.FieldPid)
-	}
-	if m._path != nil {
-		fields = append(fields, menu.FieldPath)
-	}
-	if m.component != nil {
-		fields = append(fields, menu.FieldComponent)
-	}
-	if m.redirect != nil {
-		fields = append(fields, menu.FieldRedirect)
+		fields = append(fields, genre.FieldDeletedAt)
 	}
 	if m.name != nil {
-		fields = append(fields, menu.FieldName)
+		fields = append(fields, genre.FieldName)
 	}
-	if m._order != nil {
-		fields = append(fields, menu.FieldOrder)
-	}
-	if m._type != nil {
-		fields = append(fields, menu.FieldType)
-	}
-	if m.meta != nil {
-		fields = append(fields, menu.FieldMeta)
+	if m.name_id != nil {
+		fields = append(fields, genre.FieldNameID)
 	}
 	return fields
 }
@@ -2860,32 +2460,20 @@ func (m *MenuMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *MenuMutation) Field(name string) (ent.Value, bool) {
+func (m *GenreMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case menu.FieldCreatedAt:
+	case genre.FieldCreatedAt:
 		return m.CreatedAt()
-	case menu.FieldUpdatedAt:
+	case genre.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case menu.FieldIsEnable:
+	case genre.FieldIsEnable:
 		return m.IsEnable()
-	case menu.FieldDeletedAt:
+	case genre.FieldDeletedAt:
 		return m.DeletedAt()
-	case menu.FieldPid:
-		return m.Pid()
-	case menu.FieldPath:
-		return m.Path()
-	case menu.FieldComponent:
-		return m.Component()
-	case menu.FieldRedirect:
-		return m.Redirect()
-	case menu.FieldName:
+	case genre.FieldName:
 		return m.Name()
-	case menu.FieldOrder:
-		return m.Order()
-	case menu.FieldType:
-		return m.GetType()
-	case menu.FieldMeta:
-		return m.Meta()
+	case genre.FieldNameID:
+		return m.NameID()
 	}
 	return nil, false
 }
@@ -2893,138 +2481,81 @@ func (m *MenuMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *MenuMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *GenreMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case menu.FieldCreatedAt:
+	case genre.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case menu.FieldUpdatedAt:
+	case genre.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case menu.FieldIsEnable:
+	case genre.FieldIsEnable:
 		return m.OldIsEnable(ctx)
-	case menu.FieldDeletedAt:
+	case genre.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case menu.FieldPid:
-		return m.OldPid(ctx)
-	case menu.FieldPath:
-		return m.OldPath(ctx)
-	case menu.FieldComponent:
-		return m.OldComponent(ctx)
-	case menu.FieldRedirect:
-		return m.OldRedirect(ctx)
-	case menu.FieldName:
+	case genre.FieldName:
 		return m.OldName(ctx)
-	case menu.FieldOrder:
-		return m.OldOrder(ctx)
-	case menu.FieldType:
-		return m.OldType(ctx)
-	case menu.FieldMeta:
-		return m.OldMeta(ctx)
+	case genre.FieldNameID:
+		return m.OldNameID(ctx)
 	}
-	return nil, fmt.Errorf("unknown Menu field %s", name)
+	return nil, fmt.Errorf("unknown Genre field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MenuMutation) SetField(name string, value ent.Value) error {
+func (m *GenreMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case menu.FieldCreatedAt:
+	case genre.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case menu.FieldUpdatedAt:
+	case genre.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case menu.FieldIsEnable:
+	case genre.FieldIsEnable:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsEnable(v)
 		return nil
-	case menu.FieldDeletedAt:
+	case genre.FieldDeletedAt:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case menu.FieldPid:
-		v, ok := value.(pxid.ID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPid(v)
-		return nil
-	case menu.FieldPath:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPath(v)
-		return nil
-	case menu.FieldComponent:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetComponent(v)
-		return nil
-	case menu.FieldRedirect:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRedirect(v)
-		return nil
-	case menu.FieldName:
+	case genre.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
 		return nil
-	case menu.FieldOrder:
-		v, ok := value.(int)
+	case genre.FieldNameID:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOrder(v)
-		return nil
-	case menu.FieldType:
-		v, ok := value.(menu.Type)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetType(v)
-		return nil
-	case menu.FieldMeta:
-		v, ok := value.(types.MenuMeta)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMeta(v)
+		m.SetNameID(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Menu field %s", name)
+	return fmt.Errorf("unknown Genre field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *MenuMutation) AddedFields() []string {
+func (m *GenreMutation) AddedFields() []string {
 	var fields []string
 	if m.adddeleted_at != nil {
-		fields = append(fields, menu.FieldDeletedAt)
-	}
-	if m.add_order != nil {
-		fields = append(fields, menu.FieldOrder)
+		fields = append(fields, genre.FieldDeletedAt)
 	}
 	return fields
 }
@@ -3032,12 +2563,10 @@ func (m *MenuMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *MenuMutation) AddedField(name string) (ent.Value, bool) {
+func (m *GenreMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case menu.FieldDeletedAt:
+	case genre.FieldDeletedAt:
 		return m.AddedDeletedAt()
-	case menu.FieldOrder:
-		return m.AddedOrder()
 	}
 	return nil, false
 }
@@ -3045,142 +2574,80 @@ func (m *MenuMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MenuMutation) AddField(name string, value ent.Value) error {
+func (m *GenreMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case menu.FieldDeletedAt:
+	case genre.FieldDeletedAt:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
 		return nil
-	case menu.FieldOrder:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddOrder(v)
-		return nil
 	}
-	return fmt.Errorf("unknown Menu numeric field %s", name)
+	return fmt.Errorf("unknown Genre numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *MenuMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(menu.FieldPid) {
-		fields = append(fields, menu.FieldPid)
-	}
-	if m.FieldCleared(menu.FieldRedirect) {
-		fields = append(fields, menu.FieldRedirect)
-	}
-	if m.FieldCleared(menu.FieldOrder) {
-		fields = append(fields, menu.FieldOrder)
-	}
-	return fields
+func (m *GenreMutation) ClearedFields() []string {
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *MenuMutation) FieldCleared(name string) bool {
+func (m *GenreMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *MenuMutation) ClearField(name string) error {
-	switch name {
-	case menu.FieldPid:
-		m.ClearPid()
-		return nil
-	case menu.FieldRedirect:
-		m.ClearRedirect()
-		return nil
-	case menu.FieldOrder:
-		m.ClearOrder()
-		return nil
-	}
-	return fmt.Errorf("unknown Menu nullable field %s", name)
+func (m *GenreMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Genre nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *MenuMutation) ResetField(name string) error {
+func (m *GenreMutation) ResetField(name string) error {
 	switch name {
-	case menu.FieldCreatedAt:
+	case genre.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case menu.FieldUpdatedAt:
+	case genre.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case menu.FieldIsEnable:
+	case genre.FieldIsEnable:
 		m.ResetIsEnable()
 		return nil
-	case menu.FieldDeletedAt:
+	case genre.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case menu.FieldPid:
-		m.ResetPid()
-		return nil
-	case menu.FieldPath:
-		m.ResetPath()
-		return nil
-	case menu.FieldComponent:
-		m.ResetComponent()
-		return nil
-	case menu.FieldRedirect:
-		m.ResetRedirect()
-		return nil
-	case menu.FieldName:
+	case genre.FieldName:
 		m.ResetName()
 		return nil
-	case menu.FieldOrder:
-		m.ResetOrder()
-		return nil
-	case menu.FieldType:
-		m.ResetType()
-		return nil
-	case menu.FieldMeta:
-		m.ResetMeta()
+	case genre.FieldNameID:
+		m.ResetNameID()
 		return nil
 	}
-	return fmt.Errorf("unknown Menu field %s", name)
+	return fmt.Errorf("unknown Genre field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *MenuMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.parent != nil {
-		edges = append(edges, menu.EdgeParent)
-	}
-	if m.children != nil {
-		edges = append(edges, menu.EdgeChildren)
-	}
-	if m.roles != nil {
-		edges = append(edges, menu.EdgeRoles)
+func (m *GenreMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.mangas != nil {
+		edges = append(edges, genre.EdgeMangas)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *MenuMutation) AddedIDs(name string) []ent.Value {
+func (m *GenreMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case menu.EdgeParent:
-		if id := m.parent; id != nil {
-			return []ent.Value{*id}
-		}
-	case menu.EdgeChildren:
-		ids := make([]ent.Value, 0, len(m.children))
-		for id := range m.children {
-			ids = append(ids, id)
-		}
-		return ids
-	case menu.EdgeRoles:
-		ids := make([]ent.Value, 0, len(m.roles))
-		for id := range m.roles {
+	case genre.EdgeMangas:
+		ids := make([]ent.Value, 0, len(m.mangas))
+		for id := range m.mangas {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3189,30 +2656,21 @@ func (m *MenuMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *MenuMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.removedchildren != nil {
-		edges = append(edges, menu.EdgeChildren)
-	}
-	if m.removedroles != nil {
-		edges = append(edges, menu.EdgeRoles)
+func (m *GenreMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedmangas != nil {
+		edges = append(edges, genre.EdgeMangas)
 	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *MenuMutation) RemovedIDs(name string) []ent.Value {
+func (m *GenreMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case menu.EdgeChildren:
-		ids := make([]ent.Value, 0, len(m.removedchildren))
-		for id := range m.removedchildren {
-			ids = append(ids, id)
-		}
-		return ids
-	case menu.EdgeRoles:
-		ids := make([]ent.Value, 0, len(m.removedroles))
-		for id := range m.removedroles {
+	case genre.EdgeMangas:
+		ids := make([]ent.Value, 0, len(m.removedmangas))
+		for id := range m.removedmangas {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3221,60 +2679,1887 @@ func (m *MenuMutation) RemovedIDs(name string) []ent.Value {
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *MenuMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.clearedparent {
-		edges = append(edges, menu.EdgeParent)
-	}
-	if m.clearedchildren {
-		edges = append(edges, menu.EdgeChildren)
-	}
-	if m.clearedroles {
-		edges = append(edges, menu.EdgeRoles)
+func (m *GenreMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedmangas {
+		edges = append(edges, genre.EdgeMangas)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *MenuMutation) EdgeCleared(name string) bool {
+func (m *GenreMutation) EdgeCleared(name string) bool {
 	switch name {
-	case menu.EdgeParent:
-		return m.clearedparent
-	case menu.EdgeChildren:
-		return m.clearedchildren
-	case menu.EdgeRoles:
-		return m.clearedroles
+	case genre.EdgeMangas:
+		return m.clearedmangas
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *MenuMutation) ClearEdge(name string) error {
+func (m *GenreMutation) ClearEdge(name string) error {
 	switch name {
-	case menu.EdgeParent:
-		m.ClearParent()
-		return nil
 	}
-	return fmt.Errorf("unknown Menu unique edge %s", name)
+	return fmt.Errorf("unknown Genre unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *MenuMutation) ResetEdge(name string) error {
+func (m *GenreMutation) ResetEdge(name string) error {
 	switch name {
-	case menu.EdgeParent:
-		m.ResetParent()
-		return nil
-	case menu.EdgeChildren:
-		m.ResetChildren()
-		return nil
-	case menu.EdgeRoles:
-		m.ResetRoles()
+	case genre.EdgeMangas:
+		m.ResetMangas()
 		return nil
 	}
-	return fmt.Errorf("unknown Menu edge %s", name)
+	return fmt.Errorf("unknown Genre edge %s", name)
+}
+
+// MangaMutation represents an operation that mutates the Manga nodes in the graph.
+type MangaMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *pxid.ID
+	created_at      *time.Time
+	updated_at      *time.Time
+	is_enable       *bool
+	deleted_at      *int
+	adddeleted_at   *int
+	name_id         *string
+	name            *string
+	desc            *string
+	prodiver        *string
+	thumbnail_url   *string
+	authors         *[]string
+	appendauthors   []string
+	clearedFields   map[string]struct{}
+	chapters        map[pxid.ID]struct{}
+	removedchapters map[pxid.ID]struct{}
+	clearedchapters bool
+	genres          map[pxid.ID]struct{}
+	removedgenres   map[pxid.ID]struct{}
+	clearedgenres   bool
+	done            bool
+	oldValue        func(context.Context) (*Manga, error)
+	predicates      []predicate.Manga
+}
+
+var _ ent.Mutation = (*MangaMutation)(nil)
+
+// mangaOption allows management of the mutation configuration using functional options.
+type mangaOption func(*MangaMutation)
+
+// newMangaMutation creates new mutation for the Manga entity.
+func newMangaMutation(c config, op Op, opts ...mangaOption) *MangaMutation {
+	m := &MangaMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeManga,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withMangaID sets the ID field of the mutation.
+func withMangaID(id pxid.ID) mangaOption {
+	return func(m *MangaMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Manga
+		)
+		m.oldValue = func(ctx context.Context) (*Manga, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Manga.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withManga sets the old Manga of the mutation.
+func withManga(node *Manga) mangaOption {
+	return func(m *MangaMutation) {
+		m.oldValue = func(context.Context) (*Manga, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m MangaMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m MangaMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Manga entities.
+func (m *MangaMutation) SetID(id pxid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *MangaMutation) ID() (id pxid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *MangaMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []pxid.ID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Manga.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *MangaMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *MangaMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *MangaMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *MangaMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *MangaMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *MangaMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetIsEnable sets the "is_enable" field.
+func (m *MangaMutation) SetIsEnable(b bool) {
+	m.is_enable = &b
+}
+
+// IsEnable returns the value of the "is_enable" field in the mutation.
+func (m *MangaMutation) IsEnable() (r bool, exists bool) {
+	v := m.is_enable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsEnable returns the old "is_enable" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldIsEnable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsEnable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsEnable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsEnable: %w", err)
+	}
+	return oldValue.IsEnable, nil
+}
+
+// ResetIsEnable resets all changes to the "is_enable" field.
+func (m *MangaMutation) ResetIsEnable() {
+	m.is_enable = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *MangaMutation) SetDeletedAt(i int) {
+	m.deleted_at = &i
+	m.adddeleted_at = nil
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *MangaMutation) DeletedAt() (r int, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldDeletedAt(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// AddDeletedAt adds i to the "deleted_at" field.
+func (m *MangaMutation) AddDeletedAt(i int) {
+	if m.adddeleted_at != nil {
+		*m.adddeleted_at += i
+	} else {
+		m.adddeleted_at = &i
+	}
+}
+
+// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
+func (m *MangaMutation) AddedDeletedAt() (r int, exists bool) {
+	v := m.adddeleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *MangaMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	m.adddeleted_at = nil
+}
+
+// SetNameID sets the "name_id" field.
+func (m *MangaMutation) SetNameID(s string) {
+	m.name_id = &s
+}
+
+// NameID returns the value of the "name_id" field in the mutation.
+func (m *MangaMutation) NameID() (r string, exists bool) {
+	v := m.name_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNameID returns the old "name_id" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldNameID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNameID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNameID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNameID: %w", err)
+	}
+	return oldValue.NameID, nil
+}
+
+// ResetNameID resets all changes to the "name_id" field.
+func (m *MangaMutation) ResetNameID() {
+	m.name_id = nil
+}
+
+// SetName sets the "name" field.
+func (m *MangaMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *MangaMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *MangaMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDesc sets the "desc" field.
+func (m *MangaMutation) SetDesc(s string) {
+	m.desc = &s
+}
+
+// Desc returns the value of the "desc" field in the mutation.
+func (m *MangaMutation) Desc() (r string, exists bool) {
+	v := m.desc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDesc returns the old "desc" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldDesc(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDesc is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDesc requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDesc: %w", err)
+	}
+	return oldValue.Desc, nil
+}
+
+// ResetDesc resets all changes to the "desc" field.
+func (m *MangaMutation) ResetDesc() {
+	m.desc = nil
+}
+
+// SetProdiver sets the "prodiver" field.
+func (m *MangaMutation) SetProdiver(s string) {
+	m.prodiver = &s
+}
+
+// Prodiver returns the value of the "prodiver" field in the mutation.
+func (m *MangaMutation) Prodiver() (r string, exists bool) {
+	v := m.prodiver
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProdiver returns the old "prodiver" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldProdiver(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProdiver is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProdiver requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProdiver: %w", err)
+	}
+	return oldValue.Prodiver, nil
+}
+
+// ResetProdiver resets all changes to the "prodiver" field.
+func (m *MangaMutation) ResetProdiver() {
+	m.prodiver = nil
+}
+
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (m *MangaMutation) SetThumbnailURL(s string) {
+	m.thumbnail_url = &s
+}
+
+// ThumbnailURL returns the value of the "thumbnail_url" field in the mutation.
+func (m *MangaMutation) ThumbnailURL() (r string, exists bool) {
+	v := m.thumbnail_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThumbnailURL returns the old "thumbnail_url" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldThumbnailURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThumbnailURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThumbnailURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThumbnailURL: %w", err)
+	}
+	return oldValue.ThumbnailURL, nil
+}
+
+// ResetThumbnailURL resets all changes to the "thumbnail_url" field.
+func (m *MangaMutation) ResetThumbnailURL() {
+	m.thumbnail_url = nil
+}
+
+// SetAuthors sets the "authors" field.
+func (m *MangaMutation) SetAuthors(s []string) {
+	m.authors = &s
+	m.appendauthors = nil
+}
+
+// Authors returns the value of the "authors" field in the mutation.
+func (m *MangaMutation) Authors() (r []string, exists bool) {
+	v := m.authors
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthors returns the old "authors" field's value of the Manga entity.
+// If the Manga object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaMutation) OldAuthors(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthors is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthors requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthors: %w", err)
+	}
+	return oldValue.Authors, nil
+}
+
+// AppendAuthors adds s to the "authors" field.
+func (m *MangaMutation) AppendAuthors(s []string) {
+	m.appendauthors = append(m.appendauthors, s...)
+}
+
+// AppendedAuthors returns the list of values that were appended to the "authors" field in this mutation.
+func (m *MangaMutation) AppendedAuthors() ([]string, bool) {
+	if len(m.appendauthors) == 0 {
+		return nil, false
+	}
+	return m.appendauthors, true
+}
+
+// ResetAuthors resets all changes to the "authors" field.
+func (m *MangaMutation) ResetAuthors() {
+	m.authors = nil
+	m.appendauthors = nil
+}
+
+// AddChapterIDs adds the "chapters" edge to the MangaChapter entity by ids.
+func (m *MangaMutation) AddChapterIDs(ids ...pxid.ID) {
+	if m.chapters == nil {
+		m.chapters = make(map[pxid.ID]struct{})
+	}
+	for i := range ids {
+		m.chapters[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChapters clears the "chapters" edge to the MangaChapter entity.
+func (m *MangaMutation) ClearChapters() {
+	m.clearedchapters = true
+}
+
+// ChaptersCleared reports if the "chapters" edge to the MangaChapter entity was cleared.
+func (m *MangaMutation) ChaptersCleared() bool {
+	return m.clearedchapters
+}
+
+// RemoveChapterIDs removes the "chapters" edge to the MangaChapter entity by IDs.
+func (m *MangaMutation) RemoveChapterIDs(ids ...pxid.ID) {
+	if m.removedchapters == nil {
+		m.removedchapters = make(map[pxid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.chapters, ids[i])
+		m.removedchapters[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChapters returns the removed IDs of the "chapters" edge to the MangaChapter entity.
+func (m *MangaMutation) RemovedChaptersIDs() (ids []pxid.ID) {
+	for id := range m.removedchapters {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChaptersIDs returns the "chapters" edge IDs in the mutation.
+func (m *MangaMutation) ChaptersIDs() (ids []pxid.ID) {
+	for id := range m.chapters {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChapters resets all changes to the "chapters" edge.
+func (m *MangaMutation) ResetChapters() {
+	m.chapters = nil
+	m.clearedchapters = false
+	m.removedchapters = nil
+}
+
+// AddGenreIDs adds the "genres" edge to the Genre entity by ids.
+func (m *MangaMutation) AddGenreIDs(ids ...pxid.ID) {
+	if m.genres == nil {
+		m.genres = make(map[pxid.ID]struct{})
+	}
+	for i := range ids {
+		m.genres[ids[i]] = struct{}{}
+	}
+}
+
+// ClearGenres clears the "genres" edge to the Genre entity.
+func (m *MangaMutation) ClearGenres() {
+	m.clearedgenres = true
+}
+
+// GenresCleared reports if the "genres" edge to the Genre entity was cleared.
+func (m *MangaMutation) GenresCleared() bool {
+	return m.clearedgenres
+}
+
+// RemoveGenreIDs removes the "genres" edge to the Genre entity by IDs.
+func (m *MangaMutation) RemoveGenreIDs(ids ...pxid.ID) {
+	if m.removedgenres == nil {
+		m.removedgenres = make(map[pxid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.genres, ids[i])
+		m.removedgenres[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedGenres returns the removed IDs of the "genres" edge to the Genre entity.
+func (m *MangaMutation) RemovedGenresIDs() (ids []pxid.ID) {
+	for id := range m.removedgenres {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// GenresIDs returns the "genres" edge IDs in the mutation.
+func (m *MangaMutation) GenresIDs() (ids []pxid.ID) {
+	for id := range m.genres {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetGenres resets all changes to the "genres" edge.
+func (m *MangaMutation) ResetGenres() {
+	m.genres = nil
+	m.clearedgenres = false
+	m.removedgenres = nil
+}
+
+// Where appends a list predicates to the MangaMutation builder.
+func (m *MangaMutation) Where(ps ...predicate.Manga) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the MangaMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *MangaMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Manga, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *MangaMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *MangaMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Manga).
+func (m *MangaMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *MangaMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.created_at != nil {
+		fields = append(fields, manga.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, manga.FieldUpdatedAt)
+	}
+	if m.is_enable != nil {
+		fields = append(fields, manga.FieldIsEnable)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, manga.FieldDeletedAt)
+	}
+	if m.name_id != nil {
+		fields = append(fields, manga.FieldNameID)
+	}
+	if m.name != nil {
+		fields = append(fields, manga.FieldName)
+	}
+	if m.desc != nil {
+		fields = append(fields, manga.FieldDesc)
+	}
+	if m.prodiver != nil {
+		fields = append(fields, manga.FieldProdiver)
+	}
+	if m.thumbnail_url != nil {
+		fields = append(fields, manga.FieldThumbnailURL)
+	}
+	if m.authors != nil {
+		fields = append(fields, manga.FieldAuthors)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *MangaMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case manga.FieldCreatedAt:
+		return m.CreatedAt()
+	case manga.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case manga.FieldIsEnable:
+		return m.IsEnable()
+	case manga.FieldDeletedAt:
+		return m.DeletedAt()
+	case manga.FieldNameID:
+		return m.NameID()
+	case manga.FieldName:
+		return m.Name()
+	case manga.FieldDesc:
+		return m.Desc()
+	case manga.FieldProdiver:
+		return m.Prodiver()
+	case manga.FieldThumbnailURL:
+		return m.ThumbnailURL()
+	case manga.FieldAuthors:
+		return m.Authors()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *MangaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case manga.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case manga.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case manga.FieldIsEnable:
+		return m.OldIsEnable(ctx)
+	case manga.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case manga.FieldNameID:
+		return m.OldNameID(ctx)
+	case manga.FieldName:
+		return m.OldName(ctx)
+	case manga.FieldDesc:
+		return m.OldDesc(ctx)
+	case manga.FieldProdiver:
+		return m.OldProdiver(ctx)
+	case manga.FieldThumbnailURL:
+		return m.OldThumbnailURL(ctx)
+	case manga.FieldAuthors:
+		return m.OldAuthors(ctx)
+	}
+	return nil, fmt.Errorf("unknown Manga field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MangaMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case manga.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case manga.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case manga.FieldIsEnable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsEnable(v)
+		return nil
+	case manga.FieldDeletedAt:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case manga.FieldNameID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNameID(v)
+		return nil
+	case manga.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case manga.FieldDesc:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDesc(v)
+		return nil
+	case manga.FieldProdiver:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProdiver(v)
+		return nil
+	case manga.FieldThumbnailURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThumbnailURL(v)
+		return nil
+	case manga.FieldAuthors:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthors(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Manga field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *MangaMutation) AddedFields() []string {
+	var fields []string
+	if m.adddeleted_at != nil {
+		fields = append(fields, manga.FieldDeletedAt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *MangaMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case manga.FieldDeletedAt:
+		return m.AddedDeletedAt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MangaMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case manga.FieldDeletedAt:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Manga numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *MangaMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *MangaMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *MangaMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Manga nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *MangaMutation) ResetField(name string) error {
+	switch name {
+	case manga.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case manga.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case manga.FieldIsEnable:
+		m.ResetIsEnable()
+		return nil
+	case manga.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case manga.FieldNameID:
+		m.ResetNameID()
+		return nil
+	case manga.FieldName:
+		m.ResetName()
+		return nil
+	case manga.FieldDesc:
+		m.ResetDesc()
+		return nil
+	case manga.FieldProdiver:
+		m.ResetProdiver()
+		return nil
+	case manga.FieldThumbnailURL:
+		m.ResetThumbnailURL()
+		return nil
+	case manga.FieldAuthors:
+		m.ResetAuthors()
+		return nil
+	}
+	return fmt.Errorf("unknown Manga field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *MangaMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.chapters != nil {
+		edges = append(edges, manga.EdgeChapters)
+	}
+	if m.genres != nil {
+		edges = append(edges, manga.EdgeGenres)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *MangaMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case manga.EdgeChapters:
+		ids := make([]ent.Value, 0, len(m.chapters))
+		for id := range m.chapters {
+			ids = append(ids, id)
+		}
+		return ids
+	case manga.EdgeGenres:
+		ids := make([]ent.Value, 0, len(m.genres))
+		for id := range m.genres {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *MangaMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedchapters != nil {
+		edges = append(edges, manga.EdgeChapters)
+	}
+	if m.removedgenres != nil {
+		edges = append(edges, manga.EdgeGenres)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *MangaMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case manga.EdgeChapters:
+		ids := make([]ent.Value, 0, len(m.removedchapters))
+		for id := range m.removedchapters {
+			ids = append(ids, id)
+		}
+		return ids
+	case manga.EdgeGenres:
+		ids := make([]ent.Value, 0, len(m.removedgenres))
+		for id := range m.removedgenres {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *MangaMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedchapters {
+		edges = append(edges, manga.EdgeChapters)
+	}
+	if m.clearedgenres {
+		edges = append(edges, manga.EdgeGenres)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *MangaMutation) EdgeCleared(name string) bool {
+	switch name {
+	case manga.EdgeChapters:
+		return m.clearedchapters
+	case manga.EdgeGenres:
+		return m.clearedgenres
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *MangaMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Manga unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *MangaMutation) ResetEdge(name string) error {
+	switch name {
+	case manga.EdgeChapters:
+		m.ResetChapters()
+		return nil
+	case manga.EdgeGenres:
+		m.ResetGenres()
+		return nil
+	}
+	return fmt.Errorf("unknown Manga edge %s", name)
+}
+
+// MangaChapterMutation represents an operation that mutates the MangaChapter nodes in the graph.
+type MangaChapterMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *pxid.ID
+	created_at         *time.Time
+	updated_at         *time.Time
+	title              *string
+	img_url            *string
+	number             *uint
+	addnumber          *int
+	provider_name      *string
+	chapter_updated_at *time.Time
+	clearedFields      map[string]struct{}
+	manga              *pxid.ID
+	clearedmanga       bool
+	done               bool
+	oldValue           func(context.Context) (*MangaChapter, error)
+	predicates         []predicate.MangaChapter
+}
+
+var _ ent.Mutation = (*MangaChapterMutation)(nil)
+
+// mangachapterOption allows management of the mutation configuration using functional options.
+type mangachapterOption func(*MangaChapterMutation)
+
+// newMangaChapterMutation creates new mutation for the MangaChapter entity.
+func newMangaChapterMutation(c config, op Op, opts ...mangachapterOption) *MangaChapterMutation {
+	m := &MangaChapterMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeMangaChapter,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withMangaChapterID sets the ID field of the mutation.
+func withMangaChapterID(id pxid.ID) mangachapterOption {
+	return func(m *MangaChapterMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *MangaChapter
+		)
+		m.oldValue = func(ctx context.Context) (*MangaChapter, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().MangaChapter.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withMangaChapter sets the old MangaChapter of the mutation.
+func withMangaChapter(node *MangaChapter) mangachapterOption {
+	return func(m *MangaChapterMutation) {
+		m.oldValue = func(context.Context) (*MangaChapter, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m MangaChapterMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m MangaChapterMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of MangaChapter entities.
+func (m *MangaChapterMutation) SetID(id pxid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *MangaChapterMutation) ID() (id pxid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *MangaChapterMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []pxid.ID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().MangaChapter.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *MangaChapterMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *MangaChapterMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *MangaChapterMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *MangaChapterMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *MangaChapterMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *MangaChapterMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetMangaID sets the "manga_id" field.
+func (m *MangaChapterMutation) SetMangaID(px pxid.ID) {
+	m.manga = &px
+}
+
+// MangaID returns the value of the "manga_id" field in the mutation.
+func (m *MangaChapterMutation) MangaID() (r pxid.ID, exists bool) {
+	v := m.manga
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMangaID returns the old "manga_id" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldMangaID(ctx context.Context) (v pxid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMangaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMangaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMangaID: %w", err)
+	}
+	return oldValue.MangaID, nil
+}
+
+// ResetMangaID resets all changes to the "manga_id" field.
+func (m *MangaChapterMutation) ResetMangaID() {
+	m.manga = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *MangaChapterMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *MangaChapterMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *MangaChapterMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetImgURL sets the "img_url" field.
+func (m *MangaChapterMutation) SetImgURL(s string) {
+	m.img_url = &s
+}
+
+// ImgURL returns the value of the "img_url" field in the mutation.
+func (m *MangaChapterMutation) ImgURL() (r string, exists bool) {
+	v := m.img_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImgURL returns the old "img_url" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldImgURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImgURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImgURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImgURL: %w", err)
+	}
+	return oldValue.ImgURL, nil
+}
+
+// ResetImgURL resets all changes to the "img_url" field.
+func (m *MangaChapterMutation) ResetImgURL() {
+	m.img_url = nil
+}
+
+// SetNumber sets the "number" field.
+func (m *MangaChapterMutation) SetNumber(u uint) {
+	m.number = &u
+	m.addnumber = nil
+}
+
+// Number returns the value of the "number" field in the mutation.
+func (m *MangaChapterMutation) Number() (r uint, exists bool) {
+	v := m.number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNumber returns the old "number" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldNumber(ctx context.Context) (v uint, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
+	}
+	return oldValue.Number, nil
+}
+
+// AddNumber adds u to the "number" field.
+func (m *MangaChapterMutation) AddNumber(u int) {
+	if m.addnumber != nil {
+		*m.addnumber += u
+	} else {
+		m.addnumber = &u
+	}
+}
+
+// AddedNumber returns the value that was added to the "number" field in this mutation.
+func (m *MangaChapterMutation) AddedNumber() (r int, exists bool) {
+	v := m.addnumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNumber resets all changes to the "number" field.
+func (m *MangaChapterMutation) ResetNumber() {
+	m.number = nil
+	m.addnumber = nil
+}
+
+// SetProviderName sets the "provider_name" field.
+func (m *MangaChapterMutation) SetProviderName(s string) {
+	m.provider_name = &s
+}
+
+// ProviderName returns the value of the "provider_name" field in the mutation.
+func (m *MangaChapterMutation) ProviderName() (r string, exists bool) {
+	v := m.provider_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProviderName returns the old "provider_name" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldProviderName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProviderName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProviderName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProviderName: %w", err)
+	}
+	return oldValue.ProviderName, nil
+}
+
+// ResetProviderName resets all changes to the "provider_name" field.
+func (m *MangaChapterMutation) ResetProviderName() {
+	m.provider_name = nil
+}
+
+// SetChapterUpdatedAt sets the "chapter_updated_at" field.
+func (m *MangaChapterMutation) SetChapterUpdatedAt(t time.Time) {
+	m.chapter_updated_at = &t
+}
+
+// ChapterUpdatedAt returns the value of the "chapter_updated_at" field in the mutation.
+func (m *MangaChapterMutation) ChapterUpdatedAt() (r time.Time, exists bool) {
+	v := m.chapter_updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChapterUpdatedAt returns the old "chapter_updated_at" field's value of the MangaChapter entity.
+// If the MangaChapter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MangaChapterMutation) OldChapterUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChapterUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChapterUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChapterUpdatedAt: %w", err)
+	}
+	return oldValue.ChapterUpdatedAt, nil
+}
+
+// ResetChapterUpdatedAt resets all changes to the "chapter_updated_at" field.
+func (m *MangaChapterMutation) ResetChapterUpdatedAt() {
+	m.chapter_updated_at = nil
+}
+
+// ClearManga clears the "manga" edge to the Manga entity.
+func (m *MangaChapterMutation) ClearManga() {
+	m.clearedmanga = true
+	m.clearedFields[mangachapter.FieldMangaID] = struct{}{}
+}
+
+// MangaCleared reports if the "manga" edge to the Manga entity was cleared.
+func (m *MangaChapterMutation) MangaCleared() bool {
+	return m.clearedmanga
+}
+
+// MangaIDs returns the "manga" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MangaID instead. It exists only for internal usage by the builders.
+func (m *MangaChapterMutation) MangaIDs() (ids []pxid.ID) {
+	if id := m.manga; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetManga resets all changes to the "manga" edge.
+func (m *MangaChapterMutation) ResetManga() {
+	m.manga = nil
+	m.clearedmanga = false
+}
+
+// Where appends a list predicates to the MangaChapterMutation builder.
+func (m *MangaChapterMutation) Where(ps ...predicate.MangaChapter) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the MangaChapterMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *MangaChapterMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.MangaChapter, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *MangaChapterMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *MangaChapterMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (MangaChapter).
+func (m *MangaChapterMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *MangaChapterMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.created_at != nil {
+		fields = append(fields, mangachapter.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, mangachapter.FieldUpdatedAt)
+	}
+	if m.manga != nil {
+		fields = append(fields, mangachapter.FieldMangaID)
+	}
+	if m.title != nil {
+		fields = append(fields, mangachapter.FieldTitle)
+	}
+	if m.img_url != nil {
+		fields = append(fields, mangachapter.FieldImgURL)
+	}
+	if m.number != nil {
+		fields = append(fields, mangachapter.FieldNumber)
+	}
+	if m.provider_name != nil {
+		fields = append(fields, mangachapter.FieldProviderName)
+	}
+	if m.chapter_updated_at != nil {
+		fields = append(fields, mangachapter.FieldChapterUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *MangaChapterMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case mangachapter.FieldCreatedAt:
+		return m.CreatedAt()
+	case mangachapter.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case mangachapter.FieldMangaID:
+		return m.MangaID()
+	case mangachapter.FieldTitle:
+		return m.Title()
+	case mangachapter.FieldImgURL:
+		return m.ImgURL()
+	case mangachapter.FieldNumber:
+		return m.Number()
+	case mangachapter.FieldProviderName:
+		return m.ProviderName()
+	case mangachapter.FieldChapterUpdatedAt:
+		return m.ChapterUpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *MangaChapterMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case mangachapter.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case mangachapter.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case mangachapter.FieldMangaID:
+		return m.OldMangaID(ctx)
+	case mangachapter.FieldTitle:
+		return m.OldTitle(ctx)
+	case mangachapter.FieldImgURL:
+		return m.OldImgURL(ctx)
+	case mangachapter.FieldNumber:
+		return m.OldNumber(ctx)
+	case mangachapter.FieldProviderName:
+		return m.OldProviderName(ctx)
+	case mangachapter.FieldChapterUpdatedAt:
+		return m.OldChapterUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown MangaChapter field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MangaChapterMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case mangachapter.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case mangachapter.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case mangachapter.FieldMangaID:
+		v, ok := value.(pxid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMangaID(v)
+		return nil
+	case mangachapter.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case mangachapter.FieldImgURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImgURL(v)
+		return nil
+	case mangachapter.FieldNumber:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNumber(v)
+		return nil
+	case mangachapter.FieldProviderName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProviderName(v)
+		return nil
+	case mangachapter.FieldChapterUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChapterUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown MangaChapter field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *MangaChapterMutation) AddedFields() []string {
+	var fields []string
+	if m.addnumber != nil {
+		fields = append(fields, mangachapter.FieldNumber)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *MangaChapterMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case mangachapter.FieldNumber:
+		return m.AddedNumber()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MangaChapterMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case mangachapter.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNumber(v)
+		return nil
+	}
+	return fmt.Errorf("unknown MangaChapter numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *MangaChapterMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *MangaChapterMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *MangaChapterMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown MangaChapter nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *MangaChapterMutation) ResetField(name string) error {
+	switch name {
+	case mangachapter.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case mangachapter.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case mangachapter.FieldMangaID:
+		m.ResetMangaID()
+		return nil
+	case mangachapter.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case mangachapter.FieldImgURL:
+		m.ResetImgURL()
+		return nil
+	case mangachapter.FieldNumber:
+		m.ResetNumber()
+		return nil
+	case mangachapter.FieldProviderName:
+		m.ResetProviderName()
+		return nil
+	case mangachapter.FieldChapterUpdatedAt:
+		m.ResetChapterUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown MangaChapter field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *MangaChapterMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.manga != nil {
+		edges = append(edges, mangachapter.EdgeManga)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *MangaChapterMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case mangachapter.EdgeManga:
+		if id := m.manga; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *MangaChapterMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *MangaChapterMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *MangaChapterMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedmanga {
+		edges = append(edges, mangachapter.EdgeManga)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *MangaChapterMutation) EdgeCleared(name string) bool {
+	switch name {
+	case mangachapter.EdgeManga:
+		return m.clearedmanga
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *MangaChapterMutation) ClearEdge(name string) error {
+	switch name {
+	case mangachapter.EdgeManga:
+		m.ClearManga()
+		return nil
+	}
+	return fmt.Errorf("unknown MangaChapter unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *MangaChapterMutation) ResetEdge(name string) error {
+	switch name {
+	case mangachapter.EdgeManga:
+		m.ResetManga()
+		return nil
+	}
+	return fmt.Errorf("unknown MangaChapter edge %s", name)
 }
 
 // PermissionMutation represents an operation that mutates the Permission nodes in the graph.
@@ -4104,926 +5389,6 @@ func (m *PermissionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Permission edge %s", name)
 }
 
-// RegionMutation represents an operation that mutates the Region nodes in the graph.
-type RegionMutation struct {
-	config
-	op              Op
-	typ             string
-	id              *pxid.ID
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *int
-	adddeleted_at   *int
-	is_enable       *bool
-	name_id         *string
-	name            *string
-	_type           *region.Type
-	clearedFields   map[string]struct{}
-	parent          *pxid.ID
-	clearedparent   bool
-	children        map[pxid.ID]struct{}
-	removedchildren map[pxid.ID]struct{}
-	clearedchildren bool
-	done            bool
-	oldValue        func(context.Context) (*Region, error)
-	predicates      []predicate.Region
-}
-
-var _ ent.Mutation = (*RegionMutation)(nil)
-
-// regionOption allows management of the mutation configuration using functional options.
-type regionOption func(*RegionMutation)
-
-// newRegionMutation creates new mutation for the Region entity.
-func newRegionMutation(c config, op Op, opts ...regionOption) *RegionMutation {
-	m := &RegionMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeRegion,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withRegionID sets the ID field of the mutation.
-func withRegionID(id pxid.ID) regionOption {
-	return func(m *RegionMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Region
-		)
-		m.oldValue = func(ctx context.Context) (*Region, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Region.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withRegion sets the old Region of the mutation.
-func withRegion(node *Region) regionOption {
-	return func(m *RegionMutation) {
-		m.oldValue = func(context.Context) (*Region, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m RegionMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m RegionMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Region entities.
-func (m *RegionMutation) SetID(id pxid.ID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *RegionMutation) ID() (id pxid.ID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *RegionMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []pxid.ID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Region.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *RegionMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *RegionMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *RegionMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *RegionMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *RegionMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *RegionMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *RegionMutation) SetDeletedAt(i int) {
-	m.deleted_at = &i
-	m.adddeleted_at = nil
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *RegionMutation) DeletedAt() (r int, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldDeletedAt(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// AddDeletedAt adds i to the "deleted_at" field.
-func (m *RegionMutation) AddDeletedAt(i int) {
-	if m.adddeleted_at != nil {
-		*m.adddeleted_at += i
-	} else {
-		m.adddeleted_at = &i
-	}
-}
-
-// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
-func (m *RegionMutation) AddedDeletedAt() (r int, exists bool) {
-	v := m.adddeleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *RegionMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	m.adddeleted_at = nil
-}
-
-// SetIsEnable sets the "is_enable" field.
-func (m *RegionMutation) SetIsEnable(b bool) {
-	m.is_enable = &b
-}
-
-// IsEnable returns the value of the "is_enable" field in the mutation.
-func (m *RegionMutation) IsEnable() (r bool, exists bool) {
-	v := m.is_enable
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIsEnable returns the old "is_enable" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldIsEnable(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsEnable is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsEnable requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsEnable: %w", err)
-	}
-	return oldValue.IsEnable, nil
-}
-
-// ResetIsEnable resets all changes to the "is_enable" field.
-func (m *RegionMutation) ResetIsEnable() {
-	m.is_enable = nil
-}
-
-// SetNameID sets the "name_id" field.
-func (m *RegionMutation) SetNameID(s string) {
-	m.name_id = &s
-}
-
-// NameID returns the value of the "name_id" field in the mutation.
-func (m *RegionMutation) NameID() (r string, exists bool) {
-	v := m.name_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldNameID returns the old "name_id" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldNameID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNameID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNameID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNameID: %w", err)
-	}
-	return oldValue.NameID, nil
-}
-
-// ResetNameID resets all changes to the "name_id" field.
-func (m *RegionMutation) ResetNameID() {
-	m.name_id = nil
-}
-
-// SetName sets the "name" field.
-func (m *RegionMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *RegionMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *RegionMutation) ResetName() {
-	m.name = nil
-}
-
-// SetType sets the "type" field.
-func (m *RegionMutation) SetType(r region.Type) {
-	m._type = &r
-}
-
-// GetType returns the value of the "type" field in the mutation.
-func (m *RegionMutation) GetType() (r region.Type, exists bool) {
-	v := m._type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldType returns the old "type" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldType(ctx context.Context) (v region.Type, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
-	}
-	return oldValue.Type, nil
-}
-
-// ResetType resets all changes to the "type" field.
-func (m *RegionMutation) ResetType() {
-	m._type = nil
-}
-
-// SetPid sets the "pid" field.
-func (m *RegionMutation) SetPid(px pxid.ID) {
-	m.parent = &px
-}
-
-// Pid returns the value of the "pid" field in the mutation.
-func (m *RegionMutation) Pid() (r pxid.ID, exists bool) {
-	v := m.parent
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPid returns the old "pid" field's value of the Region entity.
-// If the Region object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RegionMutation) OldPid(ctx context.Context) (v *pxid.ID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPid is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPid requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPid: %w", err)
-	}
-	return oldValue.Pid, nil
-}
-
-// ClearPid clears the value of the "pid" field.
-func (m *RegionMutation) ClearPid() {
-	m.parent = nil
-	m.clearedFields[region.FieldPid] = struct{}{}
-}
-
-// PidCleared returns if the "pid" field was cleared in this mutation.
-func (m *RegionMutation) PidCleared() bool {
-	_, ok := m.clearedFields[region.FieldPid]
-	return ok
-}
-
-// ResetPid resets all changes to the "pid" field.
-func (m *RegionMutation) ResetPid() {
-	m.parent = nil
-	delete(m.clearedFields, region.FieldPid)
-}
-
-// SetParentID sets the "parent" edge to the Region entity by id.
-func (m *RegionMutation) SetParentID(id pxid.ID) {
-	m.parent = &id
-}
-
-// ClearParent clears the "parent" edge to the Region entity.
-func (m *RegionMutation) ClearParent() {
-	m.clearedparent = true
-	m.clearedFields[region.FieldPid] = struct{}{}
-}
-
-// ParentCleared reports if the "parent" edge to the Region entity was cleared.
-func (m *RegionMutation) ParentCleared() bool {
-	return m.PidCleared() || m.clearedparent
-}
-
-// ParentID returns the "parent" edge ID in the mutation.
-func (m *RegionMutation) ParentID() (id pxid.ID, exists bool) {
-	if m.parent != nil {
-		return *m.parent, true
-	}
-	return
-}
-
-// ParentIDs returns the "parent" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentID instead. It exists only for internal usage by the builders.
-func (m *RegionMutation) ParentIDs() (ids []pxid.ID) {
-	if id := m.parent; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetParent resets all changes to the "parent" edge.
-func (m *RegionMutation) ResetParent() {
-	m.parent = nil
-	m.clearedparent = false
-}
-
-// AddChildIDs adds the "children" edge to the Region entity by ids.
-func (m *RegionMutation) AddChildIDs(ids ...pxid.ID) {
-	if m.children == nil {
-		m.children = make(map[pxid.ID]struct{})
-	}
-	for i := range ids {
-		m.children[ids[i]] = struct{}{}
-	}
-}
-
-// ClearChildren clears the "children" edge to the Region entity.
-func (m *RegionMutation) ClearChildren() {
-	m.clearedchildren = true
-}
-
-// ChildrenCleared reports if the "children" edge to the Region entity was cleared.
-func (m *RegionMutation) ChildrenCleared() bool {
-	return m.clearedchildren
-}
-
-// RemoveChildIDs removes the "children" edge to the Region entity by IDs.
-func (m *RegionMutation) RemoveChildIDs(ids ...pxid.ID) {
-	if m.removedchildren == nil {
-		m.removedchildren = make(map[pxid.ID]struct{})
-	}
-	for i := range ids {
-		delete(m.children, ids[i])
-		m.removedchildren[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedChildren returns the removed IDs of the "children" edge to the Region entity.
-func (m *RegionMutation) RemovedChildrenIDs() (ids []pxid.ID) {
-	for id := range m.removedchildren {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ChildrenIDs returns the "children" edge IDs in the mutation.
-func (m *RegionMutation) ChildrenIDs() (ids []pxid.ID) {
-	for id := range m.children {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetChildren resets all changes to the "children" edge.
-func (m *RegionMutation) ResetChildren() {
-	m.children = nil
-	m.clearedchildren = false
-	m.removedchildren = nil
-}
-
-// Where appends a list predicates to the RegionMutation builder.
-func (m *RegionMutation) Where(ps ...predicate.Region) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the RegionMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *RegionMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Region, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *RegionMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *RegionMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (Region).
-func (m *RegionMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *RegionMutation) Fields() []string {
-	fields := make([]string, 0, 8)
-	if m.created_at != nil {
-		fields = append(fields, region.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, region.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, region.FieldDeletedAt)
-	}
-	if m.is_enable != nil {
-		fields = append(fields, region.FieldIsEnable)
-	}
-	if m.name_id != nil {
-		fields = append(fields, region.FieldNameID)
-	}
-	if m.name != nil {
-		fields = append(fields, region.FieldName)
-	}
-	if m._type != nil {
-		fields = append(fields, region.FieldType)
-	}
-	if m.parent != nil {
-		fields = append(fields, region.FieldPid)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *RegionMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case region.FieldCreatedAt:
-		return m.CreatedAt()
-	case region.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case region.FieldDeletedAt:
-		return m.DeletedAt()
-	case region.FieldIsEnable:
-		return m.IsEnable()
-	case region.FieldNameID:
-		return m.NameID()
-	case region.FieldName:
-		return m.Name()
-	case region.FieldType:
-		return m.GetType()
-	case region.FieldPid:
-		return m.Pid()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *RegionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case region.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case region.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case region.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case region.FieldIsEnable:
-		return m.OldIsEnable(ctx)
-	case region.FieldNameID:
-		return m.OldNameID(ctx)
-	case region.FieldName:
-		return m.OldName(ctx)
-	case region.FieldType:
-		return m.OldType(ctx)
-	case region.FieldPid:
-		return m.OldPid(ctx)
-	}
-	return nil, fmt.Errorf("unknown Region field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *RegionMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case region.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case region.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case region.FieldDeletedAt:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case region.FieldIsEnable:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIsEnable(v)
-		return nil
-	case region.FieldNameID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetNameID(v)
-		return nil
-	case region.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	case region.FieldType:
-		v, ok := value.(region.Type)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetType(v)
-		return nil
-	case region.FieldPid:
-		v, ok := value.(pxid.ID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPid(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Region field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *RegionMutation) AddedFields() []string {
-	var fields []string
-	if m.adddeleted_at != nil {
-		fields = append(fields, region.FieldDeletedAt)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *RegionMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case region.FieldDeletedAt:
-		return m.AddedDeletedAt()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *RegionMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case region.FieldDeletedAt:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDeletedAt(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Region numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *RegionMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(region.FieldPid) {
-		fields = append(fields, region.FieldPid)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *RegionMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *RegionMutation) ClearField(name string) error {
-	switch name {
-	case region.FieldPid:
-		m.ClearPid()
-		return nil
-	}
-	return fmt.Errorf("unknown Region nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *RegionMutation) ResetField(name string) error {
-	switch name {
-	case region.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case region.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case region.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case region.FieldIsEnable:
-		m.ResetIsEnable()
-		return nil
-	case region.FieldNameID:
-		m.ResetNameID()
-		return nil
-	case region.FieldName:
-		m.ResetName()
-		return nil
-	case region.FieldType:
-		m.ResetType()
-		return nil
-	case region.FieldPid:
-		m.ResetPid()
-		return nil
-	}
-	return fmt.Errorf("unknown Region field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *RegionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.parent != nil {
-		edges = append(edges, region.EdgeParent)
-	}
-	if m.children != nil {
-		edges = append(edges, region.EdgeChildren)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *RegionMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case region.EdgeParent:
-		if id := m.parent; id != nil {
-			return []ent.Value{*id}
-		}
-	case region.EdgeChildren:
-		ids := make([]ent.Value, 0, len(m.children))
-		for id := range m.children {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *RegionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.removedchildren != nil {
-		edges = append(edges, region.EdgeChildren)
-	}
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *RegionMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case region.EdgeChildren:
-		ids := make([]ent.Value, 0, len(m.removedchildren))
-		for id := range m.removedchildren {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *RegionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.clearedparent {
-		edges = append(edges, region.EdgeParent)
-	}
-	if m.clearedchildren {
-		edges = append(edges, region.EdgeChildren)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *RegionMutation) EdgeCleared(name string) bool {
-	switch name {
-	case region.EdgeParent:
-		return m.clearedparent
-	case region.EdgeChildren:
-		return m.clearedchildren
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *RegionMutation) ClearEdge(name string) error {
-	switch name {
-	case region.EdgeParent:
-		m.ClearParent()
-		return nil
-	}
-	return fmt.Errorf("unknown Region unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *RegionMutation) ResetEdge(name string) error {
-	switch name {
-	case region.EdgeParent:
-		m.ResetParent()
-		return nil
-	case region.EdgeChildren:
-		m.ResetChildren()
-		return nil
-	}
-	return fmt.Errorf("unknown Region edge %s", name)
-}
-
 // RoleMutation represents an operation that mutates the Role nodes in the graph.
 type RoleMutation struct {
 	config
@@ -5047,9 +5412,6 @@ type RoleMutation struct {
 	permissions        map[pxid.ID]struct{}
 	removedpermissions map[pxid.ID]struct{}
 	clearedpermissions bool
-	routes             map[pxid.ID]struct{}
-	removedroutes      map[pxid.ID]struct{}
-	clearedroutes      bool
 	done               bool
 	oldValue           func(context.Context) (*Role, error)
 	predicates         []predicate.Role
@@ -5595,60 +5957,6 @@ func (m *RoleMutation) ResetPermissions() {
 	m.removedpermissions = nil
 }
 
-// AddRouteIDs adds the "routes" edge to the Menu entity by ids.
-func (m *RoleMutation) AddRouteIDs(ids ...pxid.ID) {
-	if m.routes == nil {
-		m.routes = make(map[pxid.ID]struct{})
-	}
-	for i := range ids {
-		m.routes[ids[i]] = struct{}{}
-	}
-}
-
-// ClearRoutes clears the "routes" edge to the Menu entity.
-func (m *RoleMutation) ClearRoutes() {
-	m.clearedroutes = true
-}
-
-// RoutesCleared reports if the "routes" edge to the Menu entity was cleared.
-func (m *RoleMutation) RoutesCleared() bool {
-	return m.clearedroutes
-}
-
-// RemoveRouteIDs removes the "routes" edge to the Menu entity by IDs.
-func (m *RoleMutation) RemoveRouteIDs(ids ...pxid.ID) {
-	if m.removedroutes == nil {
-		m.removedroutes = make(map[pxid.ID]struct{})
-	}
-	for i := range ids {
-		delete(m.routes, ids[i])
-		m.removedroutes[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedRoutes returns the removed IDs of the "routes" edge to the Menu entity.
-func (m *RoleMutation) RemovedRoutesIDs() (ids []pxid.ID) {
-	for id := range m.removedroutes {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// RoutesIDs returns the "routes" edge IDs in the mutation.
-func (m *RoleMutation) RoutesIDs() (ids []pxid.ID) {
-	for id := range m.routes {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetRoutes resets all changes to the "routes" edge.
-func (m *RoleMutation) ResetRoutes() {
-	m.routes = nil
-	m.clearedroutes = false
-	m.removedroutes = nil
-}
-
 // Where appends a list predicates to the RoleMutation builder.
 func (m *RoleMutation) Where(ps ...predicate.Role) {
 	m.predicates = append(m.predicates, ps...)
@@ -5928,15 +6236,12 @@ func (m *RoleMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RoleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.admins != nil {
 		edges = append(edges, role.EdgeAdmins)
 	}
 	if m.permissions != nil {
 		edges = append(edges, role.EdgePermissions)
-	}
-	if m.routes != nil {
-		edges = append(edges, role.EdgeRoutes)
 	}
 	return edges
 }
@@ -5957,27 +6262,18 @@ func (m *RoleMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case role.EdgeRoutes:
-		ids := make([]ent.Value, 0, len(m.routes))
-		for id := range m.routes {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RoleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.removedadmins != nil {
 		edges = append(edges, role.EdgeAdmins)
 	}
 	if m.removedpermissions != nil {
 		edges = append(edges, role.EdgePermissions)
-	}
-	if m.removedroutes != nil {
-		edges = append(edges, role.EdgeRoutes)
 	}
 	return edges
 }
@@ -5998,27 +6294,18 @@ func (m *RoleMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case role.EdgeRoutes:
-		ids := make([]ent.Value, 0, len(m.removedroutes))
-		for id := range m.removedroutes {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RoleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedadmins {
 		edges = append(edges, role.EdgeAdmins)
 	}
 	if m.clearedpermissions {
 		edges = append(edges, role.EdgePermissions)
-	}
-	if m.clearedroutes {
-		edges = append(edges, role.EdgeRoutes)
 	}
 	return edges
 }
@@ -6031,8 +6318,6 @@ func (m *RoleMutation) EdgeCleared(name string) bool {
 		return m.clearedadmins
 	case role.EdgePermissions:
 		return m.clearedpermissions
-	case role.EdgeRoutes:
-		return m.clearedroutes
 	}
 	return false
 }
@@ -6055,539 +6340,6 @@ func (m *RoleMutation) ResetEdge(name string) error {
 	case role.EdgePermissions:
 		m.ResetPermissions()
 		return nil
-	case role.EdgeRoutes:
-		m.ResetRoutes()
-		return nil
 	}
 	return fmt.Errorf("unknown Role edge %s", name)
-}
-
-// TodoMutation represents an operation that mutates the Todo nodes in the graph.
-type TodoMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *pxid.ID
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *int
-	adddeleted_at *int
-	name          *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Todo, error)
-	predicates    []predicate.Todo
-}
-
-var _ ent.Mutation = (*TodoMutation)(nil)
-
-// todoOption allows management of the mutation configuration using functional options.
-type todoOption func(*TodoMutation)
-
-// newTodoMutation creates new mutation for the Todo entity.
-func newTodoMutation(c config, op Op, opts ...todoOption) *TodoMutation {
-	m := &TodoMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeTodo,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withTodoID sets the ID field of the mutation.
-func withTodoID(id pxid.ID) todoOption {
-	return func(m *TodoMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Todo
-		)
-		m.oldValue = func(ctx context.Context) (*Todo, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Todo.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withTodo sets the old Todo of the mutation.
-func withTodo(node *Todo) todoOption {
-	return func(m *TodoMutation) {
-		m.oldValue = func(context.Context) (*Todo, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m TodoMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m TodoMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Todo entities.
-func (m *TodoMutation) SetID(id pxid.ID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *TodoMutation) ID() (id pxid.ID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *TodoMutation) IDs(ctx context.Context) ([]pxid.ID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []pxid.ID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Todo.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *TodoMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *TodoMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *TodoMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *TodoMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *TodoMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *TodoMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *TodoMutation) SetDeletedAt(i int) {
-	m.deleted_at = &i
-	m.adddeleted_at = nil
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *TodoMutation) DeletedAt() (r int, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldDeletedAt(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// AddDeletedAt adds i to the "deleted_at" field.
-func (m *TodoMutation) AddDeletedAt(i int) {
-	if m.adddeleted_at != nil {
-		*m.adddeleted_at += i
-	} else {
-		m.adddeleted_at = &i
-	}
-}
-
-// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
-func (m *TodoMutation) AddedDeletedAt() (r int, exists bool) {
-	v := m.adddeleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *TodoMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	m.adddeleted_at = nil
-}
-
-// SetName sets the "name" field.
-func (m *TodoMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *TodoMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the Todo entity.
-// If the Todo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *TodoMutation) ResetName() {
-	m.name = nil
-}
-
-// Where appends a list predicates to the TodoMutation builder.
-func (m *TodoMutation) Where(ps ...predicate.Todo) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the TodoMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *TodoMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Todo, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *TodoMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *TodoMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (Todo).
-func (m *TodoMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *TodoMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.created_at != nil {
-		fields = append(fields, todo.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, todo.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, todo.FieldDeletedAt)
-	}
-	if m.name != nil {
-		fields = append(fields, todo.FieldName)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *TodoMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case todo.FieldCreatedAt:
-		return m.CreatedAt()
-	case todo.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case todo.FieldDeletedAt:
-		return m.DeletedAt()
-	case todo.FieldName:
-		return m.Name()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *TodoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case todo.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case todo.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case todo.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case todo.FieldName:
-		return m.OldName(ctx)
-	}
-	return nil, fmt.Errorf("unknown Todo field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *TodoMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case todo.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case todo.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case todo.FieldDeletedAt:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case todo.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Todo field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *TodoMutation) AddedFields() []string {
-	var fields []string
-	if m.adddeleted_at != nil {
-		fields = append(fields, todo.FieldDeletedAt)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *TodoMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case todo.FieldDeletedAt:
-		return m.AddedDeletedAt()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *TodoMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case todo.FieldDeletedAt:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDeletedAt(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Todo numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *TodoMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *TodoMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *TodoMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Todo nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *TodoMutation) ResetField(name string) error {
-	switch name {
-	case todo.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case todo.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case todo.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case todo.FieldName:
-		m.ResetName()
-		return nil
-	}
-	return fmt.Errorf("unknown Todo field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *TodoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *TodoMutation) AddedIDs(name string) []ent.Value {
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *TodoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *TodoMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *TodoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *TodoMutation) EdgeCleared(name string) bool {
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *TodoMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Todo unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *TodoMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Todo edge %s", name)
 }

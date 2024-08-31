@@ -177,9 +177,7 @@ func (dc *DepartmentCreate) Mutation() *DepartmentMutation {
 
 // Save creates the Department in the database.
 func (dc *DepartmentCreate) Save(ctx context.Context) (*Department, error) {
-	if err := dc.defaults(); err != nil {
-		return nil, err
-	}
+	dc.defaults()
 	return withHooks(ctx, dc.sqlSave, dc.mutation, dc.hooks)
 }
 
@@ -206,18 +204,12 @@ func (dc *DepartmentCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (dc *DepartmentCreate) defaults() error {
+func (dc *DepartmentCreate) defaults() {
 	if _, ok := dc.mutation.CreatedAt(); !ok {
-		if department.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized department.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := department.DefaultCreatedAt()
 		dc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := dc.mutation.UpdatedAt(); !ok {
-		if department.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized department.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := department.DefaultUpdatedAt()
 		dc.mutation.SetUpdatedAt(v)
 	}
@@ -230,13 +222,9 @@ func (dc *DepartmentCreate) defaults() error {
 		dc.mutation.SetIsEnable(v)
 	}
 	if _, ok := dc.mutation.ID(); !ok {
-		if department.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized department.DefaultID (forgotten import ent/runtime?)")
-		}
 		v := department.DefaultID()
 		dc.mutation.SetID(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -14,11 +14,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -75,17 +75,17 @@ var (
 	columnCheck sql.ColumnCheck
 )
 
-// columnChecker checks if the column exists in the given table.
+// checkColumn checks if the column exists in the given table.
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			admin.Table:      admin.ValidColumn,
-			department.Table: department.ValidColumn,
-			menu.Table:       menu.ValidColumn,
-			permission.Table: permission.ValidColumn,
-			region.Table:     region.ValidColumn,
-			role.Table:       role.ValidColumn,
-			todo.Table:       todo.ValidColumn,
+			admin.Table:        admin.ValidColumn,
+			department.Table:   department.ValidColumn,
+			genre.Table:        genre.ValidColumn,
+			manga.Table:        manga.ValidColumn,
+			mangachapter.Table: mangachapter.ValidColumn,
+			permission.Table:   permission.ValidColumn,
+			role.Table:         role.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

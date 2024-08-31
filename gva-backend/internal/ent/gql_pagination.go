@@ -17,11 +17,11 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -697,20 +697,20 @@ func (d *Department) ToEdge(order *DepartmentOrder) *DepartmentEdge {
 	}
 }
 
-// MenuEdge is the edge representation of Menu.
-type MenuEdge struct {
-	Node   *Menu  `json:"node"`
+// GenreEdge is the edge representation of Genre.
+type GenreEdge struct {
+	Node   *Genre `json:"node"`
 	Cursor Cursor `json:"cursor"`
 }
 
-// MenuConnection is the connection containing edges to Menu.
-type MenuConnection struct {
-	Edges      []*MenuEdge `json:"edges"`
-	PageInfo   PageInfo    `json:"pageInfo"`
-	TotalCount int         `json:"totalCount"`
+// GenreConnection is the connection containing edges to Genre.
+type GenreConnection struct {
+	Edges      []*GenreEdge `json:"edges"`
+	PageInfo   PageInfo     `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
 }
 
-func (c *MenuConnection) build(nodes []*Menu, pager *menuPager, after *Cursor, first *int, before *Cursor, last *int) {
+func (c *GenreConnection) build(nodes []*Genre, pager *genrePager, after *Cursor, first *int, before *Cursor, last *int) {
 	c.PageInfo.HasNextPage = before != nil
 	c.PageInfo.HasPreviousPage = after != nil
 	if first != nil && *first+1 == len(nodes) {
@@ -720,21 +720,21 @@ func (c *MenuConnection) build(nodes []*Menu, pager *menuPager, after *Cursor, f
 		c.PageInfo.HasPreviousPage = true
 		nodes = nodes[:len(nodes)-1]
 	}
-	var nodeAt func(int) *Menu
+	var nodeAt func(int) *Genre
 	if last != nil {
 		n := len(nodes) - 1
-		nodeAt = func(i int) *Menu {
+		nodeAt = func(i int) *Genre {
 			return nodes[n-i]
 		}
 	} else {
-		nodeAt = func(i int) *Menu {
+		nodeAt = func(i int) *Genre {
 			return nodes[i]
 		}
 	}
-	c.Edges = make([]*MenuEdge, len(nodes))
+	c.Edges = make([]*GenreEdge, len(nodes))
 	for i := range nodes {
 		node := nodeAt(i)
-		c.Edges[i] = &MenuEdge{
+		c.Edges[i] = &GenreEdge{
 			Node:   node,
 			Cursor: pager.toCursor(node),
 		}
@@ -748,87 +748,87 @@ func (c *MenuConnection) build(nodes []*Menu, pager *menuPager, after *Cursor, f
 	}
 }
 
-// MenuPaginateOption enables pagination customization.
-type MenuPaginateOption func(*menuPager) error
+// GenrePaginateOption enables pagination customization.
+type GenrePaginateOption func(*genrePager) error
 
-// WithMenuOrder configures pagination ordering.
-func WithMenuOrder(order *MenuOrder) MenuPaginateOption {
+// WithGenreOrder configures pagination ordering.
+func WithGenreOrder(order *GenreOrder) GenrePaginateOption {
 	if order == nil {
-		order = DefaultMenuOrder
+		order = DefaultGenreOrder
 	}
 	o := *order
-	return func(pager *menuPager) error {
+	return func(pager *genrePager) error {
 		if err := o.Direction.Validate(); err != nil {
 			return err
 		}
 		if o.Field == nil {
-			o.Field = DefaultMenuOrder.Field
+			o.Field = DefaultGenreOrder.Field
 		}
 		pager.order = &o
 		return nil
 	}
 }
 
-// WithMenuFilter configures pagination filter.
-func WithMenuFilter(filter func(*MenuQuery) (*MenuQuery, error)) MenuPaginateOption {
-	return func(pager *menuPager) error {
+// WithGenreFilter configures pagination filter.
+func WithGenreFilter(filter func(*GenreQuery) (*GenreQuery, error)) GenrePaginateOption {
+	return func(pager *genrePager) error {
 		if filter == nil {
-			return errors.New("MenuQuery filter cannot be nil")
+			return errors.New("GenreQuery filter cannot be nil")
 		}
 		pager.filter = filter
 		return nil
 	}
 }
 
-type menuPager struct {
+type genrePager struct {
 	reverse bool
-	order   *MenuOrder
-	filter  func(*MenuQuery) (*MenuQuery, error)
+	order   *GenreOrder
+	filter  func(*GenreQuery) (*GenreQuery, error)
 }
 
-func newMenuPager(opts []MenuPaginateOption, reverse bool) (*menuPager, error) {
-	pager := &menuPager{reverse: reverse}
+func newGenrePager(opts []GenrePaginateOption, reverse bool) (*genrePager, error) {
+	pager := &genrePager{reverse: reverse}
 	for _, opt := range opts {
 		if err := opt(pager); err != nil {
 			return nil, err
 		}
 	}
 	if pager.order == nil {
-		pager.order = DefaultMenuOrder
+		pager.order = DefaultGenreOrder
 	}
 	return pager, nil
 }
 
-func (p *menuPager) applyFilter(query *MenuQuery) (*MenuQuery, error) {
+func (p *genrePager) applyFilter(query *GenreQuery) (*GenreQuery, error) {
 	if p.filter != nil {
 		return p.filter(query)
 	}
 	return query, nil
 }
 
-func (p *menuPager) toCursor(m *Menu) Cursor {
-	return p.order.Field.toCursor(m)
+func (p *genrePager) toCursor(ge *Genre) Cursor {
+	return p.order.Field.toCursor(ge)
 }
 
-func (p *menuPager) applyCursors(query *MenuQuery, after, before *Cursor) (*MenuQuery, error) {
+func (p *genrePager) applyCursors(query *GenreQuery, after, before *Cursor) (*GenreQuery, error) {
 	direction := p.order.Direction
 	if p.reverse {
 		direction = direction.Reverse()
 	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMenuOrder.Field.column, p.order.Field.column, direction) {
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultGenreOrder.Field.column, p.order.Field.column, direction) {
 		query = query.Where(predicate)
 	}
 	return query, nil
 }
 
-func (p *menuPager) applyOrder(query *MenuQuery) *MenuQuery {
+func (p *genrePager) applyOrder(query *GenreQuery) *GenreQuery {
 	direction := p.order.Direction
 	if p.reverse {
 		direction = direction.Reverse()
 	}
 	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultMenuOrder.Field {
-		query = query.Order(DefaultMenuOrder.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultGenreOrder.Field {
+		query = query.Order(DefaultGenreOrder.Field.toTerm(direction.OrderTermOption()))
 	}
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(p.order.Field.column)
@@ -836,7 +836,7 @@ func (p *menuPager) applyOrder(query *MenuQuery) *MenuQuery {
 	return query
 }
 
-func (p *menuPager) orderExpr(query *MenuQuery) sql.Querier {
+func (p *genrePager) orderExpr(query *GenreQuery) sql.Querier {
 	direction := p.order.Direction
 	if p.reverse {
 		direction = direction.Reverse()
@@ -846,28 +846,324 @@ func (p *menuPager) orderExpr(query *MenuQuery) sql.Querier {
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
 		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultMenuOrder.Field {
-			b.Comma().Ident(DefaultMenuOrder.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultGenreOrder.Field {
+			b.Comma().Ident(DefaultGenreOrder.Field.column).Pad().WriteString(string(direction))
 		}
 	})
 }
 
-// Paginate executes the query and returns a relay based cursor connection to Menu.
-func (m *MenuQuery) Paginate(
+// Paginate executes the query and returns a relay based cursor connection to Genre.
+func (ge *GenreQuery) Paginate(
 	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...MenuPaginateOption,
-) (*MenuConnection, error) {
+	before *Cursor, last *int, opts ...GenrePaginateOption,
+) (*GenreConnection, error) {
 	if err := validateFirstLast(first, last); err != nil {
 		return nil, err
 	}
-	pager, err := newMenuPager(opts, last != nil)
+	pager, err := newGenrePager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if ge, err = pager.applyFilter(ge); err != nil {
+		return nil, err
+	}
+	conn := &GenreConnection{Edges: []*GenreEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := ge.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if ge, err = pager.applyCursors(ge, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		ge.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := ge.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	ge = pager.applyOrder(ge)
+	nodes, err := ge.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// GenreOrderFieldID orders Genre by id.
+	GenreOrderFieldID = &GenreOrderField{
+		Value: func(ge *Genre) (ent.Value, error) {
+			return ge.ID, nil
+		},
+		column: genre.FieldID,
+		toTerm: genre.ByID,
+		toCursor: func(ge *Genre) Cursor {
+			return Cursor{
+				ID:    ge.ID,
+				Value: ge.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f GenreOrderField) String() string {
+	var str string
+	switch f.column {
+	case GenreOrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f GenreOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *GenreOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("GenreOrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *GenreOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid GenreOrderField", str)
+	}
+	return nil
+}
+
+// GenreOrderField defines the ordering field of Genre.
+type GenreOrderField struct {
+	// Value extracts the ordering value from the given Genre.
+	Value    func(*Genre) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) genre.OrderOption
+	toCursor func(*Genre) Cursor
+}
+
+// GenreOrder defines the ordering of Genre.
+type GenreOrder struct {
+	Direction OrderDirection   `json:"direction"`
+	Field     *GenreOrderField `json:"field"`
+}
+
+// DefaultGenreOrder is the default ordering of Genre.
+var DefaultGenreOrder = &GenreOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &GenreOrderField{
+		Value: func(ge *Genre) (ent.Value, error) {
+			return ge.ID, nil
+		},
+		column: genre.FieldID,
+		toTerm: genre.ByID,
+		toCursor: func(ge *Genre) Cursor {
+			return Cursor{ID: ge.ID}
+		},
+	},
+}
+
+// ToEdge converts Genre into GenreEdge.
+func (ge *Genre) ToEdge(order *GenreOrder) *GenreEdge {
+	if order == nil {
+		order = DefaultGenreOrder
+	}
+	return &GenreEdge{
+		Node:   ge,
+		Cursor: order.Field.toCursor(ge),
+	}
+}
+
+// MangaEdge is the edge representation of Manga.
+type MangaEdge struct {
+	Node   *Manga `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// MangaConnection is the connection containing edges to Manga.
+type MangaConnection struct {
+	Edges      []*MangaEdge `json:"edges"`
+	PageInfo   PageInfo     `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+}
+
+func (c *MangaConnection) build(nodes []*Manga, pager *mangaPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Manga
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Manga {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Manga {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*MangaEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &MangaEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// MangaPaginateOption enables pagination customization.
+type MangaPaginateOption func(*mangaPager) error
+
+// WithMangaOrder configures pagination ordering.
+func WithMangaOrder(order *MangaOrder) MangaPaginateOption {
+	if order == nil {
+		order = DefaultMangaOrder
+	}
+	o := *order
+	return func(pager *mangaPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMangaOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMangaFilter configures pagination filter.
+func WithMangaFilter(filter func(*MangaQuery) (*MangaQuery, error)) MangaPaginateOption {
+	return func(pager *mangaPager) error {
+		if filter == nil {
+			return errors.New("MangaQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type mangaPager struct {
+	reverse bool
+	order   *MangaOrder
+	filter  func(*MangaQuery) (*MangaQuery, error)
+}
+
+func newMangaPager(opts []MangaPaginateOption, reverse bool) (*mangaPager, error) {
+	pager := &mangaPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMangaOrder
+	}
+	return pager, nil
+}
+
+func (p *mangaPager) applyFilter(query *MangaQuery) (*MangaQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *mangaPager) toCursor(m *Manga) Cursor {
+	return p.order.Field.toCursor(m)
+}
+
+func (p *mangaPager) applyCursors(query *MangaQuery, after, before *Cursor) (*MangaQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMangaOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *mangaPager) applyOrder(query *MangaQuery) *MangaQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultMangaOrder.Field {
+		query = query.Order(DefaultMangaOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *mangaPager) orderExpr(query *MangaQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultMangaOrder.Field {
+			b.Comma().Ident(DefaultMangaOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Manga.
+func (m *MangaQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MangaPaginateOption,
+) (*MangaConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMangaPager(opts, last != nil)
 	if err != nil {
 		return nil, err
 	}
 	if m, err = pager.applyFilter(m); err != nil {
 		return nil, err
 	}
-	conn := &MenuConnection{Edges: []*MenuEdge{}}
+	conn := &MangaConnection{Edges: []*MangaEdge{}}
 	ignoredEdges := !hasCollectedField(ctx, edgesField)
 	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
 		hasPagination := after != nil || first != nil || before != nil || last != nil
@@ -906,14 +1202,14 @@ func (m *MenuQuery) Paginate(
 }
 
 var (
-	// MenuOrderFieldID orders Menu by id.
-	MenuOrderFieldID = &MenuOrderField{
-		Value: func(m *Menu) (ent.Value, error) {
+	// MangaOrderFieldID orders Manga by id.
+	MangaOrderFieldID = &MangaOrderField{
+		Value: func(m *Manga) (ent.Value, error) {
 			return m.ID, nil
 		},
-		column: menu.FieldID,
-		toTerm: menu.ByID,
-		toCursor: func(m *Menu) Cursor {
+		column: manga.FieldID,
+		toTerm: manga.ByID,
+		toCursor: func(m *Manga) Cursor {
 			return Cursor{
 				ID:    m.ID,
 				Value: m.ID,
@@ -923,73 +1219,369 @@ var (
 )
 
 // String implement fmt.Stringer interface.
-func (f MenuOrderField) String() string {
+func (f MangaOrderField) String() string {
 	var str string
 	switch f.column {
-	case MenuOrderFieldID.column:
+	case MangaOrderFieldID.column:
 		str = "id"
 	}
 	return str
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (f MenuOrderField) MarshalGQL(w io.Writer) {
+func (f MangaOrderField) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(f.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (f *MenuOrderField) UnmarshalGQL(v interface{}) error {
+func (f *MangaOrderField) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
-		return fmt.Errorf("MenuOrderField %T must be a string", v)
+		return fmt.Errorf("MangaOrderField %T must be a string", v)
 	}
 	switch str {
 	case "id":
-		*f = *MenuOrderFieldID
+		*f = *MangaOrderFieldID
 	default:
-		return fmt.Errorf("%s is not a valid MenuOrderField", str)
+		return fmt.Errorf("%s is not a valid MangaOrderField", str)
 	}
 	return nil
 }
 
-// MenuOrderField defines the ordering field of Menu.
-type MenuOrderField struct {
-	// Value extracts the ordering value from the given Menu.
-	Value    func(*Menu) (ent.Value, error)
+// MangaOrderField defines the ordering field of Manga.
+type MangaOrderField struct {
+	// Value extracts the ordering value from the given Manga.
+	Value    func(*Manga) (ent.Value, error)
 	column   string // field or computed.
-	toTerm   func(...sql.OrderTermOption) menu.OrderOption
-	toCursor func(*Menu) Cursor
+	toTerm   func(...sql.OrderTermOption) manga.OrderOption
+	toCursor func(*Manga) Cursor
 }
 
-// MenuOrder defines the ordering of Menu.
-type MenuOrder struct {
-	Direction OrderDirection  `json:"direction"`
-	Field     *MenuOrderField `json:"field"`
+// MangaOrder defines the ordering of Manga.
+type MangaOrder struct {
+	Direction OrderDirection   `json:"direction"`
+	Field     *MangaOrderField `json:"field"`
 }
 
-// DefaultMenuOrder is the default ordering of Menu.
-var DefaultMenuOrder = &MenuOrder{
+// DefaultMangaOrder is the default ordering of Manga.
+var DefaultMangaOrder = &MangaOrder{
 	Direction: entgql.OrderDirectionAsc,
-	Field: &MenuOrderField{
-		Value: func(m *Menu) (ent.Value, error) {
+	Field: &MangaOrderField{
+		Value: func(m *Manga) (ent.Value, error) {
 			return m.ID, nil
 		},
-		column: menu.FieldID,
-		toTerm: menu.ByID,
-		toCursor: func(m *Menu) Cursor {
+		column: manga.FieldID,
+		toTerm: manga.ByID,
+		toCursor: func(m *Manga) Cursor {
 			return Cursor{ID: m.ID}
 		},
 	},
 }
 
-// ToEdge converts Menu into MenuEdge.
-func (m *Menu) ToEdge(order *MenuOrder) *MenuEdge {
+// ToEdge converts Manga into MangaEdge.
+func (m *Manga) ToEdge(order *MangaOrder) *MangaEdge {
 	if order == nil {
-		order = DefaultMenuOrder
+		order = DefaultMangaOrder
 	}
-	return &MenuEdge{
+	return &MangaEdge{
 		Node:   m,
 		Cursor: order.Field.toCursor(m),
+	}
+}
+
+// MangaChapterEdge is the edge representation of MangaChapter.
+type MangaChapterEdge struct {
+	Node   *MangaChapter `json:"node"`
+	Cursor Cursor        `json:"cursor"`
+}
+
+// MangaChapterConnection is the connection containing edges to MangaChapter.
+type MangaChapterConnection struct {
+	Edges      []*MangaChapterEdge `json:"edges"`
+	PageInfo   PageInfo            `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
+}
+
+func (c *MangaChapterConnection) build(nodes []*MangaChapter, pager *mangachapterPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *MangaChapter
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *MangaChapter {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *MangaChapter {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*MangaChapterEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &MangaChapterEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// MangaChapterPaginateOption enables pagination customization.
+type MangaChapterPaginateOption func(*mangachapterPager) error
+
+// WithMangaChapterOrder configures pagination ordering.
+func WithMangaChapterOrder(order *MangaChapterOrder) MangaChapterPaginateOption {
+	if order == nil {
+		order = DefaultMangaChapterOrder
+	}
+	o := *order
+	return func(pager *mangachapterPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMangaChapterOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMangaChapterFilter configures pagination filter.
+func WithMangaChapterFilter(filter func(*MangaChapterQuery) (*MangaChapterQuery, error)) MangaChapterPaginateOption {
+	return func(pager *mangachapterPager) error {
+		if filter == nil {
+			return errors.New("MangaChapterQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type mangachapterPager struct {
+	reverse bool
+	order   *MangaChapterOrder
+	filter  func(*MangaChapterQuery) (*MangaChapterQuery, error)
+}
+
+func newMangaChapterPager(opts []MangaChapterPaginateOption, reverse bool) (*mangachapterPager, error) {
+	pager := &mangachapterPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMangaChapterOrder
+	}
+	return pager, nil
+}
+
+func (p *mangachapterPager) applyFilter(query *MangaChapterQuery) (*MangaChapterQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *mangachapterPager) toCursor(mc *MangaChapter) Cursor {
+	return p.order.Field.toCursor(mc)
+}
+
+func (p *mangachapterPager) applyCursors(query *MangaChapterQuery, after, before *Cursor) (*MangaChapterQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMangaChapterOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *mangachapterPager) applyOrder(query *MangaChapterQuery) *MangaChapterQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultMangaChapterOrder.Field {
+		query = query.Order(DefaultMangaChapterOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *mangachapterPager) orderExpr(query *MangaChapterQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultMangaChapterOrder.Field {
+			b.Comma().Ident(DefaultMangaChapterOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to MangaChapter.
+func (mc *MangaChapterQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MangaChapterPaginateOption,
+) (*MangaChapterConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMangaChapterPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if mc, err = pager.applyFilter(mc); err != nil {
+		return nil, err
+	}
+	conn := &MangaChapterConnection{Edges: []*MangaChapterEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := mc.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if mc, err = pager.applyCursors(mc, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		mc.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := mc.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	mc = pager.applyOrder(mc)
+	nodes, err := mc.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// MangaChapterOrderFieldID orders MangaChapter by id.
+	MangaChapterOrderFieldID = &MangaChapterOrderField{
+		Value: func(mc *MangaChapter) (ent.Value, error) {
+			return mc.ID, nil
+		},
+		column: mangachapter.FieldID,
+		toTerm: mangachapter.ByID,
+		toCursor: func(mc *MangaChapter) Cursor {
+			return Cursor{
+				ID:    mc.ID,
+				Value: mc.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f MangaChapterOrderField) String() string {
+	var str string
+	switch f.column {
+	case MangaChapterOrderFieldID.column:
+		str = "id"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f MangaChapterOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *MangaChapterOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("MangaChapterOrderField %T must be a string", v)
+	}
+	switch str {
+	case "id":
+		*f = *MangaChapterOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid MangaChapterOrderField", str)
+	}
+	return nil
+}
+
+// MangaChapterOrderField defines the ordering field of MangaChapter.
+type MangaChapterOrderField struct {
+	// Value extracts the ordering value from the given MangaChapter.
+	Value    func(*MangaChapter) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) mangachapter.OrderOption
+	toCursor func(*MangaChapter) Cursor
+}
+
+// MangaChapterOrder defines the ordering of MangaChapter.
+type MangaChapterOrder struct {
+	Direction OrderDirection          `json:"direction"`
+	Field     *MangaChapterOrderField `json:"field"`
+}
+
+// DefaultMangaChapterOrder is the default ordering of MangaChapter.
+var DefaultMangaChapterOrder = &MangaChapterOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &MangaChapterOrderField{
+		Value: func(mc *MangaChapter) (ent.Value, error) {
+			return mc.ID, nil
+		},
+		column: mangachapter.FieldID,
+		toTerm: mangachapter.ByID,
+		toCursor: func(mc *MangaChapter) Cursor {
+			return Cursor{ID: mc.ID}
+		},
+	},
+}
+
+// ToEdge converts MangaChapter into MangaChapterEdge.
+func (mc *MangaChapter) ToEdge(order *MangaChapterOrder) *MangaChapterEdge {
+	if order == nil {
+		order = DefaultMangaChapterOrder
+	}
+	return &MangaChapterEdge{
+		Node:   mc,
+		Cursor: order.Field.toCursor(mc),
 	}
 }
 
@@ -1289,302 +1881,6 @@ func (pe *Permission) ToEdge(order *PermissionOrder) *PermissionEdge {
 	}
 }
 
-// RegionEdge is the edge representation of Region.
-type RegionEdge struct {
-	Node   *Region `json:"node"`
-	Cursor Cursor  `json:"cursor"`
-}
-
-// RegionConnection is the connection containing edges to Region.
-type RegionConnection struct {
-	Edges      []*RegionEdge `json:"edges"`
-	PageInfo   PageInfo      `json:"pageInfo"`
-	TotalCount int           `json:"totalCount"`
-}
-
-func (c *RegionConnection) build(nodes []*Region, pager *regionPager, after *Cursor, first *int, before *Cursor, last *int) {
-	c.PageInfo.HasNextPage = before != nil
-	c.PageInfo.HasPreviousPage = after != nil
-	if first != nil && *first+1 == len(nodes) {
-		c.PageInfo.HasNextPage = true
-		nodes = nodes[:len(nodes)-1]
-	} else if last != nil && *last+1 == len(nodes) {
-		c.PageInfo.HasPreviousPage = true
-		nodes = nodes[:len(nodes)-1]
-	}
-	var nodeAt func(int) *Region
-	if last != nil {
-		n := len(nodes) - 1
-		nodeAt = func(i int) *Region {
-			return nodes[n-i]
-		}
-	} else {
-		nodeAt = func(i int) *Region {
-			return nodes[i]
-		}
-	}
-	c.Edges = make([]*RegionEdge, len(nodes))
-	for i := range nodes {
-		node := nodeAt(i)
-		c.Edges[i] = &RegionEdge{
-			Node:   node,
-			Cursor: pager.toCursor(node),
-		}
-	}
-	if l := len(c.Edges); l > 0 {
-		c.PageInfo.StartCursor = &c.Edges[0].Cursor
-		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
-	}
-	if c.TotalCount == 0 {
-		c.TotalCount = len(nodes)
-	}
-}
-
-// RegionPaginateOption enables pagination customization.
-type RegionPaginateOption func(*regionPager) error
-
-// WithRegionOrder configures pagination ordering.
-func WithRegionOrder(order *RegionOrder) RegionPaginateOption {
-	if order == nil {
-		order = DefaultRegionOrder
-	}
-	o := *order
-	return func(pager *regionPager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
-		}
-		if o.Field == nil {
-			o.Field = DefaultRegionOrder.Field
-		}
-		pager.order = &o
-		return nil
-	}
-}
-
-// WithRegionFilter configures pagination filter.
-func WithRegionFilter(filter func(*RegionQuery) (*RegionQuery, error)) RegionPaginateOption {
-	return func(pager *regionPager) error {
-		if filter == nil {
-			return errors.New("RegionQuery filter cannot be nil")
-		}
-		pager.filter = filter
-		return nil
-	}
-}
-
-type regionPager struct {
-	reverse bool
-	order   *RegionOrder
-	filter  func(*RegionQuery) (*RegionQuery, error)
-}
-
-func newRegionPager(opts []RegionPaginateOption, reverse bool) (*regionPager, error) {
-	pager := &regionPager{reverse: reverse}
-	for _, opt := range opts {
-		if err := opt(pager); err != nil {
-			return nil, err
-		}
-	}
-	if pager.order == nil {
-		pager.order = DefaultRegionOrder
-	}
-	return pager, nil
-}
-
-func (p *regionPager) applyFilter(query *RegionQuery) (*RegionQuery, error) {
-	if p.filter != nil {
-		return p.filter(query)
-	}
-	return query, nil
-}
-
-func (p *regionPager) toCursor(r *Region) Cursor {
-	return p.order.Field.toCursor(r)
-}
-
-func (p *regionPager) applyCursors(query *RegionQuery, after, before *Cursor) (*RegionQuery, error) {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultRegionOrder.Field.column, p.order.Field.column, direction) {
-		query = query.Where(predicate)
-	}
-	return query, nil
-}
-
-func (p *regionPager) applyOrder(query *RegionQuery) *RegionQuery {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultRegionOrder.Field {
-		query = query.Order(DefaultRegionOrder.Field.toTerm(direction.OrderTermOption()))
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return query
-}
-
-func (p *regionPager) orderExpr(query *RegionQuery) sql.Querier {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultRegionOrder.Field {
-			b.Comma().Ident(DefaultRegionOrder.Field.column).Pad().WriteString(string(direction))
-		}
-	})
-}
-
-// Paginate executes the query and returns a relay based cursor connection to Region.
-func (r *RegionQuery) Paginate(
-	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...RegionPaginateOption,
-) (*RegionConnection, error) {
-	if err := validateFirstLast(first, last); err != nil {
-		return nil, err
-	}
-	pager, err := newRegionPager(opts, last != nil)
-	if err != nil {
-		return nil, err
-	}
-	if r, err = pager.applyFilter(r); err != nil {
-		return nil, err
-	}
-	conn := &RegionConnection{Edges: []*RegionEdge{}}
-	ignoredEdges := !hasCollectedField(ctx, edgesField)
-	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
-		hasPagination := after != nil || first != nil || before != nil || last != nil
-		if hasPagination || ignoredEdges {
-			c := r.Clone()
-			c.ctx.Fields = nil
-			if conn.TotalCount, err = c.Count(ctx); err != nil {
-				return nil, err
-			}
-			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
-			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
-		}
-	}
-	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
-		return conn, nil
-	}
-	if r, err = pager.applyCursors(r, after, before); err != nil {
-		return nil, err
-	}
-	limit := paginateLimit(first, last)
-	if limit != 0 {
-		r.Limit(limit)
-	}
-	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := r.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
-			return nil, err
-		}
-	}
-	r = pager.applyOrder(r)
-	nodes, err := r.All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	conn.build(nodes, pager, after, first, before, last)
-	return conn, nil
-}
-
-var (
-	// RegionOrderFieldID orders Region by id.
-	RegionOrderFieldID = &RegionOrderField{
-		Value: func(r *Region) (ent.Value, error) {
-			return r.ID, nil
-		},
-		column: region.FieldID,
-		toTerm: region.ByID,
-		toCursor: func(r *Region) Cursor {
-			return Cursor{
-				ID:    r.ID,
-				Value: r.ID,
-			}
-		},
-	}
-)
-
-// String implement fmt.Stringer interface.
-func (f RegionOrderField) String() string {
-	var str string
-	switch f.column {
-	case RegionOrderFieldID.column:
-		str = "id"
-	}
-	return str
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (f RegionOrderField) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(f.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (f *RegionOrderField) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("RegionOrderField %T must be a string", v)
-	}
-	switch str {
-	case "id":
-		*f = *RegionOrderFieldID
-	default:
-		return fmt.Errorf("%s is not a valid RegionOrderField", str)
-	}
-	return nil
-}
-
-// RegionOrderField defines the ordering field of Region.
-type RegionOrderField struct {
-	// Value extracts the ordering value from the given Region.
-	Value    func(*Region) (ent.Value, error)
-	column   string // field or computed.
-	toTerm   func(...sql.OrderTermOption) region.OrderOption
-	toCursor func(*Region) Cursor
-}
-
-// RegionOrder defines the ordering of Region.
-type RegionOrder struct {
-	Direction OrderDirection    `json:"direction"`
-	Field     *RegionOrderField `json:"field"`
-}
-
-// DefaultRegionOrder is the default ordering of Region.
-var DefaultRegionOrder = &RegionOrder{
-	Direction: entgql.OrderDirectionAsc,
-	Field: &RegionOrderField{
-		Value: func(r *Region) (ent.Value, error) {
-			return r.ID, nil
-		},
-		column: region.FieldID,
-		toTerm: region.ByID,
-		toCursor: func(r *Region) Cursor {
-			return Cursor{ID: r.ID}
-		},
-	},
-}
-
-// ToEdge converts Region into RegionEdge.
-func (r *Region) ToEdge(order *RegionOrder) *RegionEdge {
-	if order == nil {
-		order = DefaultRegionOrder
-	}
-	return &RegionEdge{
-		Node:   r,
-		Cursor: order.Field.toCursor(r),
-	}
-}
-
 // RoleEdge is the edge representation of Role.
 type RoleEdge struct {
 	Node   *Role  `json:"node"`
@@ -1878,301 +2174,5 @@ func (r *Role) ToEdge(order *RoleOrder) *RoleEdge {
 	return &RoleEdge{
 		Node:   r,
 		Cursor: order.Field.toCursor(r),
-	}
-}
-
-// TodoEdge is the edge representation of Todo.
-type TodoEdge struct {
-	Node   *Todo  `json:"node"`
-	Cursor Cursor `json:"cursor"`
-}
-
-// TodoConnection is the connection containing edges to Todo.
-type TodoConnection struct {
-	Edges      []*TodoEdge `json:"edges"`
-	PageInfo   PageInfo    `json:"pageInfo"`
-	TotalCount int         `json:"totalCount"`
-}
-
-func (c *TodoConnection) build(nodes []*Todo, pager *todoPager, after *Cursor, first *int, before *Cursor, last *int) {
-	c.PageInfo.HasNextPage = before != nil
-	c.PageInfo.HasPreviousPage = after != nil
-	if first != nil && *first+1 == len(nodes) {
-		c.PageInfo.HasNextPage = true
-		nodes = nodes[:len(nodes)-1]
-	} else if last != nil && *last+1 == len(nodes) {
-		c.PageInfo.HasPreviousPage = true
-		nodes = nodes[:len(nodes)-1]
-	}
-	var nodeAt func(int) *Todo
-	if last != nil {
-		n := len(nodes) - 1
-		nodeAt = func(i int) *Todo {
-			return nodes[n-i]
-		}
-	} else {
-		nodeAt = func(i int) *Todo {
-			return nodes[i]
-		}
-	}
-	c.Edges = make([]*TodoEdge, len(nodes))
-	for i := range nodes {
-		node := nodeAt(i)
-		c.Edges[i] = &TodoEdge{
-			Node:   node,
-			Cursor: pager.toCursor(node),
-		}
-	}
-	if l := len(c.Edges); l > 0 {
-		c.PageInfo.StartCursor = &c.Edges[0].Cursor
-		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
-	}
-	if c.TotalCount == 0 {
-		c.TotalCount = len(nodes)
-	}
-}
-
-// TodoPaginateOption enables pagination customization.
-type TodoPaginateOption func(*todoPager) error
-
-// WithTodoOrder configures pagination ordering.
-func WithTodoOrder(order *TodoOrder) TodoPaginateOption {
-	if order == nil {
-		order = DefaultTodoOrder
-	}
-	o := *order
-	return func(pager *todoPager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
-		}
-		if o.Field == nil {
-			o.Field = DefaultTodoOrder.Field
-		}
-		pager.order = &o
-		return nil
-	}
-}
-
-// WithTodoFilter configures pagination filter.
-func WithTodoFilter(filter func(*TodoQuery) (*TodoQuery, error)) TodoPaginateOption {
-	return func(pager *todoPager) error {
-		if filter == nil {
-			return errors.New("TodoQuery filter cannot be nil")
-		}
-		pager.filter = filter
-		return nil
-	}
-}
-
-type todoPager struct {
-	reverse bool
-	order   *TodoOrder
-	filter  func(*TodoQuery) (*TodoQuery, error)
-}
-
-func newTodoPager(opts []TodoPaginateOption, reverse bool) (*todoPager, error) {
-	pager := &todoPager{reverse: reverse}
-	for _, opt := range opts {
-		if err := opt(pager); err != nil {
-			return nil, err
-		}
-	}
-	if pager.order == nil {
-		pager.order = DefaultTodoOrder
-	}
-	return pager, nil
-}
-
-func (p *todoPager) applyFilter(query *TodoQuery) (*TodoQuery, error) {
-	if p.filter != nil {
-		return p.filter(query)
-	}
-	return query, nil
-}
-
-func (p *todoPager) toCursor(t *Todo) Cursor {
-	return p.order.Field.toCursor(t)
-}
-
-func (p *todoPager) applyCursors(query *TodoQuery, after, before *Cursor) (*TodoQuery, error) {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultTodoOrder.Field.column, p.order.Field.column, direction) {
-		query = query.Where(predicate)
-	}
-	return query, nil
-}
-
-func (p *todoPager) applyOrder(query *TodoQuery) *TodoQuery {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultTodoOrder.Field {
-		query = query.Order(DefaultTodoOrder.Field.toTerm(direction.OrderTermOption()))
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return query
-}
-
-func (p *todoPager) orderExpr(query *TodoQuery) sql.Querier {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultTodoOrder.Field {
-			b.Comma().Ident(DefaultTodoOrder.Field.column).Pad().WriteString(string(direction))
-		}
-	})
-}
-
-// Paginate executes the query and returns a relay based cursor connection to Todo.
-func (t *TodoQuery) Paginate(
-	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...TodoPaginateOption,
-) (*TodoConnection, error) {
-	if err := validateFirstLast(first, last); err != nil {
-		return nil, err
-	}
-	pager, err := newTodoPager(opts, last != nil)
-	if err != nil {
-		return nil, err
-	}
-	if t, err = pager.applyFilter(t); err != nil {
-		return nil, err
-	}
-	conn := &TodoConnection{Edges: []*TodoEdge{}}
-	ignoredEdges := !hasCollectedField(ctx, edgesField)
-	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
-		hasPagination := after != nil || first != nil || before != nil || last != nil
-		if hasPagination || ignoredEdges {
-			c := t.Clone()
-			c.ctx.Fields = nil
-			if conn.TotalCount, err = c.Count(ctx); err != nil {
-				return nil, err
-			}
-			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
-			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
-		}
-	}
-	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
-		return conn, nil
-	}
-	if t, err = pager.applyCursors(t, after, before); err != nil {
-		return nil, err
-	}
-	limit := paginateLimit(first, last)
-	if limit != 0 {
-		t.Limit(limit)
-	}
-	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := t.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
-			return nil, err
-		}
-	}
-	t = pager.applyOrder(t)
-	nodes, err := t.All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	conn.build(nodes, pager, after, first, before, last)
-	return conn, nil
-}
-
-var (
-	// TodoOrderFieldID orders Todo by id.
-	TodoOrderFieldID = &TodoOrderField{
-		Value: func(t *Todo) (ent.Value, error) {
-			return t.ID, nil
-		},
-		column: todo.FieldID,
-		toTerm: todo.ByID,
-		toCursor: func(t *Todo) Cursor {
-			return Cursor{
-				ID:    t.ID,
-				Value: t.ID,
-			}
-		},
-	}
-)
-
-// String implement fmt.Stringer interface.
-func (f TodoOrderField) String() string {
-	var str string
-	switch f.column {
-	case TodoOrderFieldID.column:
-		str = "id"
-	}
-	return str
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (f TodoOrderField) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(f.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (f *TodoOrderField) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("TodoOrderField %T must be a string", v)
-	}
-	switch str {
-	case "id":
-		*f = *TodoOrderFieldID
-	default:
-		return fmt.Errorf("%s is not a valid TodoOrderField", str)
-	}
-	return nil
-}
-
-// TodoOrderField defines the ordering field of Todo.
-type TodoOrderField struct {
-	// Value extracts the ordering value from the given Todo.
-	Value    func(*Todo) (ent.Value, error)
-	column   string // field or computed.
-	toTerm   func(...sql.OrderTermOption) todo.OrderOption
-	toCursor func(*Todo) Cursor
-}
-
-// TodoOrder defines the ordering of Todo.
-type TodoOrder struct {
-	Direction OrderDirection  `json:"direction"`
-	Field     *TodoOrderField `json:"field"`
-}
-
-// DefaultTodoOrder is the default ordering of Todo.
-var DefaultTodoOrder = &TodoOrder{
-	Direction: entgql.OrderDirectionAsc,
-	Field: &TodoOrderField{
-		Value: func(t *Todo) (ent.Value, error) {
-			return t.ID, nil
-		},
-		column: todo.FieldID,
-		toTerm: todo.ByID,
-		toCursor: func(t *Todo) Cursor {
-			return Cursor{ID: t.ID}
-		},
-	},
-}
-
-// ToEdge converts Todo into TodoEdge.
-func (t *Todo) ToEdge(order *TodoOrder) *TodoEdge {
-	if order == nil {
-		order = DefaultTodoOrder
-	}
-	return &TodoEdge{
-		Node:   t,
-		Cursor: order.Field.toCursor(t),
 	}
 }

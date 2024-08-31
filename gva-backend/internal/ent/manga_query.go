@@ -8,71 +8,72 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/pxid"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/predicate"
-	"github.com/gva/internal/ent/role"
 
 	"github.com/gva/internal/ent/internal"
 )
 
-// MenuQuery is the builder for querying Menu entities.
-type MenuQuery struct {
+// MangaQuery is the builder for querying Manga entities.
+type MangaQuery struct {
 	config
 	ctx               *QueryContext
-	order             []menu.OrderOption
+	order             []manga.OrderOption
 	inters            []Interceptor
-	predicates        []predicate.Menu
-	withParent        *MenuQuery
-	withChildren      *MenuQuery
-	withRoles         *RoleQuery
-	loadTotal         []func(context.Context, []*Menu) error
+	predicates        []predicate.Manga
+	withChapters      *MangaChapterQuery
+	withGenres        *GenreQuery
+	loadTotal         []func(context.Context, []*Manga) error
 	modifiers         []func(*sql.Selector)
-	withNamedChildren map[string]*MenuQuery
-	withNamedRoles    map[string]*RoleQuery
+	withNamedChapters map[string]*MangaChapterQuery
+	withNamedGenres   map[string]*GenreQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the MenuQuery builder.
-func (mq *MenuQuery) Where(ps ...predicate.Menu) *MenuQuery {
+// Where adds a new predicate for the MangaQuery builder.
+func (mq *MangaQuery) Where(ps ...predicate.Manga) *MangaQuery {
 	mq.predicates = append(mq.predicates, ps...)
 	return mq
 }
 
 // Limit the number of records to be returned by this query.
-func (mq *MenuQuery) Limit(limit int) *MenuQuery {
+func (mq *MangaQuery) Limit(limit int) *MangaQuery {
 	mq.ctx.Limit = &limit
 	return mq
 }
 
 // Offset to start from.
-func (mq *MenuQuery) Offset(offset int) *MenuQuery {
+func (mq *MangaQuery) Offset(offset int) *MangaQuery {
 	mq.ctx.Offset = &offset
 	return mq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (mq *MenuQuery) Unique(unique bool) *MenuQuery {
+func (mq *MangaQuery) Unique(unique bool) *MangaQuery {
 	mq.ctx.Unique = &unique
 	return mq
 }
 
 // Order specifies how the records should be ordered.
-func (mq *MenuQuery) Order(o ...menu.OrderOption) *MenuQuery {
+func (mq *MangaQuery) Order(o ...manga.OrderOption) *MangaQuery {
 	mq.order = append(mq.order, o...)
 	return mq
 }
 
-// QueryParent chains the current query on the "parent" edge.
-func (mq *MenuQuery) QueryParent() *MenuQuery {
-	query := (&MenuClient{config: mq.config}).Query()
+// QueryChapters chains the current query on the "chapters" edge.
+func (mq *MangaQuery) QueryChapters() *MangaChapterQuery {
+	query := (&MangaChapterClient{config: mq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -82,22 +83,22 @@ func (mq *MenuQuery) QueryParent() *MenuQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(menu.Table, menu.FieldID, selector),
-			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, menu.ParentTable, menu.ParentColumn),
+			sqlgraph.From(manga.Table, manga.FieldID, selector),
+			sqlgraph.To(mangachapter.Table, mangachapter.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, manga.ChaptersTable, manga.ChaptersColumn),
 		)
 		schemaConfig := mq.schemaConfig
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.Menu
+		step.To.Schema = schemaConfig.MangaChapter
+		step.Edge.Schema = schemaConfig.MangaChapter
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
-// QueryChildren chains the current query on the "children" edge.
-func (mq *MenuQuery) QueryChildren() *MenuQuery {
-	query := (&MenuClient{config: mq.config}).Query()
+// QueryGenres chains the current query on the "genres" edge.
+func (mq *MangaQuery) QueryGenres() *GenreQuery {
+	query := (&GenreClient{config: mq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -107,59 +108,34 @@ func (mq *MenuQuery) QueryChildren() *MenuQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(menu.Table, menu.FieldID, selector),
-			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, menu.ChildrenTable, menu.ChildrenColumn),
+			sqlgraph.From(manga.Table, manga.FieldID, selector),
+			sqlgraph.To(genre.Table, genre.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, manga.GenresTable, manga.GenresPrimaryKey...),
 		)
 		schemaConfig := mq.schemaConfig
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.Menu
+		step.To.Schema = schemaConfig.Genre
+		step.Edge.Schema = schemaConfig.GenreMangas
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
-// QueryRoles chains the current query on the "roles" edge.
-func (mq *MenuQuery) QueryRoles() *RoleQuery {
-	query := (&RoleClient{config: mq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := mq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := mq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(menu.Table, menu.FieldID, selector),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, menu.RolesTable, menu.RolesPrimaryKey...),
-		)
-		schemaConfig := mq.schemaConfig
-		step.To.Schema = schemaConfig.Role
-		step.Edge.Schema = schemaConfig.RoleRoutes
-		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// First returns the first Menu entity from the query.
-// Returns a *NotFoundError when no Menu was found.
-func (mq *MenuQuery) First(ctx context.Context) (*Menu, error) {
-	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, "First"))
+// First returns the first Manga entity from the query.
+// Returns a *NotFoundError when no Manga was found.
+func (mq *MangaQuery) First(ctx context.Context) (*Manga, error) {
+	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{menu.Label}
+		return nil, &NotFoundError{manga.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (mq *MenuQuery) FirstX(ctx context.Context) *Menu {
+func (mq *MangaQuery) FirstX(ctx context.Context) *Manga {
 	node, err := mq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -167,22 +143,22 @@ func (mq *MenuQuery) FirstX(ctx context.Context) *Menu {
 	return node
 }
 
-// FirstID returns the first Menu ID from the query.
-// Returns a *NotFoundError when no Menu ID was found.
-func (mq *MenuQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
+// FirstID returns the first Manga ID from the query.
+// Returns a *NotFoundError when no Manga ID was found.
+func (mq *MangaQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
 	var ids []pxid.ID
-	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
+	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{menu.Label}
+		err = &NotFoundError{manga.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (mq *MenuQuery) FirstIDX(ctx context.Context) pxid.ID {
+func (mq *MangaQuery) FirstIDX(ctx context.Context) pxid.ID {
 	id, err := mq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -190,11 +166,11 @@ func (mq *MenuQuery) FirstIDX(ctx context.Context) pxid.ID {
 	return id
 }
 
-// Only returns a single Menu entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Menu entity is found.
-// Returns a *NotFoundError when no Menu entities are found.
-func (mq *MenuQuery) Only(ctx context.Context) (*Menu, error) {
-	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, "Only"))
+// Only returns a single Manga entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Manga entity is found.
+// Returns a *NotFoundError when no Manga entities are found.
+func (mq *MangaQuery) Only(ctx context.Context) (*Manga, error) {
+	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -202,14 +178,14 @@ func (mq *MenuQuery) Only(ctx context.Context) (*Menu, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{menu.Label}
+		return nil, &NotFoundError{manga.Label}
 	default:
-		return nil, &NotSingularError{menu.Label}
+		return nil, &NotSingularError{manga.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (mq *MenuQuery) OnlyX(ctx context.Context) *Menu {
+func (mq *MangaQuery) OnlyX(ctx context.Context) *Manga {
 	node, err := mq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -217,27 +193,27 @@ func (mq *MenuQuery) OnlyX(ctx context.Context) *Menu {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Menu ID in the query.
-// Returns a *NotSingularError when more than one Menu ID is found.
+// OnlyID is like Only, but returns the only Manga ID in the query.
+// Returns a *NotSingularError when more than one Manga ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (mq *MenuQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
+func (mq *MangaQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
 	var ids []pxid.ID
-	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
+	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{menu.Label}
+		err = &NotFoundError{manga.Label}
 	default:
-		err = &NotSingularError{menu.Label}
+		err = &NotSingularError{manga.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (mq *MenuQuery) OnlyIDX(ctx context.Context) pxid.ID {
+func (mq *MangaQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	id, err := mq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -245,18 +221,18 @@ func (mq *MenuQuery) OnlyIDX(ctx context.Context) pxid.ID {
 	return id
 }
 
-// All executes the query and returns a list of Menus.
-func (mq *MenuQuery) All(ctx context.Context) ([]*Menu, error) {
-	ctx = setContextOp(ctx, mq.ctx, "All")
+// All executes the query and returns a list of Mangas.
+func (mq *MangaQuery) All(ctx context.Context) ([]*Manga, error) {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryAll)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Menu, *MenuQuery]()
-	return withInterceptors[[]*Menu](ctx, mq, qr, mq.inters)
+	qr := querierAll[[]*Manga, *MangaQuery]()
+	return withInterceptors[[]*Manga](ctx, mq, qr, mq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (mq *MenuQuery) AllX(ctx context.Context) []*Menu {
+func (mq *MangaQuery) AllX(ctx context.Context) []*Manga {
 	nodes, err := mq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -264,20 +240,20 @@ func (mq *MenuQuery) AllX(ctx context.Context) []*Menu {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Menu IDs.
-func (mq *MenuQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
+// IDs executes the query and returns a list of Manga IDs.
+func (mq *MangaQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if mq.ctx.Unique == nil && mq.path != nil {
 		mq.Unique(true)
 	}
-	ctx = setContextOp(ctx, mq.ctx, "IDs")
-	if err = mq.Select(menu.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryIDs)
+	if err = mq.Select(manga.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (mq *MenuQuery) IDsX(ctx context.Context) []pxid.ID {
+func (mq *MangaQuery) IDsX(ctx context.Context) []pxid.ID {
 	ids, err := mq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -286,16 +262,16 @@ func (mq *MenuQuery) IDsX(ctx context.Context) []pxid.ID {
 }
 
 // Count returns the count of the given query.
-func (mq *MenuQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Count")
+func (mq *MangaQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryCount)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, mq, querierCount[*MenuQuery](), mq.inters)
+	return withInterceptors[int](ctx, mq, querierCount[*MangaQuery](), mq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (mq *MenuQuery) CountX(ctx context.Context) int {
+func (mq *MangaQuery) CountX(ctx context.Context) int {
 	count, err := mq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -304,8 +280,8 @@ func (mq *MenuQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (mq *MenuQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Exist")
+func (mq *MangaQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryExist)
 	switch _, err := mq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -317,7 +293,7 @@ func (mq *MenuQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (mq *MenuQuery) ExistX(ctx context.Context) bool {
+func (mq *MangaQuery) ExistX(ctx context.Context) bool {
 	exist, err := mq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -325,57 +301,46 @@ func (mq *MenuQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the MenuQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the MangaQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (mq *MenuQuery) Clone() *MenuQuery {
+func (mq *MangaQuery) Clone() *MangaQuery {
 	if mq == nil {
 		return nil
 	}
-	return &MenuQuery{
+	return &MangaQuery{
 		config:       mq.config,
 		ctx:          mq.ctx.Clone(),
-		order:        append([]menu.OrderOption{}, mq.order...),
+		order:        append([]manga.OrderOption{}, mq.order...),
 		inters:       append([]Interceptor{}, mq.inters...),
-		predicates:   append([]predicate.Menu{}, mq.predicates...),
-		withParent:   mq.withParent.Clone(),
-		withChildren: mq.withChildren.Clone(),
-		withRoles:    mq.withRoles.Clone(),
+		predicates:   append([]predicate.Manga{}, mq.predicates...),
+		withChapters: mq.withChapters.Clone(),
+		withGenres:   mq.withGenres.Clone(),
 		// clone intermediate query.
-		sql:  mq.sql.Clone(),
-		path: mq.path,
+		sql:       mq.sql.Clone(),
+		path:      mq.path,
+		modifiers: append([]func(*sql.Selector){}, mq.modifiers...),
 	}
 }
 
-// WithParent tells the query-builder to eager-load the nodes that are connected to
-// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MenuQuery) WithParent(opts ...func(*MenuQuery)) *MenuQuery {
-	query := (&MenuClient{config: mq.config}).Query()
+// WithChapters tells the query-builder to eager-load the nodes that are connected to
+// the "chapters" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MangaQuery) WithChapters(opts ...func(*MangaChapterQuery)) *MangaQuery {
+	query := (&MangaChapterClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withParent = query
+	mq.withChapters = query
 	return mq
 }
 
-// WithChildren tells the query-builder to eager-load the nodes that are connected to
-// the "children" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MenuQuery) WithChildren(opts ...func(*MenuQuery)) *MenuQuery {
-	query := (&MenuClient{config: mq.config}).Query()
+// WithGenres tells the query-builder to eager-load the nodes that are connected to
+// the "genres" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MangaQuery) WithGenres(opts ...func(*GenreQuery)) *MangaQuery {
+	query := (&GenreClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withChildren = query
-	return mq
-}
-
-// WithRoles tells the query-builder to eager-load the nodes that are connected to
-// the "roles" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MenuQuery) WithRoles(opts ...func(*RoleQuery)) *MenuQuery {
-	query := (&RoleClient{config: mq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	mq.withRoles = query
+	mq.withGenres = query
 	return mq
 }
 
@@ -389,15 +354,15 @@ func (mq *MenuQuery) WithRoles(opts ...func(*RoleQuery)) *MenuQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Menu.Query().
-//		GroupBy(menu.FieldCreatedAt).
+//	client.Manga.Query().
+//		GroupBy(manga.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (mq *MenuQuery) GroupBy(field string, fields ...string) *MenuGroupBy {
+func (mq *MangaQuery) GroupBy(field string, fields ...string) *MangaGroupBy {
 	mq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &MenuGroupBy{build: mq}
+	grbuild := &MangaGroupBy{build: mq}
 	grbuild.flds = &mq.ctx.Fields
-	grbuild.label = menu.Label
+	grbuild.label = manga.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -411,23 +376,23 @@ func (mq *MenuQuery) GroupBy(field string, fields ...string) *MenuGroupBy {
 //		CreatedAt time.Time `json:"createdAt,omitempty" rql:"filter,sort"`
 //	}
 //
-//	client.Menu.Query().
-//		Select(menu.FieldCreatedAt).
+//	client.Manga.Query().
+//		Select(manga.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (mq *MenuQuery) Select(fields ...string) *MenuSelect {
+func (mq *MangaQuery) Select(fields ...string) *MangaSelect {
 	mq.ctx.Fields = append(mq.ctx.Fields, fields...)
-	sbuild := &MenuSelect{MenuQuery: mq}
-	sbuild.label = menu.Label
+	sbuild := &MangaSelect{MangaQuery: mq}
+	sbuild.label = manga.Label
 	sbuild.flds, sbuild.scan = &mq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a MenuSelect configured with the given aggregations.
-func (mq *MenuQuery) Aggregate(fns ...AggregateFunc) *MenuSelect {
+// Aggregate returns a MangaSelect configured with the given aggregations.
+func (mq *MangaQuery) Aggregate(fns ...AggregateFunc) *MangaSelect {
 	return mq.Select().Aggregate(fns...)
 }
 
-func (mq *MenuQuery) prepareQuery(ctx context.Context) error {
+func (mq *MangaQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range mq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -439,7 +404,7 @@ func (mq *MenuQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range mq.ctx.Fields {
-		if !menu.ValidColumn(f) {
+		if !manga.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -453,26 +418,25 @@ func (mq *MenuQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, error) {
+func (mq *MangaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Manga, error) {
 	var (
-		nodes       = []*Menu{}
+		nodes       = []*Manga{}
 		_spec       = mq.querySpec()
-		loadedTypes = [3]bool{
-			mq.withParent != nil,
-			mq.withChildren != nil,
-			mq.withRoles != nil,
+		loadedTypes = [2]bool{
+			mq.withChapters != nil,
+			mq.withGenres != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Menu).scanValues(nil, columns)
+		return (*Manga).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Menu{config: mq.config}
+		node := &Manga{config: mq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	_spec.Node.Schema = mq.schemaConfig.Menu
+	_spec.Node.Schema = mq.schemaConfig.Manga
 	ctx = internal.NewSchemaConfigContext(ctx, mq.schemaConfig)
 	if len(mq.modifiers) > 0 {
 		_spec.Modifiers = mq.modifiers
@@ -486,47 +450,41 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := mq.withParent; query != nil {
-		if err := mq.loadParent(ctx, query, nodes, nil,
-			func(n *Menu, e *Menu) { n.Edges.Parent = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := mq.withChildren; query != nil {
-		if err := mq.loadChildren(ctx, query, nodes,
-			func(n *Menu) { n.Edges.Children = []*Menu{} },
-			func(n *Menu, e *Menu) {
-				n.Edges.Children = append(n.Edges.Children, e)
+	if query := mq.withChapters; query != nil {
+		if err := mq.loadChapters(ctx, query, nodes,
+			func(n *Manga) { n.Edges.Chapters = []*MangaChapter{} },
+			func(n *Manga, e *MangaChapter) {
+				n.Edges.Chapters = append(n.Edges.Chapters, e)
 				if !e.Edges.loadedTypes[0] {
-					e.Edges.Parent = n
+					e.Edges.Manga = n
 				}
 			}); err != nil {
 			return nil, err
 		}
 	}
-	if query := mq.withRoles; query != nil {
-		if err := mq.loadRoles(ctx, query, nodes,
-			func(n *Menu) { n.Edges.Roles = []*Role{} },
-			func(n *Menu, e *Role) { n.Edges.Roles = append(n.Edges.Roles, e) }); err != nil {
+	if query := mq.withGenres; query != nil {
+		if err := mq.loadGenres(ctx, query, nodes,
+			func(n *Manga) { n.Edges.Genres = []*Genre{} },
+			func(n *Manga, e *Genre) { n.Edges.Genres = append(n.Edges.Genres, e) }); err != nil {
 			return nil, err
 		}
 	}
-	for name, query := range mq.withNamedChildren {
-		if err := mq.loadChildren(ctx, query, nodes,
-			func(n *Menu) { n.appendNamedChildren(name) },
-			func(n *Menu, e *Menu) {
-				n.appendNamedChildren(name, e)
+	for name, query := range mq.withNamedChapters {
+		if err := mq.loadChapters(ctx, query, nodes,
+			func(n *Manga) { n.appendNamedChapters(name) },
+			func(n *Manga, e *MangaChapter) {
+				n.appendNamedChapters(name, e)
 				if !e.Edges.loadedTypes[0] {
-					e.Edges.Parent = n
+					e.Edges.Manga = n
 				}
 			}); err != nil {
 			return nil, err
 		}
 	}
-	for name, query := range mq.withNamedRoles {
-		if err := mq.loadRoles(ctx, query, nodes,
-			func(n *Menu) { n.appendNamedRoles(name) },
-			func(n *Menu, e *Role) { n.appendNamedRoles(name, e) }); err != nil {
+	for name, query := range mq.withNamedGenres {
+		if err := mq.loadGenres(ctx, query, nodes,
+			func(n *Manga) { n.appendNamedGenres(name) },
+			func(n *Manga, e *Genre) { n.appendNamedGenres(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -538,41 +496,9 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 	return nodes, nil
 }
 
-func (mq *MenuQuery) loadParent(ctx context.Context, query *MenuQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Menu)) error {
-	ids := make([]pxid.ID, 0, len(nodes))
-	nodeids := make(map[pxid.ID][]*Menu)
-	for i := range nodes {
-		if nodes[i].Pid == nil {
-			continue
-		}
-		fk := *nodes[i].Pid
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(menu.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "pid" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (mq *MenuQuery) loadChildren(ctx context.Context, query *MenuQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Menu)) error {
+func (mq *MangaQuery) loadChapters(ctx context.Context, query *MangaChapterQuery, nodes []*Manga, init func(*Manga), assign func(*Manga, *MangaChapter)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pxid.ID]*Menu)
+	nodeids := make(map[pxid.ID]*Manga)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -581,32 +507,29 @@ func (mq *MenuQuery) loadChildren(ctx context.Context, query *MenuQuery, nodes [
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(menu.FieldPid)
+		query.ctx.AppendFieldOnce(mangachapter.FieldMangaID)
 	}
-	query.Where(predicate.Menu(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(menu.ChildrenColumn), fks...))
+	query.Where(predicate.MangaChapter(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(manga.ChaptersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.Pid
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "pid" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.MangaID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "pid" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "manga_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
 	return nil
 }
-func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Role)) error {
+func (mq *MangaQuery) loadGenres(ctx context.Context, query *GenreQuery, nodes []*Manga, init func(*Manga), assign func(*Manga, *Genre)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[pxid.ID]*Menu)
-	nids := make(map[pxid.ID]map[*Menu]struct{})
+	byID := make(map[pxid.ID]*Manga)
+	nids := make(map[pxid.ID]map[*Manga]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -615,12 +538,12 @@ func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*M
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(menu.RolesTable)
-		joinT.Schema(mq.schemaConfig.RoleRoutes)
-		s.Join(joinT).On(s.C(role.FieldID), joinT.C(menu.RolesPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(menu.RolesPrimaryKey[1]), edgeIDs...))
+		joinT := sql.Table(manga.GenresTable)
+		joinT.Schema(mq.schemaConfig.GenreMangas)
+		s.Join(joinT).On(s.C(genre.FieldID), joinT.C(manga.GenresPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(manga.GenresPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(menu.RolesPrimaryKey[1]))
+		s.Select(joinT.C(manga.GenresPrimaryKey[1]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -642,7 +565,7 @@ func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*M
 				outValue := *values[0].(*pxid.ID)
 				inValue := *values[1].(*pxid.ID)
 				if nids[inValue] == nil {
-					nids[inValue] = map[*Menu]struct{}{byID[outValue]: {}}
+					nids[inValue] = map[*Manga]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
 				}
 				nids[inValue][byID[outValue]] = struct{}{}
@@ -650,14 +573,14 @@ func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*M
 			}
 		})
 	})
-	neighbors, err := withInterceptors[[]*Role](ctx, query, qr, query.inters)
+	neighbors, err := withInterceptors[[]*Genre](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "roles" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "genres" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -666,9 +589,9 @@ func (mq *MenuQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*M
 	return nil
 }
 
-func (mq *MenuQuery) sqlCount(ctx context.Context) (int, error) {
+func (mq *MangaQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := mq.querySpec()
-	_spec.Node.Schema = mq.schemaConfig.Menu
+	_spec.Node.Schema = mq.schemaConfig.Manga
 	ctx = internal.NewSchemaConfigContext(ctx, mq.schemaConfig)
 	if len(mq.modifiers) > 0 {
 		_spec.Modifiers = mq.modifiers
@@ -680,8 +603,8 @@ func (mq *MenuQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, mq.driver, _spec)
 }
 
-func (mq *MenuQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(menu.Table, menu.Columns, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString))
+func (mq *MangaQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(manga.Table, manga.Columns, sqlgraph.NewFieldSpec(manga.FieldID, field.TypeString))
 	_spec.From = mq.sql
 	if unique := mq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -690,14 +613,11 @@ func (mq *MenuQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := mq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, menu.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, manga.FieldID)
 		for i := range fields {
-			if fields[i] != menu.FieldID {
+			if fields[i] != manga.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
-		}
-		if mq.withParent != nil {
-			_spec.Node.AddColumnOnce(menu.FieldPid)
 		}
 	}
 	if ps := mq.predicates; len(ps) > 0 {
@@ -723,12 +643,12 @@ func (mq *MenuQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (mq *MenuQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (mq *MangaQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(mq.driver.Dialect())
-	t1 := builder.Table(menu.Table)
+	t1 := builder.Table(manga.Table)
 	columns := mq.ctx.Fields
 	if len(columns) == 0 {
-		columns = menu.Columns
+		columns = manga.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if mq.sql != nil {
@@ -738,7 +658,7 @@ func (mq *MenuQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if mq.ctx.Unique != nil && *mq.ctx.Unique {
 		selector.Distinct()
 	}
-	t1.Schema(mq.schemaConfig.Menu)
+	t1.Schema(mq.schemaConfig.Manga)
 	ctx = internal.NewSchemaConfigContext(ctx, mq.schemaConfig)
 	selector.WithContext(ctx)
 	for _, m := range mq.modifiers {
@@ -764,7 +684,7 @@ func (mq *MenuQuery) sqlQuery(ctx context.Context) *sql.Selector {
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being
 // updated, deleted or "selected ... for update" by other sessions, until the transaction is
 // either committed or rolled-back.
-func (mq *MenuQuery) ForUpdate(opts ...sql.LockOption) *MenuQuery {
+func (mq *MangaQuery) ForUpdate(opts ...sql.LockOption) *MangaQuery {
 	if mq.driver.Dialect() == dialect.Postgres {
 		mq.Unique(false)
 	}
@@ -777,7 +697,7 @@ func (mq *MenuQuery) ForUpdate(opts ...sql.LockOption) *MenuQuery {
 // ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
 // on any rows that are read. Other sessions can read the rows, but cannot modify them
 // until your transaction commits.
-func (mq *MenuQuery) ForShare(opts ...sql.LockOption) *MenuQuery {
+func (mq *MangaQuery) ForShare(opts ...sql.LockOption) *MangaQuery {
 	if mq.driver.Dialect() == dialect.Postgres {
 		mq.Unique(false)
 	}
@@ -788,61 +708,61 @@ func (mq *MenuQuery) ForShare(opts ...sql.LockOption) *MenuQuery {
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (mq *MenuQuery) Modify(modifiers ...func(s *sql.Selector)) *MenuSelect {
+func (mq *MangaQuery) Modify(modifiers ...func(s *sql.Selector)) *MangaSelect {
 	mq.modifiers = append(mq.modifiers, modifiers...)
 	return mq.Select()
 }
 
-// WithNamedChildren tells the query-builder to eager-load the nodes that are connected to the "children"
+// WithNamedChapters tells the query-builder to eager-load the nodes that are connected to the "chapters"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (mq *MenuQuery) WithNamedChildren(name string, opts ...func(*MenuQuery)) *MenuQuery {
-	query := (&MenuClient{config: mq.config}).Query()
+func (mq *MangaQuery) WithNamedChapters(name string, opts ...func(*MangaChapterQuery)) *MangaQuery {
+	query := (&MangaChapterClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if mq.withNamedChildren == nil {
-		mq.withNamedChildren = make(map[string]*MenuQuery)
+	if mq.withNamedChapters == nil {
+		mq.withNamedChapters = make(map[string]*MangaChapterQuery)
 	}
-	mq.withNamedChildren[name] = query
+	mq.withNamedChapters[name] = query
 	return mq
 }
 
-// WithNamedRoles tells the query-builder to eager-load the nodes that are connected to the "roles"
+// WithNamedGenres tells the query-builder to eager-load the nodes that are connected to the "genres"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (mq *MenuQuery) WithNamedRoles(name string, opts ...func(*RoleQuery)) *MenuQuery {
-	query := (&RoleClient{config: mq.config}).Query()
+func (mq *MangaQuery) WithNamedGenres(name string, opts ...func(*GenreQuery)) *MangaQuery {
+	query := (&GenreClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if mq.withNamedRoles == nil {
-		mq.withNamedRoles = make(map[string]*RoleQuery)
+	if mq.withNamedGenres == nil {
+		mq.withNamedGenres = make(map[string]*GenreQuery)
 	}
-	mq.withNamedRoles[name] = query
+	mq.withNamedGenres[name] = query
 	return mq
 }
 
-// MenuGroupBy is the group-by builder for Menu entities.
-type MenuGroupBy struct {
+// MangaGroupBy is the group-by builder for Manga entities.
+type MangaGroupBy struct {
 	selector
-	build *MenuQuery
+	build *MangaQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (mgb *MenuGroupBy) Aggregate(fns ...AggregateFunc) *MenuGroupBy {
+func (mgb *MangaGroupBy) Aggregate(fns ...AggregateFunc) *MangaGroupBy {
 	mgb.fns = append(mgb.fns, fns...)
 	return mgb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (mgb *MenuGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, mgb.build.ctx, "GroupBy")
+func (mgb *MangaGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, mgb.build.ctx, ent.OpQueryGroupBy)
 	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*MenuQuery, *MenuGroupBy](ctx, mgb.build, mgb, mgb.build.inters, v)
+	return scanWithInterceptors[*MangaQuery, *MangaGroupBy](ctx, mgb.build, mgb, mgb.build.inters, v)
 }
 
-func (mgb *MenuGroupBy) sqlScan(ctx context.Context, root *MenuQuery, v any) error {
+func (mgb *MangaGroupBy) sqlScan(ctx context.Context, root *MangaQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(mgb.fns))
 	for _, fn := range mgb.fns {
@@ -869,28 +789,28 @@ func (mgb *MenuGroupBy) sqlScan(ctx context.Context, root *MenuQuery, v any) err
 	return sql.ScanSlice(rows, v)
 }
 
-// MenuSelect is the builder for selecting fields of Menu entities.
-type MenuSelect struct {
-	*MenuQuery
+// MangaSelect is the builder for selecting fields of Manga entities.
+type MangaSelect struct {
+	*MangaQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (ms *MenuSelect) Aggregate(fns ...AggregateFunc) *MenuSelect {
+func (ms *MangaSelect) Aggregate(fns ...AggregateFunc) *MangaSelect {
 	ms.fns = append(ms.fns, fns...)
 	return ms
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ms *MenuSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ms.ctx, "Select")
+func (ms *MangaSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ms.ctx, ent.OpQuerySelect)
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*MenuQuery, *MenuSelect](ctx, ms.MenuQuery, ms, ms.inters, v)
+	return scanWithInterceptors[*MangaQuery, *MangaSelect](ctx, ms.MangaQuery, ms, ms.inters, v)
 }
 
-func (ms *MenuSelect) sqlScan(ctx context.Context, root *MenuQuery, v any) error {
+func (ms *MangaSelect) sqlScan(ctx context.Context, root *MangaQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(ms.fns))
 	for _, fn := range ms.fns {
@@ -912,7 +832,7 @@ func (ms *MenuSelect) sqlScan(ctx context.Context, root *MenuQuery, v any) error
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (ms *MenuSelect) Modify(modifiers ...func(s *sql.Selector)) *MenuSelect {
+func (ms *MangaSelect) Modify(modifiers ...func(s *sql.Selector)) *MangaSelect {
 	ms.modifiers = append(ms.modifiers, modifiers...)
 	return ms
 }

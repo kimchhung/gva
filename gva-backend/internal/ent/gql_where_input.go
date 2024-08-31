@@ -10,12 +10,12 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 )
 
 // AdminWhereInput represents a where input for filtering Admin queries.
@@ -1002,12 +1002,12 @@ func (i *DepartmentWhereInput) P() (predicate.Department, error) {
 	}
 }
 
-// MenuWhereInput represents a where input for filtering Menu queries.
-type MenuWhereInput struct {
-	Predicates []predicate.Menu  `json:"-"`
-	Not        *MenuWhereInput   `json:"not,omitempty"`
-	Or         []*MenuWhereInput `json:"or,omitempty"`
-	And        []*MenuWhereInput `json:"and,omitempty"`
+// GenreWhereInput represents a where input for filtering Genre queries.
+type GenreWhereInput struct {
+	Predicates []predicate.Genre  `json:"-"`
+	Not        *GenreWhereInput   `json:"not,omitempty"`
+	Or         []*GenreWhereInput `json:"or,omitempty"`
+	And        []*GenreWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
 	ID      *pxid.ID  `json:"id,omitempty"`
@@ -1053,69 +1053,386 @@ type MenuWhereInput struct {
 	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
 	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
 
-	// "pid" field predicates.
-	Pid             *pxid.ID  `json:"pid,omitempty"`
-	PidNEQ          *pxid.ID  `json:"pidNEQ,omitempty"`
-	PidIn           []pxid.ID `json:"pidIn,omitempty"`
-	PidNotIn        []pxid.ID `json:"pidNotIn,omitempty"`
-	PidGT           *pxid.ID  `json:"pidGT,omitempty"`
-	PidGTE          *pxid.ID  `json:"pidGTE,omitempty"`
-	PidLT           *pxid.ID  `json:"pidLT,omitempty"`
-	PidLTE          *pxid.ID  `json:"pidLTE,omitempty"`
-	PidContains     *pxid.ID  `json:"pidContains,omitempty"`
-	PidHasPrefix    *pxid.ID  `json:"pidHasPrefix,omitempty"`
-	PidHasSuffix    *pxid.ID  `json:"pidHasSuffix,omitempty"`
-	PidIsNil        bool      `json:"pidIsNil,omitempty"`
-	PidNotNil       bool      `json:"pidNotNil,omitempty"`
-	PidEqualFold    *pxid.ID  `json:"pidEqualFold,omitempty"`
-	PidContainsFold *pxid.ID  `json:"pidContainsFold,omitempty"`
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "path" field predicates.
-	Path             *string  `json:"path,omitempty"`
-	PathNEQ          *string  `json:"pathNEQ,omitempty"`
-	PathIn           []string `json:"pathIn,omitempty"`
-	PathNotIn        []string `json:"pathNotIn,omitempty"`
-	PathGT           *string  `json:"pathGT,omitempty"`
-	PathGTE          *string  `json:"pathGTE,omitempty"`
-	PathLT           *string  `json:"pathLT,omitempty"`
-	PathLTE          *string  `json:"pathLTE,omitempty"`
-	PathContains     *string  `json:"pathContains,omitempty"`
-	PathHasPrefix    *string  `json:"pathHasPrefix,omitempty"`
-	PathHasSuffix    *string  `json:"pathHasSuffix,omitempty"`
-	PathEqualFold    *string  `json:"pathEqualFold,omitempty"`
-	PathContainsFold *string  `json:"pathContainsFold,omitempty"`
+	// "name_id" field predicates.
+	NameID             *string  `json:"nameID,omitempty"`
+	NameIDNEQ          *string  `json:"nameIDNEQ,omitempty"`
+	NameIDIn           []string `json:"nameIDIn,omitempty"`
+	NameIDNotIn        []string `json:"nameIDNotIn,omitempty"`
+	NameIDGT           *string  `json:"nameIDGT,omitempty"`
+	NameIDGTE          *string  `json:"nameIDGTE,omitempty"`
+	NameIDLT           *string  `json:"nameIDLT,omitempty"`
+	NameIDLTE          *string  `json:"nameIDLTE,omitempty"`
+	NameIDContains     *string  `json:"nameIDContains,omitempty"`
+	NameIDHasPrefix    *string  `json:"nameIDHasPrefix,omitempty"`
+	NameIDHasSuffix    *string  `json:"nameIDHasSuffix,omitempty"`
+	NameIDEqualFold    *string  `json:"nameIDEqualFold,omitempty"`
+	NameIDContainsFold *string  `json:"nameIDContainsFold,omitempty"`
 
-	// "component" field predicates.
-	Component             *string  `json:"component,omitempty"`
-	ComponentNEQ          *string  `json:"componentNEQ,omitempty"`
-	ComponentIn           []string `json:"componentIn,omitempty"`
-	ComponentNotIn        []string `json:"componentNotIn,omitempty"`
-	ComponentGT           *string  `json:"componentGT,omitempty"`
-	ComponentGTE          *string  `json:"componentGTE,omitempty"`
-	ComponentLT           *string  `json:"componentLT,omitempty"`
-	ComponentLTE          *string  `json:"componentLTE,omitempty"`
-	ComponentContains     *string  `json:"componentContains,omitempty"`
-	ComponentHasPrefix    *string  `json:"componentHasPrefix,omitempty"`
-	ComponentHasSuffix    *string  `json:"componentHasSuffix,omitempty"`
-	ComponentEqualFold    *string  `json:"componentEqualFold,omitempty"`
-	ComponentContainsFold *string  `json:"componentContainsFold,omitempty"`
+	// "mangas" edge predicates.
+	HasMangas     *bool              `json:"hasMangas,omitempty"`
+	HasMangasWith []*MangaWhereInput `json:"hasMangasWith,omitempty"`
+}
 
-	// "redirect" field predicates.
-	Redirect             *string  `json:"redirect,omitempty"`
-	RedirectNEQ          *string  `json:"redirectNEQ,omitempty"`
-	RedirectIn           []string `json:"redirectIn,omitempty"`
-	RedirectNotIn        []string `json:"redirectNotIn,omitempty"`
-	RedirectGT           *string  `json:"redirectGT,omitempty"`
-	RedirectGTE          *string  `json:"redirectGTE,omitempty"`
-	RedirectLT           *string  `json:"redirectLT,omitempty"`
-	RedirectLTE          *string  `json:"redirectLTE,omitempty"`
-	RedirectContains     *string  `json:"redirectContains,omitempty"`
-	RedirectHasPrefix    *string  `json:"redirectHasPrefix,omitempty"`
-	RedirectHasSuffix    *string  `json:"redirectHasSuffix,omitempty"`
-	RedirectIsNil        bool     `json:"redirectIsNil,omitempty"`
-	RedirectNotNil       bool     `json:"redirectNotNil,omitempty"`
-	RedirectEqualFold    *string  `json:"redirectEqualFold,omitempty"`
-	RedirectContainsFold *string  `json:"redirectContainsFold,omitempty"`
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *GenreWhereInput) AddPredicates(predicates ...predicate.Genre) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the GenreWhereInput filter on the GenreQuery builder.
+func (i *GenreWhereInput) Filter(q *GenreQuery) (*GenreQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyGenreWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyGenreWhereInput is returned in case the GenreWhereInput is empty.
+var ErrEmptyGenreWhereInput = errors.New("ent: empty predicate GenreWhereInput")
+
+// P returns a predicate for filtering genres.
+// An error is returned if the input is empty or invalid.
+func (i *GenreWhereInput) P() (predicate.Genre, error) {
+	var predicates []predicate.Genre
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, genre.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Genre, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, genre.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Genre, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, genre.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, genre.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, genre.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, genre.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, genre.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, genre.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, genre.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, genre.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, genre.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, genre.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, genre.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, genre.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, genre.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, genre.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, genre.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, genre.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, genre.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, genre.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, genre.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, genre.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, genre.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, genre.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, genre.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, genre.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, genre.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.IsEnable != nil {
+		predicates = append(predicates, genre.IsEnableEQ(*i.IsEnable))
+	}
+	if i.IsEnableNEQ != nil {
+		predicates = append(predicates, genre.IsEnableNEQ(*i.IsEnableNEQ))
+	}
+	if i.DeletedAt != nil {
+		predicates = append(predicates, genre.DeletedAtEQ(*i.DeletedAt))
+	}
+	if i.DeletedAtNEQ != nil {
+		predicates = append(predicates, genre.DeletedAtNEQ(*i.DeletedAtNEQ))
+	}
+	if len(i.DeletedAtIn) > 0 {
+		predicates = append(predicates, genre.DeletedAtIn(i.DeletedAtIn...))
+	}
+	if len(i.DeletedAtNotIn) > 0 {
+		predicates = append(predicates, genre.DeletedAtNotIn(i.DeletedAtNotIn...))
+	}
+	if i.DeletedAtGT != nil {
+		predicates = append(predicates, genre.DeletedAtGT(*i.DeletedAtGT))
+	}
+	if i.DeletedAtGTE != nil {
+		predicates = append(predicates, genre.DeletedAtGTE(*i.DeletedAtGTE))
+	}
+	if i.DeletedAtLT != nil {
+		predicates = append(predicates, genre.DeletedAtLT(*i.DeletedAtLT))
+	}
+	if i.DeletedAtLTE != nil {
+		predicates = append(predicates, genre.DeletedAtLTE(*i.DeletedAtLTE))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, genre.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, genre.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, genre.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, genre.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, genre.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, genre.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, genre.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, genre.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, genre.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, genre.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, genre.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, genre.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, genre.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.NameID != nil {
+		predicates = append(predicates, genre.NameIDEQ(*i.NameID))
+	}
+	if i.NameIDNEQ != nil {
+		predicates = append(predicates, genre.NameIDNEQ(*i.NameIDNEQ))
+	}
+	if len(i.NameIDIn) > 0 {
+		predicates = append(predicates, genre.NameIDIn(i.NameIDIn...))
+	}
+	if len(i.NameIDNotIn) > 0 {
+		predicates = append(predicates, genre.NameIDNotIn(i.NameIDNotIn...))
+	}
+	if i.NameIDGT != nil {
+		predicates = append(predicates, genre.NameIDGT(*i.NameIDGT))
+	}
+	if i.NameIDGTE != nil {
+		predicates = append(predicates, genre.NameIDGTE(*i.NameIDGTE))
+	}
+	if i.NameIDLT != nil {
+		predicates = append(predicates, genre.NameIDLT(*i.NameIDLT))
+	}
+	if i.NameIDLTE != nil {
+		predicates = append(predicates, genre.NameIDLTE(*i.NameIDLTE))
+	}
+	if i.NameIDContains != nil {
+		predicates = append(predicates, genre.NameIDContains(*i.NameIDContains))
+	}
+	if i.NameIDHasPrefix != nil {
+		predicates = append(predicates, genre.NameIDHasPrefix(*i.NameIDHasPrefix))
+	}
+	if i.NameIDHasSuffix != nil {
+		predicates = append(predicates, genre.NameIDHasSuffix(*i.NameIDHasSuffix))
+	}
+	if i.NameIDEqualFold != nil {
+		predicates = append(predicates, genre.NameIDEqualFold(*i.NameIDEqualFold))
+	}
+	if i.NameIDContainsFold != nil {
+		predicates = append(predicates, genre.NameIDContainsFold(*i.NameIDContainsFold))
+	}
+
+	if i.HasMangas != nil {
+		p := genre.HasMangas()
+		if !*i.HasMangas {
+			p = genre.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasMangasWith) > 0 {
+		with := make([]predicate.Manga, 0, len(i.HasMangasWith))
+		for _, w := range i.HasMangasWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasMangasWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, genre.HasMangasWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyGenreWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return genre.And(predicates...), nil
+	}
+}
+
+// MangaWhereInput represents a where input for filtering Manga queries.
+type MangaWhereInput struct {
+	Predicates []predicate.Manga  `json:"-"`
+	Not        *MangaWhereInput   `json:"not,omitempty"`
+	Or         []*MangaWhereInput `json:"or,omitempty"`
+	And        []*MangaWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "is_enable" field predicates.
+	IsEnable    *bool `json:"isEnable,omitempty"`
+	IsEnableNEQ *bool `json:"isEnableNEQ,omitempty"`
+
+	// "deleted_at" field predicates.
+	DeletedAt      *int  `json:"deletedAt,omitempty"`
+	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
+	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
+	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
+	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
+	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
+	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
+	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
+
+	// "name_id" field predicates.
+	NameID             *string  `json:"nameID,omitempty"`
+	NameIDNEQ          *string  `json:"nameIDNEQ,omitempty"`
+	NameIDIn           []string `json:"nameIDIn,omitempty"`
+	NameIDNotIn        []string `json:"nameIDNotIn,omitempty"`
+	NameIDGT           *string  `json:"nameIDGT,omitempty"`
+	NameIDGTE          *string  `json:"nameIDGTE,omitempty"`
+	NameIDLT           *string  `json:"nameIDLT,omitempty"`
+	NameIDLTE          *string  `json:"nameIDLTE,omitempty"`
+	NameIDContains     *string  `json:"nameIDContains,omitempty"`
+	NameIDHasPrefix    *string  `json:"nameIDHasPrefix,omitempty"`
+	NameIDHasSuffix    *string  `json:"nameIDHasSuffix,omitempty"`
+	NameIDEqualFold    *string  `json:"nameIDEqualFold,omitempty"`
+	NameIDContainsFold *string  `json:"nameIDContainsFold,omitempty"`
 
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
@@ -1132,50 +1449,73 @@ type MenuWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "order" field predicates.
-	Order       *int  `json:"order,omitempty"`
-	OrderNEQ    *int  `json:"orderNEQ,omitempty"`
-	OrderIn     []int `json:"orderIn,omitempty"`
-	OrderNotIn  []int `json:"orderNotIn,omitempty"`
-	OrderGT     *int  `json:"orderGT,omitempty"`
-	OrderGTE    *int  `json:"orderGTE,omitempty"`
-	OrderLT     *int  `json:"orderLT,omitempty"`
-	OrderLTE    *int  `json:"orderLTE,omitempty"`
-	OrderIsNil  bool  `json:"orderIsNil,omitempty"`
-	OrderNotNil bool  `json:"orderNotNil,omitempty"`
+	// "desc" field predicates.
+	Desc             *string  `json:"desc,omitempty"`
+	DescNEQ          *string  `json:"descNEQ,omitempty"`
+	DescIn           []string `json:"descIn,omitempty"`
+	DescNotIn        []string `json:"descNotIn,omitempty"`
+	DescGT           *string  `json:"descGT,omitempty"`
+	DescGTE          *string  `json:"descGTE,omitempty"`
+	DescLT           *string  `json:"descLT,omitempty"`
+	DescLTE          *string  `json:"descLTE,omitempty"`
+	DescContains     *string  `json:"descContains,omitempty"`
+	DescHasPrefix    *string  `json:"descHasPrefix,omitempty"`
+	DescHasSuffix    *string  `json:"descHasSuffix,omitempty"`
+	DescEqualFold    *string  `json:"descEqualFold,omitempty"`
+	DescContainsFold *string  `json:"descContainsFold,omitempty"`
 
-	// "type" field predicates.
-	Type      *menu.Type  `json:"type,omitempty"`
-	TypeNEQ   *menu.Type  `json:"typeNEQ,omitempty"`
-	TypeIn    []menu.Type `json:"typeIn,omitempty"`
-	TypeNotIn []menu.Type `json:"typeNotIn,omitempty"`
+	// "prodiver" field predicates.
+	Prodiver             *string  `json:"prodiver,omitempty"`
+	ProdiverNEQ          *string  `json:"prodiverNEQ,omitempty"`
+	ProdiverIn           []string `json:"prodiverIn,omitempty"`
+	ProdiverNotIn        []string `json:"prodiverNotIn,omitempty"`
+	ProdiverGT           *string  `json:"prodiverGT,omitempty"`
+	ProdiverGTE          *string  `json:"prodiverGTE,omitempty"`
+	ProdiverLT           *string  `json:"prodiverLT,omitempty"`
+	ProdiverLTE          *string  `json:"prodiverLTE,omitempty"`
+	ProdiverContains     *string  `json:"prodiverContains,omitempty"`
+	ProdiverHasPrefix    *string  `json:"prodiverHasPrefix,omitempty"`
+	ProdiverHasSuffix    *string  `json:"prodiverHasSuffix,omitempty"`
+	ProdiverEqualFold    *string  `json:"prodiverEqualFold,omitempty"`
+	ProdiverContainsFold *string  `json:"prodiverContainsFold,omitempty"`
 
-	// "parent" edge predicates.
-	HasParent     *bool             `json:"hasParent,omitempty"`
-	HasParentWith []*MenuWhereInput `json:"hasParentWith,omitempty"`
+	// "thumbnail_url" field predicates.
+	ThumbnailURL             *string  `json:"thumbnailURL,omitempty"`
+	ThumbnailURLNEQ          *string  `json:"thumbnailURLNEQ,omitempty"`
+	ThumbnailURLIn           []string `json:"thumbnailURLIn,omitempty"`
+	ThumbnailURLNotIn        []string `json:"thumbnailURLNotIn,omitempty"`
+	ThumbnailURLGT           *string  `json:"thumbnailURLGT,omitempty"`
+	ThumbnailURLGTE          *string  `json:"thumbnailURLGTE,omitempty"`
+	ThumbnailURLLT           *string  `json:"thumbnailURLLT,omitempty"`
+	ThumbnailURLLTE          *string  `json:"thumbnailURLLTE,omitempty"`
+	ThumbnailURLContains     *string  `json:"thumbnailURLContains,omitempty"`
+	ThumbnailURLHasPrefix    *string  `json:"thumbnailURLHasPrefix,omitempty"`
+	ThumbnailURLHasSuffix    *string  `json:"thumbnailURLHasSuffix,omitempty"`
+	ThumbnailURLEqualFold    *string  `json:"thumbnailURLEqualFold,omitempty"`
+	ThumbnailURLContainsFold *string  `json:"thumbnailURLContainsFold,omitempty"`
 
-	// "children" edge predicates.
-	HasChildren     *bool             `json:"hasChildren,omitempty"`
-	HasChildrenWith []*MenuWhereInput `json:"hasChildrenWith,omitempty"`
+	// "chapters" edge predicates.
+	HasChapters     *bool                     `json:"hasChapters,omitempty"`
+	HasChaptersWith []*MangaChapterWhereInput `json:"hasChaptersWith,omitempty"`
 
-	// "roles" edge predicates.
-	HasRoles     *bool             `json:"hasRoles,omitempty"`
-	HasRolesWith []*RoleWhereInput `json:"hasRolesWith,omitempty"`
+	// "genres" edge predicates.
+	HasGenres     *bool              `json:"hasGenres,omitempty"`
+	HasGenresWith []*GenreWhereInput `json:"hasGenresWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
-func (i *MenuWhereInput) AddPredicates(predicates ...predicate.Menu) {
+func (i *MangaWhereInput) AddPredicates(predicates ...predicate.Manga) {
 	i.Predicates = append(i.Predicates, predicates...)
 }
 
-// Filter applies the MenuWhereInput filter on the MenuQuery builder.
-func (i *MenuWhereInput) Filter(q *MenuQuery) (*MenuQuery, error) {
+// Filter applies the MangaWhereInput filter on the MangaQuery builder.
+func (i *MangaWhereInput) Filter(q *MangaQuery) (*MangaQuery, error) {
 	if i == nil {
 		return q, nil
 	}
 	p, err := i.P()
 	if err != nil {
-		if err == ErrEmptyMenuWhereInput {
+		if err == ErrEmptyMangaWhereInput {
 			return q, nil
 		}
 		return nil, err
@@ -1183,19 +1523,19 @@ func (i *MenuWhereInput) Filter(q *MenuQuery) (*MenuQuery, error) {
 	return q.Where(p), nil
 }
 
-// ErrEmptyMenuWhereInput is returned in case the MenuWhereInput is empty.
-var ErrEmptyMenuWhereInput = errors.New("ent: empty predicate MenuWhereInput")
+// ErrEmptyMangaWhereInput is returned in case the MangaWhereInput is empty.
+var ErrEmptyMangaWhereInput = errors.New("ent: empty predicate MangaWhereInput")
 
-// P returns a predicate for filtering menus.
+// P returns a predicate for filtering mangas.
 // An error is returned if the input is empty or invalid.
-func (i *MenuWhereInput) P() (predicate.Menu, error) {
-	var predicates []predicate.Menu
+func (i *MangaWhereInput) P() (predicate.Manga, error) {
+	var predicates []predicate.Manga
 	if i.Not != nil {
 		p, err := i.Not.P()
 		if err != nil {
 			return nil, fmt.Errorf("%w: field 'not'", err)
 		}
-		predicates = append(predicates, menu.Not(p))
+		predicates = append(predicates, manga.Not(p))
 	}
 	switch n := len(i.Or); {
 	case n == 1:
@@ -1205,7 +1545,7 @@ func (i *MenuWhereInput) P() (predicate.Menu, error) {
 		}
 		predicates = append(predicates, p)
 	case n > 1:
-		or := make([]predicate.Menu, 0, n)
+		or := make([]predicate.Manga, 0, n)
 		for _, w := range i.Or {
 			p, err := w.P()
 			if err != nil {
@@ -1213,7 +1553,7 @@ func (i *MenuWhereInput) P() (predicate.Menu, error) {
 			}
 			or = append(or, p)
 		}
-		predicates = append(predicates, menu.Or(or...))
+		predicates = append(predicates, manga.Or(or...))
 	}
 	switch n := len(i.And); {
 	case n == 1:
@@ -1223,7 +1563,7 @@ func (i *MenuWhereInput) P() (predicate.Menu, error) {
 		}
 		predicates = append(predicates, p)
 	case n > 1:
-		and := make([]predicate.Menu, 0, n)
+		and := make([]predicate.Manga, 0, n)
 		for _, w := range i.And {
 			p, err := w.P()
 			if err != nil {
@@ -1231,422 +1571,848 @@ func (i *MenuWhereInput) P() (predicate.Menu, error) {
 			}
 			and = append(and, p)
 		}
-		predicates = append(predicates, menu.And(and...))
+		predicates = append(predicates, manga.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
 	if i.ID != nil {
-		predicates = append(predicates, menu.IDEQ(*i.ID))
+		predicates = append(predicates, manga.IDEQ(*i.ID))
 	}
 	if i.IDNEQ != nil {
-		predicates = append(predicates, menu.IDNEQ(*i.IDNEQ))
+		predicates = append(predicates, manga.IDNEQ(*i.IDNEQ))
 	}
 	if len(i.IDIn) > 0 {
-		predicates = append(predicates, menu.IDIn(i.IDIn...))
+		predicates = append(predicates, manga.IDIn(i.IDIn...))
 	}
 	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, menu.IDNotIn(i.IDNotIn...))
+		predicates = append(predicates, manga.IDNotIn(i.IDNotIn...))
 	}
 	if i.IDGT != nil {
-		predicates = append(predicates, menu.IDGT(*i.IDGT))
+		predicates = append(predicates, manga.IDGT(*i.IDGT))
 	}
 	if i.IDGTE != nil {
-		predicates = append(predicates, menu.IDGTE(*i.IDGTE))
+		predicates = append(predicates, manga.IDGTE(*i.IDGTE))
 	}
 	if i.IDLT != nil {
-		predicates = append(predicates, menu.IDLT(*i.IDLT))
+		predicates = append(predicates, manga.IDLT(*i.IDLT))
 	}
 	if i.IDLTE != nil {
-		predicates = append(predicates, menu.IDLTE(*i.IDLTE))
+		predicates = append(predicates, manga.IDLTE(*i.IDLTE))
 	}
 	if i.CreatedAt != nil {
-		predicates = append(predicates, menu.CreatedAtEQ(*i.CreatedAt))
+		predicates = append(predicates, manga.CreatedAtEQ(*i.CreatedAt))
 	}
 	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, menu.CreatedAtNEQ(*i.CreatedAtNEQ))
+		predicates = append(predicates, manga.CreatedAtNEQ(*i.CreatedAtNEQ))
 	}
 	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, menu.CreatedAtIn(i.CreatedAtIn...))
+		predicates = append(predicates, manga.CreatedAtIn(i.CreatedAtIn...))
 	}
 	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, menu.CreatedAtNotIn(i.CreatedAtNotIn...))
+		predicates = append(predicates, manga.CreatedAtNotIn(i.CreatedAtNotIn...))
 	}
 	if i.CreatedAtGT != nil {
-		predicates = append(predicates, menu.CreatedAtGT(*i.CreatedAtGT))
+		predicates = append(predicates, manga.CreatedAtGT(*i.CreatedAtGT))
 	}
 	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, menu.CreatedAtGTE(*i.CreatedAtGTE))
+		predicates = append(predicates, manga.CreatedAtGTE(*i.CreatedAtGTE))
 	}
 	if i.CreatedAtLT != nil {
-		predicates = append(predicates, menu.CreatedAtLT(*i.CreatedAtLT))
+		predicates = append(predicates, manga.CreatedAtLT(*i.CreatedAtLT))
 	}
 	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, menu.CreatedAtLTE(*i.CreatedAtLTE))
+		predicates = append(predicates, manga.CreatedAtLTE(*i.CreatedAtLTE))
 	}
 	if i.UpdatedAt != nil {
-		predicates = append(predicates, menu.UpdatedAtEQ(*i.UpdatedAt))
+		predicates = append(predicates, manga.UpdatedAtEQ(*i.UpdatedAt))
 	}
 	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, menu.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+		predicates = append(predicates, manga.UpdatedAtNEQ(*i.UpdatedAtNEQ))
 	}
 	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, menu.UpdatedAtIn(i.UpdatedAtIn...))
+		predicates = append(predicates, manga.UpdatedAtIn(i.UpdatedAtIn...))
 	}
 	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, menu.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+		predicates = append(predicates, manga.UpdatedAtNotIn(i.UpdatedAtNotIn...))
 	}
 	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, menu.UpdatedAtGT(*i.UpdatedAtGT))
+		predicates = append(predicates, manga.UpdatedAtGT(*i.UpdatedAtGT))
 	}
 	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, menu.UpdatedAtGTE(*i.UpdatedAtGTE))
+		predicates = append(predicates, manga.UpdatedAtGTE(*i.UpdatedAtGTE))
 	}
 	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, menu.UpdatedAtLT(*i.UpdatedAtLT))
+		predicates = append(predicates, manga.UpdatedAtLT(*i.UpdatedAtLT))
 	}
 	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, menu.UpdatedAtLTE(*i.UpdatedAtLTE))
+		predicates = append(predicates, manga.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 	if i.IsEnable != nil {
-		predicates = append(predicates, menu.IsEnableEQ(*i.IsEnable))
+		predicates = append(predicates, manga.IsEnableEQ(*i.IsEnable))
 	}
 	if i.IsEnableNEQ != nil {
-		predicates = append(predicates, menu.IsEnableNEQ(*i.IsEnableNEQ))
+		predicates = append(predicates, manga.IsEnableNEQ(*i.IsEnableNEQ))
 	}
 	if i.DeletedAt != nil {
-		predicates = append(predicates, menu.DeletedAtEQ(*i.DeletedAt))
+		predicates = append(predicates, manga.DeletedAtEQ(*i.DeletedAt))
 	}
 	if i.DeletedAtNEQ != nil {
-		predicates = append(predicates, menu.DeletedAtNEQ(*i.DeletedAtNEQ))
+		predicates = append(predicates, manga.DeletedAtNEQ(*i.DeletedAtNEQ))
 	}
 	if len(i.DeletedAtIn) > 0 {
-		predicates = append(predicates, menu.DeletedAtIn(i.DeletedAtIn...))
+		predicates = append(predicates, manga.DeletedAtIn(i.DeletedAtIn...))
 	}
 	if len(i.DeletedAtNotIn) > 0 {
-		predicates = append(predicates, menu.DeletedAtNotIn(i.DeletedAtNotIn...))
+		predicates = append(predicates, manga.DeletedAtNotIn(i.DeletedAtNotIn...))
 	}
 	if i.DeletedAtGT != nil {
-		predicates = append(predicates, menu.DeletedAtGT(*i.DeletedAtGT))
+		predicates = append(predicates, manga.DeletedAtGT(*i.DeletedAtGT))
 	}
 	if i.DeletedAtGTE != nil {
-		predicates = append(predicates, menu.DeletedAtGTE(*i.DeletedAtGTE))
+		predicates = append(predicates, manga.DeletedAtGTE(*i.DeletedAtGTE))
 	}
 	if i.DeletedAtLT != nil {
-		predicates = append(predicates, menu.DeletedAtLT(*i.DeletedAtLT))
+		predicates = append(predicates, manga.DeletedAtLT(*i.DeletedAtLT))
 	}
 	if i.DeletedAtLTE != nil {
-		predicates = append(predicates, menu.DeletedAtLTE(*i.DeletedAtLTE))
+		predicates = append(predicates, manga.DeletedAtLTE(*i.DeletedAtLTE))
 	}
-	if i.Pid != nil {
-		predicates = append(predicates, menu.PidEQ(*i.Pid))
+	if i.NameID != nil {
+		predicates = append(predicates, manga.NameIDEQ(*i.NameID))
 	}
-	if i.PidNEQ != nil {
-		predicates = append(predicates, menu.PidNEQ(*i.PidNEQ))
+	if i.NameIDNEQ != nil {
+		predicates = append(predicates, manga.NameIDNEQ(*i.NameIDNEQ))
 	}
-	if len(i.PidIn) > 0 {
-		predicates = append(predicates, menu.PidIn(i.PidIn...))
+	if len(i.NameIDIn) > 0 {
+		predicates = append(predicates, manga.NameIDIn(i.NameIDIn...))
 	}
-	if len(i.PidNotIn) > 0 {
-		predicates = append(predicates, menu.PidNotIn(i.PidNotIn...))
+	if len(i.NameIDNotIn) > 0 {
+		predicates = append(predicates, manga.NameIDNotIn(i.NameIDNotIn...))
 	}
-	if i.PidGT != nil {
-		predicates = append(predicates, menu.PidGT(*i.PidGT))
+	if i.NameIDGT != nil {
+		predicates = append(predicates, manga.NameIDGT(*i.NameIDGT))
 	}
-	if i.PidGTE != nil {
-		predicates = append(predicates, menu.PidGTE(*i.PidGTE))
+	if i.NameIDGTE != nil {
+		predicates = append(predicates, manga.NameIDGTE(*i.NameIDGTE))
 	}
-	if i.PidLT != nil {
-		predicates = append(predicates, menu.PidLT(*i.PidLT))
+	if i.NameIDLT != nil {
+		predicates = append(predicates, manga.NameIDLT(*i.NameIDLT))
 	}
-	if i.PidLTE != nil {
-		predicates = append(predicates, menu.PidLTE(*i.PidLTE))
+	if i.NameIDLTE != nil {
+		predicates = append(predicates, manga.NameIDLTE(*i.NameIDLTE))
 	}
-	if i.PidContains != nil {
-		predicates = append(predicates, menu.PidContains(*i.PidContains))
+	if i.NameIDContains != nil {
+		predicates = append(predicates, manga.NameIDContains(*i.NameIDContains))
 	}
-	if i.PidHasPrefix != nil {
-		predicates = append(predicates, menu.PidHasPrefix(*i.PidHasPrefix))
+	if i.NameIDHasPrefix != nil {
+		predicates = append(predicates, manga.NameIDHasPrefix(*i.NameIDHasPrefix))
 	}
-	if i.PidHasSuffix != nil {
-		predicates = append(predicates, menu.PidHasSuffix(*i.PidHasSuffix))
+	if i.NameIDHasSuffix != nil {
+		predicates = append(predicates, manga.NameIDHasSuffix(*i.NameIDHasSuffix))
 	}
-	if i.PidIsNil {
-		predicates = append(predicates, menu.PidIsNil())
+	if i.NameIDEqualFold != nil {
+		predicates = append(predicates, manga.NameIDEqualFold(*i.NameIDEqualFold))
 	}
-	if i.PidNotNil {
-		predicates = append(predicates, menu.PidNotNil())
-	}
-	if i.PidEqualFold != nil {
-		predicates = append(predicates, menu.PidEqualFold(*i.PidEqualFold))
-	}
-	if i.PidContainsFold != nil {
-		predicates = append(predicates, menu.PidContainsFold(*i.PidContainsFold))
-	}
-	if i.Path != nil {
-		predicates = append(predicates, menu.PathEQ(*i.Path))
-	}
-	if i.PathNEQ != nil {
-		predicates = append(predicates, menu.PathNEQ(*i.PathNEQ))
-	}
-	if len(i.PathIn) > 0 {
-		predicates = append(predicates, menu.PathIn(i.PathIn...))
-	}
-	if len(i.PathNotIn) > 0 {
-		predicates = append(predicates, menu.PathNotIn(i.PathNotIn...))
-	}
-	if i.PathGT != nil {
-		predicates = append(predicates, menu.PathGT(*i.PathGT))
-	}
-	if i.PathGTE != nil {
-		predicates = append(predicates, menu.PathGTE(*i.PathGTE))
-	}
-	if i.PathLT != nil {
-		predicates = append(predicates, menu.PathLT(*i.PathLT))
-	}
-	if i.PathLTE != nil {
-		predicates = append(predicates, menu.PathLTE(*i.PathLTE))
-	}
-	if i.PathContains != nil {
-		predicates = append(predicates, menu.PathContains(*i.PathContains))
-	}
-	if i.PathHasPrefix != nil {
-		predicates = append(predicates, menu.PathHasPrefix(*i.PathHasPrefix))
-	}
-	if i.PathHasSuffix != nil {
-		predicates = append(predicates, menu.PathHasSuffix(*i.PathHasSuffix))
-	}
-	if i.PathEqualFold != nil {
-		predicates = append(predicates, menu.PathEqualFold(*i.PathEqualFold))
-	}
-	if i.PathContainsFold != nil {
-		predicates = append(predicates, menu.PathContainsFold(*i.PathContainsFold))
-	}
-	if i.Component != nil {
-		predicates = append(predicates, menu.ComponentEQ(*i.Component))
-	}
-	if i.ComponentNEQ != nil {
-		predicates = append(predicates, menu.ComponentNEQ(*i.ComponentNEQ))
-	}
-	if len(i.ComponentIn) > 0 {
-		predicates = append(predicates, menu.ComponentIn(i.ComponentIn...))
-	}
-	if len(i.ComponentNotIn) > 0 {
-		predicates = append(predicates, menu.ComponentNotIn(i.ComponentNotIn...))
-	}
-	if i.ComponentGT != nil {
-		predicates = append(predicates, menu.ComponentGT(*i.ComponentGT))
-	}
-	if i.ComponentGTE != nil {
-		predicates = append(predicates, menu.ComponentGTE(*i.ComponentGTE))
-	}
-	if i.ComponentLT != nil {
-		predicates = append(predicates, menu.ComponentLT(*i.ComponentLT))
-	}
-	if i.ComponentLTE != nil {
-		predicates = append(predicates, menu.ComponentLTE(*i.ComponentLTE))
-	}
-	if i.ComponentContains != nil {
-		predicates = append(predicates, menu.ComponentContains(*i.ComponentContains))
-	}
-	if i.ComponentHasPrefix != nil {
-		predicates = append(predicates, menu.ComponentHasPrefix(*i.ComponentHasPrefix))
-	}
-	if i.ComponentHasSuffix != nil {
-		predicates = append(predicates, menu.ComponentHasSuffix(*i.ComponentHasSuffix))
-	}
-	if i.ComponentEqualFold != nil {
-		predicates = append(predicates, menu.ComponentEqualFold(*i.ComponentEqualFold))
-	}
-	if i.ComponentContainsFold != nil {
-		predicates = append(predicates, menu.ComponentContainsFold(*i.ComponentContainsFold))
-	}
-	if i.Redirect != nil {
-		predicates = append(predicates, menu.RedirectEQ(*i.Redirect))
-	}
-	if i.RedirectNEQ != nil {
-		predicates = append(predicates, menu.RedirectNEQ(*i.RedirectNEQ))
-	}
-	if len(i.RedirectIn) > 0 {
-		predicates = append(predicates, menu.RedirectIn(i.RedirectIn...))
-	}
-	if len(i.RedirectNotIn) > 0 {
-		predicates = append(predicates, menu.RedirectNotIn(i.RedirectNotIn...))
-	}
-	if i.RedirectGT != nil {
-		predicates = append(predicates, menu.RedirectGT(*i.RedirectGT))
-	}
-	if i.RedirectGTE != nil {
-		predicates = append(predicates, menu.RedirectGTE(*i.RedirectGTE))
-	}
-	if i.RedirectLT != nil {
-		predicates = append(predicates, menu.RedirectLT(*i.RedirectLT))
-	}
-	if i.RedirectLTE != nil {
-		predicates = append(predicates, menu.RedirectLTE(*i.RedirectLTE))
-	}
-	if i.RedirectContains != nil {
-		predicates = append(predicates, menu.RedirectContains(*i.RedirectContains))
-	}
-	if i.RedirectHasPrefix != nil {
-		predicates = append(predicates, menu.RedirectHasPrefix(*i.RedirectHasPrefix))
-	}
-	if i.RedirectHasSuffix != nil {
-		predicates = append(predicates, menu.RedirectHasSuffix(*i.RedirectHasSuffix))
-	}
-	if i.RedirectIsNil {
-		predicates = append(predicates, menu.RedirectIsNil())
-	}
-	if i.RedirectNotNil {
-		predicates = append(predicates, menu.RedirectNotNil())
-	}
-	if i.RedirectEqualFold != nil {
-		predicates = append(predicates, menu.RedirectEqualFold(*i.RedirectEqualFold))
-	}
-	if i.RedirectContainsFold != nil {
-		predicates = append(predicates, menu.RedirectContainsFold(*i.RedirectContainsFold))
+	if i.NameIDContainsFold != nil {
+		predicates = append(predicates, manga.NameIDContainsFold(*i.NameIDContainsFold))
 	}
 	if i.Name != nil {
-		predicates = append(predicates, menu.NameEQ(*i.Name))
+		predicates = append(predicates, manga.NameEQ(*i.Name))
 	}
 	if i.NameNEQ != nil {
-		predicates = append(predicates, menu.NameNEQ(*i.NameNEQ))
+		predicates = append(predicates, manga.NameNEQ(*i.NameNEQ))
 	}
 	if len(i.NameIn) > 0 {
-		predicates = append(predicates, menu.NameIn(i.NameIn...))
+		predicates = append(predicates, manga.NameIn(i.NameIn...))
 	}
 	if len(i.NameNotIn) > 0 {
-		predicates = append(predicates, menu.NameNotIn(i.NameNotIn...))
+		predicates = append(predicates, manga.NameNotIn(i.NameNotIn...))
 	}
 	if i.NameGT != nil {
-		predicates = append(predicates, menu.NameGT(*i.NameGT))
+		predicates = append(predicates, manga.NameGT(*i.NameGT))
 	}
 	if i.NameGTE != nil {
-		predicates = append(predicates, menu.NameGTE(*i.NameGTE))
+		predicates = append(predicates, manga.NameGTE(*i.NameGTE))
 	}
 	if i.NameLT != nil {
-		predicates = append(predicates, menu.NameLT(*i.NameLT))
+		predicates = append(predicates, manga.NameLT(*i.NameLT))
 	}
 	if i.NameLTE != nil {
-		predicates = append(predicates, menu.NameLTE(*i.NameLTE))
+		predicates = append(predicates, manga.NameLTE(*i.NameLTE))
 	}
 	if i.NameContains != nil {
-		predicates = append(predicates, menu.NameContains(*i.NameContains))
+		predicates = append(predicates, manga.NameContains(*i.NameContains))
 	}
 	if i.NameHasPrefix != nil {
-		predicates = append(predicates, menu.NameHasPrefix(*i.NameHasPrefix))
+		predicates = append(predicates, manga.NameHasPrefix(*i.NameHasPrefix))
 	}
 	if i.NameHasSuffix != nil {
-		predicates = append(predicates, menu.NameHasSuffix(*i.NameHasSuffix))
+		predicates = append(predicates, manga.NameHasSuffix(*i.NameHasSuffix))
 	}
 	if i.NameEqualFold != nil {
-		predicates = append(predicates, menu.NameEqualFold(*i.NameEqualFold))
+		predicates = append(predicates, manga.NameEqualFold(*i.NameEqualFold))
 	}
 	if i.NameContainsFold != nil {
-		predicates = append(predicates, menu.NameContainsFold(*i.NameContainsFold))
+		predicates = append(predicates, manga.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.Order != nil {
-		predicates = append(predicates, menu.OrderEQ(*i.Order))
+	if i.Desc != nil {
+		predicates = append(predicates, manga.DescEQ(*i.Desc))
 	}
-	if i.OrderNEQ != nil {
-		predicates = append(predicates, menu.OrderNEQ(*i.OrderNEQ))
+	if i.DescNEQ != nil {
+		predicates = append(predicates, manga.DescNEQ(*i.DescNEQ))
 	}
-	if len(i.OrderIn) > 0 {
-		predicates = append(predicates, menu.OrderIn(i.OrderIn...))
+	if len(i.DescIn) > 0 {
+		predicates = append(predicates, manga.DescIn(i.DescIn...))
 	}
-	if len(i.OrderNotIn) > 0 {
-		predicates = append(predicates, menu.OrderNotIn(i.OrderNotIn...))
+	if len(i.DescNotIn) > 0 {
+		predicates = append(predicates, manga.DescNotIn(i.DescNotIn...))
 	}
-	if i.OrderGT != nil {
-		predicates = append(predicates, menu.OrderGT(*i.OrderGT))
+	if i.DescGT != nil {
+		predicates = append(predicates, manga.DescGT(*i.DescGT))
 	}
-	if i.OrderGTE != nil {
-		predicates = append(predicates, menu.OrderGTE(*i.OrderGTE))
+	if i.DescGTE != nil {
+		predicates = append(predicates, manga.DescGTE(*i.DescGTE))
 	}
-	if i.OrderLT != nil {
-		predicates = append(predicates, menu.OrderLT(*i.OrderLT))
+	if i.DescLT != nil {
+		predicates = append(predicates, manga.DescLT(*i.DescLT))
 	}
-	if i.OrderLTE != nil {
-		predicates = append(predicates, menu.OrderLTE(*i.OrderLTE))
+	if i.DescLTE != nil {
+		predicates = append(predicates, manga.DescLTE(*i.DescLTE))
 	}
-	if i.OrderIsNil {
-		predicates = append(predicates, menu.OrderIsNil())
+	if i.DescContains != nil {
+		predicates = append(predicates, manga.DescContains(*i.DescContains))
 	}
-	if i.OrderNotNil {
-		predicates = append(predicates, menu.OrderNotNil())
+	if i.DescHasPrefix != nil {
+		predicates = append(predicates, manga.DescHasPrefix(*i.DescHasPrefix))
 	}
-	if i.Type != nil {
-		predicates = append(predicates, menu.TypeEQ(*i.Type))
+	if i.DescHasSuffix != nil {
+		predicates = append(predicates, manga.DescHasSuffix(*i.DescHasSuffix))
 	}
-	if i.TypeNEQ != nil {
-		predicates = append(predicates, menu.TypeNEQ(*i.TypeNEQ))
+	if i.DescEqualFold != nil {
+		predicates = append(predicates, manga.DescEqualFold(*i.DescEqualFold))
 	}
-	if len(i.TypeIn) > 0 {
-		predicates = append(predicates, menu.TypeIn(i.TypeIn...))
+	if i.DescContainsFold != nil {
+		predicates = append(predicates, manga.DescContainsFold(*i.DescContainsFold))
 	}
-	if len(i.TypeNotIn) > 0 {
-		predicates = append(predicates, menu.TypeNotIn(i.TypeNotIn...))
+	if i.Prodiver != nil {
+		predicates = append(predicates, manga.ProdiverEQ(*i.Prodiver))
+	}
+	if i.ProdiverNEQ != nil {
+		predicates = append(predicates, manga.ProdiverNEQ(*i.ProdiverNEQ))
+	}
+	if len(i.ProdiverIn) > 0 {
+		predicates = append(predicates, manga.ProdiverIn(i.ProdiverIn...))
+	}
+	if len(i.ProdiverNotIn) > 0 {
+		predicates = append(predicates, manga.ProdiverNotIn(i.ProdiverNotIn...))
+	}
+	if i.ProdiverGT != nil {
+		predicates = append(predicates, manga.ProdiverGT(*i.ProdiverGT))
+	}
+	if i.ProdiverGTE != nil {
+		predicates = append(predicates, manga.ProdiverGTE(*i.ProdiverGTE))
+	}
+	if i.ProdiverLT != nil {
+		predicates = append(predicates, manga.ProdiverLT(*i.ProdiverLT))
+	}
+	if i.ProdiverLTE != nil {
+		predicates = append(predicates, manga.ProdiverLTE(*i.ProdiverLTE))
+	}
+	if i.ProdiverContains != nil {
+		predicates = append(predicates, manga.ProdiverContains(*i.ProdiverContains))
+	}
+	if i.ProdiverHasPrefix != nil {
+		predicates = append(predicates, manga.ProdiverHasPrefix(*i.ProdiverHasPrefix))
+	}
+	if i.ProdiverHasSuffix != nil {
+		predicates = append(predicates, manga.ProdiverHasSuffix(*i.ProdiverHasSuffix))
+	}
+	if i.ProdiverEqualFold != nil {
+		predicates = append(predicates, manga.ProdiverEqualFold(*i.ProdiverEqualFold))
+	}
+	if i.ProdiverContainsFold != nil {
+		predicates = append(predicates, manga.ProdiverContainsFold(*i.ProdiverContainsFold))
+	}
+	if i.ThumbnailURL != nil {
+		predicates = append(predicates, manga.ThumbnailURLEQ(*i.ThumbnailURL))
+	}
+	if i.ThumbnailURLNEQ != nil {
+		predicates = append(predicates, manga.ThumbnailURLNEQ(*i.ThumbnailURLNEQ))
+	}
+	if len(i.ThumbnailURLIn) > 0 {
+		predicates = append(predicates, manga.ThumbnailURLIn(i.ThumbnailURLIn...))
+	}
+	if len(i.ThumbnailURLNotIn) > 0 {
+		predicates = append(predicates, manga.ThumbnailURLNotIn(i.ThumbnailURLNotIn...))
+	}
+	if i.ThumbnailURLGT != nil {
+		predicates = append(predicates, manga.ThumbnailURLGT(*i.ThumbnailURLGT))
+	}
+	if i.ThumbnailURLGTE != nil {
+		predicates = append(predicates, manga.ThumbnailURLGTE(*i.ThumbnailURLGTE))
+	}
+	if i.ThumbnailURLLT != nil {
+		predicates = append(predicates, manga.ThumbnailURLLT(*i.ThumbnailURLLT))
+	}
+	if i.ThumbnailURLLTE != nil {
+		predicates = append(predicates, manga.ThumbnailURLLTE(*i.ThumbnailURLLTE))
+	}
+	if i.ThumbnailURLContains != nil {
+		predicates = append(predicates, manga.ThumbnailURLContains(*i.ThumbnailURLContains))
+	}
+	if i.ThumbnailURLHasPrefix != nil {
+		predicates = append(predicates, manga.ThumbnailURLHasPrefix(*i.ThumbnailURLHasPrefix))
+	}
+	if i.ThumbnailURLHasSuffix != nil {
+		predicates = append(predicates, manga.ThumbnailURLHasSuffix(*i.ThumbnailURLHasSuffix))
+	}
+	if i.ThumbnailURLEqualFold != nil {
+		predicates = append(predicates, manga.ThumbnailURLEqualFold(*i.ThumbnailURLEqualFold))
+	}
+	if i.ThumbnailURLContainsFold != nil {
+		predicates = append(predicates, manga.ThumbnailURLContainsFold(*i.ThumbnailURLContainsFold))
 	}
 
-	if i.HasParent != nil {
-		p := menu.HasParent()
-		if !*i.HasParent {
-			p = menu.Not(p)
+	if i.HasChapters != nil {
+		p := manga.HasChapters()
+		if !*i.HasChapters {
+			p = manga.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasParentWith) > 0 {
-		with := make([]predicate.Menu, 0, len(i.HasParentWith))
-		for _, w := range i.HasParentWith {
+	if len(i.HasChaptersWith) > 0 {
+		with := make([]predicate.MangaChapter, 0, len(i.HasChaptersWith))
+		for _, w := range i.HasChaptersWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasChaptersWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, menu.HasParentWith(with...))
+		predicates = append(predicates, manga.HasChaptersWith(with...))
 	}
-	if i.HasChildren != nil {
-		p := menu.HasChildren()
-		if !*i.HasChildren {
-			p = menu.Not(p)
+	if i.HasGenres != nil {
+		p := manga.HasGenres()
+		if !*i.HasGenres {
+			p = manga.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasChildrenWith) > 0 {
-		with := make([]predicate.Menu, 0, len(i.HasChildrenWith))
-		for _, w := range i.HasChildrenWith {
+	if len(i.HasGenresWith) > 0 {
+		with := make([]predicate.Genre, 0, len(i.HasGenresWith))
+		for _, w := range i.HasGenresWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasChildrenWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasGenresWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, menu.HasChildrenWith(with...))
-	}
-	if i.HasRoles != nil {
-		p := menu.HasRoles()
-		if !*i.HasRoles {
-			p = menu.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasRolesWith) > 0 {
-		with := make([]predicate.Role, 0, len(i.HasRolesWith))
-		for _, w := range i.HasRolesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasRolesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, menu.HasRolesWith(with...))
+		predicates = append(predicates, manga.HasGenresWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
-		return nil, ErrEmptyMenuWhereInput
+		return nil, ErrEmptyMangaWhereInput
 	case 1:
 		return predicates[0], nil
 	default:
-		return menu.And(predicates...), nil
+		return manga.And(predicates...), nil
+	}
+}
+
+// MangaChapterWhereInput represents a where input for filtering MangaChapter queries.
+type MangaChapterWhereInput struct {
+	Predicates []predicate.MangaChapter  `json:"-"`
+	Not        *MangaChapterWhereInput   `json:"not,omitempty"`
+	Or         []*MangaChapterWhereInput `json:"or,omitempty"`
+	And        []*MangaChapterWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *pxid.ID  `json:"id,omitempty"`
+	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []pxid.ID `json:"idIn,omitempty"`
+	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
+	IDGT    *pxid.ID  `json:"idGT,omitempty"`
+	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
+	IDLT    *pxid.ID  `json:"idLT,omitempty"`
+	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "manga_id" field predicates.
+	MangaID             *pxid.ID  `json:"mangaID,omitempty"`
+	MangaIDNEQ          *pxid.ID  `json:"mangaIDNEQ,omitempty"`
+	MangaIDIn           []pxid.ID `json:"mangaIDIn,omitempty"`
+	MangaIDNotIn        []pxid.ID `json:"mangaIDNotIn,omitempty"`
+	MangaIDGT           *pxid.ID  `json:"mangaIDGT,omitempty"`
+	MangaIDGTE          *pxid.ID  `json:"mangaIDGTE,omitempty"`
+	MangaIDLT           *pxid.ID  `json:"mangaIDLT,omitempty"`
+	MangaIDLTE          *pxid.ID  `json:"mangaIDLTE,omitempty"`
+	MangaIDContains     *pxid.ID  `json:"mangaIDContains,omitempty"`
+	MangaIDHasPrefix    *pxid.ID  `json:"mangaIDHasPrefix,omitempty"`
+	MangaIDHasSuffix    *pxid.ID  `json:"mangaIDHasSuffix,omitempty"`
+	MangaIDEqualFold    *pxid.ID  `json:"mangaIDEqualFold,omitempty"`
+	MangaIDContainsFold *pxid.ID  `json:"mangaIDContainsFold,omitempty"`
+
+	// "title" field predicates.
+	Title             *string  `json:"title,omitempty"`
+	TitleNEQ          *string  `json:"titleNEQ,omitempty"`
+	TitleIn           []string `json:"titleIn,omitempty"`
+	TitleNotIn        []string `json:"titleNotIn,omitempty"`
+	TitleGT           *string  `json:"titleGT,omitempty"`
+	TitleGTE          *string  `json:"titleGTE,omitempty"`
+	TitleLT           *string  `json:"titleLT,omitempty"`
+	TitleLTE          *string  `json:"titleLTE,omitempty"`
+	TitleContains     *string  `json:"titleContains,omitempty"`
+	TitleHasPrefix    *string  `json:"titleHasPrefix,omitempty"`
+	TitleHasSuffix    *string  `json:"titleHasSuffix,omitempty"`
+	TitleEqualFold    *string  `json:"titleEqualFold,omitempty"`
+	TitleContainsFold *string  `json:"titleContainsFold,omitempty"`
+
+	// "img_url" field predicates.
+	ImgURL             *string  `json:"imgURL,omitempty"`
+	ImgURLNEQ          *string  `json:"imgURLNEQ,omitempty"`
+	ImgURLIn           []string `json:"imgURLIn,omitempty"`
+	ImgURLNotIn        []string `json:"imgURLNotIn,omitempty"`
+	ImgURLGT           *string  `json:"imgURLGT,omitempty"`
+	ImgURLGTE          *string  `json:"imgURLGTE,omitempty"`
+	ImgURLLT           *string  `json:"imgURLLT,omitempty"`
+	ImgURLLTE          *string  `json:"imgURLLTE,omitempty"`
+	ImgURLContains     *string  `json:"imgURLContains,omitempty"`
+	ImgURLHasPrefix    *string  `json:"imgURLHasPrefix,omitempty"`
+	ImgURLHasSuffix    *string  `json:"imgURLHasSuffix,omitempty"`
+	ImgURLEqualFold    *string  `json:"imgURLEqualFold,omitempty"`
+	ImgURLContainsFold *string  `json:"imgURLContainsFold,omitempty"`
+
+	// "number" field predicates.
+	Number      *uint  `json:"number,omitempty"`
+	NumberNEQ   *uint  `json:"numberNEQ,omitempty"`
+	NumberIn    []uint `json:"numberIn,omitempty"`
+	NumberNotIn []uint `json:"numberNotIn,omitempty"`
+	NumberGT    *uint  `json:"numberGT,omitempty"`
+	NumberGTE   *uint  `json:"numberGTE,omitempty"`
+	NumberLT    *uint  `json:"numberLT,omitempty"`
+	NumberLTE   *uint  `json:"numberLTE,omitempty"`
+
+	// "provider_name" field predicates.
+	ProviderName             *string  `json:"providerName,omitempty"`
+	ProviderNameNEQ          *string  `json:"providerNameNEQ,omitempty"`
+	ProviderNameIn           []string `json:"providerNameIn,omitempty"`
+	ProviderNameNotIn        []string `json:"providerNameNotIn,omitempty"`
+	ProviderNameGT           *string  `json:"providerNameGT,omitempty"`
+	ProviderNameGTE          *string  `json:"providerNameGTE,omitempty"`
+	ProviderNameLT           *string  `json:"providerNameLT,omitempty"`
+	ProviderNameLTE          *string  `json:"providerNameLTE,omitempty"`
+	ProviderNameContains     *string  `json:"providerNameContains,omitempty"`
+	ProviderNameHasPrefix    *string  `json:"providerNameHasPrefix,omitempty"`
+	ProviderNameHasSuffix    *string  `json:"providerNameHasSuffix,omitempty"`
+	ProviderNameEqualFold    *string  `json:"providerNameEqualFold,omitempty"`
+	ProviderNameContainsFold *string  `json:"providerNameContainsFold,omitempty"`
+
+	// "chapter_updated_at" field predicates.
+	ChapterUpdatedAt      *time.Time  `json:"chapterUpdatedAt,omitempty"`
+	ChapterUpdatedAtNEQ   *time.Time  `json:"chapterUpdatedAtNEQ,omitempty"`
+	ChapterUpdatedAtIn    []time.Time `json:"chapterUpdatedAtIn,omitempty"`
+	ChapterUpdatedAtNotIn []time.Time `json:"chapterUpdatedAtNotIn,omitempty"`
+	ChapterUpdatedAtGT    *time.Time  `json:"chapterUpdatedAtGT,omitempty"`
+	ChapterUpdatedAtGTE   *time.Time  `json:"chapterUpdatedAtGTE,omitempty"`
+	ChapterUpdatedAtLT    *time.Time  `json:"chapterUpdatedAtLT,omitempty"`
+	ChapterUpdatedAtLTE   *time.Time  `json:"chapterUpdatedAtLTE,omitempty"`
+
+	// "manga" edge predicates.
+	HasManga     *bool              `json:"hasManga,omitempty"`
+	HasMangaWith []*MangaWhereInput `json:"hasMangaWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *MangaChapterWhereInput) AddPredicates(predicates ...predicate.MangaChapter) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the MangaChapterWhereInput filter on the MangaChapterQuery builder.
+func (i *MangaChapterWhereInput) Filter(q *MangaChapterQuery) (*MangaChapterQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyMangaChapterWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyMangaChapterWhereInput is returned in case the MangaChapterWhereInput is empty.
+var ErrEmptyMangaChapterWhereInput = errors.New("ent: empty predicate MangaChapterWhereInput")
+
+// P returns a predicate for filtering mangachapters.
+// An error is returned if the input is empty or invalid.
+func (i *MangaChapterWhereInput) P() (predicate.MangaChapter, error) {
+	var predicates []predicate.MangaChapter
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, mangachapter.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.MangaChapter, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, mangachapter.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.MangaChapter, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, mangachapter.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, mangachapter.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, mangachapter.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, mangachapter.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, mangachapter.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, mangachapter.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, mangachapter.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, mangachapter.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, mangachapter.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, mangachapter.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, mangachapter.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, mangachapter.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, mangachapter.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, mangachapter.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, mangachapter.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, mangachapter.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, mangachapter.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, mangachapter.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, mangachapter.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, mangachapter.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, mangachapter.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, mangachapter.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, mangachapter.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, mangachapter.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, mangachapter.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.MangaID != nil {
+		predicates = append(predicates, mangachapter.MangaIDEQ(*i.MangaID))
+	}
+	if i.MangaIDNEQ != nil {
+		predicates = append(predicates, mangachapter.MangaIDNEQ(*i.MangaIDNEQ))
+	}
+	if len(i.MangaIDIn) > 0 {
+		predicates = append(predicates, mangachapter.MangaIDIn(i.MangaIDIn...))
+	}
+	if len(i.MangaIDNotIn) > 0 {
+		predicates = append(predicates, mangachapter.MangaIDNotIn(i.MangaIDNotIn...))
+	}
+	if i.MangaIDGT != nil {
+		predicates = append(predicates, mangachapter.MangaIDGT(*i.MangaIDGT))
+	}
+	if i.MangaIDGTE != nil {
+		predicates = append(predicates, mangachapter.MangaIDGTE(*i.MangaIDGTE))
+	}
+	if i.MangaIDLT != nil {
+		predicates = append(predicates, mangachapter.MangaIDLT(*i.MangaIDLT))
+	}
+	if i.MangaIDLTE != nil {
+		predicates = append(predicates, mangachapter.MangaIDLTE(*i.MangaIDLTE))
+	}
+	if i.MangaIDContains != nil {
+		predicates = append(predicates, mangachapter.MangaIDContains(*i.MangaIDContains))
+	}
+	if i.MangaIDHasPrefix != nil {
+		predicates = append(predicates, mangachapter.MangaIDHasPrefix(*i.MangaIDHasPrefix))
+	}
+	if i.MangaIDHasSuffix != nil {
+		predicates = append(predicates, mangachapter.MangaIDHasSuffix(*i.MangaIDHasSuffix))
+	}
+	if i.MangaIDEqualFold != nil {
+		predicates = append(predicates, mangachapter.MangaIDEqualFold(*i.MangaIDEqualFold))
+	}
+	if i.MangaIDContainsFold != nil {
+		predicates = append(predicates, mangachapter.MangaIDContainsFold(*i.MangaIDContainsFold))
+	}
+	if i.Title != nil {
+		predicates = append(predicates, mangachapter.TitleEQ(*i.Title))
+	}
+	if i.TitleNEQ != nil {
+		predicates = append(predicates, mangachapter.TitleNEQ(*i.TitleNEQ))
+	}
+	if len(i.TitleIn) > 0 {
+		predicates = append(predicates, mangachapter.TitleIn(i.TitleIn...))
+	}
+	if len(i.TitleNotIn) > 0 {
+		predicates = append(predicates, mangachapter.TitleNotIn(i.TitleNotIn...))
+	}
+	if i.TitleGT != nil {
+		predicates = append(predicates, mangachapter.TitleGT(*i.TitleGT))
+	}
+	if i.TitleGTE != nil {
+		predicates = append(predicates, mangachapter.TitleGTE(*i.TitleGTE))
+	}
+	if i.TitleLT != nil {
+		predicates = append(predicates, mangachapter.TitleLT(*i.TitleLT))
+	}
+	if i.TitleLTE != nil {
+		predicates = append(predicates, mangachapter.TitleLTE(*i.TitleLTE))
+	}
+	if i.TitleContains != nil {
+		predicates = append(predicates, mangachapter.TitleContains(*i.TitleContains))
+	}
+	if i.TitleHasPrefix != nil {
+		predicates = append(predicates, mangachapter.TitleHasPrefix(*i.TitleHasPrefix))
+	}
+	if i.TitleHasSuffix != nil {
+		predicates = append(predicates, mangachapter.TitleHasSuffix(*i.TitleHasSuffix))
+	}
+	if i.TitleEqualFold != nil {
+		predicates = append(predicates, mangachapter.TitleEqualFold(*i.TitleEqualFold))
+	}
+	if i.TitleContainsFold != nil {
+		predicates = append(predicates, mangachapter.TitleContainsFold(*i.TitleContainsFold))
+	}
+	if i.ImgURL != nil {
+		predicates = append(predicates, mangachapter.ImgURLEQ(*i.ImgURL))
+	}
+	if i.ImgURLNEQ != nil {
+		predicates = append(predicates, mangachapter.ImgURLNEQ(*i.ImgURLNEQ))
+	}
+	if len(i.ImgURLIn) > 0 {
+		predicates = append(predicates, mangachapter.ImgURLIn(i.ImgURLIn...))
+	}
+	if len(i.ImgURLNotIn) > 0 {
+		predicates = append(predicates, mangachapter.ImgURLNotIn(i.ImgURLNotIn...))
+	}
+	if i.ImgURLGT != nil {
+		predicates = append(predicates, mangachapter.ImgURLGT(*i.ImgURLGT))
+	}
+	if i.ImgURLGTE != nil {
+		predicates = append(predicates, mangachapter.ImgURLGTE(*i.ImgURLGTE))
+	}
+	if i.ImgURLLT != nil {
+		predicates = append(predicates, mangachapter.ImgURLLT(*i.ImgURLLT))
+	}
+	if i.ImgURLLTE != nil {
+		predicates = append(predicates, mangachapter.ImgURLLTE(*i.ImgURLLTE))
+	}
+	if i.ImgURLContains != nil {
+		predicates = append(predicates, mangachapter.ImgURLContains(*i.ImgURLContains))
+	}
+	if i.ImgURLHasPrefix != nil {
+		predicates = append(predicates, mangachapter.ImgURLHasPrefix(*i.ImgURLHasPrefix))
+	}
+	if i.ImgURLHasSuffix != nil {
+		predicates = append(predicates, mangachapter.ImgURLHasSuffix(*i.ImgURLHasSuffix))
+	}
+	if i.ImgURLEqualFold != nil {
+		predicates = append(predicates, mangachapter.ImgURLEqualFold(*i.ImgURLEqualFold))
+	}
+	if i.ImgURLContainsFold != nil {
+		predicates = append(predicates, mangachapter.ImgURLContainsFold(*i.ImgURLContainsFold))
+	}
+	if i.Number != nil {
+		predicates = append(predicates, mangachapter.NumberEQ(*i.Number))
+	}
+	if i.NumberNEQ != nil {
+		predicates = append(predicates, mangachapter.NumberNEQ(*i.NumberNEQ))
+	}
+	if len(i.NumberIn) > 0 {
+		predicates = append(predicates, mangachapter.NumberIn(i.NumberIn...))
+	}
+	if len(i.NumberNotIn) > 0 {
+		predicates = append(predicates, mangachapter.NumberNotIn(i.NumberNotIn...))
+	}
+	if i.NumberGT != nil {
+		predicates = append(predicates, mangachapter.NumberGT(*i.NumberGT))
+	}
+	if i.NumberGTE != nil {
+		predicates = append(predicates, mangachapter.NumberGTE(*i.NumberGTE))
+	}
+	if i.NumberLT != nil {
+		predicates = append(predicates, mangachapter.NumberLT(*i.NumberLT))
+	}
+	if i.NumberLTE != nil {
+		predicates = append(predicates, mangachapter.NumberLTE(*i.NumberLTE))
+	}
+	if i.ProviderName != nil {
+		predicates = append(predicates, mangachapter.ProviderNameEQ(*i.ProviderName))
+	}
+	if i.ProviderNameNEQ != nil {
+		predicates = append(predicates, mangachapter.ProviderNameNEQ(*i.ProviderNameNEQ))
+	}
+	if len(i.ProviderNameIn) > 0 {
+		predicates = append(predicates, mangachapter.ProviderNameIn(i.ProviderNameIn...))
+	}
+	if len(i.ProviderNameNotIn) > 0 {
+		predicates = append(predicates, mangachapter.ProviderNameNotIn(i.ProviderNameNotIn...))
+	}
+	if i.ProviderNameGT != nil {
+		predicates = append(predicates, mangachapter.ProviderNameGT(*i.ProviderNameGT))
+	}
+	if i.ProviderNameGTE != nil {
+		predicates = append(predicates, mangachapter.ProviderNameGTE(*i.ProviderNameGTE))
+	}
+	if i.ProviderNameLT != nil {
+		predicates = append(predicates, mangachapter.ProviderNameLT(*i.ProviderNameLT))
+	}
+	if i.ProviderNameLTE != nil {
+		predicates = append(predicates, mangachapter.ProviderNameLTE(*i.ProviderNameLTE))
+	}
+	if i.ProviderNameContains != nil {
+		predicates = append(predicates, mangachapter.ProviderNameContains(*i.ProviderNameContains))
+	}
+	if i.ProviderNameHasPrefix != nil {
+		predicates = append(predicates, mangachapter.ProviderNameHasPrefix(*i.ProviderNameHasPrefix))
+	}
+	if i.ProviderNameHasSuffix != nil {
+		predicates = append(predicates, mangachapter.ProviderNameHasSuffix(*i.ProviderNameHasSuffix))
+	}
+	if i.ProviderNameEqualFold != nil {
+		predicates = append(predicates, mangachapter.ProviderNameEqualFold(*i.ProviderNameEqualFold))
+	}
+	if i.ProviderNameContainsFold != nil {
+		predicates = append(predicates, mangachapter.ProviderNameContainsFold(*i.ProviderNameContainsFold))
+	}
+	if i.ChapterUpdatedAt != nil {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtEQ(*i.ChapterUpdatedAt))
+	}
+	if i.ChapterUpdatedAtNEQ != nil {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtNEQ(*i.ChapterUpdatedAtNEQ))
+	}
+	if len(i.ChapterUpdatedAtIn) > 0 {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtIn(i.ChapterUpdatedAtIn...))
+	}
+	if len(i.ChapterUpdatedAtNotIn) > 0 {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtNotIn(i.ChapterUpdatedAtNotIn...))
+	}
+	if i.ChapterUpdatedAtGT != nil {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtGT(*i.ChapterUpdatedAtGT))
+	}
+	if i.ChapterUpdatedAtGTE != nil {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtGTE(*i.ChapterUpdatedAtGTE))
+	}
+	if i.ChapterUpdatedAtLT != nil {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtLT(*i.ChapterUpdatedAtLT))
+	}
+	if i.ChapterUpdatedAtLTE != nil {
+		predicates = append(predicates, mangachapter.ChapterUpdatedAtLTE(*i.ChapterUpdatedAtLTE))
+	}
+
+	if i.HasManga != nil {
+		p := mangachapter.HasManga()
+		if !*i.HasManga {
+			p = mangachapter.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasMangaWith) > 0 {
+		with := make([]predicate.Manga, 0, len(i.HasMangaWith))
+		for _, w := range i.HasMangaWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasMangaWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, mangachapter.HasMangaWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyMangaChapterWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return mangachapter.And(predicates...), nil
 	}
 }
 
@@ -2094,474 +2860,6 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	}
 }
 
-// RegionWhereInput represents a where input for filtering Region queries.
-type RegionWhereInput struct {
-	Predicates []predicate.Region  `json:"-"`
-	Not        *RegionWhereInput   `json:"not,omitempty"`
-	Or         []*RegionWhereInput `json:"or,omitempty"`
-	And        []*RegionWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *pxid.ID  `json:"id,omitempty"`
-	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []pxid.ID `json:"idIn,omitempty"`
-	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
-	IDGT    *pxid.ID  `json:"idGT,omitempty"`
-	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
-	IDLT    *pxid.ID  `json:"idLT,omitempty"`
-	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
-
-	// "deleted_at" field predicates.
-	DeletedAt      *int  `json:"deletedAt,omitempty"`
-	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
-	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
-	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
-	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
-	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
-	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
-	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
-
-	// "is_enable" field predicates.
-	IsEnable    *bool `json:"isEnable,omitempty"`
-	IsEnableNEQ *bool `json:"isEnableNEQ,omitempty"`
-
-	// "name_id" field predicates.
-	NameID             *string  `json:"nameID,omitempty"`
-	NameIDNEQ          *string  `json:"nameIDNEQ,omitempty"`
-	NameIDIn           []string `json:"nameIDIn,omitempty"`
-	NameIDNotIn        []string `json:"nameIDNotIn,omitempty"`
-	NameIDGT           *string  `json:"nameIDGT,omitempty"`
-	NameIDGTE          *string  `json:"nameIDGTE,omitempty"`
-	NameIDLT           *string  `json:"nameIDLT,omitempty"`
-	NameIDLTE          *string  `json:"nameIDLTE,omitempty"`
-	NameIDContains     *string  `json:"nameIDContains,omitempty"`
-	NameIDHasPrefix    *string  `json:"nameIDHasPrefix,omitempty"`
-	NameIDHasSuffix    *string  `json:"nameIDHasSuffix,omitempty"`
-	NameIDEqualFold    *string  `json:"nameIDEqualFold,omitempty"`
-	NameIDContainsFold *string  `json:"nameIDContainsFold,omitempty"`
-
-	// "name" field predicates.
-	Name             *string  `json:"name,omitempty"`
-	NameNEQ          *string  `json:"nameNEQ,omitempty"`
-	NameIn           []string `json:"nameIn,omitempty"`
-	NameNotIn        []string `json:"nameNotIn,omitempty"`
-	NameGT           *string  `json:"nameGT,omitempty"`
-	NameGTE          *string  `json:"nameGTE,omitempty"`
-	NameLT           *string  `json:"nameLT,omitempty"`
-	NameLTE          *string  `json:"nameLTE,omitempty"`
-	NameContains     *string  `json:"nameContains,omitempty"`
-	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
-	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
-	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
-	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-
-	// "type" field predicates.
-	Type      *region.Type  `json:"type,omitempty"`
-	TypeNEQ   *region.Type  `json:"typeNEQ,omitempty"`
-	TypeIn    []region.Type `json:"typeIn,omitempty"`
-	TypeNotIn []region.Type `json:"typeNotIn,omitempty"`
-
-	// "pid" field predicates.
-	Pid             *pxid.ID  `json:"pid,omitempty"`
-	PidNEQ          *pxid.ID  `json:"pidNEQ,omitempty"`
-	PidIn           []pxid.ID `json:"pidIn,omitempty"`
-	PidNotIn        []pxid.ID `json:"pidNotIn,omitempty"`
-	PidGT           *pxid.ID  `json:"pidGT,omitempty"`
-	PidGTE          *pxid.ID  `json:"pidGTE,omitempty"`
-	PidLT           *pxid.ID  `json:"pidLT,omitempty"`
-	PidLTE          *pxid.ID  `json:"pidLTE,omitempty"`
-	PidContains     *pxid.ID  `json:"pidContains,omitempty"`
-	PidHasPrefix    *pxid.ID  `json:"pidHasPrefix,omitempty"`
-	PidHasSuffix    *pxid.ID  `json:"pidHasSuffix,omitempty"`
-	PidIsNil        bool      `json:"pidIsNil,omitempty"`
-	PidNotNil       bool      `json:"pidNotNil,omitempty"`
-	PidEqualFold    *pxid.ID  `json:"pidEqualFold,omitempty"`
-	PidContainsFold *pxid.ID  `json:"pidContainsFold,omitempty"`
-
-	// "parent" edge predicates.
-	HasParent     *bool               `json:"hasParent,omitempty"`
-	HasParentWith []*RegionWhereInput `json:"hasParentWith,omitempty"`
-
-	// "children" edge predicates.
-	HasChildren     *bool               `json:"hasChildren,omitempty"`
-	HasChildrenWith []*RegionWhereInput `json:"hasChildrenWith,omitempty"`
-}
-
-// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
-func (i *RegionWhereInput) AddPredicates(predicates ...predicate.Region) {
-	i.Predicates = append(i.Predicates, predicates...)
-}
-
-// Filter applies the RegionWhereInput filter on the RegionQuery builder.
-func (i *RegionWhereInput) Filter(q *RegionQuery) (*RegionQuery, error) {
-	if i == nil {
-		return q, nil
-	}
-	p, err := i.P()
-	if err != nil {
-		if err == ErrEmptyRegionWhereInput {
-			return q, nil
-		}
-		return nil, err
-	}
-	return q.Where(p), nil
-}
-
-// ErrEmptyRegionWhereInput is returned in case the RegionWhereInput is empty.
-var ErrEmptyRegionWhereInput = errors.New("ent: empty predicate RegionWhereInput")
-
-// P returns a predicate for filtering regions.
-// An error is returned if the input is empty or invalid.
-func (i *RegionWhereInput) P() (predicate.Region, error) {
-	var predicates []predicate.Region
-	if i.Not != nil {
-		p, err := i.Not.P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'not'", err)
-		}
-		predicates = append(predicates, region.Not(p))
-	}
-	switch n := len(i.Or); {
-	case n == 1:
-		p, err := i.Or[0].P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'or'", err)
-		}
-		predicates = append(predicates, p)
-	case n > 1:
-		or := make([]predicate.Region, 0, n)
-		for _, w := range i.Or {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'or'", err)
-			}
-			or = append(or, p)
-		}
-		predicates = append(predicates, region.Or(or...))
-	}
-	switch n := len(i.And); {
-	case n == 1:
-		p, err := i.And[0].P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'and'", err)
-		}
-		predicates = append(predicates, p)
-	case n > 1:
-		and := make([]predicate.Region, 0, n)
-		for _, w := range i.And {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'and'", err)
-			}
-			and = append(and, p)
-		}
-		predicates = append(predicates, region.And(and...))
-	}
-	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, region.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, region.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, region.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, region.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, region.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, region.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, region.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, region.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, region.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, region.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, region.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, region.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, region.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, region.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, region.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, region.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, region.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, region.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, region.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, region.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, region.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, region.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, region.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, region.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
-	if i.DeletedAt != nil {
-		predicates = append(predicates, region.DeletedAtEQ(*i.DeletedAt))
-	}
-	if i.DeletedAtNEQ != nil {
-		predicates = append(predicates, region.DeletedAtNEQ(*i.DeletedAtNEQ))
-	}
-	if len(i.DeletedAtIn) > 0 {
-		predicates = append(predicates, region.DeletedAtIn(i.DeletedAtIn...))
-	}
-	if len(i.DeletedAtNotIn) > 0 {
-		predicates = append(predicates, region.DeletedAtNotIn(i.DeletedAtNotIn...))
-	}
-	if i.DeletedAtGT != nil {
-		predicates = append(predicates, region.DeletedAtGT(*i.DeletedAtGT))
-	}
-	if i.DeletedAtGTE != nil {
-		predicates = append(predicates, region.DeletedAtGTE(*i.DeletedAtGTE))
-	}
-	if i.DeletedAtLT != nil {
-		predicates = append(predicates, region.DeletedAtLT(*i.DeletedAtLT))
-	}
-	if i.DeletedAtLTE != nil {
-		predicates = append(predicates, region.DeletedAtLTE(*i.DeletedAtLTE))
-	}
-	if i.IsEnable != nil {
-		predicates = append(predicates, region.IsEnableEQ(*i.IsEnable))
-	}
-	if i.IsEnableNEQ != nil {
-		predicates = append(predicates, region.IsEnableNEQ(*i.IsEnableNEQ))
-	}
-	if i.NameID != nil {
-		predicates = append(predicates, region.NameIDEQ(*i.NameID))
-	}
-	if i.NameIDNEQ != nil {
-		predicates = append(predicates, region.NameIDNEQ(*i.NameIDNEQ))
-	}
-	if len(i.NameIDIn) > 0 {
-		predicates = append(predicates, region.NameIDIn(i.NameIDIn...))
-	}
-	if len(i.NameIDNotIn) > 0 {
-		predicates = append(predicates, region.NameIDNotIn(i.NameIDNotIn...))
-	}
-	if i.NameIDGT != nil {
-		predicates = append(predicates, region.NameIDGT(*i.NameIDGT))
-	}
-	if i.NameIDGTE != nil {
-		predicates = append(predicates, region.NameIDGTE(*i.NameIDGTE))
-	}
-	if i.NameIDLT != nil {
-		predicates = append(predicates, region.NameIDLT(*i.NameIDLT))
-	}
-	if i.NameIDLTE != nil {
-		predicates = append(predicates, region.NameIDLTE(*i.NameIDLTE))
-	}
-	if i.NameIDContains != nil {
-		predicates = append(predicates, region.NameIDContains(*i.NameIDContains))
-	}
-	if i.NameIDHasPrefix != nil {
-		predicates = append(predicates, region.NameIDHasPrefix(*i.NameIDHasPrefix))
-	}
-	if i.NameIDHasSuffix != nil {
-		predicates = append(predicates, region.NameIDHasSuffix(*i.NameIDHasSuffix))
-	}
-	if i.NameIDEqualFold != nil {
-		predicates = append(predicates, region.NameIDEqualFold(*i.NameIDEqualFold))
-	}
-	if i.NameIDContainsFold != nil {
-		predicates = append(predicates, region.NameIDContainsFold(*i.NameIDContainsFold))
-	}
-	if i.Name != nil {
-		predicates = append(predicates, region.NameEQ(*i.Name))
-	}
-	if i.NameNEQ != nil {
-		predicates = append(predicates, region.NameNEQ(*i.NameNEQ))
-	}
-	if len(i.NameIn) > 0 {
-		predicates = append(predicates, region.NameIn(i.NameIn...))
-	}
-	if len(i.NameNotIn) > 0 {
-		predicates = append(predicates, region.NameNotIn(i.NameNotIn...))
-	}
-	if i.NameGT != nil {
-		predicates = append(predicates, region.NameGT(*i.NameGT))
-	}
-	if i.NameGTE != nil {
-		predicates = append(predicates, region.NameGTE(*i.NameGTE))
-	}
-	if i.NameLT != nil {
-		predicates = append(predicates, region.NameLT(*i.NameLT))
-	}
-	if i.NameLTE != nil {
-		predicates = append(predicates, region.NameLTE(*i.NameLTE))
-	}
-	if i.NameContains != nil {
-		predicates = append(predicates, region.NameContains(*i.NameContains))
-	}
-	if i.NameHasPrefix != nil {
-		predicates = append(predicates, region.NameHasPrefix(*i.NameHasPrefix))
-	}
-	if i.NameHasSuffix != nil {
-		predicates = append(predicates, region.NameHasSuffix(*i.NameHasSuffix))
-	}
-	if i.NameEqualFold != nil {
-		predicates = append(predicates, region.NameEqualFold(*i.NameEqualFold))
-	}
-	if i.NameContainsFold != nil {
-		predicates = append(predicates, region.NameContainsFold(*i.NameContainsFold))
-	}
-	if i.Type != nil {
-		predicates = append(predicates, region.TypeEQ(*i.Type))
-	}
-	if i.TypeNEQ != nil {
-		predicates = append(predicates, region.TypeNEQ(*i.TypeNEQ))
-	}
-	if len(i.TypeIn) > 0 {
-		predicates = append(predicates, region.TypeIn(i.TypeIn...))
-	}
-	if len(i.TypeNotIn) > 0 {
-		predicates = append(predicates, region.TypeNotIn(i.TypeNotIn...))
-	}
-	if i.Pid != nil {
-		predicates = append(predicates, region.PidEQ(*i.Pid))
-	}
-	if i.PidNEQ != nil {
-		predicates = append(predicates, region.PidNEQ(*i.PidNEQ))
-	}
-	if len(i.PidIn) > 0 {
-		predicates = append(predicates, region.PidIn(i.PidIn...))
-	}
-	if len(i.PidNotIn) > 0 {
-		predicates = append(predicates, region.PidNotIn(i.PidNotIn...))
-	}
-	if i.PidGT != nil {
-		predicates = append(predicates, region.PidGT(*i.PidGT))
-	}
-	if i.PidGTE != nil {
-		predicates = append(predicates, region.PidGTE(*i.PidGTE))
-	}
-	if i.PidLT != nil {
-		predicates = append(predicates, region.PidLT(*i.PidLT))
-	}
-	if i.PidLTE != nil {
-		predicates = append(predicates, region.PidLTE(*i.PidLTE))
-	}
-	if i.PidContains != nil {
-		predicates = append(predicates, region.PidContains(*i.PidContains))
-	}
-	if i.PidHasPrefix != nil {
-		predicates = append(predicates, region.PidHasPrefix(*i.PidHasPrefix))
-	}
-	if i.PidHasSuffix != nil {
-		predicates = append(predicates, region.PidHasSuffix(*i.PidHasSuffix))
-	}
-	if i.PidIsNil {
-		predicates = append(predicates, region.PidIsNil())
-	}
-	if i.PidNotNil {
-		predicates = append(predicates, region.PidNotNil())
-	}
-	if i.PidEqualFold != nil {
-		predicates = append(predicates, region.PidEqualFold(*i.PidEqualFold))
-	}
-	if i.PidContainsFold != nil {
-		predicates = append(predicates, region.PidContainsFold(*i.PidContainsFold))
-	}
-
-	if i.HasParent != nil {
-		p := region.HasParent()
-		if !*i.HasParent {
-			p = region.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasParentWith) > 0 {
-		with := make([]predicate.Region, 0, len(i.HasParentWith))
-		for _, w := range i.HasParentWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, region.HasParentWith(with...))
-	}
-	if i.HasChildren != nil {
-		p := region.HasChildren()
-		if !*i.HasChildren {
-			p = region.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasChildrenWith) > 0 {
-		with := make([]predicate.Region, 0, len(i.HasChildrenWith))
-		for _, w := range i.HasChildrenWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasChildrenWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, region.HasChildrenWith(with...))
-	}
-	switch len(predicates) {
-	case 0:
-		return nil, ErrEmptyRegionWhereInput
-	case 1:
-		return predicates[0], nil
-	default:
-		return region.And(predicates...), nil
-	}
-}
-
 // RoleWhereInput represents a where input for filtering Role queries.
 type RoleWhereInput struct {
 	Predicates []predicate.Role  `json:"-"`
@@ -2664,10 +2962,6 @@ type RoleWhereInput struct {
 	// "permissions" edge predicates.
 	HasPermissions     *bool                   `json:"hasPermissions,omitempty"`
 	HasPermissionsWith []*PermissionWhereInput `json:"hasPermissionsWith,omitempty"`
-
-	// "routes" edge predicates.
-	HasRoutes     *bool             `json:"hasRoutes,omitempty"`
-	HasRoutesWith []*MenuWhereInput `json:"hasRoutesWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2988,24 +3282,6 @@ func (i *RoleWhereInput) P() (predicate.Role, error) {
 		}
 		predicates = append(predicates, role.HasPermissionsWith(with...))
 	}
-	if i.HasRoutes != nil {
-		p := role.HasRoutes()
-		if !*i.HasRoutes {
-			p = role.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasRoutesWith) > 0 {
-		with := make([]predicate.Menu, 0, len(i.HasRoutesWith))
-		for _, w := range i.HasRoutesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasRoutesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, role.HasRoutesWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyRoleWhereInput
@@ -3013,285 +3289,5 @@ func (i *RoleWhereInput) P() (predicate.Role, error) {
 		return predicates[0], nil
 	default:
 		return role.And(predicates...), nil
-	}
-}
-
-// TodoWhereInput represents a where input for filtering Todo queries.
-type TodoWhereInput struct {
-	Predicates []predicate.Todo  `json:"-"`
-	Not        *TodoWhereInput   `json:"not,omitempty"`
-	Or         []*TodoWhereInput `json:"or,omitempty"`
-	And        []*TodoWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *pxid.ID  `json:"id,omitempty"`
-	IDNEQ   *pxid.ID  `json:"idNEQ,omitempty"`
-	IDIn    []pxid.ID `json:"idIn,omitempty"`
-	IDNotIn []pxid.ID `json:"idNotIn,omitempty"`
-	IDGT    *pxid.ID  `json:"idGT,omitempty"`
-	IDGTE   *pxid.ID  `json:"idGTE,omitempty"`
-	IDLT    *pxid.ID  `json:"idLT,omitempty"`
-	IDLTE   *pxid.ID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
-
-	// "deleted_at" field predicates.
-	DeletedAt      *int  `json:"deletedAt,omitempty"`
-	DeletedAtNEQ   *int  `json:"deletedAtNEQ,omitempty"`
-	DeletedAtIn    []int `json:"deletedAtIn,omitempty"`
-	DeletedAtNotIn []int `json:"deletedAtNotIn,omitempty"`
-	DeletedAtGT    *int  `json:"deletedAtGT,omitempty"`
-	DeletedAtGTE   *int  `json:"deletedAtGTE,omitempty"`
-	DeletedAtLT    *int  `json:"deletedAtLT,omitempty"`
-	DeletedAtLTE   *int  `json:"deletedAtLTE,omitempty"`
-
-	// "name" field predicates.
-	Name             *string  `json:"name,omitempty"`
-	NameNEQ          *string  `json:"nameNEQ,omitempty"`
-	NameIn           []string `json:"nameIn,omitempty"`
-	NameNotIn        []string `json:"nameNotIn,omitempty"`
-	NameGT           *string  `json:"nameGT,omitempty"`
-	NameGTE          *string  `json:"nameGTE,omitempty"`
-	NameLT           *string  `json:"nameLT,omitempty"`
-	NameLTE          *string  `json:"nameLTE,omitempty"`
-	NameContains     *string  `json:"nameContains,omitempty"`
-	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
-	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
-	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
-	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-}
-
-// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
-func (i *TodoWhereInput) AddPredicates(predicates ...predicate.Todo) {
-	i.Predicates = append(i.Predicates, predicates...)
-}
-
-// Filter applies the TodoWhereInput filter on the TodoQuery builder.
-func (i *TodoWhereInput) Filter(q *TodoQuery) (*TodoQuery, error) {
-	if i == nil {
-		return q, nil
-	}
-	p, err := i.P()
-	if err != nil {
-		if err == ErrEmptyTodoWhereInput {
-			return q, nil
-		}
-		return nil, err
-	}
-	return q.Where(p), nil
-}
-
-// ErrEmptyTodoWhereInput is returned in case the TodoWhereInput is empty.
-var ErrEmptyTodoWhereInput = errors.New("ent: empty predicate TodoWhereInput")
-
-// P returns a predicate for filtering todos.
-// An error is returned if the input is empty or invalid.
-func (i *TodoWhereInput) P() (predicate.Todo, error) {
-	var predicates []predicate.Todo
-	if i.Not != nil {
-		p, err := i.Not.P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'not'", err)
-		}
-		predicates = append(predicates, todo.Not(p))
-	}
-	switch n := len(i.Or); {
-	case n == 1:
-		p, err := i.Or[0].P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'or'", err)
-		}
-		predicates = append(predicates, p)
-	case n > 1:
-		or := make([]predicate.Todo, 0, n)
-		for _, w := range i.Or {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'or'", err)
-			}
-			or = append(or, p)
-		}
-		predicates = append(predicates, todo.Or(or...))
-	}
-	switch n := len(i.And); {
-	case n == 1:
-		p, err := i.And[0].P()
-		if err != nil {
-			return nil, fmt.Errorf("%w: field 'and'", err)
-		}
-		predicates = append(predicates, p)
-	case n > 1:
-		and := make([]predicate.Todo, 0, n)
-		for _, w := range i.And {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'and'", err)
-			}
-			and = append(and, p)
-		}
-		predicates = append(predicates, todo.And(and...))
-	}
-	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, todo.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, todo.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, todo.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, todo.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, todo.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, todo.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, todo.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, todo.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, todo.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, todo.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, todo.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, todo.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, todo.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, todo.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, todo.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, todo.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, todo.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, todo.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, todo.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, todo.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, todo.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, todo.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, todo.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, todo.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
-	if i.DeletedAt != nil {
-		predicates = append(predicates, todo.DeletedAtEQ(*i.DeletedAt))
-	}
-	if i.DeletedAtNEQ != nil {
-		predicates = append(predicates, todo.DeletedAtNEQ(*i.DeletedAtNEQ))
-	}
-	if len(i.DeletedAtIn) > 0 {
-		predicates = append(predicates, todo.DeletedAtIn(i.DeletedAtIn...))
-	}
-	if len(i.DeletedAtNotIn) > 0 {
-		predicates = append(predicates, todo.DeletedAtNotIn(i.DeletedAtNotIn...))
-	}
-	if i.DeletedAtGT != nil {
-		predicates = append(predicates, todo.DeletedAtGT(*i.DeletedAtGT))
-	}
-	if i.DeletedAtGTE != nil {
-		predicates = append(predicates, todo.DeletedAtGTE(*i.DeletedAtGTE))
-	}
-	if i.DeletedAtLT != nil {
-		predicates = append(predicates, todo.DeletedAtLT(*i.DeletedAtLT))
-	}
-	if i.DeletedAtLTE != nil {
-		predicates = append(predicates, todo.DeletedAtLTE(*i.DeletedAtLTE))
-	}
-	if i.Name != nil {
-		predicates = append(predicates, todo.NameEQ(*i.Name))
-	}
-	if i.NameNEQ != nil {
-		predicates = append(predicates, todo.NameNEQ(*i.NameNEQ))
-	}
-	if len(i.NameIn) > 0 {
-		predicates = append(predicates, todo.NameIn(i.NameIn...))
-	}
-	if len(i.NameNotIn) > 0 {
-		predicates = append(predicates, todo.NameNotIn(i.NameNotIn...))
-	}
-	if i.NameGT != nil {
-		predicates = append(predicates, todo.NameGT(*i.NameGT))
-	}
-	if i.NameGTE != nil {
-		predicates = append(predicates, todo.NameGTE(*i.NameGTE))
-	}
-	if i.NameLT != nil {
-		predicates = append(predicates, todo.NameLT(*i.NameLT))
-	}
-	if i.NameLTE != nil {
-		predicates = append(predicates, todo.NameLTE(*i.NameLTE))
-	}
-	if i.NameContains != nil {
-		predicates = append(predicates, todo.NameContains(*i.NameContains))
-	}
-	if i.NameHasPrefix != nil {
-		predicates = append(predicates, todo.NameHasPrefix(*i.NameHasPrefix))
-	}
-	if i.NameHasSuffix != nil {
-		predicates = append(predicates, todo.NameHasSuffix(*i.NameHasSuffix))
-	}
-	if i.NameEqualFold != nil {
-		predicates = append(predicates, todo.NameEqualFold(*i.NameEqualFold))
-	}
-	if i.NameContainsFold != nil {
-		predicates = append(predicates, todo.NameContainsFold(*i.NameContainsFold))
-	}
-
-	switch len(predicates) {
-	case 0:
-		return nil, ErrEmptyTodoWhereInput
-	case 1:
-		return predicates[0], nil
-	default:
-		return todo.And(predicates...), nil
 	}
 }

@@ -10,13 +10,13 @@ type SchemaConfig struct {
 	Admin           string // Admin table.
 	AdminRoles      string // Admin-roles->Role table.
 	Department      string // Department table.
-	Menu            string // Menu table.
+	Genre           string // Genre table.
+	GenreMangas     string // Genre-mangas->Manga table.
+	Manga           string // Manga table.
+	MangaChapter    string // MangaChapter table.
 	Permission      string // Permission table.
-	Region          string // Region table.
 	Role            string // Role table.
 	RolePermissions string // Role-permissions->Permission table.
-	RoleRoutes      string // Role-routes->Menu table.
-	Todo            string // Todo table.
 }
 
 type schemaCtxKey struct{}

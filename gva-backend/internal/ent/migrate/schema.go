@@ -84,40 +84,96 @@ var (
 			},
 		},
 	}
-	// MenusColumns holds the columns for the "menus" table.
-	MenusColumns = []*schema.Column{
+	// GenresColumns holds the columns for the "genres" table.
+	GenresColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "is_enable", Type: field.TypeBool, Default: true},
 		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
-		{Name: "path", Type: field.TypeString},
-		{Name: "component", Type: field.TypeString},
-		{Name: "redirect", Type: field.TypeString, Nullable: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "order", Type: field.TypeInt, Nullable: true, Default: 0},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"cata_log", "menu", "button", "external_link"}, Default: "cata_log"},
-		{Name: "meta", Type: field.TypeJSON},
-		{Name: "pid", Type: field.TypeString, Nullable: true},
+		{Name: "name_id", Type: field.TypeString},
 	}
-	// MenusTable holds the schema information for the "menus" table.
-	MenusTable = &schema.Table{
-		Name:       "menus",
-		Columns:    MenusColumns,
-		PrimaryKey: []*schema.Column{MenusColumns[0]},
+	// GenresTable holds the schema information for the "genres" table.
+	GenresTable = &schema.Table{
+		Name:       "genres",
+		Columns:    GenresColumns,
+		PrimaryKey: []*schema.Column{GenresColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "genre_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{GenresColumns[4]},
+			},
+			{
+				Name:    "genre_name_id_deleted_at",
+				Unique:  true,
+				Columns: []*schema.Column{GenresColumns[6], GenresColumns[4]},
+			},
+		},
+	}
+	// MangasColumns holds the columns for the "mangas" table.
+	MangasColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "is_enable", Type: field.TypeBool, Default: true},
+		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
+		{Name: "name_id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "desc", Type: field.TypeString},
+		{Name: "prodiver", Type: field.TypeString},
+		{Name: "thumbnail_url", Type: field.TypeString},
+		{Name: "authors", Type: field.TypeJSON},
+	}
+	// MangasTable holds the schema information for the "mangas" table.
+	MangasTable = &schema.Table{
+		Name:       "mangas",
+		Columns:    MangasColumns,
+		PrimaryKey: []*schema.Column{MangasColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "manga_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{MangasColumns[4]},
+			},
+			{
+				Name:    "manga_name_name_id_deleted_at",
+				Unique:  true,
+				Columns: []*schema.Column{MangasColumns[6], MangasColumns[5], MangasColumns[4]},
+			},
+		},
+	}
+	// MangaChaptersColumns holds the columns for the "manga_chapters" table.
+	MangaChaptersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "title", Type: field.TypeString},
+		{Name: "img_url", Type: field.TypeString},
+		{Name: "number", Type: field.TypeUint},
+		{Name: "provider_name", Type: field.TypeString},
+		{Name: "chapter_updated_at", Type: field.TypeTime},
+		{Name: "manga_id", Type: field.TypeString},
+	}
+	// MangaChaptersTable holds the schema information for the "manga_chapters" table.
+	MangaChaptersTable = &schema.Table{
+		Name:       "manga_chapters",
+		Columns:    MangaChaptersColumns,
+		PrimaryKey: []*schema.Column{MangaChaptersColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "menus_menus_children",
-				Columns:    []*schema.Column{MenusColumns[12]},
-				RefColumns: []*schema.Column{MenusColumns[0]},
-				OnDelete:   schema.SetNull,
+				Symbol:     "manga_chapters_mangas_chapters",
+				Columns:    []*schema.Column{MangaChaptersColumns[8]},
+				RefColumns: []*schema.Column{MangasColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "menu_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{MenusColumns[4]},
+				Name:    "mangachapter_provider_name_manga_id_number",
+				Unique:  true,
+				Columns: []*schema.Column{MangaChaptersColumns[6], MangaChaptersColumns[8], MangaChaptersColumns[5]},
 			},
 		},
 	}
@@ -137,44 +193,6 @@ var (
 		Name:       "permissions",
 		Columns:    PermissionsColumns,
 		PrimaryKey: []*schema.Column{PermissionsColumns[0]},
-	}
-	// RegionsColumns holds the columns for the "regions" table.
-	RegionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
-		{Name: "is_enable", Type: field.TypeBool, Default: true},
-		{Name: "name_id", Type: field.TypeString},
-		{Name: "name", Type: field.TypeString},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"continent", "country", "city", "street", "any"}},
-		{Name: "pid", Type: field.TypeString, Nullable: true},
-	}
-	// RegionsTable holds the schema information for the "regions" table.
-	RegionsTable = &schema.Table{
-		Name:       "regions",
-		Columns:    RegionsColumns,
-		PrimaryKey: []*schema.Column{RegionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "regions_regions_children",
-				Columns:    []*schema.Column{RegionsColumns[8]},
-				RefColumns: []*schema.Column{RegionsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "region_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{RegionsColumns[3]},
-			},
-			{
-				Name:    "region_name_id_deleted_at",
-				Unique:  true,
-				Columns: []*schema.Column{RegionsColumns[5], RegionsColumns[3]},
-			},
-		},
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
@@ -201,27 +219,6 @@ var (
 			},
 		},
 	}
-	// TodosColumns holds the columns for the "todos" table.
-	TodosColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeInt, Default: "0"},
-		{Name: "name", Type: field.TypeString},
-	}
-	// TodosTable holds the schema information for the "todos" table.
-	TodosTable = &schema.Table{
-		Name:       "todos",
-		Columns:    TodosColumns,
-		PrimaryKey: []*schema.Column{TodosColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "todo_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{TodosColumns[3]},
-			},
-		},
-	}
 	// AdminRolesColumns holds the columns for the "admin_roles" table.
 	AdminRolesColumns = []*schema.Column{
 		{Name: "admin_id", Type: field.TypeString},
@@ -243,6 +240,31 @@ var (
 				Symbol:     "admin_roles_role_id",
 				Columns:    []*schema.Column{AdminRolesColumns[1]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// GenreMangasColumns holds the columns for the "genre_mangas" table.
+	GenreMangasColumns = []*schema.Column{
+		{Name: "genre_id", Type: field.TypeString},
+		{Name: "manga_id", Type: field.TypeString},
+	}
+	// GenreMangasTable holds the schema information for the "genre_mangas" table.
+	GenreMangasTable = &schema.Table{
+		Name:       "genre_mangas",
+		Columns:    GenreMangasColumns,
+		PrimaryKey: []*schema.Column{GenreMangasColumns[0], GenreMangasColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "genre_mangas_genre_id",
+				Columns:    []*schema.Column{GenreMangasColumns[0]},
+				RefColumns: []*schema.Column{GenresColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "genre_mangas_manga_id",
+				Columns:    []*schema.Column{GenreMangasColumns[1]},
+				RefColumns: []*schema.Column{MangasColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -272,55 +294,29 @@ var (
 			},
 		},
 	}
-	// RoleRoutesColumns holds the columns for the "role_routes" table.
-	RoleRoutesColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeString},
-		{Name: "menu_id", Type: field.TypeString},
-	}
-	// RoleRoutesTable holds the schema information for the "role_routes" table.
-	RoleRoutesTable = &schema.Table{
-		Name:       "role_routes",
-		Columns:    RoleRoutesColumns,
-		PrimaryKey: []*schema.Column{RoleRoutesColumns[0], RoleRoutesColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "role_routes_role_id",
-				Columns:    []*schema.Column{RoleRoutesColumns[0]},
-				RefColumns: []*schema.Column{RolesColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "role_routes_menu_id",
-				Columns:    []*schema.Column{RoleRoutesColumns[1]},
-				RefColumns: []*schema.Column{MenusColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminsTable,
 		DepartmentsTable,
-		MenusTable,
+		GenresTable,
+		MangasTable,
+		MangaChaptersTable,
 		PermissionsTable,
-		RegionsTable,
 		RolesTable,
-		TodosTable,
 		AdminRolesTable,
+		GenreMangasTable,
 		RolePermissionsTable,
-		RoleRoutesTable,
 	}
 )
 
 func init() {
 	AdminsTable.ForeignKeys[0].RefTable = DepartmentsTable
 	DepartmentsTable.ForeignKeys[0].RefTable = DepartmentsTable
-	MenusTable.ForeignKeys[0].RefTable = MenusTable
-	RegionsTable.ForeignKeys[0].RefTable = RegionsTable
+	MangaChaptersTable.ForeignKeys[0].RefTable = MangasTable
 	AdminRolesTable.ForeignKeys[0].RefTable = AdminsTable
 	AdminRolesTable.ForeignKeys[1].RefTable = RolesTable
+	GenreMangasTable.ForeignKeys[0].RefTable = GenresTable
+	GenreMangasTable.ForeignKeys[1].RefTable = MangasTable
 	RolePermissionsTable.ForeignKeys[0].RefTable = RolesTable
 	RolePermissionsTable.ForeignKeys[1].RefTable = PermissionsTable
-	RoleRoutesTable.ForeignKeys[0].RefTable = RolesTable
-	RoleRoutesTable.ForeignKeys[1].RefTable = MenusTable
 }

@@ -1,5 +1,6 @@
-package main
+//go:build ignore
+// +build ignore
 
-// import _ "github.com/gva/internal/ent/runtime"
+package main
 
 //go:generate go run github.com/99designs/gqlgen

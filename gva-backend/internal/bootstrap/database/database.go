@@ -2,21 +2,18 @@ package database
 
 import (
 	"context"
-	"fmt"
-
-	"reflect"
-
-	"github.com/gva/env"
-	"github.com/gva/internal/ent"
-
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-
 	dsql "database/sql"
+	"fmt"
+	"reflect"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gva/env"
+	"github.com/gva/internal/ent"
+	_ "github.com/gva/internal/ent/runtime"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 type Database struct {
@@ -41,7 +38,7 @@ func NewDatabase(cfg *env.Config, log *zerolog.Logger) *Database {
 }
 
 func (db *Database) Connect() error {
-	dbDns := fmt.Sprintf("%s?parseTime=true",db.Cfg.DB.Mysql.DSN)
+	dbDns := fmt.Sprintf("%s?parseTime=true", db.Cfg.DB.Mysql.DSN)
 	drv, err := sql.Open(dialect.MySQL, dbDns)
 	if err != nil {
 		return fmt.Errorf("dns %s, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)

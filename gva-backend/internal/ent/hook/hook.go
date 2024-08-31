@@ -33,16 +33,40 @@ func (f DepartmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DepartmentMutation", m)
 }
 
-// The MenuFunc type is an adapter to allow the use of ordinary
-// function as Menu mutator.
-type MenuFunc func(context.Context, *ent.MenuMutation) (ent.Value, error)
+// The GenreFunc type is an adapter to allow the use of ordinary
+// function as Genre mutator.
+type GenreFunc func(context.Context, *ent.GenreMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MenuFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MenuMutation); ok {
+func (f GenreFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.GenreMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GenreMutation", m)
+}
+
+// The MangaFunc type is an adapter to allow the use of ordinary
+// function as Manga mutator.
+type MangaFunc func(context.Context, *ent.MangaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MangaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MangaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MangaMutation", m)
+}
+
+// The MangaChapterFunc type is an adapter to allow the use of ordinary
+// function as MangaChapter mutator.
+type MangaChapterFunc func(context.Context, *ent.MangaChapterMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MangaChapterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MangaChapterMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MangaChapterMutation", m)
 }
 
 // The PermissionFunc type is an adapter to allow the use of ordinary
@@ -57,18 +81,6 @@ func (f PermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionMutation", m)
 }
 
-// The RegionFunc type is an adapter to allow the use of ordinary
-// function as Region mutator.
-type RegionFunc func(context.Context, *ent.RegionMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f RegionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RegionMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RegionMutation", m)
-}
-
 // The RoleFunc type is an adapter to allow the use of ordinary
 // function as Role mutator.
 type RoleFunc func(context.Context, *ent.RoleMutation) (ent.Value, error)
@@ -79,18 +91,6 @@ func (f RoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoleMutation", m)
-}
-
-// The TodoFunc type is an adapter to allow the use of ordinary
-// function as Todo mutator.
-type TodoFunc func(context.Context, *ent.TodoMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TodoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TodoMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TodoMutation", m)
 }
 
 // Condition is a hook condition function.

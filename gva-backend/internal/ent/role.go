@@ -46,17 +46,14 @@ type RoleEdges struct {
 	Admins []*Admin `json:"admins,omitempty"`
 	// Permissions holds the value of the permissions edge.
 	Permissions []*Permission `json:"permissions,omitempty"`
-	// Routes holds the value of the routes edge.
-	Routes []*Menu `json:"routes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [3]map[string]int
+	totalCount [2]map[string]int
 
 	namedAdmins      map[string][]*Admin
 	namedPermissions map[string][]*Permission
-	namedRoutes      map[string][]*Menu
 }
 
 // AdminsOrErr returns the Admins value or an error if the edge
@@ -75,15 +72,6 @@ func (e RoleEdges) PermissionsOrErr() ([]*Permission, error) {
 		return e.Permissions, nil
 	}
 	return nil, &NotLoadedError{edge: "permissions"}
-}
-
-// RoutesOrErr returns the Routes value or an error if the edge
-// was not loaded in eager-loading.
-func (e RoleEdges) RoutesOrErr() ([]*Menu, error) {
-	if e.loadedTypes[2] {
-		return e.Routes, nil
-	}
-	return nil, &NotLoadedError{edge: "routes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -193,11 +181,6 @@ func (r *Role) QueryPermissions() *PermissionQuery {
 	return NewRoleClient(r.config).QueryPermissions(r)
 }
 
-// QueryRoutes queries the "routes" edge of the Role entity.
-func (r *Role) QueryRoutes() *MenuQuery {
-	return NewRoleClient(r.config).QueryRoutes(r)
-}
-
 // Update returns a builder for updating this Role.
 // Note that you need to call Role.Unwrap() before calling this method if this Role
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -293,30 +276,6 @@ func (r *Role) appendNamedPermissions(name string, edges ...*Permission) {
 		r.Edges.namedPermissions[name] = []*Permission{}
 	} else {
 		r.Edges.namedPermissions[name] = append(r.Edges.namedPermissions[name], edges...)
-	}
-}
-
-// NamedRoutes returns the Routes named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (r *Role) NamedRoutes(name string) ([]*Menu, error) {
-	if r.Edges.namedRoutes == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := r.Edges.namedRoutes[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (r *Role) appendNamedRoutes(name string, edges ...*Menu) {
-	if r.Edges.namedRoutes == nil {
-		r.Edges.namedRoutes = make(map[string][]*Menu)
-	}
-	if len(edges) == 0 {
-		r.Edges.namedRoutes[name] = []*Menu{}
-	} else {
-		r.Edges.namedRoutes[name] = append(r.Edges.namedRoutes[name], edges...)
 	}
 }
 

@@ -466,35 +466,6 @@ func HasPermissionsWith(preds ...predicate.Permission) predicate.Role {
 	})
 }
 
-// HasRoutes applies the HasEdge predicate on the "routes" edge.
-func HasRoutes() predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, RoutesTable, RoutesPrimaryKey...),
-		)
-		schemaConfig := internal.SchemaConfigFromContext(s.Context())
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.RoleRoutes
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRoutesWith applies the HasEdge predicate on the "routes" edge with a given conditions (other predicates).
-func HasRoutesWith(preds ...predicate.Menu) predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := newRoutesStep()
-		schemaConfig := internal.SchemaConfigFromContext(s.Context())
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.RoleRoutes
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Role) predicate.Role {
 	return predicate.Role(sql.AndPredicates(predicates...))

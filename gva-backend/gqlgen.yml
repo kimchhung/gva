@@ -14,8 +14,8 @@ exec:
 
 # Where should any generated models go?
 model:
- filename: api/web/graph/model/models_gen.go
- package: model
+  filename: api/web/graph/model/models_gen.go
+  package: model
 
 # Where should the resolver implementations go?
 resolver:
@@ -69,10 +69,8 @@ skip_mod_tidy: true
 autobind:
   - "github.com/99designs/gqlgen/graphql/introspection"
   - "github.com/gva/internal/ent"
-  - "github.com/gva/internal/ent/todo"
+  # - "github.com/gva/internal/ent/todo"
   # - "github.com/gva/app/database/schema/types"
-
-
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -89,6 +87,4 @@ models:
       - github.com/gva/internal/ent.Noder
   # MenuMeta:
   #   model:
-  #     - github.com/gva/app/database/schema/types.MenuMeta   
-
-
+  #     - github.com/gva/app/database/schema/types.MenuMeta

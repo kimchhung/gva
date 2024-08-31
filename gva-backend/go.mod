@@ -1,10 +1,10 @@
 module github.com/gva
 
-go 1.23
+go 1.23.0
 
 require (
 	entgo.io/contrib v0.5.0
-	entgo.io/ent v0.13.1
+	entgo.io/ent v0.14.1
 	github.com/99designs/gqlgen v0.17.49
 	github.com/efectn/fx-zerolog v1.1.0
 	github.com/go-playground/locales v0.14.1
@@ -34,10 +34,11 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.24.0 // indirect
+	ariga.io/atlas v0.26.1 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
+	github.com/a8m/entclean v0.0.0-20210204213305-8bed846a89ef // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/antchfx/htmlquery v1.2.3 // indirect
@@ -108,7 +109,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
-	github.com/hashicorp/hcl/v2 v2.21.0 // indirect
+	github.com/hashicorp/hcl/v2 v2.22.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/labstack/echo-contrib v0.17.1
 	github.com/leodido/go-urn v1.4.0 // indirect
@@ -120,7 +121,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/zclconf/go-cty v1.14.4 // indirect
+	github.com/zclconf/go-cty v1.15.0 // indirect
 	go.uber.org/dig v1.17.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect

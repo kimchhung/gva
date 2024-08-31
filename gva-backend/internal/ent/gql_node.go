@@ -11,11 +11,11 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -35,30 +35,30 @@ var departmentImplementors = []string{"Department", "Node"}
 // IsNode implements the Node interface check for GQLGen.
 func (*Department) IsNode() {}
 
-var menuImplementors = []string{"Menu", "Node"}
+var genreImplementors = []string{"Genre", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
-func (*Menu) IsNode() {}
+func (*Genre) IsNode() {}
+
+var mangaImplementors = []string{"Manga", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Manga) IsNode() {}
+
+var mangachapterImplementors = []string{"MangaChapter", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*MangaChapter) IsNode() {}
 
 var permissionImplementors = []string{"Permission", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Permission) IsNode() {}
 
-var regionImplementors = []string{"Region", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Region) IsNode() {}
-
 var roleImplementors = []string{"Role", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Role) IsNode() {}
-
-var todoImplementors = []string{"Todo", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Todo) IsNode() {}
 
 var errNodeInvalidID = &NotFoundError{"node"}
 
@@ -144,15 +144,41 @@ func (c *Client) noder(ctx context.Context, table string, id pxid.ID) (Noder, er
 			}
 		}
 		return query.Only(ctx)
-	case menu.Table:
+	case genre.Table:
 		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
-		query := c.Menu.Query().
-			Where(menu.ID(uid))
+		query := c.Genre.Query().
+			Where(genre.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, menuImplementors...); err != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, genreImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case manga.Table:
+		var uid pxid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.Manga.Query().
+			Where(manga.ID(uid))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, mangaImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case mangachapter.Table:
+		var uid pxid.ID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.MangaChapter.Query().
+			Where(mangachapter.ID(uid))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, mangachapterImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -170,19 +196,6 @@ func (c *Client) noder(ctx context.Context, table string, id pxid.ID) (Noder, er
 			}
 		}
 		return query.Only(ctx)
-	case region.Table:
-		var uid pxid.ID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.Region.Query().
-			Where(region.ID(uid))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, regionImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
 	case role.Table:
 		var uid pxid.ID
 		if err := uid.UnmarshalGQL(id); err != nil {
@@ -192,19 +205,6 @@ func (c *Client) noder(ctx context.Context, table string, id pxid.ID) (Noder, er
 			Where(role.ID(uid))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, roleImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case todo.Table:
-		var uid pxid.ID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.Todo.Query().
-			Where(todo.ID(uid))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, todoImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -314,10 +314,42 @@ func (c *Client) noders(ctx context.Context, table string, ids []pxid.ID) ([]Nod
 				*noder = node
 			}
 		}
-	case menu.Table:
-		query := c.Menu.Query().
-			Where(menu.IDIn(ids...))
-		query, err := query.CollectFields(ctx, menuImplementors...)
+	case genre.Table:
+		query := c.Genre.Query().
+			Where(genre.IDIn(ids...))
+		query, err := query.CollectFields(ctx, genreImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case manga.Table:
+		query := c.Manga.Query().
+			Where(manga.IDIn(ids...))
+		query, err := query.CollectFields(ctx, mangaImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case mangachapter.Table:
+		query := c.MangaChapter.Query().
+			Where(mangachapter.IDIn(ids...))
+		query, err := query.CollectFields(ctx, mangachapterImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -346,42 +378,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []pxid.ID) ([]Nod
 				*noder = node
 			}
 		}
-	case region.Table:
-		query := c.Region.Query().
-			Where(region.IDIn(ids...))
-		query, err := query.CollectFields(ctx, regionImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
 	case role.Table:
 		query := c.Role.Query().
 			Where(role.IDIn(ids...))
 		query, err := query.CollectFields(ctx, roleImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case todo.Table:
-		query := c.Todo.Query().
-			Where(todo.IDIn(ids...))
-		query, err := query.CollectFields(ctx, todoImplementors...)
 		if err != nil {
 			return nil, err
 		}

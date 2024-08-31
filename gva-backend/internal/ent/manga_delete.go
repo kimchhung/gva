@@ -11,29 +11,29 @@ import (
 	"github.com/gva/internal/ent/predicate"
 
 	"github.com/gva/internal/ent/internal"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/manga"
 )
 
-// MenuDelete is the builder for deleting a Menu entity.
-type MenuDelete struct {
+// MangaDelete is the builder for deleting a Manga entity.
+type MangaDelete struct {
 	config
 	hooks    []Hook
-	mutation *MenuMutation
+	mutation *MangaMutation
 }
 
-// Where appends a list predicates to the MenuDelete builder.
-func (md *MenuDelete) Where(ps ...predicate.Menu) *MenuDelete {
+// Where appends a list predicates to the MangaDelete builder.
+func (md *MangaDelete) Where(ps ...predicate.Manga) *MangaDelete {
 	md.mutation.Where(ps...)
 	return md
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (md *MenuDelete) Exec(ctx context.Context) (int, error) {
+func (md *MangaDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, md.sqlExec, md.mutation, md.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (md *MenuDelete) ExecX(ctx context.Context) int {
+func (md *MangaDelete) ExecX(ctx context.Context) int {
 	n, err := md.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -41,9 +41,9 @@ func (md *MenuDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (md *MenuDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(menu.Table, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString))
-	_spec.Node.Schema = md.schemaConfig.Menu
+func (md *MangaDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(manga.Table, sqlgraph.NewFieldSpec(manga.FieldID, field.TypeString))
+	_spec.Node.Schema = md.schemaConfig.Manga
 	ctx = internal.NewSchemaConfigContext(ctx, md.schemaConfig)
 	if ps := md.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -60,32 +60,32 @@ func (md *MenuDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// MenuDeleteOne is the builder for deleting a single Menu entity.
-type MenuDeleteOne struct {
-	md *MenuDelete
+// MangaDeleteOne is the builder for deleting a single Manga entity.
+type MangaDeleteOne struct {
+	md *MangaDelete
 }
 
-// Where appends a list predicates to the MenuDelete builder.
-func (mdo *MenuDeleteOne) Where(ps ...predicate.Menu) *MenuDeleteOne {
+// Where appends a list predicates to the MangaDelete builder.
+func (mdo *MangaDeleteOne) Where(ps ...predicate.Manga) *MangaDeleteOne {
 	mdo.md.mutation.Where(ps...)
 	return mdo
 }
 
 // Exec executes the deletion query.
-func (mdo *MenuDeleteOne) Exec(ctx context.Context) error {
+func (mdo *MangaDeleteOne) Exec(ctx context.Context) error {
 	n, err := mdo.md.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{menu.Label}
+		return &NotFoundError{manga.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (mdo *MenuDeleteOne) ExecX(ctx context.Context) {
+func (mdo *MangaDeleteOne) ExecX(ctx context.Context) {
 	if err := mdo.Exec(ctx); err != nil {
 		panic(err)
 	}

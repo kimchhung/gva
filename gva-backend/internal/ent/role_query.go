@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
 	"github.com/gva/internal/ent/role"
@@ -31,12 +31,10 @@ type RoleQuery struct {
 	predicates           []predicate.Role
 	withAdmins           *AdminQuery
 	withPermissions      *PermissionQuery
-	withRoutes           *MenuQuery
 	loadTotal            []func(context.Context, []*Role) error
 	modifiers            []func(*sql.Selector)
 	withNamedAdmins      map[string]*AdminQuery
 	withNamedPermissions map[string]*PermissionQuery
-	withNamedRoutes      map[string]*MenuQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -123,35 +121,10 @@ func (rq *RoleQuery) QueryPermissions() *PermissionQuery {
 	return query
 }
 
-// QueryRoutes chains the current query on the "routes" edge.
-func (rq *RoleQuery) QueryRoutes() *MenuQuery {
-	query := (&MenuClient{config: rq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := rq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := rq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(role.Table, role.FieldID, selector),
-			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
-		)
-		schemaConfig := rq.schemaConfig
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.RoleRoutes
-		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // First returns the first Role entity from the query.
 // Returns a *NotFoundError when no Role was found.
 func (rq *RoleQuery) First(ctx context.Context) (*Role, error) {
-	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, "First"))
+	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +147,7 @@ func (rq *RoleQuery) FirstX(ctx context.Context) *Role {
 // Returns a *NotFoundError when no Role ID was found.
 func (rq *RoleQuery) FirstID(ctx context.Context) (id pxid.ID, err error) {
 	var ids []pxid.ID
-	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
+	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -197,7 +170,7 @@ func (rq *RoleQuery) FirstIDX(ctx context.Context) pxid.ID {
 // Returns a *NotSingularError when more than one Role entity is found.
 // Returns a *NotFoundError when no Role entities are found.
 func (rq *RoleQuery) Only(ctx context.Context) (*Role, error) {
-	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, "Only"))
+	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +198,7 @@ func (rq *RoleQuery) OnlyX(ctx context.Context) *Role {
 // Returns a *NotFoundError when no entities are found.
 func (rq *RoleQuery) OnlyID(ctx context.Context) (id pxid.ID, err error) {
 	var ids []pxid.ID
-	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
+	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -250,7 +223,7 @@ func (rq *RoleQuery) OnlyIDX(ctx context.Context) pxid.ID {
 
 // All executes the query and returns a list of Roles.
 func (rq *RoleQuery) All(ctx context.Context) ([]*Role, error) {
-	ctx = setContextOp(ctx, rq.ctx, "All")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryAll)
 	if err := rq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -272,7 +245,7 @@ func (rq *RoleQuery) IDs(ctx context.Context) (ids []pxid.ID, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
-	ctx = setContextOp(ctx, rq.ctx, "IDs")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryIDs)
 	if err = rq.Select(role.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -290,7 +263,7 @@ func (rq *RoleQuery) IDsX(ctx context.Context) []pxid.ID {
 
 // Count returns the count of the given query.
 func (rq *RoleQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, rq.ctx, "Count")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryCount)
 	if err := rq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -308,7 +281,7 @@ func (rq *RoleQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rq *RoleQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, rq.ctx, "Exist")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryExist)
 	switch _, err := rq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -342,10 +315,10 @@ func (rq *RoleQuery) Clone() *RoleQuery {
 		predicates:      append([]predicate.Role{}, rq.predicates...),
 		withAdmins:      rq.withAdmins.Clone(),
 		withPermissions: rq.withPermissions.Clone(),
-		withRoutes:      rq.withRoutes.Clone(),
 		// clone intermediate query.
-		sql:  rq.sql.Clone(),
-		path: rq.path,
+		sql:       rq.sql.Clone(),
+		path:      rq.path,
+		modifiers: append([]func(*sql.Selector){}, rq.modifiers...),
 	}
 }
 
@@ -368,17 +341,6 @@ func (rq *RoleQuery) WithPermissions(opts ...func(*PermissionQuery)) *RoleQuery 
 		opt(query)
 	}
 	rq.withPermissions = query
-	return rq
-}
-
-// WithRoutes tells the query-builder to eager-load the nodes that are connected to
-// the "routes" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RoleQuery) WithRoutes(opts ...func(*MenuQuery)) *RoleQuery {
-	query := (&MenuClient{config: rq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	rq.withRoutes = query
 	return rq
 }
 
@@ -460,10 +422,9 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	var (
 		nodes       = []*Role{}
 		_spec       = rq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			rq.withAdmins != nil,
 			rq.withPermissions != nil,
-			rq.withRoutes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -503,13 +464,6 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 			return nil, err
 		}
 	}
-	if query := rq.withRoutes; query != nil {
-		if err := rq.loadRoutes(ctx, query, nodes,
-			func(n *Role) { n.Edges.Routes = []*Menu{} },
-			func(n *Role, e *Menu) { n.Edges.Routes = append(n.Edges.Routes, e) }); err != nil {
-			return nil, err
-		}
-	}
 	for name, query := range rq.withNamedAdmins {
 		if err := rq.loadAdmins(ctx, query, nodes,
 			func(n *Role) { n.appendNamedAdmins(name) },
@@ -521,13 +475,6 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 		if err := rq.loadPermissions(ctx, query, nodes,
 			func(n *Role) { n.appendNamedPermissions(name) },
 			func(n *Role, e *Permission) { n.appendNamedPermissions(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range rq.withNamedRoutes {
-		if err := rq.loadRoutes(ctx, query, nodes,
-			func(n *Role) { n.appendNamedRoutes(name) },
-			func(n *Role, e *Menu) { n.appendNamedRoutes(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -656,68 +603,6 @@ func (rq *RoleQuery) loadPermissions(ctx context.Context, query *PermissionQuery
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "permissions" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
-	}
-	return nil
-}
-func (rq *RoleQuery) loadRoutes(ctx context.Context, query *MenuQuery, nodes []*Role, init func(*Role), assign func(*Role, *Menu)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[pxid.ID]*Role)
-	nids := make(map[pxid.ID]map[*Role]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.RoutesTable)
-		joinT.Schema(rq.schemaConfig.RoleRoutes)
-		s.Join(joinT).On(s.C(menu.FieldID), joinT.C(role.RoutesPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(role.RoutesPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.RoutesPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(pxid.ID)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*pxid.ID)
-				inValue := *values[1].(*pxid.ID)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*Role]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*Menu](ctx, query, qr, query.inters)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "routes" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -878,20 +763,6 @@ func (rq *RoleQuery) WithNamedPermissions(name string, opts ...func(*PermissionQ
 	return rq
 }
 
-// WithNamedRoutes tells the query-builder to eager-load the nodes that are connected to the "routes"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (rq *RoleQuery) WithNamedRoutes(name string, opts ...func(*MenuQuery)) *RoleQuery {
-	query := (&MenuClient{config: rq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if rq.withNamedRoutes == nil {
-		rq.withNamedRoutes = make(map[string]*MenuQuery)
-	}
-	rq.withNamedRoutes[name] = query
-	return rq
-}
-
 // RoleGroupBy is the group-by builder for Role entities.
 type RoleGroupBy struct {
 	selector
@@ -906,7 +777,7 @@ func (rgb *RoleGroupBy) Aggregate(fns ...AggregateFunc) *RoleGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rgb *RoleGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, rgb.build.ctx, ent.OpQueryGroupBy)
 	if err := rgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -954,7 +825,7 @@ func (rs *RoleSelect) Aggregate(fns ...AggregateFunc) *RoleSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rs *RoleSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rs.ctx, "Select")
+	ctx = setContextOp(ctx, rs.ctx, ent.OpQuerySelect)
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}

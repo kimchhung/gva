@@ -18,11 +18,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 
 	stdsql "database/sql"
 
@@ -38,16 +38,16 @@ type Client struct {
 	Admin *AdminClient
 	// Department is the client for interacting with the Department builders.
 	Department *DepartmentClient
-	// Menu is the client for interacting with the Menu builders.
-	Menu *MenuClient
+	// Genre is the client for interacting with the Genre builders.
+	Genre *GenreClient
+	// Manga is the client for interacting with the Manga builders.
+	Manga *MangaClient
+	// MangaChapter is the client for interacting with the MangaChapter builders.
+	MangaChapter *MangaChapterClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
-	// Region is the client for interacting with the Region builders.
-	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
-	// Todo is the client for interacting with the Todo builders.
-	Todo *TodoClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -61,11 +61,11 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Admin = NewAdminClient(c.config)
 	c.Department = NewDepartmentClient(c.config)
-	c.Menu = NewMenuClient(c.config)
+	c.Genre = NewGenreClient(c.config)
+	c.Manga = NewMangaClient(c.config)
+	c.MangaChapter = NewMangaChapterClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
-	c.Region = NewRegionClient(c.config)
 	c.Role = NewRoleClient(c.config)
-	c.Todo = NewTodoClient(c.config)
 }
 
 type (
@@ -158,15 +158,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		Admin:      NewAdminClient(cfg),
-		Department: NewDepartmentClient(cfg),
-		Menu:       NewMenuClient(cfg),
-		Permission: NewPermissionClient(cfg),
-		Region:     NewRegionClient(cfg),
-		Role:       NewRoleClient(cfg),
-		Todo:       NewTodoClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Admin:        NewAdminClient(cfg),
+		Department:   NewDepartmentClient(cfg),
+		Genre:        NewGenreClient(cfg),
+		Manga:        NewMangaClient(cfg),
+		MangaChapter: NewMangaChapterClient(cfg),
+		Permission:   NewPermissionClient(cfg),
+		Role:         NewRoleClient(cfg),
 	}, nil
 }
 
@@ -184,15 +184,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		Admin:      NewAdminClient(cfg),
-		Department: NewDepartmentClient(cfg),
-		Menu:       NewMenuClient(cfg),
-		Permission: NewPermissionClient(cfg),
-		Region:     NewRegionClient(cfg),
-		Role:       NewRoleClient(cfg),
-		Todo:       NewTodoClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Admin:        NewAdminClient(cfg),
+		Department:   NewDepartmentClient(cfg),
+		Genre:        NewGenreClient(cfg),
+		Manga:        NewMangaClient(cfg),
+		MangaChapter: NewMangaChapterClient(cfg),
+		Permission:   NewPermissionClient(cfg),
+		Role:         NewRoleClient(cfg),
 	}, nil
 }
 
@@ -222,7 +222,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Admin, c.Department, c.Menu, c.Permission, c.Region, c.Role, c.Todo,
+		c.Admin, c.Department, c.Genre, c.Manga, c.MangaChapter, c.Permission, c.Role,
 	} {
 		n.Use(hooks...)
 	}
@@ -232,7 +232,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Admin, c.Department, c.Menu, c.Permission, c.Region, c.Role, c.Todo,
+		c.Admin, c.Department, c.Genre, c.Manga, c.MangaChapter, c.Permission, c.Role,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -245,16 +245,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Admin.mutate(ctx, m)
 	case *DepartmentMutation:
 		return c.Department.mutate(ctx, m)
-	case *MenuMutation:
-		return c.Menu.mutate(ctx, m)
+	case *GenreMutation:
+		return c.Genre.mutate(ctx, m)
+	case *MangaMutation:
+		return c.Manga.mutate(ctx, m)
+	case *MangaChapterMutation:
+		return c.MangaChapter.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
-	case *RegionMutation:
-		return c.Region.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
-	case *TodoMutation:
-		return c.Todo.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -408,8 +408,7 @@ func (c *AdminClient) QueryDepartment(a *Admin) *DepartmentQuery {
 
 // Hooks returns the client hooks.
 func (c *AdminClient) Hooks() []Hook {
-	hooks := c.hooks.Admin
-	return append(hooks[:len(hooks):len(hooks)], admin.Hooks[:]...)
+	return c.hooks.Admin
 }
 
 // Interceptors returns the client interceptors.
@@ -600,8 +599,7 @@ func (c *DepartmentClient) QueryMembers(d *Department) *AdminQuery {
 
 // Hooks returns the client hooks.
 func (c *DepartmentClient) Hooks() []Hook {
-	hooks := c.hooks.Department
-	return append(hooks[:len(hooks):len(hooks)], department.Hooks[:]...)
+	return c.hooks.Department
 }
 
 // Interceptors returns the client interceptors.
@@ -625,107 +623,107 @@ func (c *DepartmentClient) mutate(ctx context.Context, m *DepartmentMutation) (V
 	}
 }
 
-// MenuClient is a client for the Menu schema.
-type MenuClient struct {
+// GenreClient is a client for the Genre schema.
+type GenreClient struct {
 	config
 }
 
-// NewMenuClient returns a client for the Menu from the given config.
-func NewMenuClient(c config) *MenuClient {
-	return &MenuClient{config: c}
+// NewGenreClient returns a client for the Genre from the given config.
+func NewGenreClient(c config) *GenreClient {
+	return &GenreClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `menu.Hooks(f(g(h())))`.
-func (c *MenuClient) Use(hooks ...Hook) {
-	c.hooks.Menu = append(c.hooks.Menu, hooks...)
+// A call to `Use(f, g, h)` equals to `genre.Hooks(f(g(h())))`.
+func (c *GenreClient) Use(hooks ...Hook) {
+	c.hooks.Genre = append(c.hooks.Genre, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `menu.Intercept(f(g(h())))`.
-func (c *MenuClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Menu = append(c.inters.Menu, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `genre.Intercept(f(g(h())))`.
+func (c *GenreClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Genre = append(c.inters.Genre, interceptors...)
 }
 
-// Create returns a builder for creating a Menu entity.
-func (c *MenuClient) Create() *MenuCreate {
-	mutation := newMenuMutation(c.config, OpCreate)
-	return &MenuCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Genre entity.
+func (c *GenreClient) Create() *GenreCreate {
+	mutation := newGenreMutation(c.config, OpCreate)
+	return &GenreCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Menu entities.
-func (c *MenuClient) CreateBulk(builders ...*MenuCreate) *MenuCreateBulk {
-	return &MenuCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Genre entities.
+func (c *GenreClient) CreateBulk(builders ...*GenreCreate) *GenreCreateBulk {
+	return &GenreCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *MenuClient) MapCreateBulk(slice any, setFunc func(*MenuCreate, int)) *MenuCreateBulk {
+func (c *GenreClient) MapCreateBulk(slice any, setFunc func(*GenreCreate, int)) *GenreCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &MenuCreateBulk{err: fmt.Errorf("calling to MenuClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &GenreCreateBulk{err: fmt.Errorf("calling to GenreClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*MenuCreate, rv.Len())
+	builders := make([]*GenreCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &MenuCreateBulk{config: c.config, builders: builders}
+	return &GenreCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Menu.
-func (c *MenuClient) Update() *MenuUpdate {
-	mutation := newMenuMutation(c.config, OpUpdate)
-	return &MenuUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Genre.
+func (c *GenreClient) Update() *GenreUpdate {
+	mutation := newGenreMutation(c.config, OpUpdate)
+	return &GenreUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MenuClient) UpdateOne(m *Menu) *MenuUpdateOne {
-	mutation := newMenuMutation(c.config, OpUpdateOne, withMenu(m))
-	return &MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *GenreClient) UpdateOne(ge *Genre) *GenreUpdateOne {
+	mutation := newGenreMutation(c.config, OpUpdateOne, withGenre(ge))
+	return &GenreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MenuClient) UpdateOneID(id pxid.ID) *MenuUpdateOne {
-	mutation := newMenuMutation(c.config, OpUpdateOne, withMenuID(id))
-	return &MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *GenreClient) UpdateOneID(id pxid.ID) *GenreUpdateOne {
+	mutation := newGenreMutation(c.config, OpUpdateOne, withGenreID(id))
+	return &GenreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Menu.
-func (c *MenuClient) Delete() *MenuDelete {
-	mutation := newMenuMutation(c.config, OpDelete)
-	return &MenuDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Genre.
+func (c *GenreClient) Delete() *GenreDelete {
+	mutation := newGenreMutation(c.config, OpDelete)
+	return &GenreDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MenuClient) DeleteOne(m *Menu) *MenuDeleteOne {
-	return c.DeleteOneID(m.ID)
+func (c *GenreClient) DeleteOne(ge *Genre) *GenreDeleteOne {
+	return c.DeleteOneID(ge.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MenuClient) DeleteOneID(id pxid.ID) *MenuDeleteOne {
-	builder := c.Delete().Where(menu.ID(id))
+func (c *GenreClient) DeleteOneID(id pxid.ID) *GenreDeleteOne {
+	builder := c.Delete().Where(genre.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MenuDeleteOne{builder}
+	return &GenreDeleteOne{builder}
 }
 
-// Query returns a query builder for Menu.
-func (c *MenuClient) Query() *MenuQuery {
-	return &MenuQuery{
+// Query returns a query builder for Genre.
+func (c *GenreClient) Query() *GenreQuery {
+	return &GenreQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeMenu},
+		ctx:    &QueryContext{Type: TypeGenre},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Menu entity by its id.
-func (c *MenuClient) Get(ctx context.Context, id pxid.ID) (*Menu, error) {
-	return c.Query().Where(menu.ID(id)).Only(ctx)
+// Get returns a Genre entity by its id.
+func (c *GenreClient) Get(ctx context.Context, id pxid.ID) (*Genre, error) {
+	return c.Query().Where(genre.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MenuClient) GetX(ctx context.Context, id pxid.ID) *Menu {
+func (c *GenreClient) GetX(ctx context.Context, id pxid.ID) *Genre {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -733,57 +731,191 @@ func (c *MenuClient) GetX(ctx context.Context, id pxid.ID) *Menu {
 	return obj
 }
 
-// QueryParent queries the parent edge of a Menu.
-func (c *MenuClient) QueryParent(m *Menu) *MenuQuery {
-	query := (&MenuClient{config: c.config}).Query()
+// QueryMangas queries the mangas edge of a Genre.
+func (c *GenreClient) QueryMangas(ge *Genre) *MangaQuery {
+	query := (&MangaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ge.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(genre.Table, genre.FieldID, id),
+			sqlgraph.To(manga.Table, manga.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, genre.MangasTable, genre.MangasPrimaryKey...),
+		)
+		schemaConfig := ge.schemaConfig
+		step.To.Schema = schemaConfig.Manga
+		step.Edge.Schema = schemaConfig.GenreMangas
+		fromV = sqlgraph.Neighbors(ge.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *GenreClient) Hooks() []Hook {
+	return c.hooks.Genre
+}
+
+// Interceptors returns the client interceptors.
+func (c *GenreClient) Interceptors() []Interceptor {
+	inters := c.inters.Genre
+	return append(inters[:len(inters):len(inters)], genre.Interceptors[:]...)
+}
+
+func (c *GenreClient) mutate(ctx context.Context, m *GenreMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&GenreCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&GenreUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&GenreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&GenreDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Genre mutation op: %q", m.Op())
+	}
+}
+
+// MangaClient is a client for the Manga schema.
+type MangaClient struct {
+	config
+}
+
+// NewMangaClient returns a client for the Manga from the given config.
+func NewMangaClient(c config) *MangaClient {
+	return &MangaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `manga.Hooks(f(g(h())))`.
+func (c *MangaClient) Use(hooks ...Hook) {
+	c.hooks.Manga = append(c.hooks.Manga, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `manga.Intercept(f(g(h())))`.
+func (c *MangaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Manga = append(c.inters.Manga, interceptors...)
+}
+
+// Create returns a builder for creating a Manga entity.
+func (c *MangaClient) Create() *MangaCreate {
+	mutation := newMangaMutation(c.config, OpCreate)
+	return &MangaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Manga entities.
+func (c *MangaClient) CreateBulk(builders ...*MangaCreate) *MangaCreateBulk {
+	return &MangaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MangaClient) MapCreateBulk(slice any, setFunc func(*MangaCreate, int)) *MangaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MangaCreateBulk{err: fmt.Errorf("calling to MangaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MangaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MangaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Manga.
+func (c *MangaClient) Update() *MangaUpdate {
+	mutation := newMangaMutation(c.config, OpUpdate)
+	return &MangaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MangaClient) UpdateOne(m *Manga) *MangaUpdateOne {
+	mutation := newMangaMutation(c.config, OpUpdateOne, withManga(m))
+	return &MangaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MangaClient) UpdateOneID(id pxid.ID) *MangaUpdateOne {
+	mutation := newMangaMutation(c.config, OpUpdateOne, withMangaID(id))
+	return &MangaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Manga.
+func (c *MangaClient) Delete() *MangaDelete {
+	mutation := newMangaMutation(c.config, OpDelete)
+	return &MangaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MangaClient) DeleteOne(m *Manga) *MangaDeleteOne {
+	return c.DeleteOneID(m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MangaClient) DeleteOneID(id pxid.ID) *MangaDeleteOne {
+	builder := c.Delete().Where(manga.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MangaDeleteOne{builder}
+}
+
+// Query returns a query builder for Manga.
+func (c *MangaClient) Query() *MangaQuery {
+	return &MangaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeManga},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Manga entity by its id.
+func (c *MangaClient) Get(ctx context.Context, id pxid.ID) (*Manga, error) {
+	return c.Query().Where(manga.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MangaClient) GetX(ctx context.Context, id pxid.ID) *Manga {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryChapters queries the chapters edge of a Manga.
+func (c *MangaClient) QueryChapters(m *Manga) *MangaChapterQuery {
+	query := (&MangaChapterClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(menu.Table, menu.FieldID, id),
-			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, menu.ParentTable, menu.ParentColumn),
+			sqlgraph.From(manga.Table, manga.FieldID, id),
+			sqlgraph.To(mangachapter.Table, mangachapter.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, manga.ChaptersTable, manga.ChaptersColumn),
 		)
 		schemaConfig := m.schemaConfig
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.Menu
+		step.To.Schema = schemaConfig.MangaChapter
+		step.Edge.Schema = schemaConfig.MangaChapter
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
-// QueryChildren queries the children edge of a Menu.
-func (c *MenuClient) QueryChildren(m *Menu) *MenuQuery {
-	query := (&MenuClient{config: c.config}).Query()
+// QueryGenres queries the genres edge of a Manga.
+func (c *MangaClient) QueryGenres(m *Manga) *GenreQuery {
+	query := (&GenreClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(menu.Table, menu.FieldID, id),
-			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, menu.ChildrenTable, menu.ChildrenColumn),
+			sqlgraph.From(manga.Table, manga.FieldID, id),
+			sqlgraph.To(genre.Table, genre.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, manga.GenresTable, manga.GenresPrimaryKey...),
 		)
 		schemaConfig := m.schemaConfig
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.Menu
-		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryRoles queries the roles edge of a Menu.
-func (c *MenuClient) QueryRoles(m *Menu) *RoleQuery {
-	query := (&RoleClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(menu.Table, menu.FieldID, id),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, menu.RolesTable, menu.RolesPrimaryKey...),
-		)
-		schemaConfig := m.schemaConfig
-		step.To.Schema = schemaConfig.Role
-		step.Edge.Schema = schemaConfig.RoleRoutes
+		step.To.Schema = schemaConfig.Genre
+		step.Edge.Schema = schemaConfig.GenreMangas
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -791,29 +923,180 @@ func (c *MenuClient) QueryRoles(m *Menu) *RoleQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *MenuClient) Hooks() []Hook {
-	hooks := c.hooks.Menu
-	return append(hooks[:len(hooks):len(hooks)], menu.Hooks[:]...)
+func (c *MangaClient) Hooks() []Hook {
+	return c.hooks.Manga
 }
 
 // Interceptors returns the client interceptors.
-func (c *MenuClient) Interceptors() []Interceptor {
-	inters := c.inters.Menu
-	return append(inters[:len(inters):len(inters)], menu.Interceptors[:]...)
+func (c *MangaClient) Interceptors() []Interceptor {
+	inters := c.inters.Manga
+	return append(inters[:len(inters):len(inters)], manga.Interceptors[:]...)
 }
 
-func (c *MenuClient) mutate(ctx context.Context, m *MenuMutation) (Value, error) {
+func (c *MangaClient) mutate(ctx context.Context, m *MangaMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&MenuCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MangaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&MenuUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MangaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MangaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&MenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&MangaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Menu mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Manga mutation op: %q", m.Op())
+	}
+}
+
+// MangaChapterClient is a client for the MangaChapter schema.
+type MangaChapterClient struct {
+	config
+}
+
+// NewMangaChapterClient returns a client for the MangaChapter from the given config.
+func NewMangaChapterClient(c config) *MangaChapterClient {
+	return &MangaChapterClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `mangachapter.Hooks(f(g(h())))`.
+func (c *MangaChapterClient) Use(hooks ...Hook) {
+	c.hooks.MangaChapter = append(c.hooks.MangaChapter, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `mangachapter.Intercept(f(g(h())))`.
+func (c *MangaChapterClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MangaChapter = append(c.inters.MangaChapter, interceptors...)
+}
+
+// Create returns a builder for creating a MangaChapter entity.
+func (c *MangaChapterClient) Create() *MangaChapterCreate {
+	mutation := newMangaChapterMutation(c.config, OpCreate)
+	return &MangaChapterCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MangaChapter entities.
+func (c *MangaChapterClient) CreateBulk(builders ...*MangaChapterCreate) *MangaChapterCreateBulk {
+	return &MangaChapterCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MangaChapterClient) MapCreateBulk(slice any, setFunc func(*MangaChapterCreate, int)) *MangaChapterCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MangaChapterCreateBulk{err: fmt.Errorf("calling to MangaChapterClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MangaChapterCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MangaChapterCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MangaChapter.
+func (c *MangaChapterClient) Update() *MangaChapterUpdate {
+	mutation := newMangaChapterMutation(c.config, OpUpdate)
+	return &MangaChapterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MangaChapterClient) UpdateOne(mc *MangaChapter) *MangaChapterUpdateOne {
+	mutation := newMangaChapterMutation(c.config, OpUpdateOne, withMangaChapter(mc))
+	return &MangaChapterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MangaChapterClient) UpdateOneID(id pxid.ID) *MangaChapterUpdateOne {
+	mutation := newMangaChapterMutation(c.config, OpUpdateOne, withMangaChapterID(id))
+	return &MangaChapterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MangaChapter.
+func (c *MangaChapterClient) Delete() *MangaChapterDelete {
+	mutation := newMangaChapterMutation(c.config, OpDelete)
+	return &MangaChapterDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MangaChapterClient) DeleteOne(mc *MangaChapter) *MangaChapterDeleteOne {
+	return c.DeleteOneID(mc.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MangaChapterClient) DeleteOneID(id pxid.ID) *MangaChapterDeleteOne {
+	builder := c.Delete().Where(mangachapter.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MangaChapterDeleteOne{builder}
+}
+
+// Query returns a query builder for MangaChapter.
+func (c *MangaChapterClient) Query() *MangaChapterQuery {
+	return &MangaChapterQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMangaChapter},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MangaChapter entity by its id.
+func (c *MangaChapterClient) Get(ctx context.Context, id pxid.ID) (*MangaChapter, error) {
+	return c.Query().Where(mangachapter.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MangaChapterClient) GetX(ctx context.Context, id pxid.ID) *MangaChapter {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryManga queries the manga edge of a MangaChapter.
+func (c *MangaChapterClient) QueryManga(mc *MangaChapter) *MangaQuery {
+	query := (&MangaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := mc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(mangachapter.Table, mangachapter.FieldID, id),
+			sqlgraph.To(manga.Table, manga.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, mangachapter.MangaTable, mangachapter.MangaColumn),
+		)
+		schemaConfig := mc.schemaConfig
+		step.To.Schema = schemaConfig.Manga
+		step.Edge.Schema = schemaConfig.MangaChapter
+		fromV = sqlgraph.Neighbors(mc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MangaChapterClient) Hooks() []Hook {
+	return c.hooks.MangaChapter
+}
+
+// Interceptors returns the client interceptors.
+func (c *MangaChapterClient) Interceptors() []Interceptor {
+	return c.inters.MangaChapter
+}
+
+func (c *MangaChapterClient) mutate(ctx context.Context, m *MangaChapterMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MangaChapterCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MangaChapterUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MangaChapterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MangaChapterDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MangaChapter mutation op: %q", m.Op())
 	}
 }
 
@@ -969,179 +1252,6 @@ func (c *PermissionClient) mutate(ctx context.Context, m *PermissionMutation) (V
 	}
 }
 
-// RegionClient is a client for the Region schema.
-type RegionClient struct {
-	config
-}
-
-// NewRegionClient returns a client for the Region from the given config.
-func NewRegionClient(c config) *RegionClient {
-	return &RegionClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `region.Hooks(f(g(h())))`.
-func (c *RegionClient) Use(hooks ...Hook) {
-	c.hooks.Region = append(c.hooks.Region, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `region.Intercept(f(g(h())))`.
-func (c *RegionClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Region = append(c.inters.Region, interceptors...)
-}
-
-// Create returns a builder for creating a Region entity.
-func (c *RegionClient) Create() *RegionCreate {
-	mutation := newRegionMutation(c.config, OpCreate)
-	return &RegionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Region entities.
-func (c *RegionClient) CreateBulk(builders ...*RegionCreate) *RegionCreateBulk {
-	return &RegionCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *RegionClient) MapCreateBulk(slice any, setFunc func(*RegionCreate, int)) *RegionCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &RegionCreateBulk{err: fmt.Errorf("calling to RegionClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*RegionCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &RegionCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Region.
-func (c *RegionClient) Update() *RegionUpdate {
-	mutation := newRegionMutation(c.config, OpUpdate)
-	return &RegionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *RegionClient) UpdateOne(r *Region) *RegionUpdateOne {
-	mutation := newRegionMutation(c.config, OpUpdateOne, withRegion(r))
-	return &RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *RegionClient) UpdateOneID(id pxid.ID) *RegionUpdateOne {
-	mutation := newRegionMutation(c.config, OpUpdateOne, withRegionID(id))
-	return &RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Region.
-func (c *RegionClient) Delete() *RegionDelete {
-	mutation := newRegionMutation(c.config, OpDelete)
-	return &RegionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *RegionClient) DeleteOne(r *Region) *RegionDeleteOne {
-	return c.DeleteOneID(r.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RegionClient) DeleteOneID(id pxid.ID) *RegionDeleteOne {
-	builder := c.Delete().Where(region.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &RegionDeleteOne{builder}
-}
-
-// Query returns a query builder for Region.
-func (c *RegionClient) Query() *RegionQuery {
-	return &RegionQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeRegion},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Region entity by its id.
-func (c *RegionClient) Get(ctx context.Context, id pxid.ID) (*Region, error) {
-	return c.Query().Where(region.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *RegionClient) GetX(ctx context.Context, id pxid.ID) *Region {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryParent queries the parent edge of a Region.
-func (c *RegionClient) QueryParent(r *Region) *RegionQuery {
-	query := (&RegionClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(region.Table, region.FieldID, id),
-			sqlgraph.To(region.Table, region.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, region.ParentTable, region.ParentColumn),
-		)
-		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Region
-		step.Edge.Schema = schemaConfig.Region
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryChildren queries the children edge of a Region.
-func (c *RegionClient) QueryChildren(r *Region) *RegionQuery {
-	query := (&RegionClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(region.Table, region.FieldID, id),
-			sqlgraph.To(region.Table, region.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, region.ChildrenTable, region.ChildrenColumn),
-		)
-		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Region
-		step.Edge.Schema = schemaConfig.Region
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *RegionClient) Hooks() []Hook {
-	hooks := c.hooks.Region
-	return append(hooks[:len(hooks):len(hooks)], region.Hooks[:]...)
-}
-
-// Interceptors returns the client interceptors.
-func (c *RegionClient) Interceptors() []Interceptor {
-	inters := c.inters.Region
-	return append(inters[:len(inters):len(inters)], region.Interceptors[:]...)
-}
-
-func (c *RegionClient) mutate(ctx context.Context, m *RegionMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&RegionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&RegionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&RegionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Region mutation op: %q", m.Op())
-	}
-}
-
 // RoleClient is a client for the Role schema.
 type RoleClient struct {
 	config
@@ -1288,29 +1398,9 @@ func (c *RoleClient) QueryPermissions(r *Role) *PermissionQuery {
 	return query
 }
 
-// QueryRoutes queries the routes edge of a Role.
-func (c *RoleClient) QueryRoutes(r *Role) *MenuQuery {
-	query := (&MenuClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(role.Table, role.FieldID, id),
-			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.RoutesTable, role.RoutesPrimaryKey...),
-		)
-		schemaConfig := r.schemaConfig
-		step.To.Schema = schemaConfig.Menu
-		step.Edge.Schema = schemaConfig.RoleRoutes
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *RoleClient) Hooks() []Hook {
-	hooks := c.hooks.Role
-	return append(hooks[:len(hooks):len(hooks)], role.Hooks[:]...)
+	return c.hooks.Role
 }
 
 // Interceptors returns the client interceptors.
@@ -1334,148 +1424,14 @@ func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error)
 	}
 }
 
-// TodoClient is a client for the Todo schema.
-type TodoClient struct {
-	config
-}
-
-// NewTodoClient returns a client for the Todo from the given config.
-func NewTodoClient(c config) *TodoClient {
-	return &TodoClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `todo.Hooks(f(g(h())))`.
-func (c *TodoClient) Use(hooks ...Hook) {
-	c.hooks.Todo = append(c.hooks.Todo, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `todo.Intercept(f(g(h())))`.
-func (c *TodoClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Todo = append(c.inters.Todo, interceptors...)
-}
-
-// Create returns a builder for creating a Todo entity.
-func (c *TodoClient) Create() *TodoCreate {
-	mutation := newTodoMutation(c.config, OpCreate)
-	return &TodoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Todo entities.
-func (c *TodoClient) CreateBulk(builders ...*TodoCreate) *TodoCreateBulk {
-	return &TodoCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *TodoClient) MapCreateBulk(slice any, setFunc func(*TodoCreate, int)) *TodoCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &TodoCreateBulk{err: fmt.Errorf("calling to TodoClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*TodoCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &TodoCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Todo.
-func (c *TodoClient) Update() *TodoUpdate {
-	mutation := newTodoMutation(c.config, OpUpdate)
-	return &TodoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *TodoClient) UpdateOne(t *Todo) *TodoUpdateOne {
-	mutation := newTodoMutation(c.config, OpUpdateOne, withTodo(t))
-	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *TodoClient) UpdateOneID(id pxid.ID) *TodoUpdateOne {
-	mutation := newTodoMutation(c.config, OpUpdateOne, withTodoID(id))
-	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Todo.
-func (c *TodoClient) Delete() *TodoDelete {
-	mutation := newTodoMutation(c.config, OpDelete)
-	return &TodoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *TodoClient) DeleteOne(t *Todo) *TodoDeleteOne {
-	return c.DeleteOneID(t.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *TodoClient) DeleteOneID(id pxid.ID) *TodoDeleteOne {
-	builder := c.Delete().Where(todo.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &TodoDeleteOne{builder}
-}
-
-// Query returns a query builder for Todo.
-func (c *TodoClient) Query() *TodoQuery {
-	return &TodoQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeTodo},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Todo entity by its id.
-func (c *TodoClient) Get(ctx context.Context, id pxid.ID) (*Todo, error) {
-	return c.Query().Where(todo.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *TodoClient) GetX(ctx context.Context, id pxid.ID) *Todo {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *TodoClient) Hooks() []Hook {
-	hooks := c.hooks.Todo
-	return append(hooks[:len(hooks):len(hooks)], todo.Hooks[:]...)
-}
-
-// Interceptors returns the client interceptors.
-func (c *TodoClient) Interceptors() []Interceptor {
-	inters := c.inters.Todo
-	return append(inters[:len(inters):len(inters)], todo.Interceptors[:]...)
-}
-
-func (c *TodoClient) mutate(ctx context.Context, m *TodoMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&TodoCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&TodoUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&TodoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Todo mutation op: %q", m.Op())
-	}
-}
-
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Department, Menu, Permission, Region, Role, Todo []ent.Hook
+		Admin, Department, Genre, Manga, MangaChapter, Permission, Role []ent.Hook
 	}
 	inters struct {
-		Admin, Department, Menu, Permission, Region, Role, Todo []ent.Interceptor
+		Admin, Department, Genre, Manga, MangaChapter, Permission,
+		Role []ent.Interceptor
 	}
 )
 

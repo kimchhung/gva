@@ -4,6 +4,9 @@ install.air:
 install.atlas:
 	curl -sSf https://atlasgo.sh | sh
 
+install.entclean:
+	go install -u github.com/a8m/entclean
+
 install.swag:
 	go install github.com/swaggo/swag/cmd/swag@latest
 

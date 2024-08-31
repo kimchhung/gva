@@ -5,12 +5,12 @@ package ent
 import (
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -65,30 +65,68 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   menu.Table,
-			Columns: menu.Columns,
+			Table:   genre.Table,
+			Columns: genre.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeString,
-				Column: menu.FieldID,
+				Column: genre.FieldID,
 			},
 		},
-		Type: "Menu",
+		Type: "Genre",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			menu.FieldCreatedAt: {Type: field.TypeTime, Column: menu.FieldCreatedAt},
-			menu.FieldUpdatedAt: {Type: field.TypeTime, Column: menu.FieldUpdatedAt},
-			menu.FieldIsEnable:  {Type: field.TypeBool, Column: menu.FieldIsEnable},
-			menu.FieldDeletedAt: {Type: field.TypeInt, Column: menu.FieldDeletedAt},
-			menu.FieldPid:       {Type: field.TypeString, Column: menu.FieldPid},
-			menu.FieldPath:      {Type: field.TypeString, Column: menu.FieldPath},
-			menu.FieldComponent: {Type: field.TypeString, Column: menu.FieldComponent},
-			menu.FieldRedirect:  {Type: field.TypeString, Column: menu.FieldRedirect},
-			menu.FieldName:      {Type: field.TypeString, Column: menu.FieldName},
-			menu.FieldOrder:     {Type: field.TypeInt, Column: menu.FieldOrder},
-			menu.FieldType:      {Type: field.TypeEnum, Column: menu.FieldType},
-			menu.FieldMeta:      {Type: field.TypeJSON, Column: menu.FieldMeta},
+			genre.FieldCreatedAt: {Type: field.TypeTime, Column: genre.FieldCreatedAt},
+			genre.FieldUpdatedAt: {Type: field.TypeTime, Column: genre.FieldUpdatedAt},
+			genre.FieldIsEnable:  {Type: field.TypeBool, Column: genre.FieldIsEnable},
+			genre.FieldDeletedAt: {Type: field.TypeInt, Column: genre.FieldDeletedAt},
+			genre.FieldName:      {Type: field.TypeString, Column: genre.FieldName},
+			genre.FieldNameID:    {Type: field.TypeString, Column: genre.FieldNameID},
 		},
 	}
 	graph.Nodes[3] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   manga.Table,
+			Columns: manga.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: manga.FieldID,
+			},
+		},
+		Type: "Manga",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			manga.FieldCreatedAt:    {Type: field.TypeTime, Column: manga.FieldCreatedAt},
+			manga.FieldUpdatedAt:    {Type: field.TypeTime, Column: manga.FieldUpdatedAt},
+			manga.FieldIsEnable:     {Type: field.TypeBool, Column: manga.FieldIsEnable},
+			manga.FieldDeletedAt:    {Type: field.TypeInt, Column: manga.FieldDeletedAt},
+			manga.FieldNameID:       {Type: field.TypeString, Column: manga.FieldNameID},
+			manga.FieldName:         {Type: field.TypeString, Column: manga.FieldName},
+			manga.FieldDesc:         {Type: field.TypeString, Column: manga.FieldDesc},
+			manga.FieldProdiver:     {Type: field.TypeString, Column: manga.FieldProdiver},
+			manga.FieldThumbnailURL: {Type: field.TypeString, Column: manga.FieldThumbnailURL},
+			manga.FieldAuthors:      {Type: field.TypeJSON, Column: manga.FieldAuthors},
+		},
+	}
+	graph.Nodes[4] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   mangachapter.Table,
+			Columns: mangachapter.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: mangachapter.FieldID,
+			},
+		},
+		Type: "MangaChapter",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			mangachapter.FieldCreatedAt:        {Type: field.TypeTime, Column: mangachapter.FieldCreatedAt},
+			mangachapter.FieldUpdatedAt:        {Type: field.TypeTime, Column: mangachapter.FieldUpdatedAt},
+			mangachapter.FieldMangaID:          {Type: field.TypeString, Column: mangachapter.FieldMangaID},
+			mangachapter.FieldTitle:            {Type: field.TypeString, Column: mangachapter.FieldTitle},
+			mangachapter.FieldImgURL:           {Type: field.TypeString, Column: mangachapter.FieldImgURL},
+			mangachapter.FieldNumber:           {Type: field.TypeUint, Column: mangachapter.FieldNumber},
+			mangachapter.FieldProviderName:     {Type: field.TypeString, Column: mangachapter.FieldProviderName},
+			mangachapter.FieldChapterUpdatedAt: {Type: field.TypeTime, Column: mangachapter.FieldChapterUpdatedAt},
+		},
+	}
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permission.Table,
 			Columns: permission.Columns,
@@ -108,28 +146,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldOrder:     {Type: field.TypeInt, Column: permission.FieldOrder},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   region.Table,
-			Columns: region.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: region.FieldID,
-			},
-		},
-		Type: "Region",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			region.FieldCreatedAt: {Type: field.TypeTime, Column: region.FieldCreatedAt},
-			region.FieldUpdatedAt: {Type: field.TypeTime, Column: region.FieldUpdatedAt},
-			region.FieldDeletedAt: {Type: field.TypeInt, Column: region.FieldDeletedAt},
-			region.FieldIsEnable:  {Type: field.TypeBool, Column: region.FieldIsEnable},
-			region.FieldNameID:    {Type: field.TypeString, Column: region.FieldNameID},
-			region.FieldName:      {Type: field.TypeString, Column: region.FieldName},
-			region.FieldType:      {Type: field.TypeEnum, Column: region.FieldType},
-			region.FieldPid:       {Type: field.TypeString, Column: region.FieldPid},
-		},
-	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -148,23 +165,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldDescription:  {Type: field.TypeString, Column: role.FieldDescription},
 			role.FieldOrder:        {Type: field.TypeInt, Column: role.FieldOrder},
 			role.FieldIsChangeable: {Type: field.TypeBool, Column: role.FieldIsChangeable},
-		},
-	}
-	graph.Nodes[6] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   todo.Table,
-			Columns: todo.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: todo.FieldID,
-			},
-		},
-		Type: "Todo",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			todo.FieldCreatedAt: {Type: field.TypeTime, Column: todo.FieldCreatedAt},
-			todo.FieldUpdatedAt: {Type: field.TypeTime, Column: todo.FieldUpdatedAt},
-			todo.FieldDeletedAt: {Type: field.TypeInt, Column: todo.FieldDeletedAt},
-			todo.FieldName:      {Type: field.TypeString, Column: todo.FieldName},
 		},
 	}
 	graph.MustAddE(
@@ -228,40 +228,52 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Admin",
 	)
 	graph.MustAddE(
-		"parent",
+		"mangas",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   menu.ParentTable,
-			Columns: []string{menu.ParentColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   genre.MangasTable,
+			Columns: genre.MangasPrimaryKey,
 			Bidi:    false,
 		},
-		"Menu",
-		"Menu",
+		"Genre",
+		"Manga",
 	)
 	graph.MustAddE(
-		"children",
+		"chapters",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   menu.ChildrenTable,
-			Columns: []string{menu.ChildrenColumn},
+			Table:   manga.ChaptersTable,
+			Columns: []string{manga.ChaptersColumn},
 			Bidi:    false,
 		},
-		"Menu",
-		"Menu",
+		"Manga",
+		"MangaChapter",
 	)
 	graph.MustAddE(
-		"roles",
+		"genres",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   menu.RolesTable,
-			Columns: menu.RolesPrimaryKey,
+			Table:   manga.GenresTable,
+			Columns: manga.GenresPrimaryKey,
 			Bidi:    false,
 		},
-		"Menu",
-		"Role",
+		"Manga",
+		"Genre",
+	)
+	graph.MustAddE(
+		"manga",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   mangachapter.MangaTable,
+			Columns: []string{mangachapter.MangaColumn},
+			Bidi:    false,
+		},
+		"MangaChapter",
+		"Manga",
 	)
 	graph.MustAddE(
 		"roles",
@@ -274,30 +286,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Permission",
 		"Role",
-	)
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   region.ParentTable,
-			Columns: []string{region.ParentColumn},
-			Bidi:    false,
-		},
-		"Region",
-		"Region",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   region.ChildrenTable,
-			Columns: []string{region.ChildrenColumn},
-			Bidi:    false,
-		},
-		"Region",
-		"Region",
 	)
 	graph.MustAddE(
 		"admins",
@@ -322,18 +310,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Role",
 		"Permission",
-	)
-	graph.MustAddE(
-		"routes",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
-			Bidi:    false,
-		},
-		"Role",
-		"Menu",
 	)
 	return graph
 }()
@@ -575,33 +551,33 @@ func (f *DepartmentFilter) WhereHasMembersWith(preds ...predicate.Admin) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (mq *MenuQuery) addPredicate(pred func(s *sql.Selector)) {
-	mq.predicates = append(mq.predicates, pred)
+func (gq *GenreQuery) addPredicate(pred func(s *sql.Selector)) {
+	gq.predicates = append(gq.predicates, pred)
 }
 
-// Filter returns a Filter implementation to apply filters on the MenuQuery builder.
-func (mq *MenuQuery) Filter() *MenuFilter {
-	return &MenuFilter{config: mq.config, predicateAdder: mq}
+// Filter returns a Filter implementation to apply filters on the GenreQuery builder.
+func (gq *GenreQuery) Filter() *GenreFilter {
+	return &GenreFilter{config: gq.config, predicateAdder: gq}
 }
 
 // addPredicate implements the predicateAdder interface.
-func (m *MenuMutation) addPredicate(pred func(s *sql.Selector)) {
+func (m *GenreMutation) addPredicate(pred func(s *sql.Selector)) {
 	m.predicates = append(m.predicates, pred)
 }
 
-// Filter returns an entql.Where implementation to apply filters on the MenuMutation builder.
-func (m *MenuMutation) Filter() *MenuFilter {
-	return &MenuFilter{config: m.config, predicateAdder: m}
+// Filter returns an entql.Where implementation to apply filters on the GenreMutation builder.
+func (m *GenreMutation) Filter() *GenreFilter {
+	return &GenreFilter{config: m.config, predicateAdder: m}
 }
 
-// MenuFilter provides a generic filtering capability at runtime for MenuQuery.
-type MenuFilter struct {
+// GenreFilter provides a generic filtering capability at runtime for GenreQuery.
+type GenreFilter struct {
 	predicateAdder
 	config
 }
 
 // Where applies the entql predicate on the query filter.
-func (f *MenuFilter) Where(p entql.P) {
+func (f *GenreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
 		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
@@ -610,106 +586,260 @@ func (f *MenuFilter) Where(p entql.P) {
 }
 
 // WhereID applies the entql string predicate on the id field.
-func (f *MenuFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(menu.FieldID))
+func (f *GenreFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(genre.FieldID))
 }
 
 // WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *MenuFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(menu.FieldCreatedAt))
+func (f *GenreFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(genre.FieldCreatedAt))
 }
 
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *MenuFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(menu.FieldUpdatedAt))
+func (f *GenreFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(genre.FieldUpdatedAt))
 }
 
 // WhereIsEnable applies the entql bool predicate on the is_enable field.
-func (f *MenuFilter) WhereIsEnable(p entql.BoolP) {
-	f.Where(p.Field(menu.FieldIsEnable))
+func (f *GenreFilter) WhereIsEnable(p entql.BoolP) {
+	f.Where(p.Field(genre.FieldIsEnable))
 }
 
 // WhereDeletedAt applies the entql int predicate on the deleted_at field.
-func (f *MenuFilter) WhereDeletedAt(p entql.IntP) {
-	f.Where(p.Field(menu.FieldDeletedAt))
-}
-
-// WherePid applies the entql string predicate on the pid field.
-func (f *MenuFilter) WherePid(p entql.StringP) {
-	f.Where(p.Field(menu.FieldPid))
-}
-
-// WherePath applies the entql string predicate on the path field.
-func (f *MenuFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(menu.FieldPath))
-}
-
-// WhereComponent applies the entql string predicate on the component field.
-func (f *MenuFilter) WhereComponent(p entql.StringP) {
-	f.Where(p.Field(menu.FieldComponent))
-}
-
-// WhereRedirect applies the entql string predicate on the redirect field.
-func (f *MenuFilter) WhereRedirect(p entql.StringP) {
-	f.Where(p.Field(menu.FieldRedirect))
+func (f *GenreFilter) WhereDeletedAt(p entql.IntP) {
+	f.Where(p.Field(genre.FieldDeletedAt))
 }
 
 // WhereName applies the entql string predicate on the name field.
-func (f *MenuFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(menu.FieldName))
+func (f *GenreFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(genre.FieldName))
 }
 
-// WhereOrder applies the entql int predicate on the order field.
-func (f *MenuFilter) WhereOrder(p entql.IntP) {
-	f.Where(p.Field(menu.FieldOrder))
+// WhereNameID applies the entql string predicate on the name_id field.
+func (f *GenreFilter) WhereNameID(p entql.StringP) {
+	f.Where(p.Field(genre.FieldNameID))
 }
 
-// WhereType applies the entql string predicate on the type field.
-func (f *MenuFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(menu.FieldType))
+// WhereHasMangas applies a predicate to check if query has an edge mangas.
+func (f *GenreFilter) WhereHasMangas() {
+	f.Where(entql.HasEdge("mangas"))
 }
 
-// WhereMeta applies the entql json.RawMessage predicate on the meta field.
-func (f *MenuFilter) WhereMeta(p entql.BytesP) {
-	f.Where(p.Field(menu.FieldMeta))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *MenuFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *MenuFilter) WhereHasParentWith(preds ...predicate.Menu) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasMangasWith applies a predicate to check if query has an edge mangas with a given conditions (other predicates).
+func (f *GenreFilter) WhereHasMangasWith(preds ...predicate.Manga) {
+	f.Where(entql.HasEdgeWith("mangas", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *MenuFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
+// addPredicate implements the predicateAdder interface.
+func (mq *MangaQuery) addPredicate(pred func(s *sql.Selector)) {
+	mq.predicates = append(mq.predicates, pred)
 }
 
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *MenuFilter) WhereHasChildrenWith(preds ...predicate.Menu) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// Filter returns a Filter implementation to apply filters on the MangaQuery builder.
+func (mq *MangaQuery) Filter() *MangaFilter {
+	return &MangaFilter{config: mq.config, predicateAdder: mq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *MangaMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the MangaMutation builder.
+func (m *MangaMutation) Filter() *MangaFilter {
+	return &MangaFilter{config: m.config, predicateAdder: m}
+}
+
+// MangaFilter provides a generic filtering capability at runtime for MangaQuery.
+type MangaFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *MangaFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *MangaFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(manga.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *MangaFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(manga.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *MangaFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(manga.FieldUpdatedAt))
+}
+
+// WhereIsEnable applies the entql bool predicate on the is_enable field.
+func (f *MangaFilter) WhereIsEnable(p entql.BoolP) {
+	f.Where(p.Field(manga.FieldIsEnable))
+}
+
+// WhereDeletedAt applies the entql int predicate on the deleted_at field.
+func (f *MangaFilter) WhereDeletedAt(p entql.IntP) {
+	f.Where(p.Field(manga.FieldDeletedAt))
+}
+
+// WhereNameID applies the entql string predicate on the name_id field.
+func (f *MangaFilter) WhereNameID(p entql.StringP) {
+	f.Where(p.Field(manga.FieldNameID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *MangaFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(manga.FieldName))
+}
+
+// WhereDesc applies the entql string predicate on the desc field.
+func (f *MangaFilter) WhereDesc(p entql.StringP) {
+	f.Where(p.Field(manga.FieldDesc))
+}
+
+// WhereProdiver applies the entql string predicate on the prodiver field.
+func (f *MangaFilter) WhereProdiver(p entql.StringP) {
+	f.Where(p.Field(manga.FieldProdiver))
+}
+
+// WhereThumbnailURL applies the entql string predicate on the thumbnail_url field.
+func (f *MangaFilter) WhereThumbnailURL(p entql.StringP) {
+	f.Where(p.Field(manga.FieldThumbnailURL))
+}
+
+// WhereAuthors applies the entql json.RawMessage predicate on the authors field.
+func (f *MangaFilter) WhereAuthors(p entql.BytesP) {
+	f.Where(p.Field(manga.FieldAuthors))
+}
+
+// WhereHasChapters applies a predicate to check if query has an edge chapters.
+func (f *MangaFilter) WhereHasChapters() {
+	f.Where(entql.HasEdge("chapters"))
+}
+
+// WhereHasChaptersWith applies a predicate to check if query has an edge chapters with a given conditions (other predicates).
+func (f *MangaFilter) WhereHasChaptersWith(preds ...predicate.MangaChapter) {
+	f.Where(entql.HasEdgeWith("chapters", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasRoles applies a predicate to check if query has an edge roles.
-func (f *MenuFilter) WhereHasRoles() {
-	f.Where(entql.HasEdge("roles"))
+// WhereHasGenres applies a predicate to check if query has an edge genres.
+func (f *MangaFilter) WhereHasGenres() {
+	f.Where(entql.HasEdge("genres"))
 }
 
-// WhereHasRolesWith applies a predicate to check if query has an edge roles with a given conditions (other predicates).
-func (f *MenuFilter) WhereHasRolesWith(preds ...predicate.Role) {
-	f.Where(entql.HasEdgeWith("roles", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasGenresWith applies a predicate to check if query has an edge genres with a given conditions (other predicates).
+func (f *MangaFilter) WhereHasGenresWith(preds ...predicate.Genre) {
+	f.Where(entql.HasEdgeWith("genres", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (mcq *MangaChapterQuery) addPredicate(pred func(s *sql.Selector)) {
+	mcq.predicates = append(mcq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the MangaChapterQuery builder.
+func (mcq *MangaChapterQuery) Filter() *MangaChapterFilter {
+	return &MangaChapterFilter{config: mcq.config, predicateAdder: mcq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *MangaChapterMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the MangaChapterMutation builder.
+func (m *MangaChapterMutation) Filter() *MangaChapterFilter {
+	return &MangaChapterFilter{config: m.config, predicateAdder: m}
+}
+
+// MangaChapterFilter provides a generic filtering capability at runtime for MangaChapterQuery.
+type MangaChapterFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *MangaChapterFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *MangaChapterFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(mangachapter.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *MangaChapterFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(mangachapter.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *MangaChapterFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(mangachapter.FieldUpdatedAt))
+}
+
+// WhereMangaID applies the entql string predicate on the manga_id field.
+func (f *MangaChapterFilter) WhereMangaID(p entql.StringP) {
+	f.Where(p.Field(mangachapter.FieldMangaID))
+}
+
+// WhereTitle applies the entql string predicate on the title field.
+func (f *MangaChapterFilter) WhereTitle(p entql.StringP) {
+	f.Where(p.Field(mangachapter.FieldTitle))
+}
+
+// WhereImgURL applies the entql string predicate on the img_url field.
+func (f *MangaChapterFilter) WhereImgURL(p entql.StringP) {
+	f.Where(p.Field(mangachapter.FieldImgURL))
+}
+
+// WhereNumber applies the entql uint predicate on the number field.
+func (f *MangaChapterFilter) WhereNumber(p entql.UintP) {
+	f.Where(p.Field(mangachapter.FieldNumber))
+}
+
+// WhereProviderName applies the entql string predicate on the provider_name field.
+func (f *MangaChapterFilter) WhereProviderName(p entql.StringP) {
+	f.Where(p.Field(mangachapter.FieldProviderName))
+}
+
+// WhereChapterUpdatedAt applies the entql time.Time predicate on the chapter_updated_at field.
+func (f *MangaChapterFilter) WhereChapterUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(mangachapter.FieldChapterUpdatedAt))
+}
+
+// WhereHasManga applies a predicate to check if query has an edge manga.
+func (f *MangaChapterFilter) WhereHasManga() {
+	f.Where(entql.HasEdge("manga"))
+}
+
+// WhereHasMangaWith applies a predicate to check if query has an edge manga with a given conditions (other predicates).
+func (f *MangaChapterFilter) WhereHasMangaWith(preds ...predicate.Manga) {
+	f.Where(entql.HasEdgeWith("manga", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -745,7 +875,7 @@ type PermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -806,114 +936,6 @@ func (f *PermissionFilter) WhereHasRolesWith(preds ...predicate.Role) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (rq *RegionQuery) addPredicate(pred func(s *sql.Selector)) {
-	rq.predicates = append(rq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the RegionQuery builder.
-func (rq *RegionQuery) Filter() *RegionFilter {
-	return &RegionFilter{config: rq.config, predicateAdder: rq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *RegionMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the RegionMutation builder.
-func (m *RegionMutation) Filter() *RegionFilter {
-	return &RegionFilter{config: m.config, predicateAdder: m}
-}
-
-// RegionFilter provides a generic filtering capability at runtime for RegionQuery.
-type RegionFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *RegionFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *RegionFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(region.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *RegionFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(region.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *RegionFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(region.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql int predicate on the deleted_at field.
-func (f *RegionFilter) WhereDeletedAt(p entql.IntP) {
-	f.Where(p.Field(region.FieldDeletedAt))
-}
-
-// WhereIsEnable applies the entql bool predicate on the is_enable field.
-func (f *RegionFilter) WhereIsEnable(p entql.BoolP) {
-	f.Where(p.Field(region.FieldIsEnable))
-}
-
-// WhereNameID applies the entql string predicate on the name_id field.
-func (f *RegionFilter) WhereNameID(p entql.StringP) {
-	f.Where(p.Field(region.FieldNameID))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *RegionFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(region.FieldName))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *RegionFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(region.FieldType))
-}
-
-// WherePid applies the entql string predicate on the pid field.
-func (f *RegionFilter) WherePid(p entql.StringP) {
-	f.Where(p.Field(region.FieldPid))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *RegionFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *RegionFilter) WhereHasParentWith(preds ...predicate.Region) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *RegionFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *RegionFilter) WhereHasChildrenWith(preds ...predicate.Region) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (rq *RoleQuery) addPredicate(pred func(s *sql.Selector)) {
 	rq.predicates = append(rq.predicates, pred)
 }
@@ -942,7 +964,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1019,78 +1041,4 @@ func (f *RoleFilter) WhereHasPermissionsWith(preds ...predicate.Permission) {
 			p(s)
 		}
 	})))
-}
-
-// WhereHasRoutes applies a predicate to check if query has an edge routes.
-func (f *RoleFilter) WhereHasRoutes() {
-	f.Where(entql.HasEdge("routes"))
-}
-
-// WhereHasRoutesWith applies a predicate to check if query has an edge routes with a given conditions (other predicates).
-func (f *RoleFilter) WhereHasRoutesWith(preds ...predicate.Menu) {
-	f.Where(entql.HasEdgeWith("routes", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (tq *TodoQuery) addPredicate(pred func(s *sql.Selector)) {
-	tq.predicates = append(tq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the TodoQuery builder.
-func (tq *TodoQuery) Filter() *TodoFilter {
-	return &TodoFilter{config: tq.config, predicateAdder: tq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *TodoMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the TodoMutation builder.
-func (m *TodoMutation) Filter() *TodoFilter {
-	return &TodoFilter{config: m.config, predicateAdder: m}
-}
-
-// TodoFilter provides a generic filtering capability at runtime for TodoQuery.
-type TodoFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *TodoFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql string predicate on the id field.
-func (f *TodoFilter) WhereID(p entql.StringP) {
-	f.Where(p.Field(todo.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *TodoFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(todo.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *TodoFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(todo.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql int predicate on the deleted_at field.
-func (f *TodoFilter) WhereDeletedAt(p entql.IntP) {
-	f.Where(p.Field(todo.FieldDeletedAt))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *TodoFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(todo.FieldName))
 }

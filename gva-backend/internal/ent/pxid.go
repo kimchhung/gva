@@ -9,22 +9,22 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 )
 
 // prefixMap maps PXID prefixes to table names.
 var prefixMap = map[string]string{
 	"admin": admin.Table,
 	"dpm":   department.Table,
-	"menu":  menu.Table,
+	"magr":  genre.Table,
+	"mga":   manga.Table,
+	"mcr":   mangachapter.Table,
 	"perm":  permission.Table,
-	"regi":  region.Table,
 	"role":  role.Table,
-	"todo":  todo.Table,
 }
 
 // IDToType maps a pxid.ID to the underlying table.

@@ -9,11 +9,11 @@ import (
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -21,8 +21,6 @@ import (
 // to their package variables.
 func init() {
 	adminMixin := schema.Admin{}.Mixin()
-	adminMixinHooks3 := adminMixin[3].Hooks()
-	admin.Hooks[0] = adminMixinHooks3[0]
 	adminMixinInters3 := adminMixin[3].Interceptors()
 	admin.Interceptors[0] = adminMixinInters3[0]
 	adminMixinFields0 := adminMixin[0].Fields()
@@ -58,8 +56,6 @@ func init() {
 	// admin.DefaultID holds the default value on creation for the id field.
 	admin.DefaultID = adminDescID.Default.(func() pxid.ID)
 	departmentMixin := schema.Department{}.Mixin()
-	departmentMixinHooks2 := departmentMixin[2].Hooks()
-	department.Hooks[0] = departmentMixinHooks2[0]
 	departmentMixinInters2 := departmentMixin[2].Interceptors()
 	department.Interceptors[0] = departmentMixinInters2[0]
 	departmentMixinFields0 := departmentMixin[0].Fields()
@@ -94,47 +90,101 @@ func init() {
 	departmentDescID := departmentMixinFields0[0].Descriptor()
 	// department.DefaultID holds the default value on creation for the id field.
 	department.DefaultID = departmentDescID.Default.(func() pxid.ID)
-	menuMixin := schema.Menu{}.Mixin()
-	menuMixinHooks3 := menuMixin[3].Hooks()
-	menu.Hooks[0] = menuMixinHooks3[0]
-	menuMixinInters3 := menuMixin[3].Interceptors()
-	menu.Interceptors[0] = menuMixinInters3[0]
-	menuMixinFields0 := menuMixin[0].Fields()
-	_ = menuMixinFields0
-	menuMixinFields1 := menuMixin[1].Fields()
-	_ = menuMixinFields1
-	menuMixinFields2 := menuMixin[2].Fields()
-	_ = menuMixinFields2
-	menuMixinFields3 := menuMixin[3].Fields()
-	_ = menuMixinFields3
-	menuFields := schema.Menu{}.Fields()
-	_ = menuFields
-	// menuDescCreatedAt is the schema descriptor for created_at field.
-	menuDescCreatedAt := menuMixinFields1[0].Descriptor()
-	// menu.DefaultCreatedAt holds the default value on creation for the created_at field.
-	menu.DefaultCreatedAt = menuDescCreatedAt.Default.(func() time.Time)
-	// menuDescUpdatedAt is the schema descriptor for updated_at field.
-	menuDescUpdatedAt := menuMixinFields1[1].Descriptor()
-	// menu.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	menu.DefaultUpdatedAt = menuDescUpdatedAt.Default.(func() time.Time)
-	// menu.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	menu.UpdateDefaultUpdatedAt = menuDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// menuDescIsEnable is the schema descriptor for is_enable field.
-	menuDescIsEnable := menuMixinFields2[0].Descriptor()
-	// menu.DefaultIsEnable holds the default value on creation for the is_enable field.
-	menu.DefaultIsEnable = menuDescIsEnable.Default.(bool)
-	// menuDescDeletedAt is the schema descriptor for deleted_at field.
-	menuDescDeletedAt := menuMixinFields3[0].Descriptor()
-	// menu.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	menu.DefaultDeletedAt = menuDescDeletedAt.Default.(int)
-	// menuDescOrder is the schema descriptor for order field.
-	menuDescOrder := menuFields[5].Descriptor()
-	// menu.DefaultOrder holds the default value on creation for the order field.
-	menu.DefaultOrder = menuDescOrder.Default.(int)
-	// menuDescID is the schema descriptor for id field.
-	menuDescID := menuMixinFields0[0].Descriptor()
-	// menu.DefaultID holds the default value on creation for the id field.
-	menu.DefaultID = menuDescID.Default.(func() pxid.ID)
+	genreMixin := schema.Genre{}.Mixin()
+	genreMixinInters3 := genreMixin[3].Interceptors()
+	genre.Interceptors[0] = genreMixinInters3[0]
+	genreMixinFields0 := genreMixin[0].Fields()
+	_ = genreMixinFields0
+	genreMixinFields1 := genreMixin[1].Fields()
+	_ = genreMixinFields1
+	genreMixinFields2 := genreMixin[2].Fields()
+	_ = genreMixinFields2
+	genreMixinFields3 := genreMixin[3].Fields()
+	_ = genreMixinFields3
+	genreFields := schema.Genre{}.Fields()
+	_ = genreFields
+	// genreDescCreatedAt is the schema descriptor for created_at field.
+	genreDescCreatedAt := genreMixinFields1[0].Descriptor()
+	// genre.DefaultCreatedAt holds the default value on creation for the created_at field.
+	genre.DefaultCreatedAt = genreDescCreatedAt.Default.(func() time.Time)
+	// genreDescUpdatedAt is the schema descriptor for updated_at field.
+	genreDescUpdatedAt := genreMixinFields1[1].Descriptor()
+	// genre.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	genre.DefaultUpdatedAt = genreDescUpdatedAt.Default.(func() time.Time)
+	// genre.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	genre.UpdateDefaultUpdatedAt = genreDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// genreDescIsEnable is the schema descriptor for is_enable field.
+	genreDescIsEnable := genreMixinFields2[0].Descriptor()
+	// genre.DefaultIsEnable holds the default value on creation for the is_enable field.
+	genre.DefaultIsEnable = genreDescIsEnable.Default.(bool)
+	// genreDescDeletedAt is the schema descriptor for deleted_at field.
+	genreDescDeletedAt := genreMixinFields3[0].Descriptor()
+	// genre.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	genre.DefaultDeletedAt = genreDescDeletedAt.Default.(int)
+	// genreDescID is the schema descriptor for id field.
+	genreDescID := genreMixinFields0[0].Descriptor()
+	// genre.DefaultID holds the default value on creation for the id field.
+	genre.DefaultID = genreDescID.Default.(func() pxid.ID)
+	mangaMixin := schema.Manga{}.Mixin()
+	mangaMixinInters3 := mangaMixin[3].Interceptors()
+	manga.Interceptors[0] = mangaMixinInters3[0]
+	mangaMixinFields0 := mangaMixin[0].Fields()
+	_ = mangaMixinFields0
+	mangaMixinFields1 := mangaMixin[1].Fields()
+	_ = mangaMixinFields1
+	mangaMixinFields2 := mangaMixin[2].Fields()
+	_ = mangaMixinFields2
+	mangaMixinFields3 := mangaMixin[3].Fields()
+	_ = mangaMixinFields3
+	mangaFields := schema.Manga{}.Fields()
+	_ = mangaFields
+	// mangaDescCreatedAt is the schema descriptor for created_at field.
+	mangaDescCreatedAt := mangaMixinFields1[0].Descriptor()
+	// manga.DefaultCreatedAt holds the default value on creation for the created_at field.
+	manga.DefaultCreatedAt = mangaDescCreatedAt.Default.(func() time.Time)
+	// mangaDescUpdatedAt is the schema descriptor for updated_at field.
+	mangaDescUpdatedAt := mangaMixinFields1[1].Descriptor()
+	// manga.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	manga.DefaultUpdatedAt = mangaDescUpdatedAt.Default.(func() time.Time)
+	// manga.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	manga.UpdateDefaultUpdatedAt = mangaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// mangaDescIsEnable is the schema descriptor for is_enable field.
+	mangaDescIsEnable := mangaMixinFields2[0].Descriptor()
+	// manga.DefaultIsEnable holds the default value on creation for the is_enable field.
+	manga.DefaultIsEnable = mangaDescIsEnable.Default.(bool)
+	// mangaDescDeletedAt is the schema descriptor for deleted_at field.
+	mangaDescDeletedAt := mangaMixinFields3[0].Descriptor()
+	// manga.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	manga.DefaultDeletedAt = mangaDescDeletedAt.Default.(int)
+	// mangaDescID is the schema descriptor for id field.
+	mangaDescID := mangaMixinFields0[0].Descriptor()
+	// manga.DefaultID holds the default value on creation for the id field.
+	manga.DefaultID = mangaDescID.Default.(func() pxid.ID)
+	mangachapterMixin := schema.MangaChapter{}.Mixin()
+	mangachapterMixinFields0 := mangachapterMixin[0].Fields()
+	_ = mangachapterMixinFields0
+	mangachapterMixinFields1 := mangachapterMixin[1].Fields()
+	_ = mangachapterMixinFields1
+	mangachapterFields := schema.MangaChapter{}.Fields()
+	_ = mangachapterFields
+	// mangachapterDescCreatedAt is the schema descriptor for created_at field.
+	mangachapterDescCreatedAt := mangachapterMixinFields1[0].Descriptor()
+	// mangachapter.DefaultCreatedAt holds the default value on creation for the created_at field.
+	mangachapter.DefaultCreatedAt = mangachapterDescCreatedAt.Default.(func() time.Time)
+	// mangachapterDescUpdatedAt is the schema descriptor for updated_at field.
+	mangachapterDescUpdatedAt := mangachapterMixinFields1[1].Descriptor()
+	// mangachapter.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	mangachapter.DefaultUpdatedAt = mangachapterDescUpdatedAt.Default.(func() time.Time)
+	// mangachapter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	mangachapter.UpdateDefaultUpdatedAt = mangachapterDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// mangachapterDescMangaID is the schema descriptor for manga_id field.
+	mangachapterDescMangaID := mangachapterFields[0].Descriptor()
+	// mangachapter.MangaIDValidator is a validator for the "manga_id" field. It is called by the builders before save.
+	mangachapter.MangaIDValidator = mangachapterDescMangaID.Validators[0].(func(string) error)
+	// mangachapterDescID is the schema descriptor for id field.
+	mangachapterDescID := mangachapterMixinFields0[0].Descriptor()
+	// mangachapter.DefaultID holds the default value on creation for the id field.
+	mangachapter.DefaultID = mangachapterDescID.Default.(func() pxid.ID)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
@@ -160,46 +210,7 @@ func init() {
 	permissionDescID := permissionMixinFields0[0].Descriptor()
 	// permission.DefaultID holds the default value on creation for the id field.
 	permission.DefaultID = permissionDescID.Default.(func() pxid.ID)
-	regionMixin := schema.Region{}.Mixin()
-	regionMixinHooks2 := regionMixin[2].Hooks()
-	region.Hooks[0] = regionMixinHooks2[0]
-	regionMixinInters2 := regionMixin[2].Interceptors()
-	region.Interceptors[0] = regionMixinInters2[0]
-	regionMixinFields0 := regionMixin[0].Fields()
-	_ = regionMixinFields0
-	regionMixinFields1 := regionMixin[1].Fields()
-	_ = regionMixinFields1
-	regionMixinFields2 := regionMixin[2].Fields()
-	_ = regionMixinFields2
-	regionMixinFields3 := regionMixin[3].Fields()
-	_ = regionMixinFields3
-	regionFields := schema.Region{}.Fields()
-	_ = regionFields
-	// regionDescCreatedAt is the schema descriptor for created_at field.
-	regionDescCreatedAt := regionMixinFields1[0].Descriptor()
-	// region.DefaultCreatedAt holds the default value on creation for the created_at field.
-	region.DefaultCreatedAt = regionDescCreatedAt.Default.(func() time.Time)
-	// regionDescUpdatedAt is the schema descriptor for updated_at field.
-	regionDescUpdatedAt := regionMixinFields1[1].Descriptor()
-	// region.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	region.DefaultUpdatedAt = regionDescUpdatedAt.Default.(func() time.Time)
-	// region.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	region.UpdateDefaultUpdatedAt = regionDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// regionDescDeletedAt is the schema descriptor for deleted_at field.
-	regionDescDeletedAt := regionMixinFields2[0].Descriptor()
-	// region.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	region.DefaultDeletedAt = regionDescDeletedAt.Default.(int)
-	// regionDescIsEnable is the schema descriptor for is_enable field.
-	regionDescIsEnable := regionMixinFields3[0].Descriptor()
-	// region.DefaultIsEnable holds the default value on creation for the is_enable field.
-	region.DefaultIsEnable = regionDescIsEnable.Default.(bool)
-	// regionDescID is the schema descriptor for id field.
-	regionDescID := regionMixinFields0[0].Descriptor()
-	// region.DefaultID holds the default value on creation for the id field.
-	region.DefaultID = regionDescID.Default.(func() pxid.ID)
 	roleMixin := schema.Role{}.Mixin()
-	roleMixinHooks3 := roleMixin[3].Hooks()
-	role.Hooks[0] = roleMixinHooks3[0]
 	roleMixinInters3 := roleMixin[3].Interceptors()
 	role.Interceptors[0] = roleMixinInters3[0]
 	roleMixinFields0 := roleMixin[0].Fields()
@@ -234,40 +245,9 @@ func init() {
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
 	role.DefaultID = roleDescID.Default.(func() pxid.ID)
-	todoMixin := schema.Todo{}.Mixin()
-	todoMixinHooks2 := todoMixin[2].Hooks()
-	todo.Hooks[0] = todoMixinHooks2[0]
-	todoMixinInters2 := todoMixin[2].Interceptors()
-	todo.Interceptors[0] = todoMixinInters2[0]
-	todoMixinFields0 := todoMixin[0].Fields()
-	_ = todoMixinFields0
-	todoMixinFields1 := todoMixin[1].Fields()
-	_ = todoMixinFields1
-	todoMixinFields2 := todoMixin[2].Fields()
-	_ = todoMixinFields2
-	todoFields := schema.Todo{}.Fields()
-	_ = todoFields
-	// todoDescCreatedAt is the schema descriptor for created_at field.
-	todoDescCreatedAt := todoMixinFields1[0].Descriptor()
-	// todo.DefaultCreatedAt holds the default value on creation for the created_at field.
-	todo.DefaultCreatedAt = todoDescCreatedAt.Default.(func() time.Time)
-	// todoDescUpdatedAt is the schema descriptor for updated_at field.
-	todoDescUpdatedAt := todoMixinFields1[1].Descriptor()
-	// todo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	todo.DefaultUpdatedAt = todoDescUpdatedAt.Default.(func() time.Time)
-	// todo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	todo.UpdateDefaultUpdatedAt = todoDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// todoDescDeletedAt is the schema descriptor for deleted_at field.
-	todoDescDeletedAt := todoMixinFields2[0].Descriptor()
-	// todo.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	todo.DefaultDeletedAt = todoDescDeletedAt.Default.(int)
-	// todoDescID is the schema descriptor for id field.
-	todoDescID := todoMixinFields0[0].Descriptor()
-	// todo.DefaultID holds the default value on creation for the id field.
-	todo.DefaultID = todoDescID.Default.(func() pxid.ID)
 }
 
 const (
-	Version = "v0.13.1"                                         // Version of ent codegen.
-	Sum     = "h1:uD8QwN1h6SNphdCCzmkMN3feSUzNnVvV/WIkHKMbzOE=" // Sum of ent codegen.
+	Version = "v0.14.1"                                         // Version of ent codegen.
+	Sum     = "h1:fUERL506Pqr92EPHJqr8EYxbPioflJo6PudkrEA8a/s=" // Sum of ent codegen.
 )

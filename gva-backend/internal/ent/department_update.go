@@ -240,9 +240,7 @@ func (du *DepartmentUpdate) RemoveMembers(a ...*Admin) *DepartmentUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (du *DepartmentUpdate) Save(ctx context.Context) (int, error) {
-	if err := du.defaults(); err != nil {
-		return 0, err
-	}
+	du.defaults()
 	return withHooks(ctx, du.sqlSave, du.mutation, du.hooks)
 }
 
@@ -269,15 +267,11 @@ func (du *DepartmentUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (du *DepartmentUpdate) defaults() error {
+func (du *DepartmentUpdate) defaults() {
 	if _, ok := du.mutation.UpdatedAt(); !ok {
-		if department.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized department.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := department.UpdateDefaultUpdatedAt()
 		du.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -687,9 +681,7 @@ func (duo *DepartmentUpdateOne) Select(field string, fields ...string) *Departme
 
 // Save executes the query and returns the updated Department entity.
 func (duo *DepartmentUpdateOne) Save(ctx context.Context) (*Department, error) {
-	if err := duo.defaults(); err != nil {
-		return nil, err
-	}
+	duo.defaults()
 	return withHooks(ctx, duo.sqlSave, duo.mutation, duo.hooks)
 }
 
@@ -716,15 +708,11 @@ func (duo *DepartmentUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (duo *DepartmentUpdateOne) defaults() error {
+func (duo *DepartmentUpdateOne) defaults() {
 	if _, ok := duo.mutation.UpdatedAt(); !ok {
-		if department.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized department.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := department.UpdateDefaultUpdatedAt()
 		duo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.

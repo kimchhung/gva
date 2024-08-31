@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/gva/app/database/schema/pxid"
 	"github.com/gva/internal/ent/admin"
-	"github.com/gva/internal/ent/menu"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/role"
 )
@@ -151,21 +150,6 @@ func (rc *RoleCreate) AddPermissions(p ...*Permission) *RoleCreate {
 	return rc.AddPermissionIDs(ids...)
 }
 
-// AddRouteIDs adds the "routes" edge to the Menu entity by IDs.
-func (rc *RoleCreate) AddRouteIDs(ids ...pxid.ID) *RoleCreate {
-	rc.mutation.AddRouteIDs(ids...)
-	return rc
-}
-
-// AddRoutes adds the "routes" edges to the Menu entity.
-func (rc *RoleCreate) AddRoutes(m ...*Menu) *RoleCreate {
-	ids := make([]pxid.ID, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return rc.AddRouteIDs(ids...)
-}
-
 // Mutation returns the RoleMutation object of the builder.
 func (rc *RoleCreate) Mutation() *RoleMutation {
 	return rc.mutation
@@ -173,9 +157,7 @@ func (rc *RoleCreate) Mutation() *RoleMutation {
 
 // Save creates the Role in the database.
 func (rc *RoleCreate) Save(ctx context.Context) (*Role, error) {
-	if err := rc.defaults(); err != nil {
-		return nil, err
-	}
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -202,18 +184,12 @@ func (rc *RoleCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *RoleCreate) defaults() error {
+func (rc *RoleCreate) defaults() {
 	if _, ok := rc.mutation.CreatedAt(); !ok {
-		if role.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized role.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := role.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
-		if role.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized role.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := role.DefaultUpdatedAt()
 		rc.mutation.SetUpdatedAt(v)
 	}
@@ -226,13 +202,9 @@ func (rc *RoleCreate) defaults() error {
 		rc.mutation.SetDeletedAt(v)
 	}
 	if _, ok := rc.mutation.ID(); !ok {
-		if role.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized role.DefaultID (forgotten import ent/runtime?)")
-		}
 		v := role.DefaultID()
 		rc.mutation.SetID(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -359,23 +331,6 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 			},
 		}
 		edge.Schema = rc.schemaConfig.RolePermissions
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := rc.mutation.RoutesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   role.RoutesTable,
-			Columns: role.RoutesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
-			},
-		}
-		edge.Schema = rc.schemaConfig.RoleRoutes
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}

@@ -7,8 +7,6 @@ import (
 func AllSeeders() []database.Seeder {
 	return []database.Seeder{
 		NewDepartSeeder(),
-		NewMenuSeeder(),
-		NewMenuSeeder(),
 		NewSuperAdminSeeder(),
 	}
 }

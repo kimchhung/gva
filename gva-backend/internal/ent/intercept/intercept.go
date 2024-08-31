@@ -10,12 +10,12 @@ import (
 	"github.com/gva/internal/ent"
 	"github.com/gva/internal/ent/admin"
 	"github.com/gva/internal/ent/department"
-	"github.com/gva/internal/ent/menu"
+	"github.com/gva/internal/ent/genre"
+	"github.com/gva/internal/ent/manga"
+	"github.com/gva/internal/ent/mangachapter"
 	"github.com/gva/internal/ent/permission"
 	"github.com/gva/internal/ent/predicate"
-	"github.com/gva/internal/ent/region"
 	"github.com/gva/internal/ent/role"
-	"github.com/gva/internal/ent/todo"
 )
 
 // The Query interface represents an operation that queries a graph.
@@ -128,31 +128,85 @@ func (f TraverseDepartment) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.DepartmentQuery", q)
 }
 
-// The MenuFunc type is an adapter to allow the use of ordinary function as a Querier.
-type MenuFunc func(context.Context, *ent.MenuQuery) (ent.Value, error)
+// The GenreFunc type is an adapter to allow the use of ordinary function as a Querier.
+type GenreFunc func(context.Context, *ent.GenreQuery) (ent.Value, error)
 
 // Query calls f(ctx, q).
-func (f MenuFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.MenuQuery); ok {
+func (f GenreFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.GenreQuery); ok {
 		return f(ctx, q)
 	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.MenuQuery", q)
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.GenreQuery", q)
 }
 
-// The TraverseMenu type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseMenu func(context.Context, *ent.MenuQuery) error
+// The TraverseGenre type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseGenre func(context.Context, *ent.GenreQuery) error
 
 // Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseMenu) Intercept(next ent.Querier) ent.Querier {
+func (f TraverseGenre) Intercept(next ent.Querier) ent.Querier {
 	return next
 }
 
 // Traverse calls f(ctx, q).
-func (f TraverseMenu) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.MenuQuery); ok {
+func (f TraverseGenre) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.GenreQuery); ok {
 		return f(ctx, q)
 	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.MenuQuery", q)
+	return fmt.Errorf("unexpected query type %T. expect *ent.GenreQuery", q)
+}
+
+// The MangaFunc type is an adapter to allow the use of ordinary function as a Querier.
+type MangaFunc func(context.Context, *ent.MangaQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f MangaFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.MangaQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.MangaQuery", q)
+}
+
+// The TraverseManga type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseManga func(context.Context, *ent.MangaQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseManga) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseManga) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MangaQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.MangaQuery", q)
+}
+
+// The MangaChapterFunc type is an adapter to allow the use of ordinary function as a Querier.
+type MangaChapterFunc func(context.Context, *ent.MangaChapterQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f MangaChapterFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.MangaChapterQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.MangaChapterQuery", q)
+}
+
+// The TraverseMangaChapter type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseMangaChapter func(context.Context, *ent.MangaChapterQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseMangaChapter) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseMangaChapter) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MangaChapterQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.MangaChapterQuery", q)
 }
 
 // The PermissionFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -182,33 +236,6 @@ func (f TraversePermission) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.PermissionQuery", q)
 }
 
-// The RegionFunc type is an adapter to allow the use of ordinary function as a Querier.
-type RegionFunc func(context.Context, *ent.RegionQuery) (ent.Value, error)
-
-// Query calls f(ctx, q).
-func (f RegionFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.RegionQuery); ok {
-		return f(ctx, q)
-	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.RegionQuery", q)
-}
-
-// The TraverseRegion type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseRegion func(context.Context, *ent.RegionQuery) error
-
-// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseRegion) Intercept(next ent.Querier) ent.Querier {
-	return next
-}
-
-// Traverse calls f(ctx, q).
-func (f TraverseRegion) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.RegionQuery); ok {
-		return f(ctx, q)
-	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.RegionQuery", q)
-}
-
 // The RoleFunc type is an adapter to allow the use of ordinary function as a Querier.
 type RoleFunc func(context.Context, *ent.RoleQuery) (ent.Value, error)
 
@@ -236,33 +263,6 @@ func (f TraverseRole) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.RoleQuery", q)
 }
 
-// The TodoFunc type is an adapter to allow the use of ordinary function as a Querier.
-type TodoFunc func(context.Context, *ent.TodoQuery) (ent.Value, error)
-
-// Query calls f(ctx, q).
-func (f TodoFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.TodoQuery); ok {
-		return f(ctx, q)
-	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.TodoQuery", q)
-}
-
-// The TraverseTodo type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseTodo func(context.Context, *ent.TodoQuery) error
-
-// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseTodo) Intercept(next ent.Querier) ent.Querier {
-	return next
-}
-
-// Traverse calls f(ctx, q).
-func (f TraverseTodo) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.TodoQuery); ok {
-		return f(ctx, q)
-	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.TodoQuery", q)
-}
-
 // NewQuery returns the generic Query interface for the given typed query.
 func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
@@ -270,16 +270,16 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.AdminQuery, predicate.Admin, admin.OrderOption]{typ: ent.TypeAdmin, tq: q}, nil
 	case *ent.DepartmentQuery:
 		return &query[*ent.DepartmentQuery, predicate.Department, department.OrderOption]{typ: ent.TypeDepartment, tq: q}, nil
-	case *ent.MenuQuery:
-		return &query[*ent.MenuQuery, predicate.Menu, menu.OrderOption]{typ: ent.TypeMenu, tq: q}, nil
+	case *ent.GenreQuery:
+		return &query[*ent.GenreQuery, predicate.Genre, genre.OrderOption]{typ: ent.TypeGenre, tq: q}, nil
+	case *ent.MangaQuery:
+		return &query[*ent.MangaQuery, predicate.Manga, manga.OrderOption]{typ: ent.TypeManga, tq: q}, nil
+	case *ent.MangaChapterQuery:
+		return &query[*ent.MangaChapterQuery, predicate.MangaChapter, mangachapter.OrderOption]{typ: ent.TypeMangaChapter, tq: q}, nil
 	case *ent.PermissionQuery:
 		return &query[*ent.PermissionQuery, predicate.Permission, permission.OrderOption]{typ: ent.TypePermission, tq: q}, nil
-	case *ent.RegionQuery:
-		return &query[*ent.RegionQuery, predicate.Region, region.OrderOption]{typ: ent.TypeRegion, tq: q}, nil
 	case *ent.RoleQuery:
 		return &query[*ent.RoleQuery, predicate.Role, role.OrderOption]{typ: ent.TypeRole, tq: q}, nil
-	case *ent.TodoQuery:
-		return &query[*ent.TodoQuery, predicate.Todo, todo.OrderOption]{typ: ent.TypeTodo, tq: q}, nil
 	default:
 		return nil, fmt.Errorf("unknown query type %T", q)
 	}

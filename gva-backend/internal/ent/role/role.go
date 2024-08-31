@@ -36,8 +36,6 @@ const (
 	EdgeAdmins = "admins"
 	// EdgePermissions holds the string denoting the permissions edge name in mutations.
 	EdgePermissions = "permissions"
-	// EdgeRoutes holds the string denoting the routes edge name in mutations.
-	EdgeRoutes = "routes"
 	// Table holds the table name of the role in the database.
 	Table = "roles"
 	// AdminsTable is the table that holds the admins relation/edge. The primary key declared below.
@@ -50,11 +48,6 @@ const (
 	// PermissionsInverseTable is the table name for the Permission entity.
 	// It exists in this package in order to avoid circular dependency with the "permission" package.
 	PermissionsInverseTable = "permissions"
-	// RoutesTable is the table that holds the routes relation/edge. The primary key declared below.
-	RoutesTable = "role_routes"
-	// RoutesInverseTable is the table name for the Menu entity.
-	// It exists in this package in order to avoid circular dependency with the "menu" package.
-	RoutesInverseTable = "menus"
 )
 
 // Columns holds all SQL columns for role fields.
@@ -77,9 +70,6 @@ var (
 	// PermissionsPrimaryKey and PermissionsColumn2 are the table columns denoting the
 	// primary key for the permissions relation (M2M).
 	PermissionsPrimaryKey = []string{"role_id", "permission_id"}
-	// RoutesPrimaryKey and RoutesColumn2 are the table columns denoting the
-	// primary key for the routes relation (M2M).
-	RoutesPrimaryKey = []string{"role_id", "menu_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -98,7 +88,6 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/gva/internal/ent/runtime"
 var (
-	Hooks        [1]ent.Hook
 	Interceptors [1]ent.Interceptor
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
@@ -189,20 +178,6 @@ func ByPermissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPermissionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByRoutesCount orders the results by routes count.
-func ByRoutesCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newRoutesStep(), opts...)
-	}
-}
-
-// ByRoutes orders the results by routes terms.
-func ByRoutes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRoutesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
 func newAdminsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -215,12 +190,5 @@ func newPermissionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PermissionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, PermissionsTable, PermissionsPrimaryKey...),
-	)
-}
-func newRoutesStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RoutesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, RoutesTable, RoutesPrimaryKey...),
 	)
 }

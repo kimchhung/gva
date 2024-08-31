@@ -18,16 +18,16 @@ type Tx struct {
 	Admin *AdminClient
 	// Department is the client for interacting with the Department builders.
 	Department *DepartmentClient
-	// Menu is the client for interacting with the Menu builders.
-	Menu *MenuClient
+	// Genre is the client for interacting with the Genre builders.
+	Genre *GenreClient
+	// Manga is the client for interacting with the Manga builders.
+	Manga *MangaClient
+	// MangaChapter is the client for interacting with the MangaChapter builders.
+	MangaChapter *MangaChapterClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
-	// Region is the client for interacting with the Region builders.
-	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
-	// Todo is the client for interacting with the Todo builders.
-	Todo *TodoClient
 
 	// lazily loaded.
 	client     *Client
@@ -161,11 +161,11 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
 	tx.Department = NewDepartmentClient(tx.config)
-	tx.Menu = NewMenuClient(tx.config)
+	tx.Genre = NewGenreClient(tx.config)
+	tx.Manga = NewMangaClient(tx.config)
+	tx.MangaChapter = NewMangaChapterClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
-	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
-	tx.Todo = NewTodoClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
