@@ -1,0 +1,675 @@
+{
+  "validator": {
+    "error": {
+      "maxLength": "长度不能超过{max}字符",
+      "required": "{field}必填。",
+      "email": "无效的电子邮件。",
+      "phone": "无效的电话号码。",
+      "lengthRange": "长度必须在{min}到{max}个字符之间。",
+      "noSpace": "字段不能为空。",
+      "noSpecialCharacters": "字段包含特殊字符：{specialCharactors}",
+      "pattern": "无效模式",
+      "minMaxNumber": "该数字必须在 {min} 和 {max} 之间！",
+      "noLeadingSpace": "字段不能有前导空格！",
+      "noMultipleSpaces": "字段不能有多个空格！",
+      "noNumber": "字段不能包含数字！",
+      "imageSizeExeeded": "图像大小超过{size}MB"
+    }
+  },
+  "common": {
+    "display": "显示",
+    "yes": "是",
+    "no": "否",
+    "ok": "确定",
+    "close": "关闭",
+    "cancel": "取消",
+    "confirm": "确认",
+    "Accept": "接受",
+    "detail": "详情",
+    "view": "查看",
+    "add": "添加{name}",
+    "edit": "编辑{name}",
+    "delete": "删除{name}",
+    "save": "保存",
+    "export": "导出",
+    "username": "用户名",
+    "copied": "已复制 \"{value}\"",
+    "reset": "重置",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "name": "姓名",
+    "status": "状态",
+    "type": "类型",
+    "useLatestSetting": "使用最新设置",
+    "firstAmount": "首页 ({amount})",
+    "afterAmount": "后 ({amount})",
+    "created_at": "创建于",
+    "operation": "手术",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "种类",
+    "text": "文本",
+    "active": "激活",
+    "inactive": "未激活",
+    "id": "ID",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "action": "操作",
+    "description": "描述",
+    "create": "创建{name}",
+    "password": "密码",
+    "roles": "角色",
+    "today": "今天",
+    "yesterday": "昨天",
+    "last7Days": "过去7天",
+    "last5Minutes": "过去5分钟",
+    "last30Minutes": "过去30分钟",
+    "last14Days": "过去14天",
+    "last30Days": "过去30天",
+    "last90Days": "过去90天",
+    "order": "订购",
+    "icon": "图标",
+    "alternativeIcon": "替代图标",
+    "confirmation": "您确定吗？",
+    "upload": "上传",
+    "user": "用户",
+    "title": "標題",
+    "content": "內容",
+    "details": "修改",
+    "picture": "图片",
+    "tags": "标签",
+    "enable": "已启用",
+    "disable": "残疾人",
+    "expPoint": "经验点",
+    "freeChance": "免费次数",
+    "goldCoin": "金币",
+    "socialLevel": "社会层面",
+    "phone": "电话号码",
+    "userLevel": "用戶等級",
+    "ban": "禁止",
+    "copyFailed": "复制失败",
+    "report": "数据统计",
+    "experience": "经验",
+    "nameId": "名称ID",
+    "list": "列表",
+    "config": "配置",
+    "second": "秒",
+    "total": "总",
+    "post": {
+      "likedCount": "喜欢的数量",
+      "sharedCount": "分享数量",
+      "commentCount": "评论数量"
+    },
+    "thumbnail": "缩略图",
+    "settings": "设置",
+    "totalPerformance": "总体表现",
+    "key": "钥匙",
+    "game": "游戏",
+    "amount": "数量",
+    "schedule": "排程",
+    "restart": "重新开始",
+    "url": "网址",
+    "timezone": "时区",
+    "region": "游戏地区列表",
+    "company": "游戏公司列表",
+    "category": "类别",
+    "value": "值",
+    "group": "组",
+    "dataTypes": {
+      "title": "数据类型",
+      "group": "组",
+      "string": "字符串",
+      "textarea": "文本区域",
+      "number": "数字",
+      "boolean": "布尔值",
+      "array": "数组",
+      "json": "JSON",
+      "date": "日期",
+      "dateRange": "日期范围",
+      "image": "图片",
+      "multiImage": "多图像",
+      "object": "目的"
+    },
+    "collapseAll": "折叠所有",
+    "expandAll": "展开所有",
+    "redirectUrl": "重定向网址",
+    "addImage": "添加图片",
+    "selectAll": "选择全部",
+    "unselectAll": "取消选择全部",
+    "date": "日期",
+    "dateRange": "日期范围",
+    "resultDate": "结果日期",
+    "resultNo": "结果编号",
+    "gameName": "游戏名称",
+    "numberOfDraws": "抽奖次数",
+    "lottery": "游戏",
+    "latest": "最新",
+    "oldest": "最早",
+    "replies": "条回复",
+    "paginatePage": "{num}条/页",
+    "gold": "金币",
+    "exp": "经验",
+    "preview": "预览",
+    "success": "成功",
+    "failed": "失败",
+    "intervalScheduleText": "每 {second} 秒 {startTime}-{endTime}",
+    "userAgent": "用户代理",
+    "pending": "待定",
+    "expired": "过期",
+    "chance": "机会",
+    "metadata": "Metadata",
+    "model": "Model",
+    "advanceParams": "進階參數",
+    "profileImage": "個人資料圖片",
+    "createdBy": "创建者",
+    "update": "更新",
+    "last2": "最后2{type}",
+    "last30": "最后30{type}",
+    "last60": "最后60{type}",
+    "last90": "最后90{type}",
+    "days": "天",
+    "issues": "期"
+  },
+  "auth": {
+    "currentIP": "当前IP"
+  },
+  "menu": {
+    "title": "菜单",
+    "management": {
+      "title": "管理"
+    },
+    "dashboard": {
+      "title": "仪表板"
+    },
+    "permissions": {
+      "title": "权限"
+    },
+    "system": {
+      "title": "系统管理"
+    },
+    "document": {
+      "title": "文档"
+    }
+  },
+  "page": {
+    "document": {
+      "title": "文档"
+    },
+    "admin": {
+      "title": "账号",
+      "users": {
+        "title": "用户",
+        "form": {
+          "ip-whitelist": "IP白名单",
+          "reset-password": "重置密码",
+          "totp": "身份验证代码",
+          "totpAlert": "请输入您的身份验证代码以更新此用户。输入代码后，将为此用户设置一个新的身份验证器密钥。",
+          "downloadQR": "下载二维码",
+          "totpUpdated": "请使用身份验证器应用程序扫描此二维码。\n或输入下面的代码。",
+          "lastLoginAt": "上次登录时间",
+          "lastLoginIP": "最后登录IP",
+          "lastLoginRegion": "最后登录地区"
+        }
+      },
+      "roles": {
+        "title": "权限管理",
+        "form": {
+          "permissions": "权限"
+        }
+      },
+      "permissions": {
+        "title": "权限"
+      }
+    },
+    "management": {
+      "title": "管理",
+      "campaign": {
+        "title": "活动",
+        "list": "活动列表",
+        "detail": "活动详情"
+      },
+      "games": {
+        "title": "游戏"
+      },
+      "article": {
+        "list": "类型",
+        "status": {
+          "draft": "草稿",
+          "pending": "待办的",
+          "published": "已发表",
+          "archived": "已归档"
+        },
+        "info": "额外信息",
+        "addExtraInfo": "添加额外信息",
+        "key": "钥匙",
+        "title": "文章",
+        "type": "列表",
+        "previewArticle": "预览文章"
+      }
+    },
+    "prizes": {
+      "title": "奖品",
+      "gold": "金币"
+    },
+    "campaign": {
+      "list": {
+        "title": "活动列表"
+      },
+      "detail": {
+        "title": "活動詳情",
+        "addReward": "添加更多条件",
+        "buyCondition": "購買條件",
+        "setting": {
+          "title": "设置",
+          "weight": "权重",
+          "probability": "概率",
+          "reward": "奖励"
+        },
+        "conditionToWin": {
+          "snatch_sequence": "抢购顺序"
+        }
+      },
+      "common": {
+        "price": "價格",
+        "prizeCondition": "獎品條件",
+        "priceCondition": "價格條件"
+      }
+    },
+    "examples": {
+      "title": "示例",
+      "ellipsis": {
+        "title": "文本省略"
+      }
+    },
+    "general": {
+      "currencies": {
+        "title": "货币"
+      }
+    },
+    "social": {
+      "title": "社区",
+      "tags": {
+        "title": "标签"
+      },
+      "categories": {
+        "title": "分类"
+      },
+      "badWordFilter": {
+        "title": "不当言论筛选",
+        "word": "不当内容",
+        "replaceWord": "更新为"
+      },
+      "user": {
+        "permissionSetting": "权限设定",
+        "lastCheckedinAt": "最后入住时间",
+        "lastLoginAt": "上次登录时间"
+      },
+      "levelExperienceConfig": {
+        "eachLevelExp": "所需经验",
+        "icon": "图标",
+        "name": "等级",
+        "title": "等级经验配置"
+      },
+      "userAchievement": {
+        "achievementName": "成就名称",
+        "achievementType": {
+          "dailyCheckin": "每日访问",
+          "rootComment": "根评论",
+          "publishedPost": "已发布文章",
+          "fiveDaysCheckin": "5天签到",
+          "monthDaysCheckin": "30天签到",
+          "inviteNewUser": "邀请新用户",
+          "inviteThreeNewUser": "邀请3新用户",
+          "replyRootComment": "回复根评论",
+          "replyCommentWithinOneWeek": "一星期内回复评论",
+          "registered100Days": "注册100天",
+          "successfulLogin": "成功登录",
+          "saveMoreThan30Posts": "保存超过30篇文章",
+          "cmtOrReplyCmtMoreThan50": "评论或回复评论超过50次",
+          "firstTimeCmtOrReplyCmt": "第一次评论或回复评论"
+        },
+        "title": "用户成就",
+        "menuLabel": "成就"
+      },
+      "goldCoinLogs": {
+        "title": "金币日志",
+        "currentGoldCoin": "当前金币",
+        "previousGoldCoin": "上一个金币"
+      },
+      "achievementConfig": {
+        "condition": "健康）状况",
+        "icon": "图标",
+        "title": "成就",
+        "version": "版本",
+        "claimStatus": "索赔状态",
+        "singleClaim": "单人",
+        "multipleClaim": "复式"
+      },
+      "levelUpLogs": {
+        "title": "升级日志",
+        "menuLabel": "升级"
+      },
+      "posts": {
+        "post": "帖子",
+        "title": "帖子",
+        "list": "帖子列表",
+        "socialCategory": "社会类别",
+        "edit": "编辑帖子",
+        "permissionType": "权限类型",
+        "pinned": "置顶",
+        "posted": "已发布",
+        "toBeReviewed": "待审核",
+        "unPinned": "未置顶",
+        "mediaLinks": "媒体链接",
+        "restricted": "受限制",
+        "postType": "帖子类型",
+        "public": "公开",
+        "topMember": "顶级会员",
+        "publisherMember": "发布者会员",
+        "postStatus": "帖子状态",
+        "generalPost": "一般帖子",
+        "postPerformace": "查看帖子表现",
+        "previewPost": "预览帖子",
+        "ownerWeight": "所有者权重",
+        "manualWeight": "手动权重",
+        "numOfLikes": "点赞数",
+        "numOfShares": "分享数",
+        "numOfComments": "评论数",
+        "restrictPost": "限制帖子",
+        "removePinnedPost": "删除置顶帖子",
+        "publishPost": "发布帖子",
+        "setPinnedPost": "设置为置顶帖子",
+        "setUnPinnedPost": "设置为未置顶帖子",
+        "notification": {
+          "status": "成功{status}帖子"
+        },
+        "noMediaLinks": "没有媒体链接",
+        "setStatusAs": "设置状态为",
+        "topComment": "热门评论",
+        "latestComment": "最新评论",
+        "authorOnly": "只看楼主",
+        "noMoreComment": "没有更多了",
+        "noComment": "暂无评论"
+      },
+      "userTransaction": {
+        "title": "用户交易",
+        "transactionType": {
+          "snatchRedPocket": "红包",
+          "snatchRedPocketResult": "红包结果",
+          "userInvite": "用户邀请",
+          "userInviteClaim": "用户邀请索赔",
+          "userAchievement": "用户成就",
+          "redPocketFreeChance": "红包免费机会"
+        },
+        "tranId": "交易ID",
+        "menuLabel": "交易"
+      },
+      "userLogs": {
+        "title": "用户日志"
+      },
+      "campaignHistories": {
+        "title": "战役历史"
+      }
+    },
+    "system": {
+      "feedbacks": {
+        "title": "反馈"
+      },
+      "deepLink": {
+        "title": "深层链接",
+        "referralCode": "推荐代码",
+        "sharePost": "分享帖子",
+        "link": "链接",
+        "redirectUrl": "重定向网址",
+        "uniqueLinkId": "唯一链接 ID",
+        "confirmCount": "确认次数",
+        "visitCount": "访问次数",
+        "lastVisitedtAt": "上次访问时间",
+        "config": "设置",
+        "list": "链接",
+        "listTitle": "深度链接生成的链接",
+        "redirectPath": "重定向路径",
+        "expiredIn": "已过期"
+      },
+      "auditLog": {
+        "operation": {
+          "create": "创造",
+          "delete": "删除",
+          "update": "更新"
+        },
+        "reference": {
+          "achievement": "成就",
+          "levelExpConfig": "等级经验"
+        },
+        "operationType": "手术",
+        "refId": "参考ID",
+        "referenceType": "类型",
+        "createdBy": "操作者",
+        "createdAt": "操作于",
+        "title": "审核日志",
+        "referenceName": "参考",
+        "referenceId": "参考编号"
+      },
+      "crawlerLog": {
+        "title": "爬虫",
+        "logs": "日志",
+        "sourceName": "源名称",
+        "success": "成功",
+        "attempt": "尝试",
+        "curl": "cUrl",
+        "latency": "延迟",
+        "response": "响应",
+        "errorResponse": "错误响应",
+        "summary": "摘要",
+        "startDate": "开始日期",
+        "endDate": "结束日期",
+        "totalAttempts": "总尝试次数",
+        "successfulAttempts": "成功尝试",
+        "successRate": "成功率"
+      },
+      "configurations": {
+        "singular": "配置",
+        "title": "配置",
+        "description": "描述"
+      },
+      "operationLog": {
+        "title": "操作日志",
+        "createdAt": "运营于",
+        "operator": "操作员",
+        "scope": "行动",
+        "ip": "IP",
+        "statusCode": "代码",
+        "message": "信息",
+        "method": "方法",
+        "path": "小路",
+        "params": "参数",
+        "error": "错误",
+        "latency": "延迟"
+      },
+      "model": {
+        "title": "Model",
+        "list": "Model列表",
+        "baseModelId": "基本Model ID",
+        "modelId": "Model ID",
+        "capabilities": "功能",
+        "vision": "视觉",
+        "params": {
+          "systemPrompt": "系统提示",
+          "temperature": "Temperature",
+          "maxTokens": "Max Tokens"
+        }
+      },
+      "notification": {
+        "title": "通知",
+        "type": {
+          "alert": "系统警报"
+        },
+        "broadcast": "播送"
+      }
+    },
+    "gameManagement": {
+      "title": "游戏管理",
+      "category": {
+        "title": "游戏彩种列表"
+      },
+      "type": {
+        "title": "游戏类型列表"
+      },
+      "region": {
+        "title": "游戏地区列表"
+      },
+      "company": {
+        "title": "游戏公司列表"
+      },
+      "source": {
+        "title": "游戏源码",
+        "form": {
+          "maxRetry": "最大重试",
+          "retryDelay": "重试延迟",
+          "possibleDiff": "可能不同",
+          "everyInSec": "每秒钟",
+          "startTime": "开始时间",
+          "endTime": "时间结束",
+          "location": "时区",
+          "scheduleType": "时间表类型",
+          "expression": "表达"
+        },
+        "interval": "间隔",
+        "cron": "克朗",
+        "config": "配置",
+        "schedule": "日程",
+        "message": {
+          "restartSuccess": "重启成功"
+        }
+      },
+      "tab": {
+        "codename": "钥匙",
+        "name": "分析名称",
+        "gameType": "游戏类型",
+        "title": "分析选项卡"
+      },
+      "game": {
+        "title": "游戏",
+        "isScraping": "游戏抓取",
+        "isRecommended": "游戏推荐",
+        "sourceName": "源名称",
+        "gameName": "游戏名称",
+        "resultThemeType": {
+          "highFrequency": "高频彩",
+          "lowFrequency": "低频彩"
+        },
+        "resultTheme": "频彩\t",
+        "gameResult": "游戏结果",
+        "analysisDetail": "分析详情",
+        "hasLongDragon": "正面有长龙",
+        "tab": "游戏分析列表",
+        "gameStatus": "游戏状态",
+        "status": {
+          "none": "没有",
+          "new": "新",
+          "hot": "热"
+        }
+      },
+      "result": {
+        "title": "游戏结果",
+        "resultNo": "游戏结果编号",
+        "drawingTime": "开奖时间",
+        "gameResult": "游戏结果",
+        "resultDetail": "游戏结果详情"
+      },
+      "gameTab": {
+        "analysisName": "分析名称",
+        "gameAnalysisParameterName": "游戏分析参数名",
+        "howToPlay": "玩法说明",
+        "contentType": "内容类型",
+        "gameAnalysis": "游戏分析",
+        "contentTypeOption": {
+          "html": "HTML",
+          "none": "无",
+          "plainText": "纯文本"
+        }
+      }
+    },
+    "dashboard": {
+      "analyse": {
+        "totalRequest": "总API请求次数",
+        "requestSuccessRate": "总API请求成功率",
+        "totalVisit": "总人数",
+        "totalUserGain": "总用户数增加",
+        "gamePopularity": "游戏热度",
+        "gameAnalysisPopularity": "游戏分析热度",
+        "totalVisitor": "游览总人数"
+      }
+    }
+  },
+  "operator": {
+    "contains": "包含",
+    "containsFold": "包含折叠",
+    "equal": "平等的",
+    "gt": "大于",
+    "hasPrefix": "有前缀",
+    "hasSuffix": "有后缀",
+    "gte": "大于或等于",
+    "in": "在",
+    "isNull": "为空",
+    "lt": "少于",
+    "lte": "小于或等于",
+    "notEqual": "不等于",
+    "notIn": "不在",
+    "between": "之间",
+    "betweenEq": "之间（包括）"
+  },
+  "form": {
+    "input": {
+      "placeholder": "请输入{field}"
+    }
+  },
+  "message": {
+    "createSuccess": "成功创建{entity}",
+    "updateSuccess": "成功更新{entity}",
+    "deleteSuccess": "删除成功",
+    "confirmDelete": "您确定要删除这个吗？"
+  },
+  "permission": {
+    "add": "添加{name}",
+    "admin": "行政",
+    "admin_role": "管理员角色",
+    "campaign": "活动",
+    "campaign_setting": "活动设置",
+    "delete": "删除{name}",
+    "edit": "编辑{name}",
+    "tag": "标签",
+    "view": "查看{name}",
+    "bad_word_filter": "不当言论筛选",
+    "configuration": "配置",
+    "feedback": "反馈",
+    "game": "游戏",
+    "social_category": "社区",
+    "level_exp_config": "等级经验配置",
+    "user_achievement": "用户成就",
+    "level_up_log": "升级日志",
+    "gold_coin_log": "金币日志",
+    "achievement": "成就",
+    "deep_link": "深层链接列表",
+    "deep_link_config": "深层链接配置",
+    "user": "用户",
+    "game_category": "游戏类别",
+    "game_type": "游戏类型",
+    "article_type": "文章类型",
+    "article": "文章",
+    "post": "帖子",
+    "user_transaction": "用户交易",
+    "region": "游戏地区列表",
+    "company": "游戏公司列表",
+    "audit_log": "审核日志",
+    "operation_log": "操作日志",
+    "analyse": "分析选项卡",
+    "game_result": "游戏结果",
+    "game_source": "游戏来源",
+    "game_tab": "游戏选项卡",
+    "tab": "选项卡",
+    "crawler_log": "爬虫日志",
+    "user_campaign_history": "用户活动历史",
+    "model": "Model"
+  }
+}

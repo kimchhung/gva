@@ -1,0 +1,12 @@
+[
+  {
+    "locale": "zh",
+    "key": "unsupported_file_format",
+    "trans": "不支持的文件格式"
+  },
+  {
+    "locale": "zh",
+    "key": " error_while_uploading",
+    "trans": "上传时出错"
+  }
+]

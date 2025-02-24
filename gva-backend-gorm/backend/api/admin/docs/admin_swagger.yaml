@@ -1,0 +1,1660 @@
+basePath: /admin/v1
+definitions:
+  dto.AdminResponse:
+    properties:
+      createdAt:
+        type: string
+      currentLoginAt:
+        type: string
+      currentLoginIp:
+        type: string
+      currentRegion:
+        type: string
+      enableTOTP:
+        type: boolean
+      id:
+        type: integer
+      ipWhiteList:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.AdminRole'
+        type: array
+      status:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.AdminRoleResponse:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      nameId:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/model.Permission'
+        type: array
+      status:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  dto.ConfigResponse:
+    properties:
+      now:
+        type: string
+      publicIp:
+        type: string
+    type: object
+  dto.ConfigurationResponse:
+    properties:
+      allChildren:
+        items:
+          $ref: '#/definitions/dto.ConfigurationResponse'
+        type: array
+      children:
+        description: Children Configuration
+        items:
+          $ref: '#/definitions/dto.ConfigurationResponse'
+        type: array
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      parent:
+        $ref: '#/definitions/dto.ConfigurationResponse'
+      parentId:
+        description: Parent Configuration
+        type: integer
+      root:
+        $ref: '#/definitions/dto.ConfigurationResponse'
+      rootId:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        items:
+          type: integer
+        type: array
+    type: object
+  dto.CreateAdminRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          properties:
+            id:
+              type: integer
+          required:
+          - id
+          type: object
+        type: array
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - roles
+    - username
+    type: object
+  dto.CreateAdminRoleRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    - permissions
+    type: object
+  dto.CreateConfigurationRequest:
+    properties:
+      description:
+        type: string
+      key:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      parentId:
+        description: Parent Configuration
+        type: integer
+      rootId:
+        type: integer
+      type:
+        enum:
+        - string
+        - textarea
+        - int
+        - float
+        - bool
+        - array
+        - link
+        - date
+        - datetime
+        - dateRange
+        - json
+        - image
+        - multiImage
+        - group
+        - object
+        type: string
+      value:
+        items:
+          type: integer
+        type: array
+    required:
+    - key
+    - type
+    type: object
+  dto.CreatePermissionRequest:
+    properties:
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        maxLength: 30
+        minLength: 6
+        type: string
+      totp:
+        minLength: 6
+        type: string
+      username:
+        maxLength: 30
+        minLength: 5
+        type: string
+    required:
+    - password
+    - totp
+    - username
+    type: object
+  dto.LoginResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/model.Admin'
+      token:
+        type: string
+    type: object
+  dto.OperationLogResponse:
+    properties:
+      admin:
+        $ref: '#/definitions/types.BaseAdmin'
+      adminId:
+        type: integer
+      code:
+        type: integer
+      createdAt:
+        type: string
+      data:
+        additionalProperties: {}
+        type: object
+      error:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      latency:
+        type: integer
+      method:
+        type: string
+      msg:
+        type: string
+      path:
+        type: string
+      roleIds:
+        items:
+          type: integer
+        type: array
+      scope:
+        type: string
+    type: object
+  dto.PermissionResponse:
+    properties:
+      group:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      order:
+        type: integer
+      scope:
+        type: string
+    type: object
+  dto.SetTOTPAdminRequest:
+    properties:
+      totp:
+        type: string
+    required:
+    - totp
+    type: object
+  dto.SetTOTPAdminResponse:
+    properties:
+      totpKey:
+        type: string
+      totpURL:
+        type: string
+    type: object
+  dto.UpdateAdminRequest:
+    properties:
+      name:
+        type: string
+      roles:
+        items:
+          properties:
+            id:
+              type: integer
+          type: object
+        type: array
+      username:
+        type: string
+    type: object
+  dto.UpdateAdminRoleRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    - permissions
+    type: object
+  dto.UpdateConfigurationRequest:
+    properties:
+      description:
+        type: string
+      key:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      parentId:
+        type: integer
+      rootId:
+        type: integer
+      type:
+        enum:
+        - string
+        - textarea
+        - int
+        - float
+        - bool
+        - array
+        - link
+        - date
+        - datetime
+        - dateRange
+        - json
+        - image
+        - multiImage
+        - group
+        - object
+        type: string
+      value:
+        items:
+          type: integer
+        type: array
+    required:
+    - type
+    type: object
+  dto.UpdatePatchConfigurationRequest:
+    properties:
+      description:
+        type: string
+      key:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      type:
+        enum:
+        - string
+        - textarea
+        - int
+        - float
+        - bool
+        - array
+        - link
+        - date
+        - datetime
+        - dateRange
+        - json
+        - image
+        - multiImage
+        - group
+        - object
+        type: string
+      value:
+        items:
+          type: integer
+        type: array
+    required:
+    - type
+    type: object
+  dto.UpdatePermissionRequest:
+    properties:
+      title:
+        type: string
+    type: object
+  model.Admin:
+    properties:
+      createdAt:
+        type: string
+      currentLoginAt:
+        type: string
+      currentLoginIP:
+        type: string
+      currentRegion:
+        type: string
+      googleOtp:
+        type: string
+      googleSecretKey:
+        type: string
+      id:
+        type: integer
+      ipWhiteList:
+        items:
+          type: string
+        type: array
+      isSuperAdmin:
+        type: boolean
+      lastLoginAt:
+        type: string
+      lastLoginIP:
+        type: string
+      lastRegion:
+        type: string
+      name:
+        type: string
+      permissionScope:
+        items:
+          type: string
+        type: array
+      roleIds:
+        items:
+          type: integer
+        type: array
+      roleNameId:
+        description: not bind with table
+        items:
+          type: string
+        type: array
+      roles:
+        items:
+          $ref: '#/definitions/model.AdminRole'
+        type: array
+      status:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  model.AdminRole:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      nameId:
+        type: string
+      order:
+        type: integer
+      permissions:
+        items:
+          $ref: '#/definitions/model.Permission'
+        type: array
+      status:
+        type: integer
+      type:
+        $ref: '#/definitions/model.AdminRoleType'
+      updatedAt:
+        type: string
+    type: object
+  model.AdminRoleType:
+    enum:
+    - 1
+    - 0
+    type: integer
+    x-enum-varnames:
+    - AdminRoleTypeChangeable
+    - AdminRoleTypeNotChangeable
+  model.Permission:
+    properties:
+      createdAt:
+        type: string
+      group:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      order:
+        type: integer
+      scope:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        description: The Data field contains the actual response data
+      message:
+        type: string
+      meta:
+        description: Meta provides additional information about the data, such as
+          its type or kind.y.
+    type: object
+  types.BaseAdmin:
+    properties:
+      id:
+        type: integer
+      ipWhiteList:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+host: localhost:4000
+info:
+  contact: {}
+  description: GO VUE ADMIN Boilerplate
+  title: GVA admin API
+  version: "1.0"
+paths:
+  /admin/:
+    get:
+      consumes:
+      - application/json
+      description: Get Admins
+      operationId: get-admins
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: filters
+        in: query
+        name: filters
+        type: string
+      - description: sorts
+        in: query
+        name: sorts
+        type: string
+      - description: orders
+        in: query
+        name: orders
+        type: string
+      - description: 'selects: list, totalCount'
+        in: query
+        name: selects
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Admins
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AdminResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Admins
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create Admin
+      operationId: create-admin
+      parameters:
+      - description: Admin data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create Admin
+      tags:
+      - Admin
+  /admin/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Admin
+      operationId: delete-admin
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Delete Admin
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Get Admin
+      operationId: get-admin
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Admin
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      description: Update Admin partial
+      operationId: update-admin-partial
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update Admin partial
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update Admin
+      operationId: update-admin
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update Admin
+      tags:
+      - Admin
+  /admin/{id}/totp:
+    patch:
+      consumes:
+      - application/json
+      description: Set Admin TOTP
+      operationId: set-admin-totp
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Admin data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetTOTPAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully set Admin totp
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SetTOTPAdminResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Set Admin TOTP
+      tags:
+      - Admin
+  /adminrole/:
+    get:
+      consumes:
+      - application/json
+      description: Get AdminRoles
+      operationId: get-adminroles
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: filters
+        in: query
+        name: filters
+        type: string
+      - description: sorts
+        in: query
+        name: sorts
+        type: string
+      - description: orders
+        in: query
+        name: orders
+        type: string
+      - description: 'selects: list, totalCount'
+        in: query
+        name: selects
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get AdminRoles
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AdminRoleResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get AdminRoles
+      tags:
+      - AdminRole
+    post:
+      consumes:
+      - application/json
+      description: Create AdminRole
+      operationId: create-adminrole
+      parameters:
+      - description: AdminRole data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAdminRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created AdminRole
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminRoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create AdminRole
+      tags:
+      - AdminRole
+  /adminrole/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete AdminRole
+      operationId: delete-adminrole
+      parameters:
+      - description: AdminRole ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted AdminRole
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Delete AdminRole
+      tags:
+      - AdminRole
+    get:
+      consumes:
+      - application/json
+      description: Get AdminRole
+      operationId: get-adminrole
+      parameters:
+      - description: AdminRole ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get AdminRole
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminRoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get AdminRole
+      tags:
+      - AdminRole
+    patch:
+      consumes:
+      - application/json
+      description: Update AdminRole partial
+      operationId: update-adminrole-partial
+      parameters:
+      - description: AdminRole ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AdminRole data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAdminRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated AdminRole
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminRoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update AdminRole partial
+      tags:
+      - AdminRole
+    put:
+      consumes:
+      - application/json
+      description: Update AdminRole
+      operationId: update-adminrole
+      parameters:
+      - description: AdminRole ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AdminRole data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAdminRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated AdminRole
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminRoleResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update AdminRole
+      tags:
+      - AdminRole
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a admin with the provided credentials
+      operationId: create-Auth
+      parameters:
+      - description: Auth data
+        in: body
+        name: Auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Auth
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LoginResponse'
+              type: object
+      summary: Authenticate a admin
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: get admin data by token
+      operationId: create-Auth-me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully registered admin
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Admin'
+              type: object
+      security:
+      - Bearer: []
+      summary: query your self after login
+      tags:
+      - Auth
+  /config:
+    get:
+      operationId: config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ConfigResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Config
+      tags:
+      - Index
+  /config/docs:
+    get:
+      consumes:
+      - application/json
+      description: Get Docs Configuration
+      operationId: get-docs-configuration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Docs Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ConfigurationResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Docs Configuration
+      tags:
+      - Configuration
+  /configuration:
+    get:
+      consumes:
+      - application/json
+      description: Get Tags
+      operationId: get-configurations
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: filters
+        in: query
+        name: filters
+        type: string
+      - description: sorts
+        in: query
+        name: sorts
+        type: string
+      - description: orders
+        in: query
+        name: orders
+        type: string
+      - description: 'selects: list, totalCount'
+        in: query
+        name: selects
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Tags
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ConfigurationResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Tags
+      tags:
+      - Configuration
+    post:
+      consumes:
+      - application/json
+      description: Create Configuration
+      operationId: create-configuration
+      parameters:
+      - description: Configuration data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateConfigurationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ConfigurationResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create Configuration
+      tags:
+      - Configuration
+  /configuration/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Configuration
+      operationId: delete-configuration
+      parameters:
+      - description: Configuration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Delete Configuration
+      tags:
+      - Configuration
+    get:
+      consumes:
+      - application/json
+      description: Get Configuration
+      operationId: get-configuration
+      parameters:
+      - description: Configuration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ConfigurationResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Configuration
+      tags:
+      - Configuration
+    patch:
+      consumes:
+      - application/json
+      description: Update Configuration partial
+      operationId: update-configuration-partial
+      parameters:
+      - description: Configuration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Configuration data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePatchConfigurationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ConfigurationResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update Configuration partial
+      tags:
+      - Configuration
+    put:
+      consumes:
+      - application/json
+      description: Update Configuration
+      operationId: update-configuration
+      parameters:
+      - description: Configuration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Configuration data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateConfigurationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ConfigurationResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update Configuration
+      tags:
+      - Configuration
+  /configuration/key/{key}:
+    get:
+      consumes:
+      - application/json
+      description: Get Configuration by Key
+      operationId: get-configuration-by-key
+      parameters:
+      - description: Configuration Key
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Configuration
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ConfigurationResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Configuration by Key
+      tags:
+      - Configuration
+  /file/docs/{name}:
+    get:
+      description: Serves files from `storage/docs` directory
+      operationId: serve-static-files
+      parameters:
+      - description: filename
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      summary: Serve static files
+      tags:
+      - Index
+  /now:
+    get:
+      operationId: now
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: format time.RFC3339
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Current Server Time
+      tags:
+      - Index
+  /operation-log:
+    get:
+      consumes:
+      - application/json
+      description: Get OperationLogs
+      operationId: get-operation-logs
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: filters
+        in: query
+        name: filters
+        type: string
+      - description: sorts
+        in: query
+        name: sorts
+        type: string
+      - description: orders
+        in: query
+        name: orders
+        type: string
+      - description: 'selects: list, totalCount'
+        in: query
+        name: selects
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get OperationLogs
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.OperationLogResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get OperationLogs
+      tags:
+      - OperationLog
+  /permission-scope:
+    get:
+      consumes:
+      - application/json
+      description: Get Permission Scopes
+      operationId: get-permission-scopes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Permission Scopes
+      tags:
+      - Index
+  /permission/:
+    get:
+      consumes:
+      - application/json
+      description: Get Permissions
+      operationId: get-permissions
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: filters
+        in: query
+        name: filters
+        type: string
+      - description: sorts
+        in: query
+        name: sorts
+        type: string
+      - description: orders
+        in: query
+        name: orders
+        type: string
+      - description: 'selects: list, totalCount'
+        in: query
+        name: selects
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Permissions
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PermissionResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Permissions
+      tags:
+      - Permission
+    post:
+      consumes:
+      - application/json
+      description: Create Permission
+      operationId: create-permission
+      parameters:
+      - description: Permission data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create Permission
+      tags:
+      - Permission
+  /permission/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Permission
+      operationId: delete-permission
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Delete Permission
+      tags:
+      - Permission
+    get:
+      consumes:
+      - application/json
+      description: Get Permission
+      operationId: get-permission
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get Permission
+      tags:
+      - Permission
+    patch:
+      consumes:
+      - application/json
+      description: Update Permission partial
+      operationId: update-permission-partial
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update Permission partial
+      tags:
+      - Permission
+    put:
+      consumes:
+      - application/json
+      description: Update Permission
+      operationId: update-permission
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated Permission
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PermissionResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update Permission
+      tags:
+      - Permission
+  /upload/image:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: upload
+      parameters:
+      - description: Image File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Image URL
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: Upload Image
+      tags:
+      - Index
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

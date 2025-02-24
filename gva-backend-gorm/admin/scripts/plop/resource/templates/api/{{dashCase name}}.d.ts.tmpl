@@ -1,0 +1,7 @@
+import { {{pascalCase name}}API } from '.';
+
+declare global {
+  interface API {
+    {{camelCase name}}: {{pascalCase name}}API;
+  }
+}

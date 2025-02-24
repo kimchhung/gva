@@ -1,0 +1,676 @@
+{
+  "validator": {
+    "error": {
+      "maxLength": "The length cannot exceed {max} character",
+      "required": "{field} is required!",
+      "email": "invalid email!",
+      "phone": "invalid phone!",
+      "lengthRange": "Length must be in range {min} and {max}!",
+      "noSpace": "Field cannot contain white space!",
+      "noSpecialCharacters": "Field contain special characters: {specialCharactors}!",
+      "pattern": "Invalid pattern",
+      "minMaxNumber": "The number must be between {min} and {max}!",
+      "noNumber": "Field cannot contain number!",
+      "noEmpty": "Field cannot be empty!",
+      "noLeadingSpace": "Field cannot have leading space!",
+      "noMultipleSpaces": "Field cannot have multiple space!",
+      "imageSizeExeeded": "Image size exceeded {size}MB!"
+    }
+  },
+  "common": {
+    "display": "Display",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "Ok",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "Accept": "Accept",
+    "detail": "Detail",
+    "view": "View",
+    "add": "Add {name}",
+    "edit": "Edit {name}",
+    "delete": "Delete",
+    "save": "Save",
+    "export": "Export",
+    "username": "Username",
+    "copied": "Copied \"{value}\" ",
+    "reset": "Reset",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "name": "Name",
+    "status": "Status",
+    "type": "Type",
+    "useLatestSetting": "Use Latest Setting",
+    "firstAmount": "Frist ({amount})",
+    "afterAmount": "After ({amount})",
+    "created_at": "Created at",
+    "operation": "Operation",
+    "search": "Search",
+    "sort": "Sort",
+    "filter": "Filter",
+    "text": "text",
+    "active": "Active",
+    "inactive": "Inactive",
+    "id": "ID",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "createdBy": "Created By",
+    "action": "Action",
+    "description": "Description",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "last7Days": "Last 7 Days",
+    "last5Minutes": "Last 5 Minutes",
+    "last30Minutes": "Last 30 Minutes",
+    "last14Days": "Last 14 Days",
+    "last30Days": "Last 30 Days",
+    "last90Days": "Last 90 Days",
+    "order": "Order",
+    "icon": "Icon",
+    "alternativeIcon": "Alternative Icon",
+    "roles": "Roles",
+    "create": "Create {name}",
+    "password": "Password",
+    "confirmation": "Are you sure?",
+    "upload": "Upload",
+    "user": "User",
+    "title": "Title",
+    "content": "Content",
+    "details": "Details",
+    "picture": "Picture",
+    "tags": "Tags",
+    "enable": "Enable",
+    "disable": "Disable",
+    "phone": "Phone",
+    "goldCoin": "Gold Coin",
+    "socialLevel": "Level",
+    "expPoint": "Exp Point",
+    "userLevel": "User Level",
+    "freeChance": "Free Chance",
+    "ban": "Ban",
+    "copyFailed": "Copy Failed",
+    "report": "Report",
+    "experience": "Experience",
+    "nameId": "NameID",
+    "config": "Config",
+    "list": "List {name}",
+    "second": "Second(s)",
+    "total": "Total",
+    "post": {
+      "likedCount": "Liked Count",
+      "sharedCount": "Shared Count",
+      "commentCount": "Comment Count"
+    },
+    "settings": "Settings",
+    "thumbnail": "Thumbnail",
+    "totalPerformance": "Total Performance",
+    "key": "Key",
+    "game": "Game",
+    "gameName": "Game Name",
+    "amount": "Amount",
+    "schedule": "Schdule",
+    "restart": "Restart",
+    "url": "URL",
+    "timezone": "Time zone",
+    "region": "Region",
+    "company": "Company",
+    "category": "Category",
+    "value": "Value",
+    "group": "Group",
+    "dataTypes": {
+      "title": "Data Types",
+      "group": "Group",
+      "string": "String",
+      "textarea": "Textarea",
+      "number": "Number",
+      "boolean": "Boolean",
+      "array": "Array",
+      "json": "JSON",
+      "date": "Date",
+      "dateRange": "Date Range",
+      "image": "Image",
+      "multiImage": "Multi Image",
+      "object": "Object"
+    },
+    "collapseAll": "Collapse All",
+    "expandAll": "Expand All",
+    "redirectUrl": "Redirect URL",
+    "addImage": "Add Image",
+    "selectAll": "Select All",
+    "unselectAll": "Unselect all",
+    "date": "Date",
+    "dateRange": "Date Range",
+    "resultDate": "Result Date",
+    "resultNo": "Result No",
+    "numberOfDraws": "Number of Draws",
+    "lottery": "Lottery",
+    "latest": "Latest",
+    "oldest": "Oldest",
+    "replies": "Replies",
+    "paginatePage": "{num} / page",
+    "gold": "Gold",
+    "exp": "Exp",
+    "preview": "Preview",
+    "success": "Success",
+    "failed": "Failed",
+    "intervalScheduleText": "Every {second}s {startTime}-{endTime} ",
+    "userAgent": "User Agent",
+    "pending": "Pending",
+    "expired": "Expired",
+    "chance": "Chance",
+    "metadata": "Metadata",
+    "model": "Model",
+    "advanceParams": "Advance Params",
+    "profileImage": "Profile Image",
+    "update": "Update",
+    "last2": "Last 2 {type}",
+    "last30": "Last 30 {type}",
+    "last60": "Last 60 {type}",
+    "last90": "Last 90 {type}",
+    "days": "Days",
+    "issues": "Issues"
+  },
+  "message": {
+    "updateSuccess": "Update {name} Successfully",
+    "createSuccess": "Create Successfully",
+    "deleteSuccess": "Delete Successfully",
+    "confirmDelete": "Are you sure you want to delete this?"
+  },
+  "form": {
+    "input": {
+      "placeholder": "Please Input {field}"
+    }
+  },
+  "auth": {
+    "currentIP": "Current IP"
+  },
+  "menu": {
+    "title": "Menu",
+    "management": {
+      "title": "General"
+    },
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "permissions": {
+      "title": "Permissions"
+    },
+    "system": {
+      "title": "System"
+    },
+    "document": {
+      "title": "Document"
+    }
+  },
+  "page": {
+    "document": {
+      "title": "Document"
+    },
+    "admin": {
+      "title": "Admin",
+      "users": {
+        "title": "Users",
+        "form": {
+          "ip-whitelist": "IP Whitelist",
+          "reset-password": "Reset Password",
+          "totp": "Authentication Code",
+          "totpAlert": "Please enter your authentication code to update this user. After entering the code, a new authenticator secret key will be set for this user.",
+          "downloadQR": "Download QRCode",
+          "totpUpdated": "Please use the authenticator app to scan this QR code. or enter the code below.",
+          "lastLoginAt": "Last Login At",
+          "lastLoginRegion": "Last Login Region",
+          "lastLoginIP": "Last Login IP"
+        }
+      },
+      "roles": {
+        "title": "Roles",
+        "form": {
+          "permissions": "Permissions"
+        }
+      },
+      "permissions": {
+        "title": "Permissions"
+      }
+    },
+    "management": {
+      "title": "Management",
+      "campaign": {
+        "title": "Campaign",
+        "list": "List",
+        "detail": "Campaign Detail"
+      },
+      "games": {
+        "title": "Games"
+      },
+      "article": {
+        "title": "Article",
+        "type": "Type",
+        "list": "List",
+        "status": {
+          "draft": "Draft",
+          "pending": "Pending",
+          "published": "Published",
+          "archived": "Archived"
+        },
+        "info": "Extra Info",
+        "addExtraInfo": "Add Extra Info",
+        "key": "Key",
+        "previewArticle": "Preview Article"
+      }
+    },
+    "prizes": {
+      "title": "Prizes",
+      "gold": "Gold"
+    },
+    "campaign": {
+      "list": {
+        "title": "List"
+      },
+      "detail": {
+        "title": "Campaign Detail",
+        "addReward": "Add More Condition",
+        "buyCondition": "Buy Conditions",
+        "setting": {
+          "title": "Probability Setting",
+          "weight": "Weight",
+          "probability": "Probability",
+          "reward": "Reward"
+        },
+        "conditionToWin": {
+          "snatch_sequence": "Snatch Sequence"
+        }
+      },
+      "common": {
+        "price": "Price",
+        "prizeCondition": "Prize Condition",
+        "priceCondition": "Price Condition"
+      }
+    },
+    "examples": {
+      "title": "示例",
+      "ellipsis": {
+        "title": "文本省略"
+      }
+    },
+    "general": {
+      "currencies": {
+        "title": "Currencies"
+      }
+    },
+    "social": {
+      "title": "Social",
+      "tags": {
+        "title": "Tags"
+      },
+      "categories": {
+        "title": "Categories"
+      },
+      "badWordFilter": {
+        "title": "Word Filter",
+        "word": "Word",
+        "replaceWord": "Replace Word"
+      },
+      "user": {
+        "permissionSetting": "Permission Setting",
+        "lastLoginAt": "Last Login At",
+        "lastCheckedinAt": "Last Checkin At"
+      },
+      "levelExperienceConfig": {
+        "title": "Level Exp",
+        "icon": "Icon",
+        "eachLevelExp": "Required Experience",
+        "name": "Level"
+      },
+      "userAchievement": {
+        "title": "User Achievements",
+        "achievementName": "Achievement Name",
+        "achievementType": {
+          "dailyCheckin": "Daily Visit",
+          "rootComment": "Root Comment",
+          "publishedPost": "Published Post",
+          "fiveDaysCheckin": "5 Days Check In",
+          "monthDaysCheckin": "30 Days Check In",
+          "inviteNewUser": "Invite New User",
+          "inviteThreeNewUser": "Invite 3 New User",
+          "replyRootComment": "Reply Root Comment",
+          "replyCommentWithinOneWeek": "Reply Comment Within One Week",
+          "registered100Days": "Registered 100 Days",
+          "successfulLogin": "Successful Login",
+          "saveMoreThan30Posts": "Save More Than 30 Posts",
+          "cmtOrReplyCmtMoreThan50": "Comment Or Reply More Than 50",
+          "firstTimeCmtOrReplyCmt": "First Time Comment Or Reply Comment"
+        },
+        "menuLabel": "Achievements"
+      },
+      "levelUpLogs": {
+        "title": "Level Logs",
+        "menuLabel": "Level up"
+      },
+      "goldCoinLogs": {
+        "title": "Coin Logs",
+        "currentGoldCoin": "Current Gold Coin",
+        "previousGoldCoin": "Previous Gold Coin"
+      },
+      "achievementConfig": {
+        "title": "Achievement",
+        "version": "Version",
+        "condition": "Condition",
+        "icon": "Icon",
+        "claimStatus": "Claim Status",
+        "singleClaim": "Single",
+        "multipleClaim": "Multiple"
+      },
+      "posts": {
+        "post": "Post",
+        "title": "Posts",
+        "list": "Posts List",
+        "socialCategory": "Social Category",
+        "edit": "Edit Post",
+        "permissionType": "Permission Type",
+        "pinned": "Pinned",
+        "posted": "Posted",
+        "toBeReviewed": "To Be Reviewed",
+        "unPinned": "Unpinned",
+        "mediaLinks": "Media Links",
+        "restricted": "Restricted",
+        "postType": "Post Type",
+        "public": "Public",
+        "topMember": "Top Member",
+        "publisherMember": "Publisher Member",
+        "postStatus": "Post Status",
+        "generalPost": "General Post",
+        "postPerformace": "Post Performance",
+        "previewPost": "Preview Post",
+        "ownerWeight": "Owner Weight",
+        "manualWeight": "Manual Weight",
+        "numOfLikes": "Number of Likes",
+        "numOfShares": "Number of Shares",
+        "numOfComments": "Number of Comments",
+        "restrictPost": "Restrict Post",
+        "removePinnedPost": "Remove Pinned Post",
+        "publishPost": "Publish Post",
+        "setPinnedPost": "Set as Pinned Post",
+        "setUnPinnedPost": "Set as Unpinned Post",
+        "notification": {
+          "status": "Successfully {status} Post"
+        },
+        "noMediaLinks": "No Media Links",
+        "setStatusAs": "Set post status as",
+        "topComment": "Top Comment",
+        "latestComment": "Latest Comment",
+        "authorOnly": "Only Author",
+        "noMoreComment": "No More Comment",
+        "noComment": "No Comment"
+      },
+      "userTransaction": {
+        "title": "User Transactions",
+        "transactionType": {
+          "snatchRedPocket": "Red Pocket",
+          "snatchRedPocketResult": "Red Pocket Result",
+          "userInvite": "User Invite",
+          "userInviteClaim": "User Invite Claim",
+          "userAchievement": "User Acheivement",
+          "redPocketFreeChance": "Red Pocket Free Chance"
+        },
+        "tranId": "TransactionID",
+        "menuLabel": "Transactions"
+      },
+      "userLogs": {
+        "title": "User Logs"
+      },
+      "campaignHistories": {
+        "title": "Campaign Histories"
+      }
+    },
+    "system": {
+      "feedbacks": {
+        "title": "Feedbacks"
+      },
+      "deepLink": {
+        "title": "Deep Link",
+        "referralCode": "Referral Code",
+        "sharePost": "Share Post",
+        "link": "Link",
+        "redirectUrl": "Redirect Url",
+        "uniqueLinkId": "Unique Link ID",
+        "visitCount": "Visit Count",
+        "confirmCount": "Confirm Count",
+        "lastVisitedtAt": "Last Visitedt At",
+        "config": "Config",
+        "list": "Links",
+        "listTitle": "Deep Link Generated Links",
+        "redirectPath": "Redirect Path",
+        "expiredIn": "Expired In"
+      },
+      "auditLog": {
+        "operation": {
+          "create": "Create",
+          "update": "Update",
+          "delete": "Delete"
+        },
+        "reference": {
+          "levelExpConfig": "Level Experience",
+          "achievement": "Achievement"
+        },
+        "operationType": "Operation",
+        "referenceType": "Type",
+        "refId": "ReferenceID",
+        "createdBy": "Operation By",
+        "createdAt": "Operated At",
+        "title": "Audit Logs",
+        "referenceName": "Reference ",
+        "referenceId": "Reference Id"
+      },
+      "crawlerLog": {
+        "title": "Crawler",
+        "logs": "Logs",
+        "sourceName": "Source Name",
+        "success": "Success",
+        "attempt": "Attempt",
+        "curl": "cUrl",
+        "latency": "Latency",
+        "response": "Response",
+        "errorResponse": "Error Response",
+        "summary": "Summary",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "totalAttempts": "Total Attempts",
+        "successfulAttempts": "Successful Attempts",
+        "successRate": "Success Rate"
+      },
+      "configurations": {
+        "singular": "Configuration",
+        "title": "Config",
+        "description": "describe"
+      },
+      "operationLog": {
+        "title": "Operation Logs",
+        "createdAt": "Operated At",
+        "operator": "Operator",
+        "ip": "IP",
+        "latency": "Latency",
+        "scope": "Action",
+        "statusCode": "Code",
+        "message": "Message",
+        "method": "Method",
+        "path": "Path",
+        "params": "Params",
+        "error": "Error"
+      },
+      "model": {
+        "title": "Model",
+        "list": "Model List",
+        "baseModelId": "Base Model ID",
+        "modelId": "Model ID",
+        "capabilities": "Capabilities",
+        "vision": "Vision",
+        "params": {
+          "systemPrompt": "System Prompt",
+          "temperature": "Temperature",
+          "maxTokens": "Max Tokens"
+        }
+      },
+      "notification": {
+        "title": "Notification",
+        "type": {
+          "alert": "System Alert"
+        },
+        "broadcast": "Broadcast"
+      }
+    },
+    "gameManagement": {
+      "title": "Lotteries",
+      "category": {
+        "title": "Categories"
+      },
+      "type": {
+        "title": "Types"
+      },
+      "region": {
+        "title": "Regions"
+      },
+      "company": {
+        "title": "Companies"
+      },
+      "source": {
+        "title": "Source",
+        "form": {
+          "possibleDiff": "Possible Different",
+          "retryDelay": "Retry Delay",
+          "maxRetry": "Max Retry",
+          "everyInSec": "Every Second",
+          "startTime": "Start Time",
+          "endTime": "End Time",
+          "scheduleType": "Schedule Type",
+          "location": "Timezone",
+          "expression": "Expression"
+        },
+        "interval": "Intervals",
+        "cron": "Cron",
+        "config": "Config",
+        "schedule": "Schedule",
+        "message": {
+          "restartSuccess": "Restart Successfully"
+        }
+      },
+      "tab": {
+        "title": "Tabs",
+        "codename": "Key",
+        "name": "Analyze Name",
+        "gameType": "Game Type"
+      },
+      "game": {
+        "title": "Games",
+        "gameName": "Lottery Name",
+        "sourceName": "Source Name",
+        "isScraping": "Scrape",
+        "isRecommended": "Recommended",
+        "resultThemeType": {
+          "highFrequency": "High ",
+          "lowFrequency": "Low "
+        },
+        "resultTheme": "Frequency",
+        "gameResult": "Results",
+        "analysisDetail": "Analysis details",
+        "gameStatus": "Lottery Status",
+        "hasLongDragon": "Has long dragon",
+        "tab": "Lottery analysis list",
+        "status": {
+          "none": "None",
+          "new": "New",
+          "hot": "Hot"
+        }
+      },
+      "result": {
+        "title": "Results",
+        "resultNo": "Result No",
+        "drawingTime": "Lottery Drawing Time",
+        "gameResult": "Game Result",
+        "resultDetail": "Result Detail"
+      },
+      "gameTab": {
+        "analysisName": "Analysis Name",
+        "gameAnalysis": "Lottery Analysis",
+        "howToPlay": "How to play",
+        "contentType": "Content Type",
+        "gameAnalysisParameterName": "Lottery analysis parameter name",
+        "contentTypeOption": {
+          "none": "None",
+          "plainText": "Plain Text",
+          "html": "HTML"
+        }
+      }
+    },
+    "dashboard": {
+      "analyse": {
+        "requestSuccessRate": "Total API Request Success Rate",
+        "totalRequest": "Total Number of API Requests",
+        "totalVisit": "Total people visit",
+        "totalUserGain": "Total user gained",
+        "gamePopularity": "Lottery Popularity",
+        "gameAnalysisPopularity": "Lottery Analysis Popularity",
+        "totalVisitor": "Total number of visitors"
+      }
+    }
+  },
+  "operator": {
+    "contains": "Contains",
+    "containsFold": "Contains Fold",
+    "equal": "Equal",
+    "gt": "Greater Than",
+    "hasPrefix": "HasPrefix",
+    "hasSuffix": "HasSuffix",
+    "gte": "Greater Than or Equal To",
+    "in": "In",
+    "isNull": "Is Null",
+    "lt": "Less Than",
+    "lte": "Less Than or Equal To",
+    "notEqual": "Not Equal",
+    "notIn": "Not In",
+    "between": "Between",
+    "betweenEq": "Between Equal"
+  },
+  "permission": {
+    "admin": "Admin",
+    "admin_role": "Admin Role",
+    "campaign": "Campaign",
+    "campaign_setting": "Campaign Setting",
+    "tag": "Tag",
+    "bad_word_filter": "Bad Word Filter",
+    "configuration": "Configuration",
+    "feedback": "Feedback",
+    "game": "Game",
+    "social_category": "Social Category",
+    "view": "View {name}",
+    "add": "Add {name}",
+    "edit": "Edit {name}",
+    "delete": "Delete {name}",
+    "level_exp_config": "Level Experience Config",
+    "user_achievement": "User Achievement",
+    "level_up_log": "Level Up Log",
+    "gold_coin_log": "Gold Coin Log",
+    "achievement": "Achievement",
+    "deep_link": "Deep Link",
+    "deep_link_config": "Deep Link Configuration",
+    "user": "User",
+    "game_category": "Game Category",
+    "game_type": "Game Type",
+    "article_type": "Article Type",
+    "article": "Article",
+    "post": "Post",
+    "user_transaction": "User Transaction",
+    "region": "Region",
+    "company": "Company",
+    "audit_log": "Audit Log",
+    "operation_log": "Operation Log",
+    "analyse": "Analyse Tabs",
+    "game_result": "Game Results",
+    "game_source": "Game Source",
+    "game_tab": "Game Tabs",
+    "tab": "Tabs",
+    "crawler_log": "Crawler Log",
+    "user_campaign_history": "User Campaign History",
+    "model": "Model"
+  }
+}

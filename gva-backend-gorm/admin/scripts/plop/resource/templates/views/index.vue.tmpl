@@ -1,0 +1,129 @@
+<script setup lang="ts">
+import type { {{pascalCase name}} } from '#/api/{{dashCase name}}/types';
+
+import { computed, ref } from 'vue';
+
+import { Page } from '@vben/common-ui';
+
+import {
+  Button,
+  Image,
+  notification,
+  Popconfirm,
+  Space,
+  type TableColumnsType,
+} from 'ant-design-vue';
+
+import { {{constantCase name}}_PERMISSION } from '#/constants';
+import { $t } from '#/locales';
+import { withSuper } from '#/utils/helper/permissions';
+import {
+  TypeDate,
+  TypeString,
+  useQueryForm,
+} from '#/utils/pagi/form';
+import { tableColumns } from '#/utils/table/column';
+import DataTable from '#/views/_core/table/data-table.vue';
+
+
+const columns = computed<TableColumnsType<{{pascalCase name}}>>(() => [
+  {
+    dataIndex: 'id',
+    key: 'id',
+    title: $t('common.id'),
+  },
+  {
+    dataIndex: 'name',
+    key: 'name',
+    title: $t('common.name'),
+  },
+  tableColumns.createdAt(),
+  tableColumns.updatedAt(),
+  {
+    dataIndex: 'action',
+    key: 'action',
+    title: $t('common.action'),
+  },
+]);
+
+const querier = useQueryForm({
+  model: {
+    createdAt: TypeDate(),
+    name: TypeString(),
+  },
+  modelConfig: computed(() => ({
+    createdAt: {
+      label: $t('common.created_at'),
+    },
+    name: {
+      label: $t('common.name'),
+    },
+  })),
+});
+
+const handleDelete = (record: {{pascalCase name}}) => {
+  return api.{{camelCase name}}._delete({
+    id: record.id,
+    opt: {
+      onSuccess: () => {
+        api.{{camelCase name}}._getMany.invalidate();
+        notification.success({
+          message: $t('message.deleteSuccess'),
+        });
+      },
+    },
+  });
+};
+</script>
+
+<template>
+  <Page :title="$t('page.social.tags.title')">
+    <template #appendHeader>
+      <Button
+        type="primary"
+        v-permissions="withSuper({{constantCase name}}_PERMISSION.ADD)"
+      >
+       \{{ $t('common.create') }}
+      </Button>
+    </template>
+
+    <DataTable
+      :columns="columns"
+      :get-api="(api) => api.{{camelCase name}}._getMany"
+      :querier="querier"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'icon' && record.icon !== ''">
+          <Image
+            :src="`${record.icon}`"
+            alt="icon"
+            style="width: 50px; height: 50px"
+          />
+        </template>
+      </template>
+      <template #action="{ record }">
+        <Space>
+          <Button
+            type="primary"
+            v-permissions="withSuper({{constantCase name}}_PERMISSION.EDIT)"
+          >
+            \{{ $t('common.edit') }}
+          </Button>
+          <Popconfirm
+            :ok-text="$t('common.confirm')"
+            :title="$t('common.confirmation')"
+            @confirm="handleDelete(record)"
+          >
+            <Button
+              danger
+              type="primary"
+              v-permissions="withSuper({{constantCase name}}_PERMISSION.DELETE)"
+            >
+              \{{ $t('common.delete') }}
+            </Button>
+          </Popconfirm>
+        </Space>
+      </template>
+    </DataTable>
+  </Page>
+</template>

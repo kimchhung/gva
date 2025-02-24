@@ -1,0 +1,34 @@
+import type {
+{{pascalCase name}},
+Create{{pascalCase name}},
+Update{{pascalCase name}},
+UpdatePartial{{pascalCase name}},
+} from './types';
+
+import { ResourceAPI } from '../node';
+
+export class {{pascalCase name}}API extends ResourceAPI<
+{{pascalCase name}},
+Create{{pascalCase name}},
+Update{{pascalCase name}},
+UpdatePartial{{pascalCase name}},
+> {
+  constructor() {
+    super('{{dashCase name}}');
+  }
+
+  // # expose from resources
+  create = this._create;
+  update = this._update;
+  delete = this._delete;
+  updatePartial = this._updatePatial;
+  getMany = this._getMany;
+  get = this._get;
+
+  // add custom api here
+}
+
+export const module: APIModule = {
+  name: '{{camelCase name}}',
+  resource: new {{pascalCase name}}API(),
+};

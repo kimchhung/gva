@@ -1,0 +1,25 @@
+version: "3.8"
+
+networks:
+  gva-backend-net:
+    driver: bridge
+    name: gva-backend-net
+
+volumes:
+  mysql-data:
+  docker-entrypoint-initdb.d:
+
+services:
+  gva-backend-mysql:
+    image: mysql:8.4.2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: gva_backend
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - gva-backend-net

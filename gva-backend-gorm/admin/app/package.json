@@ -1,0 +1,65 @@
+{
+  "name": "@vben/app",
+  "version": "5.0.1",
+  "homepage": "https://vben.pro",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "app"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "vben",
+    "email": "ann.vben@gmail.com",
+    "url": "https://github.com/anncwb"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "pnpm vite build --mode prod",
+    "build:dist": "pnpm vite build --mode prod && tar -czf dist.tar.gz dist && pnpm rimraf dist",
+    "build:analyze": "pnpm vite build --mode analyze",
+    "dev": "pnpm vite --mode dev",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "dependencies": {
+    "@tanstack/vue-query": "^5.52.2",
+    "@vben-core/shadcn-ui": "workspace:*",
+    "@vben-core/shared": "workspace:*",
+    "@vben/access": "workspace:*",
+    "@vben/chart-ui": "workspace:*",
+    "@vben/common-ui": "workspace:*",
+    "@vben/constants": "workspace:*",
+    "@vben/hooks": "workspace:*",
+    "@vben/icons": "workspace:*",
+    "@vben/layouts": "workspace:*",
+    "@vben/locales": "workspace:*",
+    "@vben/preferences": "workspace:*",
+    "@vben/stores": "workspace:*",
+    "@vben/styles": "workspace:*",
+    "@vben/types": "workspace:*",
+    "@vben/utils": "workspace:*",
+    "@vueuse/core": "^10.11.1",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-vue": "^5.1.12",
+    "ant-design-vue": "^4.2.3",
+    "axios": "^1.7.3",
+    "cron-parser": "^4.9.0",
+    "cronstrue": "^2.50.0",
+    "dayjs": "^1.11.12",
+    "pinia": "2.2.1",
+    "vue": "^3.4.37",
+    "vue-diff": "^1.2.4",
+    "vue-router": "^4.4.3",
+    "vue3-cron-antd": "^1.1.1"
+  },
+  "eslintConfig": {
+    "globals": {
+      "vue": true
+    }
+  }
+}

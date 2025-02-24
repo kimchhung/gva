@@ -1,0 +1,107 @@
+[
+  {
+    "locale": "en",
+    "key": "unknown_error",
+    "trans": "Unknown error"
+  },
+  {
+    "locale": "en",
+    "key": "validation_error",
+    "trans": "Validation error"
+  },
+  {
+    "locale": "en",
+    "key": "unauthorized",
+    "trans": "Unauthorized"
+  },
+  {
+    "locale": "en",
+    "key": "login_error",
+    "trans": "Login error"
+  },
+  {
+    "locale": "en",
+    "key": "unauthenticated",
+    "trans": "Unauthenticated"
+  },
+  {
+    "locale": "en",
+    "key": "access_denied",
+    "trans": "Access denied"
+  },
+  {
+    "locale": "en",
+    "key": "record_not_found",
+    "trans": "Record not found"
+  },
+  {
+    "locale": "en",
+    "key": "invalid_otp_code",
+    "trans": "Invalid OTP code"
+  },
+  {
+    "locale": "en",
+    "key": "not_found",
+    "trans": "Not found"
+  },
+  {
+    "locale": "en",
+    "key": "invalid_token",
+    "trans": "Invalid token"
+  },
+  {
+    "locale": "en",
+    "key": "bad_request",
+    "trans": "Bad request"
+  },
+  {
+    "locale": "en",
+    "key": "token_expired",
+    "trans": "Token expired"
+  },
+  {
+    "locale": "en",
+    "key": "content_has_been_removed",
+    "trans": "Content has been removed"
+  },
+  {
+    "locale": "en",
+    "key": "status_has_been_disabled",
+    "trans": "Status has been disabled"
+  },
+  {
+    "locale": "en",
+    "key": "too_many_retries",
+    "trans": "Too many retries"
+  },
+  {
+    "locale": "en",
+    "key": "admin_whitelist_invalid",
+    "trans": "Admin Whitelist IP invalid"
+  },
+  {
+    "locale": "en",
+    "key": "invalid_ip",
+    "trans": "Invalid IP"
+  },
+  {
+    "locale": "en",
+    "key": "key_already_exists",
+    "trans": "Key already exists"
+  },
+  {
+    "locale": "en",
+    "key": "company_already_exists",
+    "trans": "Company already exists"
+  },
+  {
+    "locale": "en",
+    "key": "duplicated_record",
+    "trans": "Record already exists"
+  },
+  {
+    "locale": "en",
+    "key": "invalid_credentials",
+    "trans": "Invalid Credentials!"
+  }
+]

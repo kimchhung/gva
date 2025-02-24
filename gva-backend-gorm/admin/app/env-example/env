@@ -1,0 +1,7 @@
+# Application title
+
+VITE_APP_TITLE=开奖网Lottery
+
+# Apply naming space, used for cache, store and other functions to ensure isolation
+
+VITE_APP_NAMESPACE=lottery-data

@@ -1,0 +1,12 @@
+[
+  {
+    "locale": "en",
+    "key": "unsupported_file_format",
+    "trans": "Unsupported file format"
+  },
+  {
+    "locale": "en",
+    "key": " error_while_uploading",
+    "trans": "Error while uploading"
+  }
+]

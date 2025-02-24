@@ -1,0 +1,107 @@
+[
+  {
+    "locale": "zh",
+    "key": "unknown_error",
+    "trans": "未知错误"
+  },
+  {
+    "locale": "zh",
+    "key": "validation_error",
+    "trans": "验证错误"
+  },
+  {
+    "locale": "zh",
+    "key": "unauthorized",
+    "trans": "未授权"
+  },
+  {
+    "locale": "zh",
+    "key": "login_error",
+    "trans": "登录错误"
+  },
+  {
+    "locale": "zh",
+    "key": "unauthenticated",
+    "trans": "未认证"
+  },
+  {
+    "locale": "zh",
+    "key": "access_denied",
+    "trans": "拒绝访问"
+  },
+  {
+    "locale": "zh",
+    "key": "record_not_found",
+    "trans": "记录不存在"
+  },
+  {
+    "locale": "zh",
+    "key": "invalid_otp_code",
+    "trans": "无效的OTP代码"
+  },
+  {
+    "locale": "zh",
+    "key": "not_found",
+    "trans": "未找到"
+  },
+  {
+    "locale": "zh",
+    "key": "invalid_token",
+    "trans": "无效令牌"
+  },
+  {
+    "locale": "zh",
+    "key": "bad_request",
+    "trans": "坏请求"
+  },
+  {
+    "locale": "zh",
+    "key": "token_expired",
+    "trans": "令牌过期"
+  },
+  {
+    "locale": "zh",
+    "key": "content_has_been_removed",
+    "trans": "内容已被移除"
+  },
+  {
+    "locale": "zh",
+    "key": "status_has_been_disabled",
+    "trans": "状态已被禁用"
+  },
+  {
+    "locale": "zh",
+    "key": "too_many_retries",
+    "trans": "重试太多"
+  },
+  {
+    "locale": "zh",
+    "key": "admin_whitelist_invalid",
+    "trans": "管理员白名单IP无效"
+  },
+  {
+    "locale": "zh",
+    "key": "invalid_ip",
+    "trans": "无效的IP"
+  },
+  {
+    "locale": "zh",
+    "key": "key_already_exists",
+    "trans": "密钥已存在"
+  },
+  {
+    "locale": "zh",
+    "key": "company_already_exists",
+    "trans": "公司已存在"
+  },
+  {
+    "locale": "zh",
+    "key": "duplicated_record",
+    "trans": "记录已存在"
+  },
+  {
+    "locale": "zh",
+    "key": "invalid_credentials",
+    "trans": "无效的用户和密码"
+  }
+]
