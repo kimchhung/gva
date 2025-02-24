@@ -1,7 +1,7 @@
 # Application title
 
-VITE_APP_TITLE=开奖网Lottery
+VITE_APP_TITLE=GVA_BACKEND
 
 # Apply naming space, used for cache, store and other functions to ensure isolation
 
-VITE_APP_NAMESPACE=lottery-data
+VITE_APP_NAMESPACE=GVA_BACKEND
