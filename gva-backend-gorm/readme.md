@@ -14,4 +14,12 @@
 
 ## 4 run seeds
 
-`make admincmd.seed.all`
+### Run all api modules
+
+`make api.run`
+
+### Run specific module
+
+`make api.run.<module_name>`
+
+e.g. `make api.run.admin` or `make api.run.bot`
