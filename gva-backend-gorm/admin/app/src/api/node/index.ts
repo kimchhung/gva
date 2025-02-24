@@ -189,7 +189,7 @@ export class ResourceAPI<
     return req.put<Node<T>>({ data: body, url: `${this._base}/${id}` }, opt);
   }
 
-  protected _updatePatial({
+  protected _updatePartial({
     body,
     id,
     opt,

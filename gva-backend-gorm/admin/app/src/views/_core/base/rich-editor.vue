@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, shallowRef, toRefs } from 'vue';
 
+import { api } from '#/api';
 import {
   type IDomEditor,
   type IEditorConfig,
@@ -56,7 +57,7 @@ const editorState = reactive({
         ) {
           const formData = new FormData();
           formData.append('file', file);
-          const [res] = await api.uploadImage(formData);
+          const [res] = await api().uploadImage(formData);
           if (!res) return;
           insertFn(res.data.url, res.data.filename);
         },

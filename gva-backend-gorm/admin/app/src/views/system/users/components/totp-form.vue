@@ -17,6 +17,7 @@ import {
   QRCode,
 } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { useValidator } from '#/hooks/use-validator';
 import { getFormInfos } from '#/utils/form/label';
 import { copyToClipboard } from '#/utils/helper/copy';
@@ -60,7 +61,7 @@ const onSubmit = async () => {
     totp: formState.totp,
   };
 
-  await api.admin.setTOTP({
+  await api().admin.setTOTP({
     id: props.record.id,
     body: payload,
     opt: {

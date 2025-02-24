@@ -9,6 +9,7 @@ import { $t } from '@vben/locales';
 
 import { Button } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { useAuthStore } from '#/store';
 import { copyToClipboard } from '#/utils/helper/copy';
 
@@ -19,7 +20,7 @@ const authStore = useAuthStore();
 const adminConfig = ref<AdminIndexConfig | null>(null);
 
 onMounted(async () => {
-  const [res] = await api.getConfig();
+  const [res] = await api().getConfig();
 
   if (res?.code === 0) {
     adminConfig.value = res.data;

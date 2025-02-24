@@ -62,11 +62,11 @@ const querier = useQueryForm({
 });
 
 const handleDelete = (record: {{pascalCase name}}) => {
-  return api.{{camelCase name}}._delete({
+  return api().{{camelCase name}}._delete({
     id: record.id,
     opt: {
       onSuccess: () => {
-        api.{{camelCase name}}._getMany.invalidate();
+        api().{{camelCase name}}._getMany.invalidate();
         notification.success({
           message: $t('message.deleteSuccess'),
         });
@@ -89,7 +89,7 @@ const handleDelete = (record: {{pascalCase name}}) => {
 
     <DataTable
       :columns="columns"
-      :get-api="(api) => api.{{camelCase name}}._getMany"
+      :get-api="(api) => api().{{camelCase name}}._getMany"
       :querier="querier"
     >
       <template #bodyCell="{ column, record }">

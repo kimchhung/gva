@@ -16,6 +16,8 @@ export class AdminRoleAPI extends ResourceAPI<
   getMany = this._getMany;
   create = this._create;
   update = this._update;
+  updatePartial = this._updatePartial;
+  delete = this._delete;
 }
 
 export const module: APIModule = {

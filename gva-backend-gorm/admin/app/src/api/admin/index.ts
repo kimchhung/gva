@@ -20,7 +20,7 @@ export class AdminAPI extends ResourceAPI<Admin, AdminCreate, AdminUpdate> {
   create = this._create;
   update = this._update;
   delete = this._delete;
-  updatePartial = this._updatePatial;
+  updatePartial = this._updatePartial;
   getMany = this._getMany;
   get = this._get;
 

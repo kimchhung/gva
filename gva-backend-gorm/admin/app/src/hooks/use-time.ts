@@ -1,6 +1,7 @@
 import { onMounted } from 'vue';
 
 import { dateUtil } from '#/utils/helper/date-util';
+import { api } from '../api';
 
 let ___serverDiffOffset = 0;
 
@@ -25,7 +26,7 @@ export const useTime = () => {
     }
 
     const syncTime = async () => {
-      const [res, error] = await api.now();
+      const [res, error] = await api().now();
       if (error) console.error(error);
 
       const serverTime = dateUtil(res?.data);

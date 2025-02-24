@@ -4,9 +4,10 @@ import type { UploadRequestOption } from 'ant-design-vue/es/vc-upload/interface'
 
 import { onMounted, ref, watch } from 'vue';
 
-import { $t } from '@vben/locales';
 import { VbenIcon } from '@vben-core/shadcn-ui';
+import { $t } from '@vben/locales';
 
+import { api } from '#/api';
 import { Form, message, Upload, type UploadFile } from 'ant-design-vue';
 
 interface Props {
@@ -65,7 +66,7 @@ const handleUploadImage = async (opts: UploadRequestOption) => {
   if (opts.onSuccess) {
     const formData = new FormData();
     formData.append('file', opts.file);
-    const [res] = await api.uploadImage(formData, {
+    const [res] = await api().uploadImage(formData, {
       loading,
     });
     triggerChange(res?.data.url ?? '');

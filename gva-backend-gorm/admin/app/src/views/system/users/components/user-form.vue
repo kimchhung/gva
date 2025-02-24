@@ -9,6 +9,7 @@ import { $t } from '@vben/locales';
 
 import { Form, FormItem, Input, InputPassword, Select } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { useBaseModalForm } from '#/hooks/use-base-modal-form';
 import { useValidator } from '#/hooks/use-validator';
 import { getFormInfos } from '#/utils/form/label';
@@ -49,7 +50,7 @@ const {
   },
 });
 
-const { data: adminRoles, isLoading } = api.adminRole.getMany.useQuery({
+const { data: adminRoles, isLoading } = api().adminRole.getMany.useQuery({
   query: () =>
     defaultQuery({
       filters: [
@@ -95,7 +96,7 @@ const onSubmit = handleSubmit(async () => {
 
   const options = {
     onSuccess: () => {
-      api.admin.getMany.invalidate();
+      api().admin.getMany.invalidate();
       closeModal({
         showSuccessMessage: true,
       });
@@ -104,12 +105,12 @@ const onSubmit = handleSubmit(async () => {
   };
 
   await (props.record
-    ? api.admin.update({
+    ? api().admin.update({
         id: props.record!.id,
         body: payload,
         opt: options,
       })
-    : api.admin.create({
+    : api().admin.create({
         body: {
           ...payload,
           password: formState.password,

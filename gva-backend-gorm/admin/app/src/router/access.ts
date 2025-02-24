@@ -8,6 +8,7 @@ import { preferences } from '@vben/preferences';
 
 import { BasicLayout, IFrameView } from '#/layouts';
 import { mapConfigTree } from '#/utils/helper/configuration';
+import { api } from '../api';
 
 const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
@@ -34,7 +35,7 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   return await generateAccessible(preferences.app.accessMode, {
     ...options,
     fetchMenuListAsync: async () => {
-      const [res, err] = await api.getDocs();
+      const [res, err] = await api().getDocs();
       if (err) {
         return [];
       }

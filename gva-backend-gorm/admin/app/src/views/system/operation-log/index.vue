@@ -28,6 +28,7 @@ import Filter from '#/views/_core/filter/index.vue';
 import Table from '#/views/_core/table/table.vue';
 import TableTool from '#/views/_core/table/tool.vue';
 
+import { api } from '#/api';
 import OperationLogDetail from './components/operation-log-detail.vue';
 
 const { actionGroupRef, actionWidth } = useGroupActionWidth();
@@ -95,7 +96,7 @@ const columns = computed<TableColumnsType<OperationLog>>(() => [
   }),
 ]);
 
-const { data: permissionRes } = api.permission.getMany.useQuery();
+const { data: permissionRes } = api().permission.getMany.useQuery();
 const permissionOptions = computed(() => {
   return (
     permissionRes.value?.data?.reduce(

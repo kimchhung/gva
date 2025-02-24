@@ -14,6 +14,7 @@ import { withSuper } from '#/utils/helper/permissions';
 import { defaultQuery } from '#/utils/pagi/query';
 import ActionButton from '#/views/_core/button/action-button.vue';
 
+import { api } from '#/api';
 import ConfigurationForm from './components/configuration-form.vue';
 import ConfigurationNode from './components/configuration-node.vue';
 
@@ -21,7 +22,7 @@ const openSheet = ref<boolean>(false);
 
 const editData = ref<Configuration | null>(null);
 
-const { data: configurationList } = api.configuration.getMany.useQuery({
+const { data: configurationList } = api().configuration.getMany.useQuery({
   query: () => defaultQuery({ limit: 500, selects: ['list'] }),
 });
 
@@ -53,11 +54,11 @@ const toggleCollapseAll = () => {
 };
 
 const handleDelete = async (id: number) => {
-  await api.configuration.delete({
+  await api().configuration.delete({
     id,
     opt: {
       onSuccess: () => {
-        api.configuration.getMany.invalidate();
+        api().configuration.getMany.invalidate();
         notification.success({
           message: $t('message.deleteSuccess'),
         });

@@ -26,6 +26,7 @@ import Filter from '#/views/_core/filter/index.vue';
 import Table from '#/views/_core/table/table.vue';
 import TableTool from '#/views/_core/table/tool.vue';
 
+import { api } from '#/api';
 import IpWhitelistForm from './components/ip-whitelist-form.vue';
 import ResetPasswordForm from './components/reset-password-form.vue';
 import TotpForm from './components/totp-form.vue';
@@ -61,7 +62,7 @@ const columns = computed<TableColumnsType<Admin>>(() => [
       !hasAccessByPermissions(withSuper(ADMIN_PERMISSION.EDIT)) ||
       (!!userInfo?.userId && record.id === userInfo.userId),
     onConfirm: async (newValue: any, record: Admin) => {
-      return api.admin.updatePartial({
+      return api().admin.updatePartial({
         body: {
           status: newValue,
         },
@@ -143,11 +144,11 @@ const openTotpForm = (record: Admin | null) => {
 };
 
 const handleDeleteUser = async (record: Admin) => {
-  return api.admin.delete({
+  return api().admin.delete({
     id: record.id,
     opt: {
       onSuccess: () => {
-        api.admin.getMany.invalidate();
+        api().admin.getMany.invalidate();
         notification.success({
           message: $t('message.deleteSuccess'),
         });

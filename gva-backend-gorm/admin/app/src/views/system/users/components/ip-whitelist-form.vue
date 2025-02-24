@@ -3,11 +3,12 @@ import type { Admin } from '#/api/admin/types';
 
 import { reactive } from 'vue';
 
-import { $t } from '@vben/locales';
 import { VbenIcon } from '@vben-core/shadcn-ui';
+import { $t } from '@vben/locales';
 
 import { Button, Form, FormItem, Input } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { useBaseModalForm } from '#/hooks/use-base-modal-form';
 import { useValidator } from '#/hooks/use-validator';
 import BaseModal from '#/views/_core/base/base-modal.vue';
@@ -50,12 +51,12 @@ const onSubmit = handleSubmit(async () => {
     ipWhiteList: formState.ipWhiteList.filter(Boolean),
   };
 
-  await api.admin._updatePatial({
+  await api().admin.updatePartial({
     id: props.record.id,
     body: payload,
     opt: {
       onSuccess: () => {
-        api.admin._getMany.invalidate();
+        api().admin.getMany.invalidate();
         closeModal({
           showSuccessMessage: true,
         });

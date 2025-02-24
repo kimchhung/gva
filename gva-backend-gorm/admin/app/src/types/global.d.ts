@@ -1,8 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 declare interface API {}
 
-declare const api: API;
-
 declare interface APIModule {
   name: string;
   resource: any;

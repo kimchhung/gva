@@ -4,8 +4,8 @@ import { defineComponent, h, inject, nextTick, provide, reactive } from 'vue';
 
 import { useStore } from '@vben-core/shared';
 
-import BaseModel from './modal.vue';
 import { ModalApi } from './modal-api';
+import BaseModel from './modal.vue';
 
 const USER_MODAL_INJECT_KEY = Symbol('BASE_MODAL_INJECT');
 

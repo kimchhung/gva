@@ -19,6 +19,7 @@ import {
   Tree,
 } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { getPermissionTree } from '#/constants/permission-tree';
 import { useValidator } from '#/hooks/use-validator';
 import { getFormInfos } from '#/utils/form/label';
@@ -56,7 +57,7 @@ const onSave = async () => {
     ];
 
     const onSuccess = () => {
-      api.adminRole.getMany.invalidate();
+      api().adminRole.getMany.invalidate();
       const currentPath = router.currentRoute.value.path;
       const parentPath = currentPath.slice(0, currentPath.lastIndexOf('/'));
       notification.success({
@@ -68,7 +69,7 @@ const onSave = async () => {
     };
 
     if (id) {
-      api.adminRole.update({
+      api().adminRole.update({
         id,
         body,
         opt: {
@@ -76,7 +77,7 @@ const onSave = async () => {
         },
       });
     } else {
-      api.adminRole.create({ body, opt: { onSuccess } });
+      api().adminRole.create({ body, opt: { onSuccess } });
     }
   });
 };
@@ -89,7 +90,7 @@ const rules = {
 
 onBeforeMount(() => {
   if (route.params.id) {
-    api.adminRole._get({
+    api().adminRole.get({
       id: route.params.id as string,
       opt: {
         onSuccess: ({ data }) => {

@@ -5,15 +5,13 @@ import type { Querier } from '../pagi/form';
 
 import { computed, type MaybeRef, reactive, ref, unref } from 'vue';
 
+import { api } from '../../api';
 import { useSortableColumns } from './use-column-sort';
 import { useTableSort } from './use-table-sort';
 
-interface UseTableProps<
-  Data = any,
-  Method extends keyof typeof api = keyof typeof api,
-> {
+interface UseTableProps<Data = any> {
   querier: Querier;
-  fetcher: (globalAPi: typeof api) => (typeof api)[Method]['_getMany'];
+  fetcher: (globalAPi: API) => any;
   columns: MaybeRef<TableColumnsType<Data>>;
   table: {
     getHasNext: (data: { data: Data[]; meta: Record<string, any> }) => boolean;
@@ -33,7 +31,7 @@ export const useTableData = <T = any>({
   table,
   columns,
 }: UseTableProps<T>) => {
-  const getMany = fetcher(api);
+  const getMany = fetcher(api());
   const query = computed(() => querier.query);
 
   const {

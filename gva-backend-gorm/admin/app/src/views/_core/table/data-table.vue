@@ -13,12 +13,13 @@ import {
 import { useTableSort } from '#/utils/table/use-table-sort';
 import Filter from '#/views/_core/filter/index.vue';
 
+import { api } from '#/api';
 import DataTablePaginate from './data-table-paginate.vue';
 
 const props = withDefaults(
   defineProps<{
     columns: TableColumnsType<T>;
-    getApi: (getMany: typeof api) => any;
+    getApi: (getMany: any) => any;
     hideFilter?: boolean;
     minTableWidth?: number;
     querier: any;

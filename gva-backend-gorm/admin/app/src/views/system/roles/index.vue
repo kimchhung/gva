@@ -14,6 +14,7 @@ import {
   type TableColumnsType,
 } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { ADMIN_ROLE_PERMISSION, ROLE } from '#/constants';
 import { withSuper } from '#/utils/helper/permissions';
 import { TypeDate, TypeString, useQueryForm } from '#/utils/pagi/form';
@@ -54,14 +55,14 @@ const columns = computed<TableColumnsType<AdminRole>>(() => [
             !hasAccessByPermissions(withSuper(ADMIN_ROLE_PERMISSION.EDIT))
           }
           onConfirm={(newValue) => {
-            return api.adminRole._updatePatial({
+            return api().adminRole.updatePartial({
               body: {
                 status: newValue as number,
               },
               id: record.id,
               opt: {
                 onSuccess: () => {
-                  api.adminRole._getMany.invalidate();
+                  api().adminRole.getMany.invalidate();
                   notification.success({
                     message: $t('message.updateSuccess'),
                   });
@@ -97,11 +98,11 @@ const querier = useQueryForm({
 });
 
 const handleDeleteUser = async (record: AdminRole) => {
-  return api.adminRole._delete({
+  return api().adminRole.delete({
     id: record.id,
     opt: {
       onSuccess: () => {
-        api.adminRole._getMany.invalidate();
+        api().adminRole.getMany.invalidate();
         notification.success({
           message: $t('message.deleteSuccess'),
         });
@@ -126,7 +127,7 @@ const handleEdit = (record: AdminRole) => {
 const { tableState, tableFunction, tableTool } = useTableData<AdminRole>({
   querier: querier as any,
   columns,
-  fetcher: (api) => api.adminRole._getMany,
+  fetcher: (api) => api.adminRole.getMany,
   table: {
     getHasNext: (res) => !!res?.meta?.hasNext,
     getList: (res) => res?.data,

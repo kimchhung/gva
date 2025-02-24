@@ -32,6 +32,7 @@ import { getFormInfos } from '#/utils/form/label';
 import ImageUploader from '#/views/_core/base/image-uploader.vue';
 import ObjectEditor from '#/views/_core/base/object-editor.vue';
 
+import { api } from '#/api';
 import Block from './block.vue';
 
 const props = defineProps<{
@@ -319,14 +320,14 @@ const onSubmit = async () => {
   }
 
   await (editMode.value
-    ? api.configuration.update({
+    ? api().configuration.update({
         id: props.initialData?.id as number,
         body: payload,
         opt: {
           loading,
           onSuccess: () => {
             loading.value = false;
-            api.configuration.getMany.invalidate();
+            api().configuration.getMany.invalidate();
             notification.success({
               message: $t('message.updateSuccess'),
             });
@@ -336,12 +337,12 @@ const onSubmit = async () => {
           },
         },
       })
-    : api.configuration.create({
+    : api().configuration.create({
         body: payload,
         opt: {
           loading,
           onSuccess: () => {
-            api.configuration.getMany.invalidate();
+            api().configuration.getMany.invalidate();
             notification.success({
               message: $t('message.createSuccess'),
             });

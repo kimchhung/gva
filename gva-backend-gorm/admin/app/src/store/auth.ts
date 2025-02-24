@@ -11,6 +11,7 @@ import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
 import { $t } from '#/locales';
+import { api } from '../api';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
@@ -36,7 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       loginLoading.value = true;
-      const [res] = await api.auth.login({
+      const [res] = await api().auth.login({
         body: {
           password: params.password,
           totp: params.totp ?? '',
@@ -100,7 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function fetchUserInfo() {
     let userInfo: BasicUserInfo | null = null;
-    const [res, err] = await api.auth.me();
+    const [res, err] = await api().auth.me();
     if (err) return null;
 
     userInfo = {

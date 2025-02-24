@@ -13,6 +13,7 @@ import {
   notification,
 } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { useValidator } from '#/hooks/use-validator';
 import { getFormInfos } from '#/utils/form/label';
 import BaseModal from '#/views/_core/base/base-modal.vue';
@@ -39,7 +40,7 @@ const onSuccess = () => {
       props.record ? 'message.updateSuccess' : 'message.createSuccess',
     ),
   });
-  api.admin._getMany.invalidate();
+  api().admin.getMany.invalidate();
   emit('update:open', false);
   formRef.value?.resetFields();
 };
@@ -56,7 +57,7 @@ const onSubmit = async () => {
     password: formState.password,
   };
 
-  await api.admin._updatePatial({
+  await api().admin.updatePartial({
     id: props.record.id,
     body: payload,
     opt: {
