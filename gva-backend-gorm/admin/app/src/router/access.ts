@@ -8,6 +8,7 @@ import { preferences } from '@vben/preferences';
 
 import { BasicLayout, IFrameView } from '#/layouts';
 import { mapConfigTree } from '#/utils/helper/configuration';
+
 import { api } from '../api';
 
 const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');

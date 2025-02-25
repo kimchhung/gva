@@ -10,10 +10,10 @@ import {
   type TableProps,
 } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { useTableSort } from '#/utils/table/use-table-sort';
 import Filter from '#/views/_core/filter/index.vue';
 
-import { api } from '#/api';
 import DataTablePaginate from './data-table-paginate.vue';
 
 const props = withDefaults(

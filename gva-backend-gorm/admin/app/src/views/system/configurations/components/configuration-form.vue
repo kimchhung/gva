@@ -3,8 +3,8 @@ import type { Configuration } from '#/api/configuration/types';
 
 import { computed, reactive, ref, watch } from 'vue';
 
-import { VbenIcon } from '@vben-core/shadcn-ui';
 import { preferences } from '@vben/preferences';
+import { VbenIcon } from '@vben-core/shadcn-ui';
 
 import {
   Button,
@@ -26,13 +26,13 @@ import {
 } from 'ant-design-vue';
 import dayjs from 'dayjs';
 
+import { api } from '#/api';
 import { useValidator } from '#/hooks/use-validator';
 import { $t } from '#/locales';
 import { getFormInfos } from '#/utils/form/label';
 import ImageUploader from '#/views/_core/base/image-uploader.vue';
 import ObjectEditor from '#/views/_core/base/object-editor.vue';
 
-import { api } from '#/api';
 import Block from './block.vue';
 
 const props = defineProps<{

@@ -11,11 +11,12 @@ import {
   type UnwrapRef,
   watch,
 } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { useTabbarStore } from '@vben/stores';
 
 import { cloneDeep, merge } from 'lodash';
 
-import { useTabbarStore } from '@vben/stores';
-import { useRouter } from 'vue-router';
 import { useTabbar } from '../../../../packages/effects/layouts/src/basic/tabbar';
 import { DATE_TIME_FORMAT, dateUtil } from '../helper/date-util';
 import {
@@ -299,7 +300,70 @@ const setFieldDefaulConfig = <T extends BaseModel<T>>(
 
   return modelConfig;
 };
+const querySearchStore = new Map<string, string>();
+const useQuerySearchState = (opt: {
+  enable: boolean;
+  onQuerySearchChange?: (querySearch: string) => void;
+}) => {
+  const router = useRouter();
+  const tab = useTabbar();
+  const tabbarStore = useTabbarStore();
 
+  const updateUrlQuerySearch = (queryValue: string) => {
+    const newUrl = new URL(window.location.href);
+    newUrl.search = queryValue;
+
+    const isSameUrl = newUrl.toString() === window.location.toString();
+    if (isSameUrl) return;
+
+    router.currentRoute.value.meta.querySearch = newUrl.search;
+    querySearchStore.set(tab.currentActive.value, queryValue);
+    window.history.replaceState(window.history.state, '', newUrl.href);
+  };
+
+  const clearUrlQuerySearch = () => {
+    const newUrl = new URL(window.location.href);
+    newUrl.search = '';
+    window.history.replaceState(window.history.state, '', newUrl.href);
+  };
+  if (!opt.enable) {
+    return { updateUrlQuerySearch, clearUrlQuerySearch };
+  }
+
+  watch(
+    tabbarStore.tabs,
+    () => {
+      const tabPath = tab.currentActive.value;
+      let queryValue = querySearchStore.get(tabPath);
+      if (!queryValue) return;
+
+      const hasTab = tabbarStore.tabs.find((e) => e.path === tabPath);
+      if (!hasTab) {
+        querySearchStore.delete(tabPath);
+        queryValue = '';
+        clearUrlQuerySearch();
+      }
+    },
+    { deep: true, immediate: true },
+  );
+
+  watch(
+    tab.currentActive,
+    (tabPath) => {
+      const queryValue = querySearchStore.get(tabPath);
+      if (!queryValue) return;
+
+      updateUrlQuerySearch(queryValue);
+      opt?.onQuerySearchChange?.(queryValue);
+    },
+    { deep: true, immediate: true },
+  );
+
+  return {
+    updateUrlQuerySearch,
+    clearUrlQuerySearch,
+  };
+};
 export interface UseQueryProp<
   T extends Record<string, any>,
   K extends string = Extract<keyof T, string>,
@@ -469,7 +533,7 @@ export const useQueryForm = <T extends BaseModel<T>>(
       search: {
         operation: 'containsFold',
         type: 'string',
-        value: queryValue.search.replace(/\*/g, '') || '',
+        value: queryValue.search.replaceAll('*', '') || '',
       },
       sorts: queryValue.sorts.map(
         (sort: any) => `${sort.column} ${sort.direction}`,
@@ -584,72 +648,6 @@ export const useQueryForm = <T extends BaseModel<T>>(
     sortOption,
     types,
   });
-};
-
-const querySearchStore = new Map<string, string>();
-
-const useQuerySearchState = (opt: {
-  enable: boolean;
-  onQuerySearchChange?: (querySearch: string) => void;
-}) => {
-  const router = useRouter();
-  const tab = useTabbar();
-  const tabbarStore = useTabbarStore();
-
-  const updateUrlQuerySearch = (queryValue: string) => {
-    const newUrl = new URL(window.location.href);
-    newUrl.search = queryValue;
-
-    const isSameUrl = newUrl.toString() === window.location.toString();
-    if (isSameUrl) return;
-
-    router.currentRoute.value.meta.querySearch = newUrl.search;
-    querySearchStore.set(tab.currentActive.value, queryValue);
-    window.history.replaceState(window.history.state, '', newUrl.href);
-  };
-
-  const clearUrlQuerySearch = () => {
-    const newUrl = new URL(window.location.href);
-    newUrl.search = '';
-    window.history.replaceState(window.history.state, '', newUrl.href);
-  };
-  if (!opt.enable) {
-    return { updateUrlQuerySearch, clearUrlQuerySearch };
-  }
-
-  watch(
-    tabbarStore.tabs,
-    () => {
-      const tabPath = tab.currentActive.value;
-      let queryValue = querySearchStore.get(tabPath);
-      if (!queryValue) return;
-
-      const hasTab = tabbarStore.tabs.find((e) => e.path === tabPath);
-      if (!hasTab) {
-        querySearchStore.delete(tabPath);
-        queryValue = '';
-        clearUrlQuerySearch();
-      }
-    },
-    { deep: true, immediate: true },
-  );
-
-  watch(
-    tab.currentActive,
-    (tabPath) => {
-      let queryValue = querySearchStore.get(tabPath);
-      if (!queryValue) return;
-
-      updateUrlQuerySearch(queryValue);
-      opt?.onQuerySearchChange?.(queryValue);
-    },
-    { deep: true, immediate: true },
-  );
-
-  return {
-    updateUrlQuerySearch,
-    clearUrlQuerySearch,
-  };
 };
 
 export type Querier = ReturnType<typeof useQueryForm>;

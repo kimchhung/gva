@@ -1,29 +1,24 @@
-import type {
-Blog,
-CreateBlog,
-UpdateBlog,
-UpdatePartialBlog,
-} from './types';
+import type { Blog, CreateBlog, UpdateBlog, UpdatePartialBlog } from './types';
 
 import { ResourceAPI } from '../node';
 
 export class BlogAPI extends ResourceAPI<
-Blog,
-CreateBlog,
-UpdateBlog,
-UpdatePartialBlog
+  Blog,
+  CreateBlog,
+  UpdateBlog,
+  UpdatePartialBlog
 > {
-  constructor() {
-    super('blog');
-  }
+  create = this._create;
 
+  delete = this._delete;
   // # expose from resources
   get = this._get;
   getMany = this._getMany;
-  create = this._create;
   update = this._update;
   updatePartial = this._updatePartial;
-  delete = this._delete;
+  constructor() {
+    super('blog');
+  }
 
   // add custom api here
 }

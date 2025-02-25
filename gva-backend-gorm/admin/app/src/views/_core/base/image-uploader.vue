@@ -4,11 +4,12 @@ import type { UploadRequestOption } from 'ant-design-vue/es/vc-upload/interface'
 
 import { onMounted, ref, watch } from 'vue';
 
-import { VbenIcon } from '@vben-core/shadcn-ui';
 import { $t } from '@vben/locales';
+import { VbenIcon } from '@vben-core/shadcn-ui';
+
+import { Form, message, Upload, type UploadFile } from 'ant-design-vue';
 
 import { api } from '#/api';
-import { Form, message, Upload, type UploadFile } from 'ant-design-vue';
 
 interface Props {
   listType?: UploadListType;

@@ -14,6 +14,7 @@ import {
   type TableColumnsType,
 } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { ADMIN_PERMISSION } from '#/constants';
 import { withSuper } from '#/utils/helper/permissions';
 import { TypeDate, TypeString, useQueryForm } from '#/utils/pagi/form';
@@ -26,7 +27,6 @@ import Filter from '#/views/_core/filter/index.vue';
 import Table from '#/views/_core/table/table.vue';
 import TableTool from '#/views/_core/table/tool.vue';
 
-import { api } from '#/api';
 import IpWhitelistForm from './components/ip-whitelist-form.vue';
 import ResetPasswordForm from './components/reset-password-form.vue';
 import TotpForm from './components/totp-form.vue';

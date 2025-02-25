@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, shallowRef, toRefs } from 'vue';
 
-import { api } from '#/api';
 import {
   type IDomEditor,
   type IEditorConfig,
   type IToolbarConfig,
 } from '@wangeditor/editor';
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
+
+import { api } from '#/api';
 
 const props = defineProps<{
   class?: string;

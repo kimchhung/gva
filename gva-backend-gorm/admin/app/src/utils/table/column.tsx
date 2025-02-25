@@ -2,8 +2,8 @@ import type { DefaultOptionType } from 'ant-design-vue/es/select';
 
 import { type MaybeRef, unref } from 'vue';
 
-import { VbenIcon } from '@vben-core/shadcn-ui';
 import { $t } from '@vben/locales';
+import { VbenIcon } from '@vben-core/shadcn-ui';
 
 import {
   Image,

@@ -12,17 +12,17 @@ import { req, type RequestOption } from '#/utils/axios';
 import { ResourceAPI } from '../node';
 
 export class AdminAPI extends ResourceAPI<Admin, AdminCreate, AdminUpdate> {
+  // # expose from resources
+  create = this._create;
+
+  delete = this._delete;
+  get = this._get;
+  getMany = this._getMany;
+  update = this._update;
+  updatePartial = this._updatePartial;
   constructor() {
     super('admin');
   }
-
-  // # expose from resources
-  create = this._create;
-  update = this._update;
-  delete = this._delete;
-  updatePartial = this._updatePartial;
-  getMany = this._getMany;
-  get = this._get;
 
   setTOTP({
     id,

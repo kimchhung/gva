@@ -13,14 +13,14 @@ export class ConfigurationAPI extends ResourceAPI<
   UpdateConfiguration,
   UpdatePartialConfiguration
 > {
+  create = this._create;
+
+  delete = this._delete;
+  getMany = this._getMany;
+  update = this._update;
   constructor() {
     super('configuration');
   }
-
-  create = this._create;
-  update = this._update;
-  getMany = this._getMany;
-  delete = this._delete;
 }
 
 export const module: APIModule = {

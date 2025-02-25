@@ -7,6 +7,7 @@ import { Page } from '@vben/common-ui';
 
 import { Pagination, type TableColumnsType, Tag } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { OPERATION_LOG_PERMISSION } from '#/constants';
 import { METHODS_COLOR } from '#/constants/operation-log';
 import { $t } from '#/locales';
@@ -28,7 +29,6 @@ import Filter from '#/views/_core/filter/index.vue';
 import Table from '#/views/_core/table/table.vue';
 import TableTool from '#/views/_core/table/tool.vue';
 
-import { api } from '#/api';
 import OperationLogDetail from './components/operation-log-detail.vue';
 
 const { actionGroupRef, actionWidth } = useGroupActionWidth();

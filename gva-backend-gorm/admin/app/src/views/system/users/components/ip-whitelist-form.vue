@@ -3,8 +3,8 @@ import type { Admin } from '#/api/admin/types';
 
 import { reactive } from 'vue';
 
-import { VbenIcon } from '@vben-core/shadcn-ui';
 import { $t } from '@vben/locales';
+import { VbenIcon } from '@vben-core/shadcn-ui';
 
 import { Button, Form, FormItem, Input } from 'ant-design-vue';
 

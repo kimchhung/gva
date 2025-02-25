@@ -11,6 +11,7 @@ import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
 import { $t } from '#/locales';
+
 import { api } from '../api';
 
 export const useAuthStore = defineStore('auth', () => {

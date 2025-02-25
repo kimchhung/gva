@@ -13,13 +13,13 @@ export class OperationLogAPI extends ResourceAPI<
   UpdateOperationLog,
   UpdatePartialOperationLog
 > {
-  constructor() {
-    super('operation-log');
-  }
+  get = this._get;
 
   // extends
   getMany = this._getMany;
-  get = this._get;
+  constructor() {
+    super('operation-log');
+  }
 }
 
 export const module: APIModule = {

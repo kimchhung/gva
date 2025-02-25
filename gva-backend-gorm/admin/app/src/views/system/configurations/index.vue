@@ -7,6 +7,7 @@ import { Page } from '@vben/common-ui';
 
 import { Button, notification } from 'ant-design-vue';
 
+import { api } from '#/api';
 import { CONFIGURATION_PERMISSION } from '#/constants';
 import { $t } from '#/locales';
 import { mapConfigTree } from '#/utils/helper/configuration';
@@ -14,7 +15,6 @@ import { withSuper } from '#/utils/helper/permissions';
 import { defaultQuery } from '#/utils/pagi/query';
 import ActionButton from '#/views/_core/button/action-button.vue';
 
-import { api } from '#/api';
 import ConfigurationForm from './components/configuration-form.vue';
 import ConfigurationNode from './components/configuration-node.vue';
 

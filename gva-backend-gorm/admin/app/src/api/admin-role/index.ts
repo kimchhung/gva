@@ -7,17 +7,17 @@ export class AdminRoleAPI extends ResourceAPI<
   CreateAdminRole,
   UpdateAdminRole
 > {
-  constructor() {
-    super('adminrole');
-  }
+  create = this._create;
 
+  delete = this._delete;
   // #expose from resources
   get = this._get;
   getMany = this._getMany;
-  create = this._create;
   update = this._update;
   updatePartial = this._updatePartial;
-  delete = this._delete;
+  constructor() {
+    super('adminrole');
+  }
 }
 
 export const module: APIModule = {
