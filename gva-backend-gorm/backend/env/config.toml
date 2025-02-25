@@ -30,21 +30,21 @@ enable = true
 username = "admin"
 password = "123456"
 
-[api.admin]
+[api().admin]
 enable = true
 base_path = "/admin/v1"
 
-[api.bot]
+[api().bot]
 enable = true
 base_path = "/bot/v1"
 
-[api.bot.scrap]
+[api().bot.scrap]
 proxy = "http://admin.campaign.ss.hd1.fun:24127/api/proxy/forward"
 
-[api.bot.scrap.game]
+[api().bot.scrap.game]
 enable = false
 
-[api.bot.scrap.article]
+[api().bot.scrap.article]
 enable = false
 
 

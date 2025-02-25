@@ -4,22 +4,20 @@ import "strings"
 
 var Model = strings.ReplaceAll(`package model
 
-import (
-	"backend/app/common/constant/table"
-)
+import "backend/app/common/constant/table"
 
 type {{.EntityPascal}} struct {
-	BaseModelV2
+	BaseModel
 	Title string $json:"title"$
 }
 
 func (t *{{.EntityPascal}}) TableName() string {
-	return constant.{{.EntityPascal}}TableName
+	return table.Blog
 }
 
 func (t *{{.EntityPascal}}) New{{.EntityPascal}}Model() *{{.EntityPascal}} {
 	return &{{.EntityPascal}}{
-		BaseModelV2: NewBaseModelV2(),
+		BaseModel: NewBaseModel(),
 		Title:       t.Title,
 	}
 }

@@ -44,7 +44,7 @@ import (
 
 // Requests & responses Data Transfer Object
 type {{.EntityPascal}}Response struct {
-	model.BaseModelV2
+	model.BaseModel
 
 	Title string $json:"title"$
 }

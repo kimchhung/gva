@@ -1,6 +1,6 @@
 # GVA GO VUE ADMIN Boilerplate
 
-[![Go Reference](https://pkg.go.dev/badge/api.svg)](https://pkg.go.dev/api)
+[![Go Reference](<https://pkg.go.dev/badge/api().svg>)](https://pkg.go.dev/api)
 
 Simple and scalable boilerplate to build powerful and organized REST projects with [Fiber](https://github.com/gofiber/fiber).
 

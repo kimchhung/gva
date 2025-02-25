@@ -15,3 +15,7 @@
 ## 4 run seeds
 
 `make admincmd.seed.all`
+
+## 5 Run go
+
+`make api().`

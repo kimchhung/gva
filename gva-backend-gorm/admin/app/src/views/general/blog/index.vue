@@ -1,11 +1,10 @@
 <script setup lang="tsx">
-import type { {{pascalCase name}} } from '#/api/{{camelCase name}}/types';
+import type { Blog } from '#/api/blog/types';
 
 import { computed } from 'vue';
 
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-import { use{{pascalCase name}}Store } from '@vben/stores';
 
 import {
   notification,
@@ -14,7 +13,7 @@ import {
 } from 'ant-design-vue';
 
 import { api } from '#/api';
-import { {{constantCase name}}_PERMISSION } from '#/constants';
+import { BLOG_PERMISSION } from '#/constants';
 import { withSuper } from '#/utils/helper/permissions';
 import { TypeDate, TypeString, useQueryForm } from '#/utils/pagi/form';
 import { tableColumns } from '#/utils/table/column';
@@ -28,7 +27,7 @@ import TableTool from '#/views/_core/table/tool.vue';
 
 const { actionGroupRef, actionWidth } = useGroupActionWidth();
 
-const columns = computed<TableColumnsType<{{pascalCase name}}>>(() => [
+const columns = computed<TableColumnsType<Blog>>(() => [
   tableColumns.id(),
   tableColumns.createdAt(),
   tableColumns.action({
@@ -51,12 +50,12 @@ const querier = useQueryForm({
   })),
 });
 
-const handleDelete{{pascalCase name}} = async (record: {{pascalCase name}}) => {
-  return api().{{camelCase name}}.delete({
+const handleDeleteBlog = async (record: Blog) => {
+  return api().blog.delete({
     id: record.id,
     opt: {
       onSuccess: () => {
-        api().{{camelCase name}}.getMany.invalidate();
+        api().blog.getMany.invalidate();
         notification.success({
           message: $t('message.deleteSuccess'),
         });
@@ -65,10 +64,10 @@ const handleDelete{{pascalCase name}} = async (record: {{pascalCase name}}) => {
   });
 };
 
-const { tableState, tableFunction, tableTool } = useTableData<{{pascalCase name}}>({
+const { tableState, tableFunction, tableTool } = useTableData<Blog>({
   querier: querier as any,
   columns,
-  fetcher: (api) => api.{{camelCase name}}.getMany,
+  fetcher: (api) => api.blog.getMany,
   table: {
     getHasNext: (res) => !!res?.meta?.hasNext,
     getList: (res) => res?.data,
@@ -80,7 +79,7 @@ const { tableState, tableFunction, tableTool } = useTableData<{{pascalCase name}
 <template>
   <Page
     :badge-text="tableState.total().toString()"
-    :title="$t('page.{{camelCase name}}.title')"
+    :title="$t('page.blog.title')"
     show-footer
   >
     <template #appendHeader>
@@ -90,7 +89,7 @@ const { tableState, tableFunction, tableTool } = useTableData<{{pascalCase name}
       >
         <ActionButton
           action-type="create"
-          v-permissions="withSuper({{constantCase name}}_PERMISSION.ADD)"
+          v-permissions="withSuper(BLOG_PERMISSION.ADD)"
         />
       </Filter>
     </template>
@@ -113,19 +112,19 @@ const { tableState, tableFunction, tableTool } = useTableData<{{pascalCase name}
             {
               value: $t('common.edit'),
               actionType: 'edit',
-              vPermissions: withSuper({{constantCase name}}_PERMISSION.VIEW),
+              vPermissions: withSuper(BLOG_PERMISSION.VIEW),
             },
             {
               value: $t('common.edit'),
               actionType: 'edit',
-              vPermissions: withSuper({{constantCase name}}_PERMISSION.EDIT),
-              onClick: () => handleDelete{{pascalCase name}}(record),
+              vPermissions: withSuper(BLOG_PERMISSION.EDIT),
+              onClick: () => handleDeleteBlog(record),
             },
             {
               value: $t('common.delete'),
               actionType: 'delete',
-              vPermissions: withSuper({{constantCase name}}_PERMISSION.DELETE),
-              onClick: () => handleDelete{{pascalCase name}}(record),
+              vPermissions: withSuper(BLOG_PERMISSION.DELETE),
+              onClick: () => handleDeleteBlog(record),
             },
           ]"
           :max-display="3"
@@ -147,4 +146,3 @@ const { tableState, tableFunction, tableTool } = useTableData<{{pascalCase name}
     </template>
   </Page>
 </template>
-

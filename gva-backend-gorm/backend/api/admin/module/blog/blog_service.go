@@ -1,12 +1,10 @@
-package module_template
-
-var Service = `package {{.EntityAllLower}}
+package blog
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"backend/api/admin/module/{{.EntityAllLower}}/dto"
+	"backend/api/admin/module/blog/dto"
 	apperror "backend/app/common/error"
 	"backend/app/common/model"
 	repository "backend/app/common/repository"
@@ -18,20 +16,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type {{.EntityPascal}}Service struct {
-	repo *repository.{{.EntityPascal}}Repo
+type BlogService struct {
+	repo *repository.BlogRepo
 }
 
-// New{{.EntityPascal}}Service initializes a new {{.EntityPascal}}Service with a JwtService and a UserStore.
-func New{{.EntityPascal}}Service(repo *repository.{{.EntityPascal}}Repo) *{{.EntityPascal}}Service {
-	return &{{.EntityPascal}}Service{
+// NewBlogService initializes a new BlogService with a JwtService and a UserStore.
+func NewBlogService(repo *repository.BlogRepo) *BlogService {
+	return &BlogService{
 		repo: repo,
 	}
 }
 
-// Create{{.EntityPascal}} creates a new {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, p *dto.Create{{.EntityPascal}}Request) (*dto.{{.EntityPascal}}Response, error) {
-	body := utils.MustCopy(new(model.{{.EntityPascal}}), p)
+// CreateBlog creates a new Blog.
+func (s *BlogService) CreateBlog(ctx context.Context, p *dto.CreateBlogRequest) (*dto.BlogResponse, error) {
+	body := utils.MustCopy(new(model.Blog), p)
 	// Default base model
 	body.BaseModel = model.NewBaseModel()
 	created, err := s.repo.Create(ctx, body)
@@ -39,12 +37,12 @@ func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, 
 		return nil, err
 	}
 
-	return utils.MustCopy(new(dto.{{.EntityPascal}}Response), created), nil
+	return utils.MustCopy(new(dto.BlogResponse), created), nil
 }
 
-// Get{{.EntityPascal}} gets a {{.EntityPascal}} by ID.
-func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id uint) (*dto.{{.EntityPascal}}Response, error) {
-	{{.EntityAllLower}}, err := s.repo.GetById(ctx, id)
+// GetBlog gets a Blog by ID.
+func (s *BlogService) GetBlog(ctx context.Context, id uint) (*dto.BlogResponse, error) {
+	blog, err := s.repo.GetById(ctx, id)
 	if err != nil {
 		// Check if the error is a not found error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -54,11 +52,11 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id 
 		return nil, err
 	}
 
-	return utils.MustCopy(new(dto.{{.EntityPascal}}Response), {{.EntityAllLower}}), nil
+	return utils.MustCopy(new(dto.BlogResponse), blog), nil
 }
 
-// LockForUpdate locks a {{.EntityPascal}} for update.
-func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) database.TxOperaton {
+// LockForUpdate locks a Blog for update.
+func (s *BlogService) LockForUpdate(ctx context.Context, id uint) database.TxOperaton {
 	return func(tx *gorm.DB) error {
 		_, err := s.repo.Tx(tx).GetById(ctx, id, gormq.WithSelect("id"), gormq.WithLockUpdate())
 		if err != nil {
@@ -74,12 +72,12 @@ func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) d
 	}
 }
 
-// Update{{.EntityPascal}} updates a {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id uint, p *dto.Update{{.EntityPascal}}Request) (updatedRes *dto.{{.EntityPascal}}Response, err error) {
+// UpdateBlog updates a Blog.
+func (s *BlogService) UpdateBlog(ctx context.Context, id uint, p *dto.UpdateBlogRequest) (updatedRes *dto.BlogResponse, err error) {
 	err = s.repo.MultiTransaction(
 		s.LockForUpdate(ctx, id),
 		func(tx *gorm.DB) error {
-			body := utils.MustCopy(new(model.{{.EntityPascal}}), p)
+			body := utils.MustCopy(new(model.Blog), p)
 			body.ID = id
 
 			updated, err := s.repo.Tx(tx).Update(ctx, body)
@@ -87,7 +85,7 @@ func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, 
 				return err
 			}
 
-			updatedRes = utils.MustCopy(new(dto.{{.EntityPascal}}Response), updated)
+			updatedRes = utils.MustCopy(new(dto.BlogResponse), updated)
 			return nil
 		},
 	)
@@ -95,11 +93,11 @@ func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, 
 		return nil, err
 	}
 
-	return s.Get{{.EntityPascal}}(ctx, id)
+	return s.GetBlog(ctx, id)
 }
 
-// Update{{.EntityPascal}} updates a {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Context, id uint, p *dto.UpdatePatch{{.EntityPascal}}Request) (resp map[string]any, err error) {
+// UpdateBlog updates a Blog.
+func (s *BlogService) UpdatePatchBlog(ctx context.Context, id uint, p *dto.UpdatePatchBlogRequest) (resp map[string]any, err error) {
 	err = s.repo.MultiTransaction(
 		s.LockForUpdate(ctx, id),
 		func(tx *gorm.DB) error {
@@ -115,7 +113,7 @@ func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Cont
 				))
 			}
 
-			return tx.Model(&model.{{.EntityPascal}}{}).
+			return tx.Model(&model.Blog{}).
 				Scopes(gormq.Equal("id", id)).
 				Updates(dbCols).Error
 		},
@@ -123,8 +121,8 @@ func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Cont
 	return
 }
 
-// Delete{{.EntityPascal}} deletes a {{.EntityPascal}} by ID.
-func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id uint) error {
+// DeleteBlog deletes a Blog by ID.
+func (s *BlogService) DeleteBlog(ctx context.Context, id uint) error {
 	err := s.repo.DeleteById(ctx, id)
 	if err != nil {
 		// Check if the error is a not found error
@@ -136,8 +134,8 @@ func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, 
 	return nil
 }
 
-// Get{{.EntityPascal}}s gets all {{.EntityPascal}}s.
-func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, query *dto.GetManyQuery) ([]dto.{{.EntityPascal}}Response, *pagi.MetaDto, error) {
+// GetBlogs gets all Blogs.
+func (s *BlogService) GetBlogs(ctx context.Context, query *dto.GetManyQuery) ([]dto.BlogResponse, *pagi.MetaDto, error) {
 	columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
 		"id":        gormq.Ignore(),
 		"createdAt": gormq.ToSnake(),
@@ -147,7 +145,7 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, qu
 		"id",
 	).Values()
 
-	resp, respMeta := pagi.PrepareResponse[dto.{{.EntityPascal}}Response](&query.QueryDto)
+	resp, respMeta := pagi.PrepareResponse[dto.BlogResponse](&query.QueryDto)
 	err := s.repo.GetManyAndCount(ctx, &resp, respMeta.TotalCount,
 		gormq.WithPageAndLimit(query.Page, query.Limit),
 		gormq.WithFilters(query.Filters, columnMap),
@@ -160,4 +158,3 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, qu
 	}
 	return resp, respMeta, nil
 }
-`

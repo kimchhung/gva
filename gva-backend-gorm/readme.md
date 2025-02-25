@@ -16,10 +16,10 @@
 
 ### Run all api modules
 
-`make api.run`
+`make api().run`
 
 ### Run specific module
 
-`make api.run.<module_name>`
+`make api().run.<module_name>`
 
-e.g. `make api.run.admin` or `make api.run.bot`
+e.g. `make api().run.admin` or `make api().run.bot`
