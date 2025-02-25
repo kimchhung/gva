@@ -61,7 +61,7 @@ func (s ConfigurationSeeder) Seed(ctx context.Context, db *gorm.DB) error {
 			Description: "backend name convention guide",
 			Type:        model.ValueTypeString,
 			Metadata:    json.MustJSON(map[string]any{"icon": "lucide:book-text", "labelEn": "Name Convention", "labelZh": "名称约定"}),
-			Value:       json.MustJSON("http://localhost:4000/admin/v1/file/docs/backend/codegen.md"),
+			Value:       json.MustJSON("http://localhost:4000/admin/v1/file/docs/backend/name-convention.md"),
 			RootId:      &document.ID,
 		}
 
@@ -71,7 +71,7 @@ func (s ConfigurationSeeder) Seed(ctx context.Context, db *gorm.DB) error {
 			Description: "backend folder structure",
 			Type:        model.ValueTypeString,
 			Metadata:    json.MustJSON(map[string]any{"icon": "lucide:book-text", "labelEn": "Codegen", "labelZh": "Codegen"}),
-			Value:       json.MustJSON("http://localhost:4000/admin/v1/file/docs/backend/name-convention.md"),
+			Value:       json.MustJSON("http://localhost:4000/admin/v1/file/docs/backend/codegen.md"),
 			RootId:      &document.ID,
 		}
 

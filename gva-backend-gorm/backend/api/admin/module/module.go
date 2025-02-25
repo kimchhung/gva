@@ -13,7 +13,6 @@ import (
 
 	"backend/api/admin/module/permission"
 
-	"backend/api/admin/module/blog"
 	"go.uber.org/fx"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )
@@ -28,7 +27,6 @@ var NewAdminModules = fx.Module("admin-module",
 	configuration.ConfigurationModule,
 	operationlog.OperationLogModule,
 
-	blog.BlogModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 	// Add Router
 	fx.Provide(
