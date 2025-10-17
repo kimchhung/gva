@@ -33,7 +33,7 @@ func NewEcho(cfg *env.Config) *echo.Echo {
 func printStartupMessage(cfg *env.Config) {
 
 	// Custom Startup Messages
-	host, port := env.ParseAddr(cfg.App.Port)
+	host, port := env.ParseAddress(cfg.App.Port)
 	if host == "" {
 		host = "http://localhost"
 	}

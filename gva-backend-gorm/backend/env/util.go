@@ -1,7 +1,9 @@
 package env
 
 import (
+	"backend/utils"
 	"fmt"
+	"reflect"
 	"sort"
 
 	"os"
@@ -65,7 +67,7 @@ func ReadEnv(filename string, path ...string) (envFile *viper.Viper, config *Con
 				envConfig.Set(newK, v)
 			}
 
-		} else if config == nil {
+		} else if utils.IsEmpty(config) {
 			return nil, nil, fmt.Errorf("config is empty, failed to read env %v", err)
 		}
 	}
@@ -79,7 +81,6 @@ func ReadEnv(filename string, path ...string) (envFile *viper.Viper, config *Con
 	if err := envConfig.Unmarshal(&config); err != nil {
 		return nil, nil, err
 	}
-
 	return envConfig, config, nil
 }
 
@@ -90,7 +91,7 @@ func ReadEnvOrGenerate() (*Config, error) {
 	}
 
 	if config.App.Env == "" {
-		fmt.Println("env not found, generating env from env/config.toml...")
+		fmt.Printf("env not found, generating env from %s/%s", envFilePath, envFileName)
 		if err := GenerateEnvFromToml(false); err != nil {
 			return nil, fmt.Errorf("GenerateEnvFromToml %v", err)
 		}
@@ -106,10 +107,7 @@ func ReadEnvOrGenerate() (*Config, error) {
 
 func GenerateEnvFromToml(overwrite bool) error {
 	_, err := os.Stat(envFileName)
-	isExist := err == nil
-	if isExist && !overwrite {
-		return nil
-	}
+	isDotEnvFileExist := err == nil
 
 	tomlFile, _, err := ReadToml(tomlFileName, tomlFilePath)
 	if err != nil {
@@ -117,12 +115,10 @@ func GenerateEnvFromToml(overwrite bool) error {
 	}
 
 	flats := flatNestMap(tomlFile.AllSettings())
-
 	keys := maps.Keys(flats)
 	sort.Strings(keys)
 
 	envString := ""
-
 	for i, envKey := range keys {
 		prefix := strings.Split(envKey, seperator)[0]
 
@@ -139,10 +135,35 @@ func GenerateEnvFromToml(overwrite bool) error {
 		}
 
 		envVal := flats[envKey]
-		envString += fmt.Sprintf("%s=%v \n", strings.ToUpper(envKey), envVal)
+		envStr := fmt.Sprintf("%v", envVal)
+
+		switch envVal.(type) {
+		case string, bool, int, int8, int16, int32, int64, float32, float64:
+		default:
+			valType := reflect.TypeOf(envVal)
+			val := reflect.ValueOf(envVal)
+
+			switch valType.Kind() {
+			case reflect.Slice:
+				sliceVal := val.Interface().([]any)
+				strSlice := make([]string, len(sliceVal))
+				for i, v := range sliceVal {
+					strSlice[i] = fmt.Sprintf("%v", v)
+				}
+				envStr = strings.Join(strSlice, ",")
+			}
+		}
+
+		envString += fmt.Sprintf("%s=%v \n", strings.ToUpper(envKey), envStr)
 	}
 
-	if err := os.WriteFile(envFileName, []byte(envString), 0644); err != nil {
+	if !isDotEnvFileExist || overwrite {
+		if err := os.WriteFile(envFileName, []byte(envString), os.ModePerm); err != nil {
+			return err
+		}
+	}
+
+	if err := os.WriteFile(envFileName+".example", []byte(envString), os.ModePerm); err != nil {
 		return err
 	}
 

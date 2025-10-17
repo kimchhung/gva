@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -175,10 +176,14 @@ func NewConfig() *Config {
 		panic(fmt.Errorf("ReadEnvOrGenerate %v", err))
 	}
 
+	if err := validator.New().Struct(config); err != nil {
+		panic(err)
+	}
+
 	return config
 }
 
-func ParseAddr(raw string) (host, port string) {
+func ParseAddress(raw string) (host, port string) {
 	if i := strings.LastIndex(raw, ":"); i != -1 {
 		return raw[:i], raw[i+1:]
 	}

@@ -17,11 +17,11 @@ key_file = "./storage/selfsigned.key"
 
 [db.mysql]
 #dns = # <username>:<password>@tcp(<host>:<port>)/<dbname>
-dsn = "root:password@tcp(localhost:3306)/gva_backend?parseTime=true"
+dsn = "root:password@tcp(db-service)/gva?parseTime=true"
 
 [db.redis]
 enable = false
-url = "rediss://foxie:foxiepw@localhost:6379"
+url = "rediss://foxie:foxiepw@cache-service"
 
 [seed]
 enable = true
@@ -30,23 +30,13 @@ enable = true
 username = "admin"
 password = "123456"
 
-[api().admin]
+[api.admin]
 enable = true
 base_path = "/admin/v1"
 
-[api().bot]
+[api.bot]
 enable = true
 base_path = "/bot/v1"
-
-[api().bot.scrap]
-proxy = "http://admin.campaign.ss.hd1.fun:24127/api/proxy/forward"
-
-[api().bot.scrap.game]
-enable = false
-
-[api().bot.scrap.article]
-enable = false
-
 
 [logger]
 time_format = "" # https://pkg.go.dev/time#pkg-constants

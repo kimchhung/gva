@@ -2,9 +2,10 @@ package logger
 
 import (
 	"backend/env"
-	"backend/internal/report"
+	"backend/internal/logger/report"
+	"context"
+
 	"runtime/debug"
-	"strings"
 
 	"github.com/tidwall/pretty"
 	"go.uber.org/zap"
@@ -72,20 +73,15 @@ func (c *Core) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 			tag = "fetal"
 		}
 
-		opts := []report.ReportOption{
+		go report.Send(context.Background(),
+			report.WithTitle(entry.Message),
 			report.WithIcon(icon),
 			report.AddTag(tag),
 			report.AddMessage("", string(PretifyZapFields(entry, fields))),
 			report.AddMessage("Stack", string(debug.Stack())),
 			report.WithUrl(c.env.Google.ChatWebhookURL),
 			report.WithMode(c.env.App.Env),
-		}
-
-		if strings.Contains(entry.LoggerName, "scrapService") {
-			opts = append(opts, report.WithScrapUrl())
-		}
-
-		go report.Send(entry.Message, opts...)
+		)
 	}
 
 	return c.Core.Write(entry, fields)

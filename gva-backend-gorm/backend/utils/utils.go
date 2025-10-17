@@ -1,12 +1,12 @@
 package utils
 
 import (
+	"backend/internal/gormq"
 	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"backend/internal/gormq"
-	"backend/internal/logger"
+
 	"backend/utils/json"
 	"reflect"
 	"strconv"
@@ -278,7 +278,6 @@ func AttemptX[T any](ctx context.Context, config *AttemptConfig[T], f func(ctx c
 func Attempts[T any](ctx context.Context, attempts int, sleep time.Duration, f func(ctx context.Context, i int) (T, error)) (result T, err error) {
 	for i := 0; i < attempts; i++ {
 		if i > 0 {
-			logger.G().Debug(fmt.Sprintf("[retry:%v] after err: %v, retrying...", i, err))
 			time.Sleep(sleep)
 		}
 

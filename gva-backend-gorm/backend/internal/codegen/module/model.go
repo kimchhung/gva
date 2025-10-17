@@ -12,7 +12,7 @@ type {{.EntityPascal}} struct {
 }
 
 func (t *{{.EntityPascal}}) TableName() string {
-	return table.Blog
+	return table.{{.EntityPascal}}
 }
 
 func (t *{{.EntityPascal}}) New{{.EntityPascal}}Model() *{{.EntityPascal}} {

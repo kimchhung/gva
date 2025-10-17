@@ -10,12 +10,12 @@ const (
 	ValueTypeInt      ValueType = "int"
 	ValueTypeFloat    ValueType = "float"
 	ValueTypeBool     ValueType = "bool"
-	ValueTypeArray    ValueType = "array"
 	ValueTypeLink     ValueType = "link"
 	ValueTypeDate     ValueType = "date"
 	ValueTypeDateTime ValueType = "datetime"
 	ValueTypeJSON     ValueType = "json"
 	ValueTypeGroup    ValueType = "group"
+	ValueTypeArray    ValueType = "array"
 	ValueTypeObject   ValueType = "object"
 )
 
