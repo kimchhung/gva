@@ -84,23 +84,13 @@ func ReadEnv(filename string, path ...string) (envFile *viper.Viper, config *Con
 	return envConfig, config, nil
 }
 
-func ReadEnvOrGenerate() (*Config, error) {
+func ReadEnvFromFile() (*Config, error) {
 	_, config, err := ReadEnv(envFilePath, envFileName)
 	if err != nil {
 		return nil, err
 	}
 
-	if config.App.Env == "" {
-		fmt.Printf("env not found, generating env from %s/%s", envFilePath, envFileName)
-		if err := GenerateEnvFromToml(false); err != nil {
-			return nil, fmt.Errorf("GenerateEnvFromToml %v", err)
-		}
 
-		_, config, err = ReadEnv(envFilePath, envFileName)
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	return config, nil
 }
@@ -161,12 +151,19 @@ func GenerateEnvFromToml(overwrite bool) error {
 		if err := os.WriteFile(envFileName, []byte(envString), os.ModePerm); err != nil {
 			return err
 		}
+		fmt.Println("env/config.toml -> .env : file generated")
+	}else{
+		fmt.Println("env/config.toml -> .env : file already exists, skipping generation")
 	}
 
-	if err := os.WriteFile(envFileName+".example", []byte(envString), os.ModePerm); err != nil {
+
+	donttouch:= "# DO NOT TOUCH THIS FILE, please change it in env/config.toml then run `make env.create`\n"
+
+	if err := os.WriteFile(envFileName+".example", []byte(donttouch+envString), os.ModePerm); err != nil {
 		return err
 	}
 
+	fmt.Println("env/config.toml -> .env.example : file generated")
 	return nil
 }
 

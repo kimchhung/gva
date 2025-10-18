@@ -5,7 +5,7 @@ import (
 
 	appctx "backend/app/common/context"
 	"backend/app/common/model"
-	"backend/utils/validator"
+	"backend/internal/bootstrap/validator"
 )
 
 // use as middleware Validate(BodyParser(&body),ParamsParser(out))

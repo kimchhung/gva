@@ -10,6 +10,8 @@ import (
 	"backend/env"
 	"backend/internal/bootstrap"
 	"backend/internal/bootstrap/database"
+	"backend/internal/ctxutil"
+	"backend/internal/logger"
 
 	"github.com/spf13/cobra"
 )
@@ -26,10 +28,10 @@ var seedCmd = &cobra.Command{
 		db.Connect()
 		defer db.Close()
 
-		// dependencies for seeding
-		ctx = context.WithValue(ctx, env.Config{}, cfg)
-		ctx = context.WithValue(ctx, service.PasswordService{}, service.NewPasswordService(cfg))
+		logger.Log(cfg)
 
+		// dependencies for seeding
+		ctx = ctxutil.Add(ctx, cfg, service.NewPasswordService(cfg))
 		seeders := append(seeds.AllSeeders(), permission.AllSeeders()...)
 		db.SeedModels(ctx, seeders...)
 		log.Info("Run seed is completed")

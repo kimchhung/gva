@@ -15,9 +15,8 @@ func Locale(locale LocaleType) LocaleOption {
 // get prefered language from request context
 func ForContext(ctx context.Context) LocaleOption {
 	return func(c *Config) {
-		if locale, ok := ctx.Value(langKey{}).(string); ok {
-			c.locale = LocaleType(locale)
-		}
+		locale := FromContext(ctx)
+		c.locale = locale
 	}
 }
 

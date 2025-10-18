@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"reflect"
+	"slices"
+	"strings"
 
 	"backend/env"
 
@@ -20,8 +22,8 @@ type TxOperaton func(tx *gorm.DB) error
 
 type Database struct {
 	*gorm.DB
-	Cfg *env.Config
-	Log *zap.Logger
+	cfg *env.Config
+	log *zap.Logger
 }
 
 type Seeder interface {
@@ -32,8 +34,8 @@ type Seeder interface {
 
 func NewDatabase(cfg *env.Config, log *zap.Logger) *Database {
 	db := &Database{
-		Cfg: cfg,
-		Log: log,
+		cfg: cfg,
+		log: log,
 		DB:  new(gorm.DB),
 	}
 
@@ -41,9 +43,9 @@ func NewDatabase(cfg *env.Config, log *zap.Logger) *Database {
 }
 
 func (db *Database) Connect() error {
-	drv, err := sql.Open("mysql", db.Cfg.DB.Mysql.DSN)
+	drv, err := sql.Open("mysql", db.cfg.DB.Mysql.DSN)
 	if err != nil {
-		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.Cfg.DB.Mysql.DSN, err)
+		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.cfg.DB.Mysql.DSN, err)
 	}
 
 	gormdb, err := gorm.Open(mysql.New(mysql.Config{
@@ -56,12 +58,12 @@ func (db *Database) Connect() error {
 	}
 
 	*db.DB = *gormdb
-	db.Log.Info("database is connected")
+	db.log.Info("database is connected")
 	return nil
 }
 
 func (db *Database) Close() error {
-	defer db.Log.Info("Database connection is closed")
+	defer db.log.Info("Database connection is closed")
 	sqlDB, err := db.DB.DB()
 	if err != nil {
 		return err
@@ -87,16 +89,23 @@ func (db *Database) MultiTransaction(fns ...TxOperaton) error {
 }
 
 func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
-	if !db.Cfg.Seed.Enable {
+	if !db.cfg.Seed.Enable {
 		return
 	}
 
 	for _, v := range seeder {
 		seedType := reflect.TypeOf(v).Elem().Name()
-		seedlog := db.Log.With(
+		seedlog := db.log.With(
 			zap.String("name", v.Name()),
 			zap.String("type", seedType),
 		)
+
+		if slices.ContainsFunc(db.cfg.Seed.BlacklistTypes, func(t string) bool {
+			return strings.Contains((strings.ToLower(t)), strings.ToLower(seedType))
+		}) {
+			seedlog.Info("in blacklist. Skipping!")
+			continue
+		}
 
 		count, err := v.Count(ctx, db.DB)
 
@@ -118,5 +127,5 @@ func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
 		seedlog.Info("Table has seeded successfully.")
 	}
 
-	db.Log.Info("Seeding was completed!")
+	db.log.Info("Seeding was completed!")
 }

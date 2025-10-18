@@ -63,7 +63,11 @@ type (
 		}
 	}
 	seed struct {
-		Enable     bool
+		// enable true, always run on app start
+		Enable bool
+
+		BlacklistTypes []string `mapstructure:"blacklist_types"`
+
 		SuperAdmin struct {
 			Username string
 			Password string
@@ -107,6 +111,9 @@ type (
 			Max               int
 			ExpirationSeconds int64 `mapstructure:"expiration_seconds"`
 		}
+		Translation struct {
+			Enable bool
+		}
 	}
 	jwt struct {
 		Secret string
@@ -130,6 +137,8 @@ type (
 		ChatWebhookURL string `mapstructure:"chat_webhook_url"`
 	}
 )
+
+type CtxKey struct{}
 
 type Config struct {
 	API        api
@@ -171,13 +180,13 @@ func ParsePath(path string) (*Config, error) {
 
 func NewConfig() *Config {
 	// generate .env if not exist
-	config, err := ReadEnvOrGenerate()
+	config, err := ReadEnvFromFile()
 	if err != nil {
-		panic(fmt.Errorf("ReadEnvOrGenerate %v", err))
+		panic(fmt.Errorf("false to read env %v", err))
 	}
 
 	if err := validator.New().Struct(config); err != nil {
-		panic(err)
+		panic(fmt.Errorf("false to validate env validator: %v", err))
 	}
 
 	return config

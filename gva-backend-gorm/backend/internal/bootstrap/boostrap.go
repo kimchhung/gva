@@ -2,19 +2,18 @@ package bootstrap
 
 import (
 	"context"
-	"sort"
-	"strings"
 	"time"
 
+	"backend/app/common/permission"
+	"backend/app/common/seeds"
+	"backend/app/common/service"
 	"backend/app/middleware"
 	"backend/app/router"
 	"backend/env"
 	"backend/internal/bootstrap/database"
-	"backend/internal/lang"
+	"backend/internal/ctxutil"
+
 	"backend/internal/logger"
-	"backend/internal/treeprint"
-	"backend/utils/color"
-	"backend/utils/validator"
 
 	"github.com/labstack/echo/v4"
 
@@ -59,63 +58,6 @@ func NewBootstrap(
 	}
 }
 
-// notify when server started
-func (b *Bootstrap) Started() (wait, done func()) {
-	doneCh := make(chan struct{})
-	b.startedListeners = append(b.startedListeners, doneCh)
-
-	wait = func() {
-		<-doneCh
-	}
-
-	done = func() {
-		doneCh <- struct{}{}
-	}
-
-	return wait, done
-}
-
-// notify when server is shuting down
-func (b *Bootstrap) ShuttingDown() (wait, done func()) {
-	doneCh := make(chan struct{})
-	b.startedListeners = append(b.shutdownListerners, doneCh)
-
-	wait = func() {
-		<-doneCh
-	}
-
-	done = func() {
-		doneCh <- struct{}{}
-	}
-
-	return wait, done
-}
-
-func (b *Bootstrap) notifyShuttingDown() {
-	resps := make([]chan struct{}, len(b.shutdownListerners))
-	for i, req := range b.shutdownListerners {
-		// notify shutdown
-		req <- struct{}{}
-		resps[i] = req
-	}
-
-	for _, resp := range resps {
-		<-resp
-		close(resp)
-	}
-}
-
-func (b *Bootstrap) notifyStarted() {
-	for _, req := range b.startedListeners {
-		// notify server started
-		req <- struct{}{}
-
-		// wait process is done
-		<-req
-		close(req)
-	}
-}
-
 func (b *Bootstrap) setup() {
 	b.lc.Append(
 		fx.StartStopHook(
@@ -130,18 +72,11 @@ func (b *Bootstrap) start(ctx context.Context) {
 		logger.Log(b.cfg)
 	}
 
-	// Initailize validator and translator
-	if err := lang.InitializeTranslator(); err != nil {
-		b.log.Panic("InitializeTranslator", zap.Error(err))
-	}
-
-	if err := validator.InitializeValidator(); err != nil {
-		b.log.Panic("InitializeValidator", zap.Error(err))
-	}
-
 	if err := b.db.Connect(); err != nil {
 		b.log.Panic("b.db.Connect", zap.Error(err))
 	}
+
+	b.RunSeed(ctx)
 
 	if err := b.redis.Connect(); err != nil {
 		b.log.Panic("b.redis.Connect", zap.Error(err))
@@ -217,68 +152,13 @@ func (b *Bootstrap) stop(ctx context.Context) {
 	b.log.Info("\u001b[96mSee you again👋\u001b[0m")
 }
 
-func printRoutes(routes []*echo.Route) {
-	tree := treeprint.New("api")
-	N := 4
-
-	sort.Slice(routes, func(i, j int) bool {
-		return len(strings.Split(routes[i].Path, "")) > len(strings.Split(routes[j].Path, ""))
-	})
-
-	maxLenth := calculateMaxLength(routes, N)
-	for _, r := range routes {
-		if r.Method == "echo_route_not_found" {
-			continue
-		}
-
-		paths := []any{}
-		for _, str := range strings.SplitAfterN(r.Path, "/", N) {
-			str := strings.TrimSuffix(str, "/")
-			if str == "" {
-				continue
-			}
-			paths = append(paths, strings.TrimSuffix(str, "/"))
-		}
-		if len(paths) > N-2 {
-			paths[N-2] = strings.ReplaceAll(strings.Split(paths[N-2].(string), "/")[0], "/", "")
-		}
-		httpPath := color.MethodColor(r.Method) + " " + r.Path
-		space := calculateDynamicSpace(httpPath, maxLenth)
-		paths = append(paths, httpPath+space+color.Cyan(r.Name))
-		tree.AddPath(paths...)
+func (b *Bootstrap) RunSeed(ctx context.Context) {
+	if !b.cfg.Seed.Enable {
+		return
 	}
 
-	treeprint.Print(tree)
-}
-
-func calculateMaxLength(routes []*echo.Route, N int) int {
-	maxLength := 0
-
-	for _, r := range routes {
-		paths := []any{}
-		for _, str := range strings.SplitAfterN(r.Path, "/", N) {
-			paths = append(paths, strings.TrimSuffix(str, "/"))
-		}
-
-		length := 0
-		for _, str := range paths {
-			strs := strings.ReplaceAll(str.(string), "/", "")
-			length += len(strs)
-		}
-
-		length += len(color.MethodColor(r.Method))
-		if length > maxLength {
-			maxLength = length
-		}
-	}
-
-	return maxLength
-}
-
-func calculateDynamicSpace(path string, maxLength int) string {
-	spaceNeeded := maxLength - len(path)
-	if spaceNeeded <= 0 {
-		spaceNeeded = 1
-	}
-	return strings.Repeat(" ", spaceNeeded)
+	// dependencies for seeding
+	ctx = ctxutil.Add(ctx, b.cfg, service.NewPasswordService(b.cfg))
+	seeders := append(seeds.AllSeeders(), permission.AllSeeders()...)
+	b.db.SeedModels(ctx, seeders...)
 }

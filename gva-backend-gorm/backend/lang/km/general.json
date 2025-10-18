@@ -1,0 +1,107 @@
+[
+  {
+    "locale": "km",
+    "key": "unknown_error",
+    "trans": "កំបរិនស្គាល់"
+  },
+  {
+    "locale": "km",
+    "key": "validation_error",
+    "trans": "កំនស្គាលបរិ"
+  },
+  {
+    "locale": "km",
+    "key": "unauthorized",
+    "trans": "ម្របរិនស្គាល"
+  },
+  {
+    "locale": "km",
+    "key": "login_error",
+    "trans": "កំបរិនស្គាល"
+  },
+  {
+    "locale": "km",
+    "key": "unauthenticated",
+    "trans": "ម្របរិនស្គាល"
+  },
+  {
+    "locale": "km",
+    "key": "access_denied",
+    "trans": "ម្របរិនស្គាល"
+  },
+  {
+    "locale": "km",
+    "key": "record_not_found",
+    "trans": "កំបរិនស្គាលមិ"
+  },
+  {
+    "locale": "km",
+    "key": "invalid_otp_code",
+    "trans": "កំបរិទបរបបបយ"
+  },
+  {
+    "locale": "km",
+    "key": "not_found",
+    "trans": "មិនស្គាល"
+  },
+  {
+    "locale": "km",
+    "key": "invalid_token",
+    "trans": "ទបរិទបរបបប"
+  },
+  {
+    "locale": "km",
+    "key": "bad_request",
+    "trans": "កំបរិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "token_expired",
+    "trans": "ទបរិទបរបប"
+  },
+  {
+    "locale": "km",
+    "key": "content_has_been_removed",
+    "trans": "កំបរិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "status_has_been_disabled",
+    "trans": "ស្ថិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "too_many_retries",
+    "trans": "ម្របរិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "admin_whitelist_invalid",
+    "trans": "IP Admin Whitelist មិ"
+  },
+  {
+    "locale": "km",
+    "key": "invalid_ip",
+    "trans": "IP មិ"
+  },
+  {
+    "locale": "km",
+    "key": "key_already_exists",
+    "trans": "កំបរិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "company_already_exists",
+    "trans": "កំបរិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "duplicated_record",
+    "trans": "កំបរិទាប"
+  },
+  {
+    "locale": "km",
+    "key": "invalid_credentials",
+    "trans": "ទបរិទាប"
+  }
+]

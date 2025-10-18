@@ -2,14 +2,12 @@ package apperror
 
 import (
 	"strings"
-
-	"backend/internal/lang"
 )
 
 type Error struct {
-	HttpCode  int
-	ErrorCode int
-	Message   string
+	HttpCode  int    `json:"httpCode"`
+	ErrorCode int    `json:"errorCode"`
+	Message   string `json:"message"`
 
 	subErrs            []error
 	isDisableTranslate bool
@@ -21,6 +19,22 @@ type Option func(*Error)
 const (
 	seperator = ", "
 )
+
+func (e *Error) Update(updators ...Option) *Error {
+	for _, updator := range updators {
+		updator(e)
+	}
+	return e
+}
+
+func (e *Error) IsPublic() bool {
+	return e.isPublic
+}
+
+// same as update but always new instance
+func (e *Error) Copy(updators ...Option) *Error {
+	return NewError(e, updators...)
+}
 
 func (e *Error) Error() string {
 	msgs := make([]string, 0)
@@ -39,67 +53,34 @@ func (e Error) IsDisableTranslate() bool {
 	return e.isDisableTranslate
 }
 
-func (e Error) IsPublic() bool {
-	return e.isPublic
-}
-
-func (e *Error) Join(err error) *Error {
-	e.subErrs = append(e.subErrs, err)
-	return e
-}
-
 // overwrite original message with raw message
 func Join(err error) Option {
 	return func(_err *Error) {
-		_err.Join(err)
+		_err.subErrs = append(_err.subErrs, err)
 	}
 }
 
 // overwrite original message with raw message
-func Message(text string) Option {
+func WithMessage(text string) Option {
 	return func(err *Error) {
 		err.Message = text
 	}
 }
 
 // overwrite original message with raw message
-func MessageFunc(fn func(message string) string) Option {
+func WithMessageFunc(fn func(prev string) string) Option {
 	return func(err *Error) {
 		err.Message = fn(err.Message)
 	}
 }
 
-// Add prefix to original message
-func Prefix(localeOpt lang.LocaleOption, prefix string) Option {
+func WithTranslator(fn func(prev string) string) Option {
 	return func(err *Error) {
-		if localeOpt == nil {
-			err.Message = prefix + err.Message
+		if err.isDisableTranslate {
 			return
 		}
-
-		translated := lang.T(localeOpt, err.Message)
+		err.Message = fn(err.Message)
 		err.isDisableTranslate = true
-		if !lang.Is(localeOpt, lang.LocaleZH) {
-			prefix += " "
-		}
-		err.Message = prefix + translated
-	}
-}
-
-// Add sufic to original message
-func Suffix(localeOpt lang.LocaleOption, suffic string) Option {
-	return func(err *Error) {
-		if localeOpt == nil {
-			err.Message = err.Message + suffic
-			return
-		}
-
-		translated := lang.T(localeOpt, err.Message)
-		err.isDisableTranslate = true
-		if !lang.Is(localeOpt, lang.LocaleZH) {
-			suffic = " " + suffic
-		}
-		err.Message = translated + suffic
 	}
 }
 
@@ -109,10 +90,9 @@ by default error will be translated when response
 
 	NewError(err,DisableTranslate()) // to disable translation when response
 */
-func NewError(err *Error, opt Option, opts ...Option) *Error {
+func NewError(err *Error, opts ...Option) *Error {
 	nErr := new(Error)
 	*nErr = *err
-	opt(nErr)
 
 	for _, op := range opts {
 		op(nErr)
@@ -121,8 +101,7 @@ func NewError(err *Error, opt Option, opts ...Option) *Error {
 	return nErr
 }
 
-// to disable translation
-func DisableTranslate() Option {
+func WithDisableTranslate() Option {
 	return func(err *Error) {
 		err.isDisableTranslate = true
 	}

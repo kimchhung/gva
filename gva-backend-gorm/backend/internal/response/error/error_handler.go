@@ -1,29 +1,31 @@
 package rerror
 
 import (
+	"context"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 
 	apperror "backend/app/common/error"
-	in_validator "backend/utils/validator"
+	in_validator "backend/internal/bootstrap/validator"
 
-	"backend/internal/lang"
+	"backend/internal/bootstrap/lang"
 	"backend/internal/response"
 )
 
 // Default error handler
-func ParseError(c echo.Context, err error) (*apperror.Error, error) {
+func SanitizeError(ctx context.Context, err error) *apperror.Error {
 	var resErr *apperror.Error
 
 	switch e := err.(type) {
 	case validator.ValidationErrors:
 		// error from request input validation
-		t := lang.GetTranslator(lang.ForContext(c.Request().Context()))
-
+		t := lang.DefaultTranslator().GetTranslator(lang.ForContext(ctx))
 		translatedMsg := in_validator.RemoveTopStruct(e.Translate(t))
+
 		resErr = apperror.NewError(
 			apperror.ErrValidationError,
-			apperror.Message(translatedMsg),
+			apperror.WithMessage(translatedMsg),
 		)
 
 	case *apperror.Error:
@@ -31,9 +33,9 @@ func ParseError(c echo.Context, err error) (*apperror.Error, error) {
 		if e.IsDisableTranslate() {
 			resErr = e
 		} else {
-			resErr = apperror.NewError(e, apperror.MessageFunc(
+			resErr = apperror.NewError(e, apperror.WithMessageFunc(
 				func(message string) string {
-					return lang.T(lang.ForContext(c.Request().Context()), message)
+					return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
 				},
 			))
 		}
@@ -42,9 +44,9 @@ func ParseError(c echo.Context, err error) (*apperror.Error, error) {
 		// wrong routing .....
 		resErr = apperror.NewError(
 			apperror.ErrBadRequest,
-			apperror.MessageFunc(
+			apperror.WithMessageFunc(
 				func(message string) string {
-					return lang.T(lang.ForContext(c.Request().Context()), message)
+					return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
 				},
 			),
 			apperror.Join(err),
@@ -57,13 +59,19 @@ func ParseError(c echo.Context, err error) (*apperror.Error, error) {
 		// StackHandler will invoke too
 		resErr = apperror.NewError(
 			apperror.ErrUnknownError,
-			apperror.MessageFunc(
+			apperror.WithMessageFunc(
 				func(message string) string {
-					return lang.T(lang.ForContext(c.Request().Context()), message)
+					return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
 				},
 			),
 		)
 	}
 
+	return resErr
+}
+
+// Default error handler
+func ParseError(c echo.Context, err error) (*apperror.Error, error) {
+	resErr := SanitizeError(c.Request().Context(), err)
 	return resErr, response.New(response.Error(resErr)).Parse(c)
 }

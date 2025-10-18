@@ -13,8 +13,7 @@ var makeEnvCMD = &cobra.Command{
 	Short: "Generate .env from env/config.toml",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		_, err := env.ReadEnvOrGenerate()
-		if err != nil {
+		if err := env.GenerateEnvFromToml(false);err != nil {
 			panic(fmt.Errorf("ReadEnvOrGenerate %v", err))
 		}
 	},

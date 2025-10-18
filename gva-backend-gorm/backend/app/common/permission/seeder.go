@@ -1,12 +1,21 @@
 package permission
 
 import (
-	"context"
 	"backend/app/common/model"
 	"backend/internal/bootstrap/database"
+	"context"
+	"time"
 
 	"gorm.io/gorm"
 )
+
+var (
+	allSeeders []database.Seeder
+)
+
+func AllSeeders() []database.Seeder {
+	return append([]database.Seeder{}, allSeeders...)
+}
 
 type PermissionSeeder struct {
 	group  TPermissionGroup
@@ -36,4 +45,25 @@ func (seeder PermissionSeeder) Count(ctx context.Context, db *gorm.DB) (int, err
 
 func (seeder PermissionSeeder) Seed(ctx context.Context, db *gorm.DB) error {
 	return db.Model(model.Permission{}).Create(createBulkPermissionDto(seeder.scopes...)).Error
+}
+
+func createBulkPermissionDto(scopes ...permissionScope) []*model.Permission {
+	bulks := make([]*model.Permission, len(scopes))
+
+	for i, scope := range scopes {
+		group, _, err := scope.Value()
+		if err != nil {
+			panic(err)
+		}
+
+		bulks[i] = &model.Permission{
+			CreatedAt: time.Now(),
+			Group:     string(group),
+			Scope:     string(scope),
+			Order:     i,
+			Name:      scope.Name(),
+		}
+	}
+
+	return bulks
 }

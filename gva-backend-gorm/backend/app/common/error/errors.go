@@ -34,9 +34,12 @@ func newError(httpCode int, errorCode int, message string) *Error {
 }
 
 func newPublicError(httpCode int, errorCode int, message string) *Error {
-	err := newError(httpCode, errorCode, message)
-	err.isPublic = true
-	return err
+	return &Error{
+		HttpCode:  httpCode,
+		ErrorCode: errorCode,
+		Message:   message,
+		isPublic:  true,
+	}
 }
 
 func ErrorByCode(code int) (*Error, error) {

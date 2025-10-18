@@ -5,6 +5,7 @@ import (
 	"backend/app/common/service"
 	"backend/env"
 	"backend/internal/bootstrap/database"
+	"backend/internal/ctxutil"
 	"context"
 	"fmt"
 
@@ -23,7 +24,7 @@ func (s SuperAdminSeeder) Name() string {
 }
 
 func (s SuperAdminSeeder) Count(ctx context.Context, db *gorm.DB) (int, error) {
-	cfg := ctx.Value(env.Config{}).(*env.Config)
+	cfg := ctxutil.MustValue[*env.Config](ctx)
 
 	var total int64
 	if err := db.Model(model.Admin{}).Where("username = ?", cfg.Seed.SuperAdmin.Username).Count(&total).Error; err != nil {
@@ -34,8 +35,8 @@ func (s SuperAdminSeeder) Count(ctx context.Context, db *gorm.DB) (int, error) {
 }
 
 func (s SuperAdminSeeder) Seed(ctx context.Context, db *gorm.DB) error {
-	cfg := ctx.Value(env.Config{}).(*env.Config)
-	password_ := ctx.Value(service.PasswordService{}).(*service.PasswordService)
+	cfg := ctxutil.MustValue[*env.Config](ctx)
+	password_ := ctxutil.MustValue[*service.PasswordService](ctx)
 
 	db.Transaction(func(tx *gorm.DB) error {
 		adminRole := &model.AdminRole{
