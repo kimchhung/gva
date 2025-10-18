@@ -82,7 +82,7 @@ export async function javascript(): Promise<Linter.Config[]> {
         'no-implied-eval': 'error',
         'no-import-assign': 'error',
         'no-invalid-regexp': 'error',
-        'no-irregular-whitespace': 'error',
+        'no-irregular-whitespace': 'off',
         'no-iterator': 'error',
         'no-labels': ['error', { allowLoop: false, allowSwitch: false }],
         'no-lone-blocks': 'error',
