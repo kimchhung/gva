@@ -32,6 +32,7 @@ function loadLocalesMap(modules: Record<string, () => Promise<unknown>>) {
 
   for (const [path, loadLocale] of Object.entries(modules)) {
     const key = path.match(/([\w-]*)\.(yaml|yml|json)/)?.[1];
+
     if (key) {
       localesMap[key] = loadLocale as ImportLocaleFn;
     }
@@ -51,7 +52,7 @@ function setI18nLanguage(locale: Locale) {
 }
 
 async function setupI18n(app: App, options: LocaleSetupOptions = {}) {
-  const { defaultLocale = 'zh-CN' } = options;
+  const { defaultLocale = 'en-US' } = options;
   // app可以自行扩展一些第三方库和组件库的国际化
   loadMessages = options.loadMessages || (async () => ({}));
   app.use(i18n);

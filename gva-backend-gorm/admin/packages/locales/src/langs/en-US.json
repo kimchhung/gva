@@ -6,19 +6,6 @@
       "codeLogin": "Code Login",
       "qrcodeLogin": "Qr Code Login",
       "forgetPassword": "Forget Password"
-    },
-    "dashboard": {
-      "title": "Dashboard",
-      "analytics": "Analytics",
-      "workspace": "Workspace"
-    },
-    "vben": {
-      "title": "Project",
-      "about": "About",
-      "document": "Document",
-      "antdv": "Ant Design Vue Version",
-      "naive-ui": "Naive UI Version",
-      "element-plus": "Element Plus Version"
     }
   },
   "common": {

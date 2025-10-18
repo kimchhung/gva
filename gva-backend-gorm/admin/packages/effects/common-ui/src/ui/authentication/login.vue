@@ -90,7 +90,6 @@ function handleSubmit() {
         <span>
           {{ title || `${$t('authentication.welcomeBack')}` }}
         </span>
-        <div class="duration-3000 animate-spin">{{ '🎲' }}</div>
       </div>
     </Title>
 

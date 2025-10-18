@@ -1,0 +1,239 @@
+{
+  "validator": {
+    "error": {
+      "maxLength": "ប្រវែងមិនអាចលើស {max} តួអក្សរបានទេ",
+      "required": "{field} គឺជាផ្នែកប្ដូរទេ!",
+      "email": "អ៊ីមែលមិនត្រឹមត្រូវ!",
+      "phone": "លេខទូរស័ព្ទមិនត្រឹមត្រូវ!",
+      "lengthRange": "ប្រវែងត្រូវនៅក្នុងចន្លោះ {min} និង {max}!",
+      "noSpace": "វាលមិនអាចមានចន្លោះខ្លះៗ!",
+      "noSpecialCharacters": "វាលមានតួអក្សរពិសេស: {specialCharactors}!",
+      "pattern": "ទ្រង់ទ្រាយមិនត្រឹមត្រូវ",
+      "minMaxNumber": "លេខត្រូវនៅចន្លោះ {min} និង {max}!",
+      "noNumber": "វាលមិនអាចមានលេខ!",
+      "noEmpty": "វាលមិនអាចទទេ!",
+      "noLeadingSpace": "វាលមិនអាចមានចន្លោះដើម!",
+      "noMultipleSpaces": "វាលមិនអាចមានចន្លោះជាប់ៗគ្នាច្រើនលើស!",
+      "imageSizeExeeded": "ទំហំរូបភាពលើស {size}MB!"
+    }
+  },
+  "common": {
+    "display": "បង្ហាញ",
+    "yes": "បាទ/ចាស",
+    "no": "ទេ",
+    "ok": "យល់ព្រម",
+    "close": "បិទ",
+    "cancel": "បោះបង់",
+    "confirm": "បញ្ជាក់",
+    "Accept": "ទទូល",
+    "detail": "ព័ត៌មានលំអិត",
+    "view": "មើល",
+    "add": "បន្ថែម {name}",
+    "edit": "កែប្រែរ {name}",
+    "delete": "លុប",
+    "save": "រក្សាទុក",
+    "export": "នាំចេញ",
+    "username": "ឈ្មោះអ្នកប្រើ",
+    "copied": "បានចម្លង \"{value}\"",
+    "reset": "កំណត់ឡើងវិញ",
+    "startDate": "ថ្ងៃចាប់ផ្តើម",
+    "endDate": "ថ្ងៃបញ្ចប់",
+    "name": "ឈ្មោះ",
+    "status": "ស្ថានភាព",
+    "type": "ប្រភេទ",
+    "created_at": "បានបង្កើតនៅ",
+    "operation": "ប្រតិបត្តិការ",
+    "search": "ស្វែងរក",
+    "sort": "ចាត់តម្រៀប",
+    "filter": "ច្រោះ",
+    "text": "អត្ថបទ",
+    "active": "សកម្ម",
+    "inactive": "មិនសកម្ម",
+    "id": "ID",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "createdBy": "បានបង្កើតដោយ",
+    "action": "សកម្មភាព",
+    "description": "ការពិពណ៌នា",
+    "today": "ថ្ងៃនេះ",
+    "yesterday": "ម្សិលមិញ",
+    "last7Days": "7 ថ្ងៃចុងក្រោយ",
+    "last5Minutes": "5 នាទីចុងក្រោយ",
+    "last30Minutes": "30 នាទីចុងក្រោយ",
+    "last14Days": "14 ថ្ងៃចុងក្រោយ",
+    "last30Days": "30 ថ្ងៃចុងក្រោយ",
+    "last90Days": "90 ថ្ងៃចុងក្រោយ",
+    "order": "លំដាប់",
+    "icon": "រូបសញ្ញា",
+    "roles": "តួនាទី",
+    "create": "បង្កើត {name}",
+    "password": "ពាក្យសម្ងាត់",
+    "confirmation": "តើ​អ្នក​ប្រាកដទេ?",
+    "user": "អ្នកប្រើ",
+    "title": "ចំណងជើង",
+    "details": "ព័ត៌មានលំអិត",
+    "picture": "រូបភាព",
+    "tags": "ស្លាក",
+    "enable": "បើក",
+    "disable": "បិទ",
+    "phone": "ទូរស័ព្ទ",
+    "nameId": "NameID",
+    "config": "ការកំណត់",
+    "thumbnail": "រូបតូច",
+    "restart": "ចាប់ផ្តើមឡើងវិញ",
+    "url": "URL",
+    "timezone": "ម៉ោងតំបន់",
+    "value": "តម្លៃ",
+    "group": "ក្រុម",
+    "dataTypes": {
+      "title": "ប្រភេទទិន្នន័យ",
+      "group": "ក្រុម",
+      "string": "ខ្សែអក្សរ",
+      "textarea": "តំបន់អត្ថបទធំ",
+      "number": "លេខ",
+      "boolean": "តម្លៃពិត/មិនពិត",
+      "array": "អារេ",
+      "json": "JSON",
+      "date": "ថ្ងៃខែឆ្នាំ",
+      "dateRange": "ជួបប្រទះថ្ងៃខែឆ្នាំ",
+      "image": "រូបភាព",
+      "multiImage": "រូបភាពច្រើន",
+      "object": "វត្ថុ"
+    },
+    "collapseAll": "បង្រួមទាំងអស់",
+    "expandAll": "បង្កើនទាំងអស់",
+    "redirectUrl": "URL អញ្ជើញផ្ទេរ",
+    "addImage": "បន្ថែមរូបភាព",
+    "date": "ថ្ងៃខែឆ្នាំ",
+    "dateRange": "ជួបប្រទះថ្ងៃខែឆ្នាំ",
+    "paginatePage": "{num} / ទំព័រ",
+    "preview": "미ើលទិដ្ឋភាពមុន",
+    "success": "ជោគជ័យ",
+    "failed": "បរាជ័យ",
+    "intervalScheduleText": "រៀងរាល់ {second} វិនាទី {startTime}-{endTime}",
+    "userAgent": "ភ្នាក់ងារអ្នកប្រើ",
+    "pending": "កំពុងរងចាំ",
+    "metadata": "មេតាឌាតា",
+    "update": "បន្ទាន់សម័យ"
+  },
+  "message": {
+    "updateSuccess": "ធ្វើបច្ចុប្បន្នភាព {name} បានជោគជ័យ",
+    "createSuccess": "បង្កើតបានជោគជ័យ",
+    "deleteSuccess": "លុបបានជោគជ័យ",
+    "confirmDelete": "តើ​អ្នក​ប្រាកដថាចង់លុបនេះមែនទេ?"
+  },
+  "form": {
+    "input": {
+      "placeholder": "សូមបញ្ចូល {field}"
+    }
+  },
+  "auth": {
+    "currentIP": "IP បច្ចុប្បន្នក្នុងពេលនេះ"
+  },
+  "menu": {
+    "title": "មេនុយ",
+    "management": {
+      "title": "ទូទៅ"
+    },
+    "dashboard": {
+      "title": "ផ្ទាំងព័ត៌មាន"
+    },
+    "permissions": {
+      "title": "សិទ្ធិ"
+    },
+    "system": {
+      "title": "ប្រព័ន្ធ"
+    },
+    "document": {
+      "title": "ឯកសារ"
+    }
+  },
+  "page": {
+    "document": {
+      "title": "ឯកសារ"
+    },
+    "admin": {
+      "title": "អ្នកគ្រប់គ្រង",
+      "users": {
+        "title": "អ្នកប្រើ",
+        "form": {
+          "ip-whitelist": "បញ្ចីសណ្ឋាន IP អនុញ្ញាត",
+          "reset-password": "កំណត់ពាក្យសម្ងាត់ឡើងវិញ",
+          "totp": "កូដផ្ទៀងផ្ទាត់",
+          "totpAlert": "សូមបញ្ចូលកូដផ្ទៀងផ្ទាត់របស់អ្នកដើម្បីធ្វើបច្ចុប្បន្នភាពអ្នកប្រើនេះ។ បន្ទាប់ពីបញ្ចូល នឹងកំណត់កូនសោសម្ងាត់ថ្មីសម្រាប់អ្នកប្រើនេះ។",
+          "downloadQR": "ទាញយក QRCode",
+          "totpUpdated": "សូម​ប្រើ កម្មវិធីអត្តសញ្ញាណដើម្បីស្កេន QR នេះ ឬបញ្ចូលកូដនៅខាងក្រោម។",
+          "lastLoginAt": "ចូលចុងក្រោយនៅថ្ងៃ",
+          "lastLoginRegion": "តំបន់ចូលចុងក្រោយ",
+          "lastLoginIP": "IP ចូលចុងក្រោយ"
+        }
+      },
+      "roles": {
+        "title": "តួនាទី",
+        "form": {
+          "permissions": "សិទ្ធិ"
+        }
+      },
+      "permissions": {
+        "title": "សិទ្ធិ"
+      }
+    },
+    "system": {
+      "configurations": {
+        "singular": "ការកំណត់",
+        "title": "ការកំណត់",
+        "description": "ការពិពណ៌នា"
+      },
+      "operationLog": {
+        "title": "កំណត់ហេតុប្រតិបត្តិការណ៍",
+        "createdAt": "បានធ្វើនៅ",
+        "operator": "អ្នកប្រតិបត្តិការ",
+        "ip": "IP",
+        "latency": "ពន្យារពេល",
+        "scope": "វិសាលភាព",
+        "statusCode": "លេខស្ថានភាព",
+        "message": "សារ",
+        "method": "វិធីសាស្ត្រ",
+        "path": "ផ្លូវ",
+        "params": "ប៉ារ៉ាមែត្រ",
+        "error": "កំហុស"
+      }
+    },
+    "dashboard": {
+      "analyse": {
+        "requestSuccessRate": "អត្រា​សំណើ API ដែលជោគជ័យ",
+        "totalRequest": "ចំនួនសំណើរទាំងអស់​របស់ API",
+        "totalVisit": "ចំនួនទស្សនករ​សរុប",
+        "totalVisitor": "ចំនួនអ្នកទស្សនា​សរុប"
+      }
+    }
+  },
+  "operator": {
+    "contains": "មាន",
+    "containsFold": "មាន (មិនគិតខ្លួនអក្សរធំ/តូច)",
+    "equal": "ស្មើ",
+    "gt": "ធំជាង",
+    "hasPrefix": "មានគោលលេខដើម",
+    "hasSuffix": "មានគោលលេខចប់",
+    "gte": "ធំស្មើ",
+    "in": "នៅក្នុង",
+    "isNull": "គ្មាន",
+    "lt": "តិចជាង",
+    "lte": "តិចស្មើ",
+    "notEqual": "មិនស្មើ",
+    "notIn": "មិននៅក្នុង",
+    "between": "នៅចន្លោះ",
+    "betweenEq": "នៅចន្លោះ/រួមបញ្ចូលចំណុចដែន"
+  },
+  "permission": {
+    "admin": "អ្នកគ្រប់គ្រង",
+    "admin_role": "តួនាទីអ្នកគ្រប់គ្រង",
+    "configuration": "ការកំណត់",
+    "view": "មើល {name}",
+    "add": "បន្ថែម {name}",
+    "edit": "កែប្រែរ {name}",
+    "delete": "លុប {name}",
+    "operation_log": "កំណត់ហេតុប្រតិបត្តិការណ៍",
+    "analyse": "ភារកិច្ចវិភាគ"
+  }
+}
