@@ -18,6 +18,7 @@
     }
   },
   "common": {
+    "key": "钥匙",
     "display": "显示",
     "yes": "是",
     "no": "否",
@@ -200,6 +201,8 @@
       }
     },
     "dashboard": {
+      "title": "挡泥板",
+      "analytics": "分析学",
       "analyse": {
         "requestSuccessRate": "API 请求成功率",
         "totalRequest": "API 请求总数",

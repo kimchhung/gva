@@ -6,7 +6,6 @@ import (
 	"backend/internal/bootstrap/validator"
 
 	"go.uber.org/fx"
-	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
 )
 
@@ -14,10 +13,10 @@ func NewModule() fx.Option {
 	return fx.Module("bootstrap",
 		// Define logger
 		fx.Provide(NewLogger),
-		fx.WithLogger(func(logger *zap.Logger) fxevent.Logger {
-			return &fxevent.ZapLogger{Logger: logger}
+		fx.Provide(func(log *Logger) *zap.Logger {
+			log.Initailized()
+			return log.logger
 		}),
-
 		fx.Provide(lang.NewTranslator),
 		fx.Provide(validator.NewValidator),
 

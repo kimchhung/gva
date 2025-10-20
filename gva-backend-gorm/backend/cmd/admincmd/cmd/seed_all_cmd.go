@@ -8,11 +8,11 @@ import (
 	"backend/app/common/service"
 
 	"backend/env"
-	"backend/internal/bootstrap"
 	"backend/internal/bootstrap/database"
 	"backend/internal/ctxutil"
 	"backend/internal/logger"
 
+	"github.com/labstack/gommon/log"
 	"github.com/spf13/cobra"
 )
 
@@ -23,12 +23,9 @@ var seedCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		cfg := env.NewConfig()
-		log := bootstrap.NewLogger(cfg)
-		db := database.NewDatabase(cfg, log)
+		db := database.NewDatabase(cfg, logger.G())
 		db.Connect()
 		defer db.Close()
-
-		logger.Log(cfg)
 
 		// dependencies for seeding
 		ctx = ctxutil.Add(ctx, cfg, service.NewPasswordService(cfg))

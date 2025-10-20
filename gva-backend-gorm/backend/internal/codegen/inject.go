@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -17,7 +18,11 @@ func InjectCodeToPos(filePath string, pos map[string]string, format bool) {
 	strContent := string(content)
 	// Find the location to insert the new line
 	for key, value := range pos {
-		if strings.Contains(strContent, value) {
+		fileContext := strings.TrimSpace(strContent)
+		text := strings.TrimSpace(value)
+
+		if strings.Contains(fileContext, text) {
+			fmt.Println("Skipping text injection in file:"+filePath+" for existing text:", text)
 			continue
 		}
 

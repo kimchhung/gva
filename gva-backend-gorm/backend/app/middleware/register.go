@@ -69,7 +69,7 @@ func (m *Middleware) Register() {
 				middleware.RateLimiterMemoryStoreConfig{
 					Rate:      rate.Limit(mdCfg.Limiter.Max),
 					Burst:     int(mdCfg.Limiter.Max + 30),
-					ExpiresIn: time.Duration(mdCfg.Limiter.ExpirationSeconds) * time.Second,
+					ExpiresIn: time.Duration(mdCfg.Limiter.ExpirationTTL) * time.Second,
 				},
 			),
 			IdentifierExtractor: func(ctx echo.Context) (string, error) {
@@ -123,12 +123,13 @@ func (m *Middleware) TranslationMiddleware() echo.MiddlewareFunc {
 			switch preferredLanguage {
 			case "km", "km-KH":
 				preferredLanguage = lang.LocaleKM
+			case "zh", "zh-CN":
+				preferredLanguage = lang.LocaleZH
 			default:
 				preferredLanguage = lang.LocaleEN
 			}
 
-			ctx := c.Request().Context()
-			ctx = lang.WithContext(ctx, preferredLanguage)
+			ctx := lang.WithContext(c.Request().Context(), preferredLanguage)
 			c.SetRequest(c.Request().WithContext(ctx))
 			return next(c)
 		}

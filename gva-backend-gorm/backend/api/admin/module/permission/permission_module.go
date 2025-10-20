@@ -12,5 +12,5 @@ var PermissionModule = fx.Module("PermissionModule",
 	fx.Provide(NewPermissionService),
 
 	// Regiser Controller
-	controller.ProvideAdminController(NewPermissionController),
+	controller.Admin.AddController(NewPermissionController),
 )

@@ -16,6 +16,7 @@ import (
 	"gorm.io/gorm"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/xo/dburl"
 )
 
 type TxOperaton func(tx *gorm.DB) error
@@ -43,9 +44,14 @@ func NewDatabase(cfg *env.Config, log *zap.Logger) *Database {
 }
 
 func (db *Database) Connect() error {
-	drv, err := sql.Open("mysql", db.cfg.DB.Mysql.DSN)
+	url, err := dburl.Parse(db.cfg.DB.Url)
 	if err != nil {
-		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", db.cfg.DB.Mysql.DSN, err)
+		return fmt.Errorf("failed to parse db url: %v", err)
+	}
+
+	drv, err := sql.Open(url.Driver, url.DSN)
+	if err != nil {
+		return fmt.Errorf("dns %sv, An unknown error occurred when to connect the database!, %v", url.DSN, err)
 	}
 
 	gormdb, err := gorm.Open(mysql.New(mysql.Config{
@@ -89,7 +95,7 @@ func (db *Database) MultiTransaction(fns ...TxOperaton) error {
 }
 
 func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
-	if !db.cfg.Seed.Enable {
+	if !db.cfg.DB.Seed.Enable {
 		return
 	}
 
@@ -100,7 +106,7 @@ func (db *Database) SeedModels(ctx context.Context, seeder ...Seeder) {
 			zap.String("type", seedType),
 		)
 
-		if slices.ContainsFunc(db.cfg.Seed.BlacklistTypes, func(t string) bool {
+		if slices.ContainsFunc(db.cfg.DB.Seed.BlacklistTypes, func(t string) bool {
 			return strings.Contains((strings.ToLower(t)), strings.ToLower(seedType))
 		}) {
 			seedlog.Info("in blacklist. Skipping!")

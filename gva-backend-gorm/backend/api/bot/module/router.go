@@ -1,12 +1,15 @@
 package module
 
 import (
+	"context"
+
 	"github.com/labstack/echo/v4"
 
 	docs "backend/api/bot/docs"
 	"backend/app/common/controller"
 	"backend/env"
 	"backend/internal/ctr"
+	"backend/internal/ctxutil"
 	"backend/utils"
 	"backend/utils/swagger"
 
@@ -23,9 +26,9 @@ func NewRouter(controllers []ctr.CTR) *Router {
 	return &Router{controllers}
 }
 
-func (r *Router) Register(args ...any) {
-	app := args[0].(*echo.Echo)
-	cfg := args[1].(*env.Config)
+func (r *Router) Register(ctx context.Context) {
+	app := ctxutil.MustValue[*echo.Echo](ctx)
+	cfg := ctxutil.MustValue[*env.Config](ctx)
 
 	//default value if not exist in env config
 	utils.SetIfEmpty(&cfg.API.Bot.BasePath, "/bot/v1")

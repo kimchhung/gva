@@ -18,7 +18,7 @@ func NewPasswordService(cfg *env.Config) *PasswordService {
 
 // HashPassword hashes a password using bcrypt.
 func (s *PasswordService) HashPassword(password string) (string, error) {
-	cost := s.cfg.Password.HashCost
+	cost := s.cfg.API.Admin.Auth.PasswordHashCost
 	if cost == 0 {
 		cost = bcrypt.DefaultCost
 	}

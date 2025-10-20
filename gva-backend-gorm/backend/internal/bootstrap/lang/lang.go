@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/km"
+	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"go.uber.org/zap"
 )
@@ -53,7 +54,8 @@ func (t *Translator) UTranslator() *ut.UniversalTranslator {
 func (t *Translator) Initialize() error {
 	en := en.New()
 	km := km.New()
-	_UTranslator = ut.New(en, en, km)
+	zh := zh.New()
+	_UTranslator = ut.New(en, en, km, zh)
 
 	if err := t.UTranslator().Import(ut.FormatJSON, "./lang"); err != nil {
 		return err

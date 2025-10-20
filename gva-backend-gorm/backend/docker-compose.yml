@@ -16,9 +16,10 @@ services:
       MYSQL_DATABASE: gva
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
     ports:
-      - "33066:33066"
+      - "33066:3306"
     volumes:
-      - db-data:/data
+      - ./migrations:/docker-entrypoint-initdb.d/
+      - db-data:/var/lib/mysql
     networks:
       - share-network
     healthcheck:
@@ -41,7 +42,7 @@ services:
     image: redis:7.2-alpine
     restart: unless-stopped
     ports:
-      - "63799:63799"
+      - "63799:6379"
     command: redis-server --loglevel warning --requirepass password
     volumes:
       - cache-data:/data
@@ -57,7 +58,7 @@ services:
     networks:
       - share-network
     ports:
-      - 5500:5500
+      - 4000:4000
     env_file:
       - .env
     depends_on:

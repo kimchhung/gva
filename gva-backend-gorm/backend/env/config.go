@@ -2,11 +2,8 @@ package env
 
 import (
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/pelletier/go-toml/v2"
 )
 
 const (
@@ -16,9 +13,6 @@ const (
 )
 
 const (
-	tomlFilePath = "./env"
-	tomlFileName = "config"
-
 	envFilePath = "."
 	envFileName = ".env"
 
@@ -39,88 +33,92 @@ func (c *Config) IsStag() bool {
 
 type (
 	app = struct {
-		Name            string
-		Port            string
-		PrintRoutes     bool `mapstructure:"print_routes"`
-		Env             string
-		IdleTimeout     int64 `mapstructure:"idle_timeout"`
-		ShutdownTimeout int64 `mapstructure:"shutdown_timeout"`
+		Name            string `default:"dev"`
+		Port            string `default:":4000"`
+		PrintRoutes     bool   `mapstructure:"print_routes" default:"true"`
+		Env             string `validate:"oneof=dev stag prod" default:"dev"`
+		IdleTimeout     int64  `mapstructure:"idle_timeout" default:"5"`
+		ShutdownTimeout int64  `mapstructure:"shutdown_timeout" default:"10"`
 		TLS             struct {
 			Auto     bool
 			Enable   bool
 			CertFile string `mapstructure:"cert_file"`
 			KeyFile  string `mapstructure:"key_file"`
 		}
-		Host string
+		Host string `mapstructure:"host" default:"localhost:4000"`
 	}
-	db = struct {
-		Mysql struct {
-			DSN string
-		}
-		Redis struct {
-			Enable bool
-			URL    string
-		}
-	}
-	seed struct {
-		// enable true, always run on app start
-		Enable bool
 
-		BlacklistTypes []string `mapstructure:"blacklist_types"`
-
-		SuperAdmin struct {
-			Username string
-			Password string
-		} `mapstructure:"super_admin"`
-	}
 	api struct {
 		Admin struct {
-			Enable   bool
-			Port     string
-			BasePath string `mapstructure:"base_path"`
+			Enable   bool   `default:"true"`
+			Port     string `default:"4001"`
+			BasePath string `mapstructure:"base_path" default:"/admin/v1"`
+			Auth     struct {
+				JwtSecret        string `mapstructure:"jwt_secret" default:"secret"`
+				PasswordHashCost int    `mapstructure:"password_hash_cost" default:"10"`
+				TotpTestCode     string `mapstructure:"totp_test_code" default:"666666"`
+				AccessTokenTTL   int    `mapstructure:"access_token_ttl" default:"7200"`
+				RefreshTokenTTL  int    `mapstructure:"refresh_token_ttl" default:"86400"`
+			}
 		}
 		Bot struct {
-			Enable   bool
-			Port     string
-			BasePath string `mapstructure:"base_path"`
+			Enable   bool   `default:"true"`
+			Port     string `default:"4002"`
+			BasePath string `mapstructure:"base_path" default:"/bot/v1"`
+		}
+		Web struct {
+			Enable   bool   `default:"true"`
+			Port     string `default:"4000"`
+			BasePath string `mapstructure:"base_path" default:"/web/v1"`
 		}
 	}
-	logger = struct {
-		TimeFormat string `mapstructure:"time_format"`
-		Level      int8
-		Prettier   bool
+
+	db = struct {
+		Url    string `default:"mysql://root:password@db-service/gva?parseTime=true"`
+		UrlDev string `default:"mysql://root:password@db-service/gva_dev?parseTime=true" mapstructure:"url_dev"`
+		Redis  struct {
+			Enable bool
+			Url    string `default:"rediss://foxie:foxiepw@cache-service"`
+		}
+		Seed struct {
+			// enable true, always run on app start
+			Enable bool `default:"true"`
+			// skip auto run on specific types
+			BlacklistTypes []string `mapstructure:"blacklist_types" default:"[]"`
+			// seed default super admin
+			SuperAdmin struct {
+				Username string `default:"admin"`
+				Password string `default:"123456"`
+			} `mapstructure:"super_admin"`
+		}
 	}
+
 	middleware = struct {
 		Swagger struct {
-			Enable bool
-			Path   string
+			Enable bool   `default:"true"`
+			Path   string `default:"/docs"`
 		}
 		Compress struct {
-			Enable bool
-			Level  int
+			Enable bool `default:"true"`
+			Level  int  `default:"1"`
 		}
 		Monitor struct {
-			Enable bool
+			Enable bool `default:"true"`
 			Path   string
 		}
 		Pprof struct {
-			Enable bool
+			Enable bool `default:"true"`
 		}
 		Limiter struct {
-			Enable            bool
-			Max               int
-			ExpirationSeconds int64 `mapstructure:"expiration_seconds"`
+			Enable        bool  `default:"true"`
+			Max           int   `default:"20"`
+			ExpirationTTL int64 `mapstructure:"expiration_ttl" default:"60"`
 		}
 		Translation struct {
-			Enable bool
+			Enable bool `default:"true"`
 		}
 	}
-	jwt struct {
-		Secret string
-	}
-	password struct {
-		HashCost int `mapstructure:"hash_cost"`
-	}
+
 	s3 struct {
 		Region   string
 		Key      string `mapstructure:"access_key_id"`
@@ -129,9 +127,13 @@ type (
 		Endpoint string
 		Session  string `mapstructure:"session_token"`
 	}
-	totp struct {
-		TestCode string `mapstructure:"test_code"`
+
+	logger = struct {
+		TimeFormat string `mapstructure:"time_format"`
+		Level      int8   `default:"0"`
+		Prettier   bool   `default:"true"`
 	}
+
 	google struct {
 		Enable         bool
 		ChatWebhookURL string `mapstructure:"chat_webhook_url"`
@@ -141,41 +143,13 @@ type (
 type CtxKey struct{}
 
 type Config struct {
-	API        api
 	App        app
+	API        api
 	DB         db
-	Seed       seed
-	Logger     logger
 	Middleware middleware
-	Jwt        jwt
-	Password   password
 	S3         s3
-	TOTP       totp
+	Logger     logger
 	Google     google
-}
-
-func ParseEnv(name string) (*Config, error) {
-	var contents *Config
-
-	file, err := os.ReadFile("./env/" + name + ".toml")
-	if err != nil {
-		return &Config{}, err
-	}
-
-	err = toml.Unmarshal(file, &contents)
-	return contents, err
-}
-
-func ParsePath(path string) (*Config, error) {
-	var contents *Config
-
-	file, err := os.ReadFile(path)
-	if err != nil {
-		return &Config{}, err
-	}
-
-	err = toml.Unmarshal(file, &contents)
-	return contents, err
 }
 
 func NewConfig() *Config {
@@ -190,11 +164,4 @@ func NewConfig() *Config {
 	}
 
 	return config
-}
-
-func ParseAddress(raw string) (host, port string) {
-	if i := strings.LastIndex(raw, ":"); i != -1 {
-		return raw[:i], raw[i+1:]
-	}
-	return raw, ""
 }

@@ -84,7 +84,7 @@ func (b *Bootstrap) start(ctx context.Context) {
 
 	// Register middlewares & routes
 	b.middlewares.Register()
-	b.routers.Register(b.app, b.cfg)
+	b.routers.Register(ctxutil.Add(ctx, b.app, b.cfg))
 
 	b.app.Server.RegisterOnShutdown(func() {
 		b.log.Info("1- Shutdown the database")
@@ -153,7 +153,7 @@ func (b *Bootstrap) stop(ctx context.Context) {
 }
 
 func (b *Bootstrap) RunSeed(ctx context.Context) {
-	if !b.cfg.Seed.Enable {
+	if !b.cfg.DB.Seed.Enable {
 		return
 	}
 

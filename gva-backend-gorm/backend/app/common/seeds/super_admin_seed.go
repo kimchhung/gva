@@ -27,7 +27,7 @@ func (s SuperAdminSeeder) Count(ctx context.Context, db *gorm.DB) (int, error) {
 	cfg := ctxutil.MustValue[*env.Config](ctx)
 
 	var total int64
-	if err := db.Model(model.Admin{}).Where("username = ?", cfg.Seed.SuperAdmin.Username).Count(&total).Error; err != nil {
+	if err := db.Model(model.Admin{}).Where("username = ?", cfg.DB.Seed.SuperAdmin.Username).Count(&total).Error; err != nil {
 		return 0, err
 	}
 
@@ -49,14 +49,15 @@ func (s SuperAdminSeeder) Seed(ctx context.Context, db *gorm.DB) error {
 			Order:       0,
 		}
 		adminRole.ID = 1
-		pw, err := password_.HashPassword(cfg.Seed.SuperAdmin.Password)
+		pw, err := password_.HashPassword(cfg.DB.Seed.SuperAdmin.Password)
 		if err != nil {
 			return fmt.Errorf("hash password: %w", err)
 		}
 
 		admin := &model.Admin{
+			BaseModel:    model.NewBaseModel(),
 			Name:         "Super Admin",
-			Username:     cfg.Seed.SuperAdmin.Username,
+			Username:     cfg.DB.Seed.SuperAdmin.Username,
 			Roles:        []*model.AdminRole{adminRole},
 			PasswordHash: pw,
 			Status:       1,

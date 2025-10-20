@@ -10,11 +10,11 @@ import (
 
 var makeEnvCMD = &cobra.Command{
 	Use:   "env.create",
-	Short: "Generate .env from env/config.toml",
+	Short: "Generate .env from env/config.go",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := env.GenerateEnvFromToml(false);err != nil {
-			panic(fmt.Errorf("ReadEnvOrGenerate %v", err))
+		if err := env.GenerateEnvFromDefaultConfig(false); err != nil {
+			panic(fmt.Errorf("ReadEnvOrGenerate: %v", err))
 		}
 	},
 }

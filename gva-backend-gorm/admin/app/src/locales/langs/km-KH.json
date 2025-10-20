@@ -18,6 +18,7 @@
     }
   },
   "common": {
+    "key": "កូនសោ",
     "display": "បង្ហាញ",
     "yes": "បាទ/ចាស",
     "no": "ទេ",
@@ -200,6 +201,8 @@
       }
     },
     "dashboard": {
+      "title": "ផ្ទាំងគ្រប់គ្រង",
+      "analytics": "វិភាគ",
       "analyse": {
         "requestSuccessRate": "អត្រា​សំណើ API ដែលជោគជ័យ",
         "totalRequest": "ចំនួនសំណើរទាំងអស់​របស់ API",

@@ -12,5 +12,5 @@ var ConfigurationModule = fx.Module("ConfigurationModule",
 	fx.Provide(NewConfigurationService),
 
 	// Regiser Controller
-	controller.ProvideAdminController(NewConfigurationController),
+	controller.Admin.AddController(NewConfigurationController),
 )

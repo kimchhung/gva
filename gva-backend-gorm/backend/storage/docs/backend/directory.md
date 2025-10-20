@@ -1,6 +1,4 @@
-# LOTTERY DATA
-
-## Backend Directory Structure
+# Backend Directory Structure
 
 ```
 ├── api

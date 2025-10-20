@@ -11,5 +11,5 @@ var IndexModule = fx.Module("IndexModule",
 	fx.Provide(NewIndexService),
 
 	// Regiser Controller
-	controller.ProvideBotController(NewIndexController),
+	controller.Bot.AddController(NewIndexController),
 )

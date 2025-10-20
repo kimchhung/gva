@@ -15,5 +15,5 @@ const (
 	Permission   string = "permissions"
 	OperationLog string = "operation_logs"
 
-	Blog string = "blogs" // #inject:tableName (do not remove or change position this comment, it is used by the code generator)
+	Blog       string = "blogs"
 )

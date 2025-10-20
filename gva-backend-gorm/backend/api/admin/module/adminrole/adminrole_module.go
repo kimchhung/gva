@@ -2,6 +2,7 @@ package adminrole
 
 import (
 	"backend/app/common/controller"
+
 	"go.uber.org/fx"
 )
 
@@ -11,5 +12,5 @@ var AdminRoleModule = fx.Module("AdminRoleModule",
 	fx.Provide(NewAdminRoleService),
 
 	// Regiser Controller
-	controller.ProvideAdminController(NewAdminRoleController),
+	controller.ProvideController(NewAdminRoleController, controller.Admin),
 )

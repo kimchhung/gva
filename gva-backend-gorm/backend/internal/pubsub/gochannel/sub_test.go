@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"backend/internal/logger"
 	"backend/internal/pubsub"
 	"backend/internal/pxid"
 )
@@ -35,7 +34,6 @@ func BenchmarkHighLoadPublish(b *testing.B) {
 		}
 		go func() {
 			msg := <-ch
-			logger.Log(msg)
 			if msg != "test-value" {
 				b.Errorf("wrong value")
 			}

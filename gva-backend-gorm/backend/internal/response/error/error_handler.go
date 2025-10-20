@@ -13,6 +13,13 @@ import (
 	"backend/internal/response"
 )
 
+func translateForCtx(ctx context.Context, message string) string {
+	if lang.IsInitialized() {
+		return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
+	}
+	return message
+}
+
 // Default error handler
 func SanitizeError(ctx context.Context, err error) *apperror.Error {
 	var resErr *apperror.Error
@@ -20,8 +27,12 @@ func SanitizeError(ctx context.Context, err error) *apperror.Error {
 	switch e := err.(type) {
 	case validator.ValidationErrors:
 		// error from request input validation
-		t := lang.DefaultTranslator().GetTranslator(lang.ForContext(ctx))
-		translatedMsg := in_validator.RemoveTopStruct(e.Translate(t))
+
+		translatedMsg := e.Error()
+		if lang.IsInitialized() {
+			t := lang.DefaultTranslator().GetTranslator(lang.ForContext(ctx))
+			translatedMsg = in_validator.RemoveTopStruct(e.Translate(t))
+		}
 
 		resErr = apperror.NewError(
 			apperror.ErrValidationError,
@@ -32,10 +43,10 @@ func SanitizeError(ctx context.Context, err error) *apperror.Error {
 		// throw from logical error for user to see
 		if e.IsDisableTranslate() {
 			resErr = e
-		} else {
+		} else if lang.IsInitialized() {
 			resErr = apperror.NewError(e, apperror.WithMessageFunc(
 				func(message string) string {
-					return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
+					return translateForCtx(ctx, message)
 				},
 			))
 		}
@@ -46,7 +57,7 @@ func SanitizeError(ctx context.Context, err error) *apperror.Error {
 			apperror.ErrBadRequest,
 			apperror.WithMessageFunc(
 				func(message string) string {
-					return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
+					return translateForCtx(ctx, message)
 				},
 			),
 			apperror.Join(err),
@@ -61,7 +72,7 @@ func SanitizeError(ctx context.Context, err error) *apperror.Error {
 			apperror.ErrUnknownError,
 			apperror.WithMessageFunc(
 				func(message string) string {
-					return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
+					return translateForCtx(ctx, message)
 				},
 			),
 		)

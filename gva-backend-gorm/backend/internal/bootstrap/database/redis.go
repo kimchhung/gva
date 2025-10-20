@@ -30,7 +30,7 @@ func (db *Redis) Connect() error {
 		return nil
 	}
 
-	url, err := redis.ParseURL(db.Cfg.DB.Redis.URL)
+	url, err := redis.ParseURL(db.Cfg.DB.Redis.Url)
 	if err != nil {
 		return fmt.Errorf("failed to parse redis url: %v", err)
 	}

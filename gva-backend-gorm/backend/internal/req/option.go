@@ -1,6 +1,7 @@
 package req
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -62,6 +63,18 @@ func WithBody(body interface{}) Option {
 		default:
 			request.SetBodyJsonMarshal(body)
 		}
+	}
+}
+
+func WithClient(c *Client) Option {
+	return func(request *Req) {
+		request.SetClient(c)
+	}
+}
+
+func WithContext(ctx context.Context) Option {
+	return func(request *Req) {
+		request.SetContext(ctx)
 	}
 }
 

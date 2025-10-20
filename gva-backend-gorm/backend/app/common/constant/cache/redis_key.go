@@ -2,7 +2,6 @@ package cache
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -25,38 +24,12 @@ func (k RedisKey) String() string {
 	return string(k)
 }
 
-const (
-	// Configuration
-	RedisKeyConfig RedisKey = "configuration"
-
-	// UserId
-	RedisKeyUserId RedisKey = "userId"
-
-	// RedisKeyEditPost is the key for the edit post.
-	UserEditRestrictPostCount     RedisKey = "userEditRestrictPostCount"
-	UserEditRestrictPostCountDown RedisKey = "userEditRestrictPostCountDown"
-
-	// Game Redis Keys
-	GameTypeList     RedisKey = "gameTypeList"
-	GameCategoryList RedisKey = "gameCategoryList"
-	CompanyList      RedisKey = "companyList"
-	RegionList       RedisKey = "regionList"
-	GameTab          RedisKey = "game_tab"
-	GameSource       RedisKey = "gameSource"
-
-	UpdateGameSource RedisKey = "UpdateGameSource"
-)
-
 func (k RedisKey) WithPrefix(prefix string) RedisKey {
 	return RedisKey(prefix + ":" + k.String())
 }
 
 func (k RedisKey) WithSuffix(suffix string) RedisKey {
 	return RedisKey(k.String() + ":" + suffix)
-}
-
-func (k RedisKey) WithID(id uint) RedisKey {
-	return RedisKey(k.String() + ":" + strconv.FormatUint(uint64(id), 10))
 }
 
 // WithKeyValue returns a new RedisKey with the given key-value pairs.

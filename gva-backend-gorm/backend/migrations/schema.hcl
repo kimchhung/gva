@@ -1,10 +1,10 @@
-schema "gva_backend" {
+schema "gva" {
   charset = "utf8mb4"
   collate = "utf8mb4_general_ci"
 }
 
 table "operation_logs" {
-  schema = schema.gva_backend
+  schema = schema.gva
   column "id" {
     null           = false
     type           = bigint
@@ -76,7 +76,7 @@ table "operation_logs" {
 }
 
 table "permissions" {
-  schema = schema.gva_backend
+  schema = schema.gva
   column "id" {
     null           = false
     type           = bigint
@@ -114,7 +114,7 @@ table "permissions" {
 }
 
 table "admin_admin_roles" {
-  schema = schema.gva_backend
+  schema = schema.gva
   column "admin_id" {
     null     = false
     type     = bigint
@@ -146,7 +146,7 @@ table "admin_admin_roles" {
 }
 
 table "admin_role_permissions" {
-  schema = schema.gva_backend
+  schema = schema.gva
   column "admin_role_id" {
     null     = false
     type     = bigint
@@ -178,7 +178,7 @@ table "admin_role_permissions" {
 }
 
 table "admin_roles" {
-  schema = schema.gva_backend
+  schema = schema.gva
   column "id" {
     null           = false
     type           = bigint
@@ -239,7 +239,7 @@ table "admin_roles" {
 }
 
 table "admins" {
-  schema = schema.gva_backend
+  schema = schema.gva
   column "id" {
     null           = false
     type           = bigint
@@ -266,7 +266,7 @@ table "admins" {
   }
   column "status" {
     null    = true
-    type    = bigint
+    type    = tinyint
     default = 1
   }
   column "name" {
@@ -325,8 +325,8 @@ table "admins" {
   }
 }
 
-table "configurations" {
-  schema = schema.gva_backend
+table "configs" {
+  schema = schema.gva
   column "id" {
     null           = false
     type           = bigint
@@ -385,22 +385,22 @@ table "configurations" {
   primary_key {
     columns = [column.id]
   }
-  foreign_key "fk_configuration_parent_id" {
+  foreign_key "fk_config_parent_id" {
     columns     = [column.parent_id]
-    ref_columns = [table.configurations.column.id]
+    ref_columns = [table.configs.column.id]
     on_update   = NO_ACTION
     on_delete   = NO_ACTION
   }
-  foreign_key "fk_configuration_root_id" {
+  foreign_key "fk_config_root_id" {
     columns     = [column.root_id]
-    ref_columns = [table.configurations.column.id]
+    ref_columns = [table.configs.column.id]
     on_update   = NO_ACTION
     on_delete   = NO_ACTION
   }
-  index "fk_configuration_parent_id" {
+  index "fk_config_parent_id" {
     columns = [column.parent_id]
   }
-  index "fk_configuration_root_id" {
+  index "fk_config_root_id" {
     columns = [column.root_id]
   }
   index "key" {

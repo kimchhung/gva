@@ -31,7 +31,8 @@ func (s *TOTPService) GenerateSecretKey(accountName string) *otp.Key {
 
 // VerifyPassword checks if a given password matches the hashed password.
 func (s *TOTPService) VerifyTOTP(secretKey, code string) bool {
-	if s.cfg.TOTP.TestCode != "" && s.cfg.TOTP.TestCode == code {
+	testCode := s.cfg.API.Admin.Auth.TotpTestCode
+	if testCode != "" && testCode == code {
 		return true
 	}
 

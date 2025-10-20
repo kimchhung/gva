@@ -1,61 +1,38 @@
 # Makefile for some commands.
-
-env ?= "local"
-args ?=
-
-ifeq ($(env),"local")
-  CONFIG_FILE := local.connection.env
-else
-  CONFIG_FILE := ${env}.connection.env
-endif
-
-# Include the chosen .env file
-include $(CONFIG_FILE)
+env=local
 
 migrate.inspect:
-	atlas schema inspect -u "${url}"
+	atlas schema inspect --env ${env}
 
-migrate.apply.hash:
-	atlas migrate apply \
-		--dir "${dir}" \
-		--url "${url}" \
-		${args}
-
-migrate.down.hash:
-	atlas schema apply \
-		--to "${dir}" \
-		--url "${url}" \
-		--dev-url "${devUrl}" \
-		--exclude "atlas_schema_revisions"\
-		${args}
-
-migrate.down.auto:
-	rm -f $(shell ls -t ./sql/*.sql | head -n 1)
-	make down
-	make set version=$(shell ls -t ./sql/*.sql | sed -n '2p' | grep -oE '[0-9]+')
-
-migrate.set:
-	atlas migrate set ${version} --url ${url} --dir ${dir}
+migrate.set: migrate.hash
+	atlas migrate set ${version} --env ${env}
 
 migrate.status:
-	atlas migrate status --url ${url} --dir ${dir}
-
-migrate.down.check:
-	atlas migrate down \
-		--dir "${dir}" \
-		--url "${url}" \
-		--dev-url "${devUrl}" \
-		--dry-run \
-		${args}
+	atlas migrate status --env ${env}
 
 migrate.hash:
-	atlas migrate hash \
-		--dir "${dir}" \
-		${args}
+	atlas migrate hash --env ${env}
 
-migrate.diff: hash
-	atlas migrate diff ${name} \
-  --dir "${dir}" \
- 	--to "file://schema.hcl" \
-  --dev-url "${devUrl}"
+migrate.new:
+	atlas migrate new --env ${env}
+
+migrate.diff: migrate.hash
+	atlas migrate diff ${name} --env ${env}
+
+migrate.apply: migrate.hash
+	atlas migrate apply --env ${env}
+
+# check sql remove query
+migrate.down.check:
+	atlas migrate down --env ${env} --dry-run
+
+# trigger sql remove query
+migrate.down: migrate.hash
+	atlas migrate down --env ${env}
+
+# 1- run query, 2-remove file locally, 3- set current local version
+migrate.down.auto:
+	make migrate.down
+	rm -f $(shell ls -t ./sql/*.sql | head -n 1)
+	make migrate.set version=$(shell ls -t ./sql/*.sql | sed -n '2p' | grep -oE '[0-9]+')
 

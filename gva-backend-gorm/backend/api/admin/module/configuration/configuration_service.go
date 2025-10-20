@@ -246,5 +246,5 @@ func (s *ConfigurationService) GetDocsConfiguration(ctx context.Context) ([]dto.
 }
 
 func getRedisKeyConfig(key string) string {
-	return cache.RedisKeyConfig.WithSuffix("key").WithSuffix(key).String()
+	return cache.KeyConfig.WithKeyValue("key", key).String()
 }

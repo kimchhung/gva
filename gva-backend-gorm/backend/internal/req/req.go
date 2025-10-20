@@ -7,6 +7,7 @@ import (
 	_req "github.com/imroc/req/v3"
 )
 
+type Client = _req.Client
 type Req = _req.Request
 type Option func(request *Req)
 
@@ -25,6 +26,10 @@ func Request(url string, options ...Option) *Req {
 	}
 
 	return r
+}
+
+func New() *Client {
+	return _req.NewClient()
 }
 
 func RequestStruct(url string, out any, options ...Option) (code int, body []byte, errs []error) {

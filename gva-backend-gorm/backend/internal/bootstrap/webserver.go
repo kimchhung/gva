@@ -63,6 +63,17 @@ func printStartupMessage(cfg *env.Config) {
 		table.AddRow(row...)
 	}
 
+	if cfg.API.Web.Enable {
+		url := host + ":" + port + cfg.API.Web.BasePath
+		row := []any{"Web", color.Cyan(url)}
+
+		if cfg.Middleware.Swagger.Enable {
+			row = append(row, color.Cyan(url+cfg.Middleware.Swagger.Path))
+		}
+
+		table.AddRow(row...)
+	}
+
 	fmt.Printf("\n --------------- %s --------------- \n\n", color.White(cfg.App.Name)+" is running at the moment!")
 	fmt.Println(table)
 	fmt.Print("\n")

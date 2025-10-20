@@ -2,6 +2,7 @@ package operationlog
 
 import (
 	"backend/app/common/controller"
+
 	"go.uber.org/fx"
 )
 
@@ -11,5 +12,5 @@ var OperationLogModule = fx.Module("OperationLogModule",
 	fx.Provide(NewOperationLogService),
 
 	// Regiser Controller
-	controller.ProvideAdminController(NewOperationLogController),
+	controller.Admin.AddController(NewOperationLogController),
 )

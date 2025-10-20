@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"backend/env"
 	"reflect"
 
 	"go.uber.org/zap"
@@ -39,11 +38,11 @@ func Clone(from interface{}) *zap.Logger {
 	return G().With().Named(nameFromStruct(from))
 }
 
-func WithCore(env *env.Config) zap.Option {
-	return zap.WrapCore(func(c zapcore.Core) zapcore.Core {
-		return NewCore(c, env)
-	})
-}
+// func WithCore(env *env.Config) zap.Option {
+// 	return zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+// 		return NewCore(c, env)
+// 	})
+// }
 
 func Log(v ...any) {
 	if b, ok := v[0].([]byte); ok {

@@ -9,29 +9,19 @@ import (
 	"os"
 	"strings"
 
+	"github.com/creasty/defaults"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/maps"
 )
 
-func ReadToml(filename string, path ...string) (tomlFile *viper.Viper, config *Config, err error) {
+func DefaultConfig() (config *Config, err error) {
 	config = new(Config)
-	tomlFile = viper.New()
-	tomlFile.SetConfigName(filename)
-	tomlFile.SetConfigType("toml")
-
-	for _, p := range path {
-		tomlFile.AddConfigPath(p)
+	if err := defaults.Set(config); err != nil {
+		return nil, err
 	}
 
-	if err := tomlFile.ReadInConfig(); err != nil {
-		return nil, nil, err
-	}
-
-	if err := tomlFile.Unmarshal(&config); err != nil {
-		return nil, nil, err
-	}
-
-	return tomlFile, config, nil
+	return config, nil
 }
 
 func Environ() map[string]string {
@@ -90,22 +80,32 @@ func ReadEnvFromFile() (*Config, error) {
 		return nil, err
 	}
 
-
-
 	return config, nil
 }
 
-func GenerateEnvFromToml(overwrite bool) error {
+func structToKeyValue(s interface{}) (map[string]any, error) {
+	m := make(map[string]any)
+	if err := mapstructure.Decode(s, &m); err != nil {
+		return nil, err
+	}
+	return flatNestMap(m), nil
+}
+
+func GenerateEnvFromDefaultConfig(overwrite bool) error {
 	_, err := os.Stat(envFileName)
 	isDotEnvFileExist := err == nil
 
-	tomlFile, _, err := ReadToml(tomlFileName, tomlFilePath)
+	config, err := DefaultConfig()
 	if err != nil {
 		return err
 	}
 
-	flats := flatNestMap(tomlFile.AllSettings())
-	keys := maps.Keys(flats)
+	keyvalues, err := structToKeyValue(config)
+	if err != nil {
+		return err
+	}
+
+	keys := maps.Keys(keyvalues)
 	sort.Strings(keys)
 
 	envString := ""
@@ -113,18 +113,18 @@ func GenerateEnvFromToml(overwrite bool) error {
 		prefix := strings.Split(envKey, seperator)[0]
 
 		if i == 0 {
-			envString += fmt.Sprintf("# %s\n", prefix)
+			envString += fmt.Sprintf("# %s\n", strings.ToUpper(prefix))
 		}
 
 		if i > 0 {
 			oldPrefix := strings.Split(keys[i-1], seperator)[0]
 			if prefix != oldPrefix {
 				envString += "\n"
-				envString += fmt.Sprintf("# %s\n", prefix)
+				envString += fmt.Sprintf("# %s\n", strings.ToUpper(prefix))
 			}
 		}
 
-		envVal := flats[envKey]
+		envVal := keyvalues[envKey]
 		envStr := fmt.Sprintf("%v", envVal)
 
 		switch envVal.(type) {
@@ -135,13 +135,19 @@ func GenerateEnvFromToml(overwrite bool) error {
 
 			switch valType.Kind() {
 			case reflect.Slice:
-				sliceVal := val.Interface().([]any)
+				var sliceVal []any
+				sliceVal, ok := val.Interface().([]any)
+				if !ok {
+					sliceVal = []any{}
+				}
+
 				strSlice := make([]string, len(sliceVal))
 				for i, v := range sliceVal {
 					strSlice[i] = fmt.Sprintf("%v", v)
 				}
 				envStr = strings.Join(strSlice, ",")
 			}
+
 		}
 
 		envString += fmt.Sprintf("%s=%v \n", strings.ToUpper(envKey), envStr)
@@ -151,36 +157,19 @@ func GenerateEnvFromToml(overwrite bool) error {
 		if err := os.WriteFile(envFileName, []byte(envString), os.ModePerm); err != nil {
 			return err
 		}
-		fmt.Println("env/config.toml -> .env : file generated")
-	}else{
-		fmt.Println("env/config.toml -> .env : file already exists, skipping generation")
+		fmt.Println("env/config.go -> .env : file generated")
+	} else {
+		fmt.Println("env/config.go -> .env : file already exists, skipping generation")
 	}
 
-
-	donttouch:= "# DO NOT TOUCH THIS FILE, please change it in env/config.toml then run `make env.create`\n"
+	donttouch := "# DO NOT TOUCH THIS FILE, please change it in env/config.go then run `make env.create`\n"
 
 	if err := os.WriteFile(envFileName+".example", []byte(donttouch+envString), os.ModePerm); err != nil {
 		return err
 	}
 
-	fmt.Println("env/config.toml -> .env.example : file generated")
+	fmt.Println("env/config.go -> .env.example : file generated")
 	return nil
-}
-
-func GroupMapAny(nested map[string]any) map[string]map[string]any {
-	result := make(map[string]map[string]any)
-
-	for k, v := range nested {
-		path := strings.SplitAfter(k, seperator)[0]
-		_, ok := result[path]
-		if !ok {
-			result[path] = map[string]any{}
-		}
-
-		result[path][k] = v
-	}
-
-	return result
 }
 
 func flatNestMap(nested map[string]any) map[string]any {
@@ -201,4 +190,11 @@ func flatNestMap(nested map[string]any) map[string]any {
 	}
 
 	return result
+}
+
+func ParseAddress(raw string) (host, port string) {
+	if i := strings.LastIndex(raw, ":"); i != -1 {
+		return raw[:i], raw[i+1:]
+	}
+	return raw, ""
 }

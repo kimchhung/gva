@@ -18,6 +18,7 @@
     }
   },
   "common": {
+    "key": "钥匙",
     "display": "Display",
     "yes": "Yes",
     "no": "No",
@@ -200,11 +201,19 @@
       }
     },
     "dashboard": {
+      "title": "Dashboard",
+      "analytics": "Analytics",
       "analyse": {
         "requestSuccessRate": "Total API Request Success Rate",
         "totalRequest": "Total Number of API Requests",
         "totalVisit": "Total people visit",
         "totalVisitor": "Total number of visitors"
+      }
+    },
+    "general": {
+      "title": "General",
+      "todos": {
+        "title": "Todos"
       }
     }
   },

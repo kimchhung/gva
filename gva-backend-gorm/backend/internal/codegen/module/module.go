@@ -14,6 +14,6 @@ var {{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	fx.Provide(New{{.EntityPascal}}Service),
 
 	// Regiser Controller
-	controller.ProvideAdminController(New{{.EntityPascal}}Controller),
+	controller.Admin.AddController(New{{.EntityPascal}}Controller),
 )
 `

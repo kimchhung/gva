@@ -1,21 +1,18 @@
-# DB setup
+# Migration
 
-## 1 initialize db image
+## How to add new table or edit columns?
 
-`docker compose up -d gva-backend-mysql`
+- add new table or column in `schema.hcl`
+- run `make migrate.diff {name}` to generate an new migration file in `/sql`
+- run `make migrate.apply` to execute or sync `/sql`
 
-## 2 connect docker db and create schema dev
+## How to add new `sql` for seeding?
 
-`CREATE SCHEMA IF NOT EXISTS gva_backend_dev DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;`
+- run `make migrate.new {name} to` to create an new empty migration file in `/sql`
+- edit new migration file
+- run `make migrate.apply` to execute or sync `/sql`
 
-## 3 run migration
+## How to migrate down | rollback?
 
-`make migrate.apply`
-
-## 4 run seeds
-
-`make admincmd.seed.all`
-
-## 5 Run go
-
-`make api().`
+- run `migrate.down.check` to check if script to use to rollback is current
+- run `migrate.down.auto` will execute `sql down script` and remove last file in `/sql`

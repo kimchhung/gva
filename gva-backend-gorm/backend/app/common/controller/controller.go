@@ -4,46 +4,50 @@ import (
 	"backend/internal/ctr"
 
 	"github.com/labstack/echo/v4"
-
 	"go.uber.org/fx"
 )
 
-const (
-	BotAdminController = `group:"bot-controllers"`
-	TagAdminController = `group:"admin-controllers"`
-	TagWebController   = `group:"web-controllers"`
+type Controller string
 
-	TagModule = `group:"modules"`
+const (
+	Bot   Controller = `group:"bot-controllers"`
+	Admin Controller = `group:"admin-controllers"`
+	Web   Controller = `group:"web-controllers"`
+
+	TagRouters = `group:"routers"`
 )
 
+func (tag Controller) AddController(c any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(c,
+			fx.As(new(ctr.CTR)),
+			fx.ResultTags(string(tag)),
+		),
+	)
+}
+
+func (tag Controller) AddRouter(r any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(r,
+			// convert type *Router => ctr.ModuleRouter
+			fx.As(new(ctr.ModuleRouter)),
+
+			// take group params from container => []ctr.CTR -> NewRouter
+			fx.ParamTags(string(tag)),
+
+			// register to container as member of module group
+			fx.ResultTags(TagRouters),
+		),
+	)
+}
+
 // register to container  type echoc.Controller and tag as admin module
-func ProvideAdminController(contructor any) fx.Option {
+func ProvideController(contructor any, tag Controller) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			contructor,
 			fx.As(new(ctr.CTR)),
-			fx.ResultTags(TagAdminController),
-		),
-	)
-}
-
-// register to container as type echoc.Controller and tag as web module
-func ProvideWebController(contructor any) fx.Option {
-	return fx.Provide(
-		fx.Annotate(
-			contructor,
-			fx.As(new(ctr.CTR)),
-			fx.ResultTags(TagWebController),
-		),
-	)
-}
-
-func ProvideBotController(contructor any) fx.Option {
-	return fx.Provide(
-		fx.Annotate(
-			contructor,
-			fx.As(new(ctr.CTR)),
-			fx.ResultTags(BotAdminController),
+			fx.ResultTags(string(tag)),
 		),
 	)
 }

@@ -3,6 +3,7 @@ package router
 import (
 	"backend/app/common/controller"
 	"backend/internal/ctr"
+	"context"
 
 	"go.uber.org/fx"
 )
@@ -21,9 +22,9 @@ func NewRouter(modules []ctr.ModuleRouter) *Router {
 	return r
 }
 
-func (r *Router) Register(args ...any) {
+func (r *Router) Register(ctx context.Context) {
 	for _, r := range r.modules {
-		r.Register(args...)
+		r.Register(ctx)
 	}
 }
 
@@ -32,7 +33,7 @@ func WithRouter(modules ...fx.Option) []fx.Option {
 		// register as *Router
 		fx.Annotate(NewRouter,
 			// take group params from container => []ctr.ModuleRouter -> NewRouter
-			fx.ParamTags(controller.TagModule),
+			fx.ParamTags(controller.TagRouters),
 		),
 	))
 

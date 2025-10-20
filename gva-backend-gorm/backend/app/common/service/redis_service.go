@@ -1,11 +1,11 @@
 package service
 
 import (
+	"backend/internal/bootstrap/database"
+	"backend/utils/json"
 	"context"
 	"errors"
 	"fmt"
-	"backend/internal/bootstrap/database"
-	"backend/utils/json"
 	"reflect"
 	"time"
 
@@ -39,6 +39,12 @@ func (s *RedisService) Publish(ctx context.Context, channel string, value any) e
 
 func (s *RedisService) Get(ctx context.Context, key string) (string, error) {
 	rcmd := s.redis.Get(ctx, key)
+	if err := rcmd.Err(); err != nil {
+		if errors.Is(redis.Nil, err) {
+			return "", nil
+		}
+		return "", err
+	}
 	return rcmd.String(), rcmd.Err()
 }
 
@@ -46,6 +52,9 @@ func (s *RedisService) Get(ctx context.Context, key string) (string, error) {
 func (s *RedisService) GetTo(ctx context.Context, key string, value any) error {
 	rcmd := s.redis.Get(ctx, key)
 	if err := rcmd.Err(); err != nil {
+		if errors.Is(redis.Nil, err) {
+			return nil
+		}
 		return err
 	}
 
@@ -55,6 +64,9 @@ func (s *RedisService) GetTo(ctx context.Context, key string, value any) error {
 func (s *RedisService) GetJsonTo(ctx context.Context, key string, value any) (err error) {
 	rcmd := s.redis.Get(ctx, key)
 	if err := rcmd.Err(); err != nil {
+		if errors.Is(redis.Nil, err) {
+			return nil
+		}
 		return err
 	}
 
@@ -71,7 +83,7 @@ func (s *RedisService) GetJsonTo(ctx context.Context, key string, value any) (er
 	return nil
 }
 
-func (s *RedisService) WrapTo(ctx context.Context, key string, ttl time.Duration, fn func() (any, error), to any) (err error) {
+func (s *RedisService) WrapTo(ctx context.Context, key string, ttl time.Duration, to any, fn func() (any, error)) (err error) {
 	rcmd := s.redis.Get(ctx, key)
 	if err := rcmd.Err(); err == redis.Nil {
 		fnValue, fnErr := fn()

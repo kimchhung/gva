@@ -58,7 +58,7 @@ func GenerateByCmd(params codegen.CodeGenParams, cmds ...string) {
 }
 
 var crudCmd = &cobra.Command{
-	Use:   "crud",
+	Use:   "gen",
 	Short: "generate crud template",
 
 	Run: func(cmd *cobra.Command, args []string) {

@@ -16,19 +16,18 @@ import (
 
 func New(cfg *env.Config, opts ...fx.Option) *fx.App {
 	return fx.New(
-		// boostrap
 
 		// Provide config
 		fx.Supply(cfg),
 
+		// Start Application, execute on run
+		bootstrap.NewModule(),
+
 		/* Common Module */
-		common.NewCommonModule,
+		common.NewCommonModule(),
 
 		/* add web or admin modules */
 		fx.Module("api", opts...),
-
-		// Start Application, execute on run
-		bootstrap.NewModule(),
 	)
 }
 

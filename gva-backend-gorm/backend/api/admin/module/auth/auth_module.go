@@ -11,5 +11,5 @@ var AuthModule = fx.Module("AuthModule",
 	fx.Provide(NewAuthService),
 
 	// Regiser Controller
-	controller.ProvideAdminController(NewAuthController),
+	controller.Admin.AddController(NewAuthController),
 )
