@@ -10,5 +10,6 @@ import (
 
 var NewWebModules = fx.Module("web-module",
 	index.IndexModule,
+
 	controller.Web.AddRouter(NewRouter),
 )

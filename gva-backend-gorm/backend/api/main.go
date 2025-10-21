@@ -1,9 +1,9 @@
 package main
 
 import (
-	admin "backend/api/admin/module"
-	bot "backend/api/bot/module"
-	web "backend/api/web/module"
+	adminmodule "backend/api/admin/module"
+	botmodule "backend/api/bot/module"
+	webmodule "backend/api/web/module"
 	"backend/app"
 	"backend/app/router"
 	"backend/env"
@@ -21,16 +21,16 @@ func Run() {
 
 	/* Enable admin Module */
 	if cfg.API.Admin.Enable {
-		modules = append(modules, admin.NewAdminModules)
+		modules = append(modules, adminmodule.NewAdminModules)
 	}
 
 	/* Enable Bot Module */
 	if cfg.API.Bot.Enable {
-		modules = append(modules, bot.NewbotModules)
+		modules = append(modules, botmodule.NewbotModules)
 	}
 
 	if cfg.API.Web.Enable {
-		modules = append(modules, web.NewWebModules)
+		modules = append(modules, webmodule.NewWebModules)
 	}
 
 	app.New(

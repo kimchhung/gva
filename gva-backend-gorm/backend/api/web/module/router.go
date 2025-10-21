@@ -1,16 +1,15 @@
 package module
 
 import (
-	"context"
-
-	"github.com/labstack/echo/v4"
-
-	// docs "backend/api/web/docs"
+	"backend/api/web/docs"
 	"backend/app/common/controller"
 	"backend/env"
 	"backend/internal/ctr"
 	"backend/internal/ctxutil"
 	"backend/utils/swagger"
+	"context"
+
+	"github.com/labstack/echo/v4"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
@@ -30,15 +29,15 @@ func (r *Router) Register(ctx context.Context) {
 	cfg := ctxutil.MustValue[*env.Config](ctx)
 
 	//default value if not exist in env config
-	// docs.SwaggerInfobot.BasePath = cfg.API.web.BasePath
+	docs.SwaggerInfoweb.BasePath = cfg.API.Web.BasePath
 
 	swagger.Register(app, cfg.API.Web.BasePath, cfg.Middleware.Swagger.Path,
-		// echoSwagger.InstanceName(docs.SwaggerInfobot.InstanceName()),
+		echoSwagger.InstanceName(docs.SwaggerInfoweb.InstanceName()),
 		echoSwagger.PersistAuthorization(true),
 		echoSwagger.SyntaxHighlight(true),
 	)
 
-	api := app.Group(cfg.API.Bot.BasePath)
+	api := app.Group(cfg.API.Web.BasePath)
 	if err := controller.RegisterEcho(api, r.controllers); err != nil {
 		panic(err)
 	}

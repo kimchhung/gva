@@ -235,7 +235,7 @@ func ErrorHandler(anyErr error, c echo.Context) error {
 		rctx.LogFields.Error = perr
 	}
 
-	if rctx.IsProd() && !perr.IsPublic() {
+	if !rctx.IsProd() && !perr.IsPublic() {
 		rctx.PrintLog()
 	}
 

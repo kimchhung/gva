@@ -41,17 +41,6 @@ func (tag Controller) AddRouter(r any) fx.Option {
 	)
 }
 
-// register to container  type echoc.Controller and tag as admin module
-func ProvideController(contructor any, tag Controller) fx.Option {
-	return fx.Provide(
-		fx.Annotate(
-			contructor,
-			fx.As(new(ctr.CTR)),
-			fx.ResultTags(string(tag)),
-		),
-	)
-}
-
 func RegisterEcho(api *echo.Group, icontrollers []ctr.CTR) error {
 	controllers, err := ctr.Reflect(icontrollers...)
 	if err != nil {

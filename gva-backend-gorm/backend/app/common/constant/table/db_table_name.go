@@ -16,4 +16,6 @@ const (
 	OperationLog string = "operation_logs"
 
 	Blog       string = "blogs"
+	Todo       string = "todos"
+	TronEnergy string = "tron_energys" // #inject:tableName (do not remove or change position this comment, it is used by the code generator)
 )

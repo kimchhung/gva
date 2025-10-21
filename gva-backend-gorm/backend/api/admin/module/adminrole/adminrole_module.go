@@ -12,5 +12,5 @@ var AdminRoleModule = fx.Module("AdminRoleModule",
 	fx.Provide(NewAdminRoleService),
 
 	// Regiser Controller
-	controller.ProvideController(NewAdminRoleController, controller.Admin),
+	controller.Admin.AddController(NewAdminRoleController),
 )

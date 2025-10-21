@@ -77,8 +77,8 @@ type (
 		Url    string `default:"mysql://root:password@db-service/gva?parseTime=true"`
 		UrlDev string `default:"mysql://root:password@db-service/gva_dev?parseTime=true" mapstructure:"url_dev"`
 		Redis  struct {
-			Enable bool
-			Url    string `default:"rediss://foxie:foxiepw@cache-service"`
+			Enable bool  `default:"true"`
+			Url    string `default:"rediss://:password@cache-service"`
 		}
 		Seed struct {
 			// enable true, always run on app start
