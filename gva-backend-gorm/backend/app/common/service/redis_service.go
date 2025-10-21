@@ -21,7 +21,7 @@ type RedisService struct {
 func NewRedisService(redis *database.Redis, log *zap.Logger) *RedisService {
 	return &RedisService{
 		redis: redis,
-		log:   log.Named("cacheService"),
+		log:   log.Named("RedisService"),
 	}
 }
 
@@ -35,17 +35,6 @@ func (s *RedisService) Publish(ctx context.Context, channel string, value any) e
 		return err
 	}
 	return nil
-}
-
-func (s *RedisService) Get(ctx context.Context, key string) (string, error) {
-	rcmd := s.redis.Get(ctx, key)
-	if err := rcmd.Err(); err != nil {
-		if errors.Is(redis.Nil, err) {
-			return "", nil
-		}
-		return "", err
-	}
-	return rcmd.String(), rcmd.Err()
 }
 
 // support primative type, except json
@@ -83,39 +72,55 @@ func (s *RedisService) GetJsonTo(ctx context.Context, key string, value any) (er
 	return nil
 }
 
-func (s *RedisService) WrapTo(ctx context.Context, key string, ttl time.Duration, to any, fn func() (any, error)) (err error) {
+func (s *RedisService) WrapTo(ctx context.Context, key string, ttl time.Duration, to any, fn func() (any, error)) error {
 	rcmd := s.redis.Get(ctx, key)
-	if err := rcmd.Err(); err == redis.Nil {
-		fnValue, fnErr := fn()
-		if fnErr != nil {
-			return fnErr
-		}
+	if err := rcmd.Err(); err != nil {
+		if errors.Is(err, redis.Nil) {
+			fnValue, fnErr := fn()
+			if fnErr != nil {
+				return fnErr
+			}
 
-		if reflect.TypeOf(fnValue).AssignableTo(reflect.TypeOf(to).Elem()) {
-			reflect.ValueOf(to).Elem().Set(reflect.ValueOf(fnValue))
-		} else if reflect.ValueOf(fnValue).Kind() == reflect.Ptr &&
-			reflect.TypeOf(fnValue).Elem().AssignableTo(reflect.TypeOf(to).Elem().Elem()) {
-			reflect.ValueOf(to).Elem().Set(reflect.ValueOf(fnValue).Elem())
+			valueOfTo := reflect.ValueOf(to)
+			valueOfFNValue := reflect.ValueOf(fnValue)
+
+			var value reflect.Value = valueOfFNValue
+			if valueOfFNValue.Kind() == reflect.Ptr {
+				value = valueOfFNValue.Elem()
+			}
+
+			switch {
+			case valueOfTo.Type().Kind() == reflect.Pointer && valueOfTo.Type().Elem().AssignableTo(value.Type()):
+				valueOfTo.Elem().Set(value)
+
+			case valueOfTo.Type().AssignableTo(value.Type()):
+				valueOfTo.Set(value)
+
+			case valueOfTo.Kind() != reflect.Ptr:
+				return fmt.Errorf("type of %T, must be pointer", to)
+
+			default:
+				return fmt.Errorf("type not match %T %T", fnValue, to)
+			}
+
+			if err := s.SetJson(ctx, key, to, ttl); err != nil {
+				return err
+			}
+
+			return nil
 		} else {
-			return fmt.Errorf("type not match %T %T", fnValue, to)
-		}
-
-		if err = s.SetJson(ctx, key, to, ttl); err != nil {
 			return err
 		}
-
-	} else if err != nil {
-		return err
 	}
 
-	var rawByte json.JSON
-	rawByte, err = rcmd.Bytes()
+	rawByte, err := rcmd.Bytes()
 	if err != nil {
 		return err
 	}
-
-	if err = rawByte.Out(to); err != nil {
-		return err
+	if rawByte := json.JSON(rawByte); len(rawByte) > 0 && rawByte.IsValid() {
+		if err := rawByte.Out(to); err != nil {
+			return err
+		}
 	}
 
 	return nil
