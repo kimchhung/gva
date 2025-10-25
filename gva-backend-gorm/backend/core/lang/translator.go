@@ -14,31 +14,34 @@ import (
 )
 
 var (
-	_UTranslator *ut.UniversalTranslator
-	_Translator  = &Translator{}
+	_Translator = &Translator{}
 )
 
 func IsInitialized() bool {
-	return _UTranslator != nil
+	return _Translator != nil
 }
-
-type LocaleType string
-
-const (
-	LocaleEN LocaleType = "en"
-	LocaleKM LocaleType = "km"
-	LocaleZH LocaleType = "zh"
-)
 
 type Translator struct {
-	cfg *env.Config
+	env *env.Config
 	log *zap.Logger
+
+	localePaths []string
+	uTranslator *ut.UniversalTranslator
 }
 
-func NewTranslator(cfg *env.Config, log *zap.Logger) *Translator {
-	t := &Translator{}
-	t.cfg = cfg
-	t.log = log.Named("translator")
+func NewTranslator(env *env.Config, log *zap.Logger) *Translator {
+	ent := en.New()
+	kmt := km.New()
+	zht := zh.New()
+
+	t := &Translator{
+		env: env,
+		log: log.Named("Translator"),
+		localePaths: []string{
+			"./app/share/locale",
+		},
+		uTranslator: ut.New(ent, ent, kmt, zht),
+	}
 
 	return t
 }
@@ -48,28 +51,32 @@ func (t *Translator) IsInitialized() bool {
 }
 
 func (t *Translator) UTranslator() *ut.UniversalTranslator {
-	return _UTranslator
+	return t.uTranslator
+}
+
+func (t *Translator) Import(paths ...string) {
+
+	for _, path := range paths {
+		t.log.Info("importing translations", zap.String("path", path))
+		defer t.log.Info("import translations completed", zap.String("path", path))
+
+		if err := t.UTranslator().Import(ut.FormatJSON, path); err != nil {
+			t.log.Panic("failed to import translator", zap.String("path", path), zap.Error(err))
+			continue
+		}
+
+		if err := t.UTranslator().VerifyTranslations(); err != nil {
+			t.log.Panic("failed to import translator", zap.String("path", path), zap.Error(err))
+		}
+	}
 }
 
 func (t *Translator) Initialize() error {
-	en := en.New()
-	km := km.New()
-	zh := zh.New()
-	_UTranslator = ut.New(en, en, km, zh)
-
-	if err := t.UTranslator().Import(ut.FormatJSON, "./lang"); err != nil {
-		return err
-	}
-
-	if err := t.UTranslator().VerifyTranslations(); err != nil {
-		t.log.Panic("failed to initialize translator")
+	for _, path := range t.localePaths {
+		t.Import(path)
 	}
 
 	t.log.Info("translator is initialized")
-	return nil
-}
-
-func (t *Translator) SetAsDefaultTranslator() error {
 	_Translator = t
 	return nil
 }

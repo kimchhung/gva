@@ -9,7 +9,6 @@ import (
 
 type PermissionRepo struct {
 	IBaseRepository[model.Permission]
-	*database.Database
 }
 
 func init() {
@@ -19,6 +18,5 @@ func init() {
 func NewPermissionRepo(db *database.Database) *PermissionRepo {
 	return &PermissionRepo{
 		NewBaseRepository[model.Permission](db.DB),
-		db,
 	}
 }

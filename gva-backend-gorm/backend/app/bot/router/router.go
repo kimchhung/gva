@@ -48,17 +48,17 @@ func NewRouter(p RouterParam) *Router {
 
 func (r *Router) Register(ctx context.Context) {
 	//default value if not exist in env config
-	utils.SetIfEmpty(&r.env.API.Bot.BasePath, "/bot/v1")
-	docs.SwaggerInfobot.BasePath = r.env.API.Bot.BasePath
+	utils.SetIfEmpty(&r.env.Bot.BasePath, "/bot/v1")
+	docs.SwaggerInfobot.BasePath = r.env.Bot.BasePath
 	docs.SwaggerInfobot.Host = r.env.App.Host
 
-	swagger.Register(r.app, r.env.API.Bot.BasePath, r.env.Middleware.Swagger.Path,
+	swagger.Register(r.app, r.env.Bot.BasePath, r.env.Middleware.Swagger.Path,
 		echoSwagger.InstanceName(docs.SwaggerInfobot.InstanceName()),
 		echoSwagger.PersistAuthorization(true),
 		echoSwagger.SyntaxHighlight(true),
 	)
 
-	api := r.app.Group(r.env.API.Bot.BasePath)
+	api := r.app.Group(r.env.Bot.BasePath)
 	if err := router.RegisterEcho(api, r.controllers); err != nil {
 		panic(err)
 	}

@@ -73,7 +73,7 @@ var (
 	// map to check uniqness for error code
 	errorByCode = map[int]*Error{}
 
-	// general
+	// general:
 	ErrUnknownError          = newError(http.StatusInternalServerError, -1, "unknown_error")
 	ErrValidationError       = newPublicError(http.StatusBadRequest, -2, "validation_error")
 	ErrUnauthorized          = newPublicError(http.StatusForbidden, -3, "unauthorized")
@@ -95,7 +95,7 @@ var (
 	ErrDuplicatedRecord      = newPublicError(http.StatusConflict, -19, "duplicated_record")
 	ErrKeyExists             = newPublicError(http.StatusConflict, -20, "key_already_exists")
 
-	// image upload errors (300 - 399)
+	// file: image upload errors (300 - 399)
 	ErrUnsupportedFileFormat = newPublicError(http.StatusBadRequest, -300, "unsupported_file_format")
 	ErrWhileUploading        = newPublicError(http.StatusInternalServerError, -301, "error_while_uploading")
 	ErrImageTooLarge         = newPublicError(http.StatusBadRequest, -302, "image_too_large")

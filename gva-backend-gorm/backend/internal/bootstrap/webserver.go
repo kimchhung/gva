@@ -32,8 +32,8 @@ func printStartupMessage(cfg *env.Config) {
 	table := uitable.New()
 	table.AddRow("API Module", "BasePath", "Document")
 
-	if cfg.API.Bot.Enable {
-		url := host + ":" + port + cfg.API.Bot.BasePath
+	if cfg.Bot.Enable {
+		url := host + ":" + port + cfg.Bot.BasePath
 		row := []any{"Bot", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
@@ -43,8 +43,8 @@ func printStartupMessage(cfg *env.Config) {
 		table.AddRow(row...)
 	}
 
-	if cfg.API.Admin.Enable {
-		url := host + ":" + port + cfg.API.Admin.BasePath
+	if cfg.Admin.Enable {
+		url := host + ":" + port + cfg.Admin.BasePath
 		row := []any{"Admin", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {
@@ -54,8 +54,8 @@ func printStartupMessage(cfg *env.Config) {
 		table.AddRow(row...)
 	}
 
-	if cfg.API.Web.Enable {
-		url := host + ":" + port + cfg.API.Web.BasePath
+	if cfg.Web.Enable {
+		url := host + ":" + port + cfg.Web.BasePath
 		row := []any{"Web", color.Cyan(url)}
 
 		if cfg.Middleware.Swagger.Enable {

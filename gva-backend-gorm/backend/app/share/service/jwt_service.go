@@ -101,7 +101,7 @@ func (s *JwtService) GenerateToken(opt ClaimOption, opts ...ClaimOption) (string
 
 	// Create the token using the claims and the.cfg.Jwt.Secret
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(s.cfg.API.Admin.Auth.JwtSecret))
+	tokenString, err := token.SignedString([]byte(s.cfg.Admin.Auth.JwtSecret))
 	if err != nil {
 		return "", err
 	}
@@ -119,7 +119,7 @@ func (s *JwtService) ValidateToken(tokenString string, opts ...ClaimValidator) (
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte(s.cfg.API.Admin.Auth.JwtSecret), nil
+			return []byte(s.cfg.Admin.Auth.JwtSecret), nil
 		},
 		jwt.WithExpirationRequired(),
 	)

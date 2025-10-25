@@ -9,7 +9,6 @@ import (
 
 type AdminRoleRepo struct {
 	IBaseRepository[model.AdminRole]
-	*database.Database
 }
 
 func init() {
@@ -19,6 +18,5 @@ func init() {
 func NewAdminRoleRepo(db *database.Database) *AdminRoleRepo {
 	return &AdminRoleRepo{
 		NewBaseRepository[model.AdminRole](db.DB),
-		db,
 	}
 }

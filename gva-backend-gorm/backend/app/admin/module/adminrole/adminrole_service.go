@@ -86,7 +86,7 @@ func (s *AdminRoleService) UpdateAdminRole(ctx context.Context, id uint, p *dto.
 		return nil, apperror.ErrForbidden
 	}
 
-	err = s.adminRole_r.Transaction(func(tx *gorm.DB) error {
+	err = s.adminRole_r.DB().Transaction(func(tx *gorm.DB) error {
 		body := utils.MustCopy(new(model.AdminRole), p)
 		body.ID = id
 		body.Permissions = s.getPermissionsByScope(ctx, p.Permissions)
@@ -120,7 +120,7 @@ func (s *AdminRoleService) UpdatePatchAdminRole(ctx context.Context, id uint, p 
 	})
 
 	dbCols, resp := utils.StructToMap(p, columnMap)
-	err := s.adminRole_r.Model(&model.AdminRole{}).
+	err := s.adminRole_r.DB().Model(&model.AdminRole{}).
 		Scopes(
 			gormq.Where(gormq.Equal("id", id)),
 		).
@@ -140,7 +140,7 @@ func (s *AdminRoleService) DeleteAdminRole(ctx context.Context, id uint) error {
 
 	// check if role is in use
 	var count int64 = 0
-	err := s.adminRole_r.Table("admin_admin_roles").
+	err := s.adminRole_r.DB().Table("admin_admin_roles").
 		Joins("inner join admins on admins.id = admin_admin_roles.admin_id").
 		Where("admin_admin_roles.admin_role_id = ?", id).
 		Where("admins.deleted_at = 0").

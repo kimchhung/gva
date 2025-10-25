@@ -76,7 +76,7 @@ func (s *AdminService) GetAdmin(ctx context.Context, id uint) (*dto.AdminRespons
 
 // UpdateAdmin updates a Admin.
 func (s *AdminService) UpdateAdmin(ctx context.Context, id uint, p *dto.UpdateAdminRequest) (resp *dto.AdminResponse, err error) {
-	err = s.repo.Transaction(
+	err = s.repo.MultiTransaction(
 		func(tx *gorm.DB) error {
 			body := utils.MustCopy(new(model.Admin), p)
 			body.ID = id
@@ -103,7 +103,7 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, id uint, p *dto.UpdateAd
 
 // UpdateAdmin updates a Admin.
 func (s *AdminService) UpdatePatchAdmin(ctx context.Context, id uint, p *dto.UpdatePatchAdminRequest) (resp map[string]any, err error) {
-	err = s.repo.Transaction(
+	err = s.repo.MultiTransaction(
 		func(tx *gorm.DB) error {
 			columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
 				"name":        gormq.Ignore(),
@@ -225,7 +225,7 @@ func (s *AdminService) GetAdmins(ctx context.Context, query *dto.GetManyQuery) (
 
 			return q.
 				Joins("LEFT JOIN admin_admin_roles ON admins.id = admin_admin_roles.admin_id").
-				Where("admins.id NOT IN (?)", s.repo.Table("admin_admin_roles").
+				Where("admins.id NOT IN (?)", s.repo.DB().Table("admin_admin_roles").
 					Select("admin_id").
 					Where("admin_role_id = ?", constant.RoleIdSuperAdmin)).
 				Group("admins.id")

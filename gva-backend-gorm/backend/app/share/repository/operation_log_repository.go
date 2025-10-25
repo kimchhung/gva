@@ -9,7 +9,6 @@ import (
 
 type OperationLogRepo struct {
 	IBaseRepository[model.OperationLog]
-	*database.Database
 }
 
 func init() {
@@ -19,6 +18,5 @@ func init() {
 func NewOperationLogRepo(db *database.Database) *OperationLogRepo {
 	return &OperationLogRepo{
 		NewBaseRepository[model.OperationLog](db.DB),
-		db,
 	}
 }

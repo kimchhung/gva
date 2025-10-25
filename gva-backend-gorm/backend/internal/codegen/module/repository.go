@@ -11,7 +11,6 @@ import (
 
 type {{.EntityPascal}}Repo struct {
 	IBaseRepository[model.{{.EntityPascal}}]
-	*database.Database
 }
 
 func init() {
@@ -21,7 +20,6 @@ func init() {
 func New{{.EntityPascal}}Repo(db *database.Database) *{{.EntityPascal}}Repo {
 	return &{{.EntityPascal}}Repo{
 		NewBaseRepository[model.{{.EntityPascal}}](db.DB),
-		db,
 	}
 }
 `

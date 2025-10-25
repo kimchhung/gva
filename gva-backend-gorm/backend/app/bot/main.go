@@ -26,12 +26,12 @@ func Run() {
 	// * Run only web api
 
 	// force app to enable only web module
-	cfg.API.Admin.Enable = false
-	cfg.API.Bot.Enable = true
+	cfg.Admin.Enable = false
+	cfg.Bot.Enable = true
 
 	// overwrite app port
-	if cfg.API.Bot.Port != "" {
-		cfg.App.Port = cfg.API.Bot.Port
+	if cfg.Bot.Port != "" {
+		cfg.App.Port = cfg.Bot.Port
 	}
 
 	/* Web |> module <| */

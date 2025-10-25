@@ -9,7 +9,6 @@ import (
 
 type ConfigurationRepo struct {
 	IBaseRepository[model.Configuration]
-	*database.Database
 }
 
 func init() {
@@ -19,6 +18,5 @@ func init() {
 func NewConfigurationRepo(db *database.Database) *ConfigurationRepo {
 	return &ConfigurationRepo{
 		NewBaseRepository[model.Configuration](db.DB),
-		db,
 	}
 }

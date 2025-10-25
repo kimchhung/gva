@@ -125,7 +125,6 @@ func (m *Middleware) Translation() echo.MiddlewareFunc {
 			m.log.Error("failed to initialize translator", zap.Error(err))
 		}
 
-		m.translator.SetAsDefaultTranslator()
 	}
 
 	if m.translator.IsInitialized() {

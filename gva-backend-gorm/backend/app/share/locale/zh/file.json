@@ -6,7 +6,7 @@
   },
   {
     "locale": "zh",
-    "key": " error_while_uploading",
+    "key": "error_while_uploading",
     "trans": "上传时出错"
   }
 ]

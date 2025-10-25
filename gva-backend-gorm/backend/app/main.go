@@ -22,16 +22,16 @@ func Run() {
 	modules := []fx.Option{}
 
 	/* Enable admin Module */
-	if cfg.API.Admin.Enable {
+	if cfg.Admin.Enable {
 		modules = append(modules, adminmodule.NewAdminModules)
 	}
 
 	/* Enable Bot Module */
-	if cfg.API.Bot.Enable {
+	if cfg.Bot.Enable {
 		modules = append(modules, botmodule.NewbotModules)
 	}
 
-	if cfg.API.Web.Enable {
+	if cfg.Web.Enable {
 		modules = append(modules, webmodule.NewWebModules)
 	}
 

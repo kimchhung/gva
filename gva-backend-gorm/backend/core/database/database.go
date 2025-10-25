@@ -20,8 +20,6 @@ import (
 	"github.com/xo/dburl"
 )
 
-type TxOperaton func(tx *gorm.DB) error
-
 type Database struct {
 	*gorm.DB
 	cfg *env.Config
@@ -75,18 +73,6 @@ func (db *Database) Close() error {
 	}
 
 	return nil
-}
-
-func (db *Database) MultiTransaction(fns ...TxOperaton) error {
-	return db.Transaction(func(tx *gorm.DB) error {
-		for _, fn := range fns {
-			if err := fn(db.DB); err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
 }
 
 func (db *Database) SeedModels(ctx context.Context, seeder ...coretype.Seeder) {

@@ -7,7 +7,6 @@ import (
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
 	"backend/app/share/service"
-	"backend/core/database"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
@@ -81,7 +80,7 @@ func (s *ConfigurationService) GetConfiguration(ctx context.Context, id uint) (*
 }
 
 // LockForUpdate locks a Configuration for update.
-func (s *ConfigurationService) LockForUpdate(ctx context.Context, id uint) database.TxOperaton {
+func (s *ConfigurationService) LockForUpdate(ctx context.Context, id uint) func(tx *gorm.DB) error {
 	return func(tx *gorm.DB) error {
 		_, err := s.repo.Tx(tx).GetById(ctx, id, gormq.WithSelect("id", "description", "value"), gormq.WithLockUpdate())
 		if err != nil {
@@ -99,6 +98,7 @@ func (s *ConfigurationService) LockForUpdate(ctx context.Context, id uint) datab
 
 // UpdateConfiguration updates a Configuration.
 func (s *ConfigurationService) UpdateConfiguration(ctx context.Context, id uint, p *dto.UpdateConfigurationRequest) (updatedRes *dto.ConfigurationResponse, err error) {
+
 	err = s.repo.MultiTransaction(
 		s.LockForUpdate(ctx, id),
 		func(tx *gorm.DB) error {

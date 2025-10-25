@@ -26,11 +26,11 @@ var (
 func Run() {
 	// * Run only web api
 	// force app to enable only admin module
-	cfg.API.Admin.Enable = true
-	cfg.API.Bot.Enable = false
+	cfg.Admin.Enable = true
+	cfg.Bot.Enable = false
 
-	if cfg.API.Admin.Port != "" {
-		cfg.App.Port = cfg.API.Admin.Port
+	if cfg.Admin.Port != "" {
+		cfg.App.Port = cfg.Admin.Port
 	}
 
 	/* Admin |> module <| */

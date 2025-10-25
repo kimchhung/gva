@@ -2,6 +2,6 @@
   {
     "locale": "zh",
     "key": "username_already_exists",
-    "trans": "此用户名已存在"
+    "trans": "用户名已存在"
   }
 ]

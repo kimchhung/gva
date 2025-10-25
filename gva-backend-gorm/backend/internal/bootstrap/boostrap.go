@@ -78,7 +78,6 @@ func (b *Bootstrap) start(ctx context.Context) error {
 		b.log.Panic("b.redis.Connect", zap.Error(err))
 	}
 
-	// Register middlewares & routes
 	b.middleware.RegisterMiddleware(b.app)
 
 	b.router.Register(ctx)

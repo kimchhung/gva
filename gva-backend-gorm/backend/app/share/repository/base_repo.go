@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"context"
-	"errors"
 	"backend/internal/dbtx"
 	"backend/internal/gormq"
 	"backend/internal/relay"
+	"context"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -30,6 +30,9 @@ type IBaseRepository[T any] interface {
 	// transaction
 	Tx(*gorm.DB) IBaseRepository[T]
 	UseTxIfExist(ctx context.Context) IBaseRepository[T]
+	DB() *gorm.DB
+
+	MultiTransaction(fns ...func(tx *gorm.DB) error) error
 }
 
 type BaseRepository[T any] struct {
@@ -40,6 +43,22 @@ type BaseRepository[T any] struct {
 func NewBaseRepository[T any](db *gorm.DB) IBaseRepository[T] {
 	var model T
 	return &BaseRepository[T]{db, &model}
+}
+
+func (repo *BaseRepository[T]) DB() *gorm.DB {
+	return repo.db
+}
+
+func (repo *BaseRepository[T]) MultiTransaction(fns ...func(tx *gorm.DB) error) error {
+	return repo.db.Transaction(
+		func(tx *gorm.DB) error {
+			for _, f := range fns {
+				f(tx)
+			}
+
+			return nil
+		},
+	)
 }
 
 func (repo *BaseRepository[T]) Tx(tx *gorm.DB) IBaseRepository[T] {

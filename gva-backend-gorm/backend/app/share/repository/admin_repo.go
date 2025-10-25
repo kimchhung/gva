@@ -11,7 +11,6 @@ import (
 // UserQueries struct for queries from User model.
 type AdminRepo struct {
 	IBaseRepository[model.Admin]
-	*database.Database
 }
 
 func init() {
@@ -21,12 +20,11 @@ func init() {
 func NewAdminRepo(db *database.Database) *AdminRepo {
 	return &AdminRepo{
 		NewBaseRepository[model.Admin](db.DB),
-		db,
 	}
 }
 
 func (r *AdminRepo) GetRolesByID(adminID uint, admin *model.Admin) error {
-	err := r.DB.Model(&model.AdminRole{}).
+	err := r.DB().Model(&model.AdminRole{}).
 		Select("admin_roles.id", "admin_roles.name_id").
 		Joins("inner join admin_admin_roles on admin_roles.id = admin_admin_roles.admin_role_id").
 		Where("admin_admin_roles.admin_id = ?", adminID).
@@ -47,7 +45,7 @@ func (r *AdminRepo) GetRolesByID(adminID uint, admin *model.Admin) error {
 	}
 	admin.RoleIds = adminRoleIds
 
-	err = r.DB.Model(&model.Permission{}).
+	err = r.DB().Model(&model.Permission{}).
 		Distinct("scope").
 		Joins("inner join admin_role_permissions on permissions.id = admin_role_permissions.permission_id").
 		Where("admin_role_permissions.admin_role_id IN (?)", adminRoleIds).

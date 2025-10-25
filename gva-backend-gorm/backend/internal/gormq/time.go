@@ -12,6 +12,7 @@ import (
 
 type (
 	Option func(q *gorm.DB) *gorm.DB
+	Tx     func(q *gorm.DB) error
 
 	TimeBetweenValue struct {
 		Start time.Time

@@ -47,38 +47,34 @@ type (
 		}
 		Host string `mapstructure:"host" default:"localhost:4000"`
 	}
-
-	api struct {
-		Admin struct {
-			Enable   bool   `default:"true"`
-			Port     string `default:"4001"`
-			BasePath string `mapstructure:"base_path" default:"/admin/v1"`
-			Auth     struct {
-				JwtSecret        string `mapstructure:"jwt_secret" default:"secret"`
-				PasswordHashCost int    `mapstructure:"password_hash_cost" default:"10"`
-				TotpTestCode     string `mapstructure:"totp_test_code" default:"666666"`
-				AccessTokenTTL   int    `mapstructure:"access_token_ttl" default:"7200"`
-				RefreshTokenTTL  int    `mapstructure:"refresh_token_ttl" default:"86400"`
-			}
-		}
-		Bot struct {
-			Enable   bool   `default:"true"`
-			Port     string `default:"4002"`
-			BasePath string `mapstructure:"base_path" default:"/bot/v1"`
-		}
-		Web struct {
-			Enable   bool   `default:"true"`
-			Port     string `default:"4000"`
-			BasePath string `mapstructure:"base_path" default:"/web/v1"`
+	admin struct {
+		Enable   bool   `default:"true"`
+		Port     string `default:"4001"`
+		BasePath string `mapstructure:"base_path" default:"/admin/v1"`
+		Auth     struct {
+			JwtSecret        string `mapstructure:"jwt_secret" default:"secret"`
+			PasswordHashCost int    `mapstructure:"password_hash_cost" default:"10"`
+			TotpTestCode     string `mapstructure:"totp_test_code" default:"666666"`
+			AccessTokenTTL   int    `mapstructure:"access_token_ttl" default:"7200"`
+			RefreshTokenTTL  int    `mapstructure:"refresh_token_ttl" default:"86400"`
 		}
 	}
-
+	bot struct {
+		Enable   bool   `default:"true"`
+		Port     string `default:"4002"`
+		BasePath string `mapstructure:"base_path" default:"/bot/v1"`
+	}
+	web struct {
+		Enable   bool   `default:"true"`
+		Port     string `default:"4000"`
+		BasePath string `mapstructure:"base_path" default:"/web/v1"`
+	}
 	db = struct {
 		Url    string `default:"mysql://root:password@db-service/gva?parseTime=true"`
 		UrlDev string `default:"mysql://root:password@db-service/gva_dev?parseTime=true" mapstructure:"url_dev"`
 		Redis  struct {
-			Enable bool  `default:"true"`
-			Url    string `default:"rediss://:password@cache-service"`
+			Enable bool   `default:"true"`
+			Url    string `default:"redis://:password@cache-service"`
 		}
 		Seed struct {
 			// enable true, always run on app start
@@ -92,7 +88,6 @@ type (
 			} `mapstructure:"super_admin"`
 		}
 	}
-
 	middleware = struct {
 		Swagger struct {
 			Enable bool   `default:"true"`
@@ -118,7 +113,6 @@ type (
 			Enable bool `default:"true"`
 		}
 	}
-
 	s3 struct {
 		Region   string
 		Key      string `mapstructure:"access_key_id"`
@@ -144,12 +138,15 @@ type CtxKey struct{}
 
 type Config struct {
 	App        app
-	API        api
 	DB         db
 	Middleware middleware
 	S3         s3
 	Logger     logger
 	Google     google
+
+	Admin admin
+	Bot   bot
+	Web   web
 }
 
 func NewConfig() *Config {
