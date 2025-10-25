@@ -21,13 +21,11 @@ import (
 var NewAdminModules = fx.Module("admin-module",
 	auth.AuthModule,
 	index.IndexModule,
-
 	admin.AdminModule,
 	adminrole.AdminRoleModule,
 	permission.PermissionModule,
 	configuration.ConfigurationModule,
 	operationlog.OperationLogModule,
-
 	// #inject:module (do not remove this comment, it is used by the code generator)
 
 	// middleware

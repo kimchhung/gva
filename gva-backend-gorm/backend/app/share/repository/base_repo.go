@@ -31,7 +31,6 @@ type IBaseRepository[T any] interface {
 	Tx(*gorm.DB) IBaseRepository[T]
 	UseTxIfExist(ctx context.Context) IBaseRepository[T]
 	DB() *gorm.DB
-
 	MultiTransaction(fns ...func(tx *gorm.DB) error) error
 }
 
@@ -55,7 +54,6 @@ func (repo *BaseRepository[T]) MultiTransaction(fns ...func(tx *gorm.DB) error) 
 			for _, f := range fns {
 				f(tx)
 			}
-
 			return nil
 		},
 	)

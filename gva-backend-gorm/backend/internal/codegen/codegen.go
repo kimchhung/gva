@@ -38,27 +38,27 @@ func GenerateFiles(params CodeGenParams, opts ...string) {
 	for _, opt := range opts {
 		switch opt {
 		case "model":
-			GenerateModuleChildNoFolder(params, "model", "app/common", "model", module_template.Model)
+			GenerateModuleChildNoFolder(params, "model", "app/share", "model", module_template.Model)
 		case "module":
-			GenerateModule(params, "module", "api/admin/module", module_template.Module)
-			InjectCodeToPos("api/admin/module/module.go", map[string]string{
-				"// #inject:module":       fmt.Sprintf("%v.%vModule,\n", params.EntityAllLower, params.EntityPascal),
-				"// #inject:moduleImport": fmt.Sprintf(`"backend/app/admin/module/%v"`+"\n", params.EntityAllLower),
+			GenerateModule(params, "module", "app/admin/module", module_template.Module)
+			InjectCodeToPos("app/admin/module/module.go", map[string]string{
+				"// #inject:module":       fmt.Sprintf("%v.%vModule,", params.EntityAllLower, params.EntityPascal),
+				"// #inject:moduleImport": fmt.Sprintf(`"backend/app/admin/module/%v"`, params.EntityAllLower),
 			}, true)
 		case "repository":
-			GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)
+			GenerateModuleChildNoFolder(params, "repository", "app/share", "repository", module_template.Repository)
 		case "permission":
-			GenerateModuleChildNoFolder(params, "permission", "app/common", "permission", module_template.Permission)
+			GenerateModuleChildNoFolder(params, "permission", "app/share", "permission", module_template.Permission)
 		case "dto":
-			GenerateModuleChild(params, "dto", "api/admin/module", "request", module_template.DtoRequest)
-			GenerateModuleChild(params, "dto", "api/admin/module", "response", module_template.DtoResponse)
-			InjectCodeToPos("app/common/constant/table/db_table_name.go", map[string]string{
-				"// #inject:tableName": fmt.Sprintf("\n"+`%v string = "%vs"`, params.EntityPascal, params.EntitySnake),
+			GenerateModuleChild(params, "dto", "app/admin/module", "request", module_template.DtoRequest)
+			GenerateModuleChild(params, "dto", "app/admin/module", "response", module_template.DtoResponse)
+			InjectCodeToPos("app/share/constant/table/db_table_name.go", map[string]string{
+				"// #inject:tableName": fmt.Sprintf(`%v string = "%vs"`, params.EntityPascal, params.EntitySnake),
 			}, true)
 		case "service":
-			GenerateModuleChild(params, "", "api/admin/module", "service", module_template.Service)
+			GenerateModuleChild(params, "", "app/admin/module", "service", module_template.Service)
 		case "controller":
-			GenerateModuleChild(params, "", "api/admin/module", "controller", module_template.Controller)
+			GenerateModuleChild(params, "", "app/admin/module", "controller", module_template.Controller)
 		default:
 			panic(fmt.Errorf("unknown option: %v", opt))
 		}

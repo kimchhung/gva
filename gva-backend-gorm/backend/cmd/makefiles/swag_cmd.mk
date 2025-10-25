@@ -4,10 +4,10 @@ swag:
 	make swag.web
 
 swag.admin:
-	swag init -g main.go -d ./api/admin --parseDependency --parseInternal --output ./api/admin/docs --instanceName admin
+	swag init -g main.go -d ./app/admin --parseDependency --parseInternal --output ./app/admin/docs --instanceName admin
 
 swag.bot:
-	swag init -g main.go -d ./api/bot --parseDependency --parseInternal --output ./api/bot/docs --instanceName bot
+	swag init -g main.go -d ./app/bot --parseDependency --parseInternal --output ./app/bot/docs --instanceName bot
 
 swag.web:
-	swag init -g main.go -d ./api/web --parseDependency --parseInternal --output ./api/web/docs --instanceName web
+	swag init -g main.go -d ./app/web --parseDependency --parseInternal --output ./app/web/docs --instanceName web

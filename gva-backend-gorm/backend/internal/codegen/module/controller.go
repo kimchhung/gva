@@ -55,7 +55,7 @@ func (con *{{.EntityPascal}}Controller) Create() *ctr.Route {
 		body := new(dto.Create{{.EntityPascal}}Request)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.{{.EntityPascal}}Add),
+			permission.RequireAny(permission.{{.EntityPascal}}Add),
 			request.Validate(
 				request.BodyParser(body),
 			),
@@ -88,7 +88,7 @@ func (con *{{.EntityPascal}}Controller) Get() *ctr.Route {
 		params := new(dto.Get{{.EntityPascal}}Request)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.{{.EntityPascal}}View),
+			permission.RequireAny(permission.{{.EntityPascal}}View),
 			request.Validate(
 				request.ParamsParser(params),
 			),
@@ -127,7 +127,7 @@ func (con *{{.EntityPascal}}Controller) GetMany() *ctr.Route {
 		query := new(dto.GetManyQuery)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.{{.EntityPascal}}View),
+			permission.RequireAny(permission.{{.EntityPascal}}View),
 			request.Validate(
 				request.PaginateParser(&query.QueryDto),
 			),
@@ -164,7 +164,7 @@ func (con *{{.EntityPascal}}Controller) Update() *ctr.Route {
 		body := new(dto.Update{{.EntityPascal}}Request)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.{{.EntityPascal}}Edit),
+			permission.RequireAny(permission.{{.EntityPascal}}Edit),
 			request.Validate(
 				request.ParamsParser(params),
 				request.BodyParser(body),
@@ -200,7 +200,7 @@ func (con *{{.EntityPascal}}Controller) Patch() *ctr.Route {
 		body := new(dto.UpdatePatch{{.EntityPascal}}Request)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.{{.EntityPascal}}Edit),
+			permission.RequireAny(permission.{{.EntityPascal}}Edit),
 			request.Validate(
 				request.ParamsParser(params),
 				request.BodyParser(body),
@@ -234,7 +234,7 @@ func (con *{{.EntityPascal}}Controller) Delete() *ctr.Route {
 		params := new(dto.Get{{.EntityPascal}}Request)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.{{.EntityPascal}}Delete),
+			permission.RequireAny(permission.{{.EntityPascal}}Delete),
 			request.Validate(
 				request.ParamsParser(params),
 			),

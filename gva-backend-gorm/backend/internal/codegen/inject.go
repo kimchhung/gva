@@ -21,12 +21,13 @@ func InjectCodeToPos(filePath string, pos map[string]string, format bool) {
 		fileContext := strings.TrimSpace(strContent)
 		text := strings.TrimSpace(value)
 
-		if strings.Contains(fileContext, text) {
+		if strings.Contains(fileContext, value) {
 			fmt.Println("Skipping text injection in file:"+filePath+" for existing text:", text)
 			continue
 		}
 
 		insertStruct := strings.LastIndex(strContent, key)
+		value += "\n\t"
 		strContent = strContent[:insertStruct] + value + strContent[insertStruct:]
 	}
 
@@ -39,6 +40,8 @@ func InjectCodeToPos(filePath string, pos map[string]string, format bool) {
 	if format {
 		formatFile(filePath)
 	}
+
+	fmt.Println("Modified code to file:", filePath)
 }
 
 func formatFile(filePath string) {

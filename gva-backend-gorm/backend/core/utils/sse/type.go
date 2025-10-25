@@ -7,7 +7,7 @@ import (
 )
 
 // Event represents Server-Sent Event.
-// SSE explanation: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format
+// SSE explanation: https://developer.mozilla.org/en-US/docs/Web/app/Server-sent_events/Using_server-sent_events#event_stream_format
 type Event struct {
 	// ID is used to set the EventSource object's last event ID value.
 	ID []byte

@@ -30,7 +30,7 @@ func (con *AdminController) Get() *ctr.Route {
 		params := new(dto.GetAdminRequest)
 
 		return []ctr.H{
-			permission.RequireAnyWithSuper(permission.AdminView),
+			permission.RequireAny(permission.AdminView),
 			request.Validate(
 				request.ParamsParser(params),
 			),

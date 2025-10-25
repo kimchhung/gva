@@ -10,6 +10,11 @@ import (
 )
 
 func GenerateByCmd(params codegen.CodeGenParams, cmds ...string) {
+
+	fmt.Println("----------- Generating:", params.EntityAllLower, "------------")
+	fmt.Println("")
+	defer fmt.Println("\n-----------Completed:", params.EntityAllLower, "------------")
+
 	seperator := ","
 
 	all := []string{}

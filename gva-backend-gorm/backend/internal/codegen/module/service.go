@@ -10,10 +10,9 @@ import (
 	coreerror "backend/core/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
-	"backend/core/database"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
-	"backend/util"
+	"backend/core/utils"
 
 	"gorm.io/gorm"
 )
@@ -58,7 +57,7 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id 
 }
 
 // LockForUpdate locks a {{.EntityPascal}} for update.
-func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) database.TxOperaton {
+func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) gormq.Tx {
 	return func(tx *gorm.DB) error {
 		_, err := s.repo.Tx(tx).GetById(ctx, id, gormq.WithSelect("id"), gormq.WithLockUpdate())
 		if err != nil {

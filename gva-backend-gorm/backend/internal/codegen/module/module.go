@@ -4,7 +4,7 @@ var special = "`"
 var Module = `package {{.EntityAllLower}}
 
 import (
-	"backend/app/share/controller"
+	adminrouter "backend/app/admin/router"
 	"go.uber.org/fx"
 )
 
