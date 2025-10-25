@@ -3,8 +3,8 @@ package module_template
 var Repository = `package repository
 
 import (
-	"backend/app/common/model"
-	"backend/internal/bootstrap/database"
+	"backend/app/share/model"
+	"backend/core/database"
 
 	"go.uber.org/fx"
 )

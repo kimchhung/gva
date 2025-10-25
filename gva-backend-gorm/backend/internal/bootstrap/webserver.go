@@ -4,13 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	appctx "backend/app/common/context"
+	"backend/core/utils/color"
 	"backend/env"
-	"backend/utils/color"
 
 	"github.com/gosuri/uitable"
-
-	"backend/internal/request"
 
 	"github.com/labstack/echo/v4"
 )
@@ -18,14 +15,8 @@ import (
 func NewEcho(cfg *env.Config) *echo.Echo {
 	// Setup Webserver
 
-	// Pass production config to check it
-	request.IsProduction = cfg.IsProd()
-
 	e := echo.New()
 	e.Server.IdleTimeout = time.Duration(cfg.App.IdleTimeout) * time.Second
-	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		appctx.ErrorHandler(err, c)
-	}
 
 	return e
 }

@@ -4,7 +4,7 @@ import "strings"
 
 var Model = strings.ReplaceAll(`package model
 
-import "backend/app/common/constant/table"
+import "backend/app/share/constant/table"
 
 type {{.EntityPascal}} struct {
 	BaseModel

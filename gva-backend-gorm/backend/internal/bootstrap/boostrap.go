@@ -1,35 +1,34 @@
 package bootstrap
 
 import (
+	"backend/app/share/middleware"
+	"backend/app/share/permission"
+	"backend/app/share/seeds"
+	"backend/app/share/service"
+	"backend/core/router"
+	"backend/core/utils/ctxutil"
+	"backend/env"
+
+	"backend/core/database"
+	"backend/internal/logger"
+
 	"context"
 	"time"
 
-	"backend/app/common/permission"
-	"backend/app/common/seeds"
-	"backend/app/common/service"
-	"backend/app/middleware"
-	"backend/app/router"
-	"backend/env"
-	"backend/internal/bootstrap/database"
-	"backend/internal/ctxutil"
-
-	"backend/internal/logger"
-
 	"github.com/labstack/echo/v4"
-
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
 type Bootstrap struct {
-	lc          fx.Lifecycle
-	cfg         *env.Config
-	routers     *router.Router
-	app         *echo.Echo
-	middlewares *middleware.Middleware
-	db          *database.Database
-	redis       *database.Redis
-	log         *zap.Logger
+	lc         fx.Lifecycle
+	cfg        *env.Config
+	router     *router.Router
+	app        *echo.Echo
+	middleware *middleware.Middleware
+	db         *database.Database
+	redis      *database.Redis
+	log        *zap.Logger
 
 	startedListeners   []chan struct{}
 	shutdownListerners []chan struct{}
@@ -39,35 +38,32 @@ type Bootstrap struct {
 func NewBootstrap(
 	lc fx.Lifecycle,
 	cfg *env.Config,
-	routers *router.Router,
+	router *router.Router,
 	app *echo.Echo,
-	middlewares *middleware.Middleware,
+	middleware *middleware.Middleware,
 	db *database.Database,
 	redis *database.Redis,
 	log *zap.Logger,
 ) *Bootstrap {
 	return &Bootstrap{
-		lc:          lc,
-		cfg:         cfg,
-		routers:     routers,
-		app:         app,
-		middlewares: middlewares,
-		db:          db,
-		log:         log,
-		redis:       redis,
+		lc:         lc,
+		cfg:        cfg,
+		router:     router,
+		app:        app,
+		middleware: middleware,
+		db:         db,
+		log:        log,
+		redis:      redis,
 	}
 }
 
 func (b *Bootstrap) setup() {
 	b.lc.Append(
-		fx.StartStopHook(
-			b.start,
-			b.stop,
-		),
+		fx.StartStopHook(b.start, b.stop),
 	)
 }
 
-func (b *Bootstrap) start(ctx context.Context) {
+func (b *Bootstrap) start(ctx context.Context) error {
 	if !b.cfg.IsProd() {
 		logger.Log(b.cfg)
 	}
@@ -83,8 +79,9 @@ func (b *Bootstrap) start(ctx context.Context) {
 	}
 
 	// Register middlewares & routes
-	b.middlewares.Register()
-	b.routers.Register(ctxutil.Add(ctx, b.app, b.cfg))
+	b.middleware.RegisterMiddleware(b.app)
+
+	b.router.Register(ctx)
 
 	b.app.Server.RegisterOnShutdown(func() {
 		b.log.Info("1- Shutdown the database")
@@ -132,9 +129,11 @@ func (b *Bootstrap) start(ctx context.Context) {
 			}
 		}()
 	}
+
+	return nil
 }
 
-func (b *Bootstrap) stop(ctx context.Context) {
+func (b *Bootstrap) stop(ctx context.Context) error {
 	b.isShuttingdown = true
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(b.cfg.App.ShutdownTimeout)*time.Second)
 	defer cancel()
@@ -150,6 +149,8 @@ func (b *Bootstrap) stop(ctx context.Context) {
 
 	b.log.Sugar().Infof("%s was successful shutdown.", b.cfg.App.Name)
 	b.log.Info("\u001b[96mSee you again👋\u001b[0m")
+
+	return nil
 }
 
 func (b *Bootstrap) RunSeed(ctx context.Context) {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
+	ustrings "backend/core/utils/strings"
 	module_template "backend/internal/codegen/module"
-	ustrings "backend/utils/strings"
 )
 
 type CodeGenParams struct {
@@ -43,7 +43,7 @@ func GenerateFiles(params CodeGenParams, opts ...string) {
 			GenerateModule(params, "module", "api/admin/module", module_template.Module)
 			InjectCodeToPos("api/admin/module/module.go", map[string]string{
 				"// #inject:module":       fmt.Sprintf("%v.%vModule,\n", params.EntityAllLower, params.EntityPascal),
-				"// #inject:moduleImport": fmt.Sprintf(`"backend/api/admin/module/%v"`+"\n", params.EntityAllLower),
+				"// #inject:moduleImport": fmt.Sprintf(`"backend/app/admin/module/%v"`+"\n", params.EntityAllLower),
 			}, true)
 		case "repository":
 			GenerateModuleChildNoFolder(params, "repository", "app/common", "repository", module_template.Repository)

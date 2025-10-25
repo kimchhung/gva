@@ -4,7 +4,7 @@ var special = "`"
 var Module = `package {{.EntityAllLower}}
 
 import (
-	"backend/app/common/controller"
+	"backend/app/share/controller"
 	"go.uber.org/fx"
 )
 
@@ -14,6 +14,6 @@ var {{.EntityPascal}}Module = fx.Module("{{.EntityPascal}}Module",
 	fx.Provide(New{{.EntityPascal}}Service),
 
 	// Regiser Controller
-	controller.Admin.AddController(New{{.EntityPascal}}Controller),
+	adminrouter.Controller.Add(New{{.EntityPascal}}Controller),
 )
 `

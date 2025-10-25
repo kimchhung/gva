@@ -38,8 +38,8 @@ type GetManyQuery struct {
 var DtoResponse = strings.ReplaceAll(`package dto
 
 import (
-	"backend/app/common/constant/table"
-	"backend/app/common/model"
+	"backend/app/share/constant/table"
+	"backend/app/share/model"
 )
 
 // Requests & responses Data Transfer Object

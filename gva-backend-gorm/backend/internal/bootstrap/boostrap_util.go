@@ -1,8 +1,8 @@
 package bootstrap
 
 import (
+	"backend/core/utils/color"
 	"backend/internal/treeprint"
-	"backend/utils/color"
 	"context"
 	"sort"
 	"strings"

@@ -10,12 +10,12 @@ import (
 var Controller = strings.ReplaceAll(`package {{.EntityAllLower}}
 
 import (
-	"backend/api/admin/module/{{.EntityAllLower}}/dto"
-	"backend/app/common/permission"
-	"backend/app/common/service"
+	"backend/app/admin/module/{{.EntityAllLower}}/dto"
+	"backend/app/share/permission"
+	"backend/app/share/service"
 	"backend/internal/ctr"
-	"backend/internal/request"
-	"backend/internal/response"
+	"backend/core/utils/request"
+	"backend/core/utils/response"
 
 	"github.com/labstack/echo/v4"
 )

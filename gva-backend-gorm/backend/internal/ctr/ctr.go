@@ -1,7 +1,6 @@
 package ctr
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
@@ -11,9 +10,6 @@ import (
 type H = echo.HandlerFunc
 type M = echo.MiddlewareFunc
 type R = func(*echo.Group)
-type ModuleRouter interface {
-	Register(ctx context.Context)
-}
 
 type ScopeHandler func() []H
 
