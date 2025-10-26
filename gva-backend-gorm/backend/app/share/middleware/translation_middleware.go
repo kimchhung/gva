@@ -1,4 +1,4 @@
-package coremiddleware
+package middleware
 
 import (
 	"backend/core/lang"

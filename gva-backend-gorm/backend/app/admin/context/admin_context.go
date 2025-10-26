@@ -1,4 +1,4 @@
-package admincontext
+package context
 
 import (
 	"context"
@@ -19,6 +19,8 @@ type AdminContext struct {
 	Admin        *model.Admin
 	isSuperAdmin bool
 	scopes       []string
+
+	EndpointScopes []string
 }
 
 func GetAdminContext(ctx context.Context) (*AdminContext, error) {

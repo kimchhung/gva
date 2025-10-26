@@ -9,7 +9,6 @@ import (
 	docs "backend/app/bot/docs"
 	"backend/core/router"
 	coretype "backend/core/type"
-	"backend/core/utils"
 	"backend/core/utils/swagger"
 	"backend/env"
 	"backend/internal/ctr"
@@ -48,7 +47,6 @@ func NewRouter(p RouterParam) *Router {
 
 func (r *Router) Register(ctx context.Context) {
 	//default value if not exist in env config
-	utils.SetIfEmpty(&r.env.Bot.BasePath, "/bot/v1")
 	docs.SwaggerInfobot.BasePath = r.env.Bot.BasePath
 	docs.SwaggerInfobot.Host = r.env.App.Host
 

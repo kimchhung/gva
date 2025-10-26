@@ -3,7 +3,6 @@ package corecontext
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sync"
 )
 
@@ -13,8 +12,7 @@ type (
 
 var (
 	RequestContextKey Key = "req_context"
-
-	ErrNotFound = errors.New("request context not found")
+	ErrNotFound           = errors.New("request context not found")
 )
 
 type RequestContext struct {
@@ -57,32 +55,4 @@ func MustRequestContext(ctx context.Context) *RequestContext {
 	}
 
 	return actx
-}
-
-func Set(ctx context.Context, key Key, value any) {
-	MustRequestContext(ctx).Set(key, value)
-}
-
-func Get[T any](ctx context.Context, key Key) (T, error) {
-	v, ok := MustRequestContext(ctx).Get(key)
-	if !ok {
-		var zero T
-		return zero, fmt.Errorf("key %v not found in context", key)
-	}
-
-	expectedType, ok := v.(T)
-	if !ok {
-		return expectedType, fmt.Errorf("invalid type, expected %T, got %T", v, expectedType)
-	}
-
-	return expectedType, nil
-}
-
-func Must[T any](ctx context.Context, key Key) T {
-	v, err := Get[T](ctx, key)
-	if err != nil {
-		panic(err)
-	}
-
-	return v
 }

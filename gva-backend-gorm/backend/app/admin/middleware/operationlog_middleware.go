@@ -1,102 +1,106 @@
-package adminmiddleware
+package middleware
 
 import (
+	admincontext "backend/app/admin/context"
 	"backend/app/share/model"
+	corecontext "backend/core/context"
 	"backend/core/utils/json"
+	"backend/core/utils/request"
+	"backend/core/utils/response"
 	"bytes"
-	"context"
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	"go.uber.org/zap"
 )
 
-type OperationLogSkip struct{}
-
-func (m *Middleware) OperationLog() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) (err error) {
-			ctx := c.Request().Context()
-			if _, isKeyExist := ctx.Value(OperationLogSkip{}).(bool); isKeyExist {
-				return next(c)
-			}
-
-			operationData := model.OperationLogData{}
-			method := c.Request().Method
-			queries := c.Request().URL.Query()
-			if len(queries) > 0 {
-				operationData["queries"] = flattenQueryParams(queries)
-			}
-
-			switch method {
-			case http.MethodPost, http.MethodPut, http.MethodPatch:
-				var bodyBytes []byte
-				if c.Request().Body != nil {
-					bodyBytes, err = io.ReadAll(c.Request().Body)
-					if err != nil {
-						return
-					}
-					c.Request().Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-				}
-
-				if strings.Contains(c.Request().Header.Get("Content-Type"), "application/json") {
-					operationData["body"] = json.JSON(bodyBytes).Object()
-				} else {
-					operationData["body"] = json.JSON(bodyBytes).String()
-				}
-
-			default:
-			}
-
-			// defer func(c echo.Context, operationData model.OperationLogData) {
-			// 	ctx := appctx.MustRequestContext(c.Request().Context())
-			// 	adminCtx, err := appctx.GetAdminContext(c.Request().Context())
-			// 	if err != nil {
-			// 		return
-			// 	}
-
-			// 	var scope string
-			// 	if len(ctx.LogFields.Scopes) > 0 {
-			// 		scope = ctx.LogFields.Scopes[0]
-			// 	}
-
-			// 	for k, v := range ctx.LogFields.MetaData {
-			// 		operationData[k] = v
-			// 	}
-
-			// 	op := model.OperationLog{
-			// 		Method:    method,
-			// 		Path:      ctx.LogFields.Path,
-			// 		Data:      operationData,
-			// 		IP:        ctx.LogFields.RemoteIP,
-			// 		AdminId:   adminCtx.Admin.ID,
-			// 		RoleIds:   adminCtx.Admin.RoleIds,
-			// 		Scope:     scope,
-			// 		Code:      ctx.LogFields.ErrorCode,
-			// 		CreatedAt: time.Now(),
-			// 		Latency:   ctx.LogFields.Latency.Milliseconds(),
-			// 		Msg:       ctx.LogFields.ErrorMsg,
-			// 	}
-
-			// 	if ctx.LogFields.ErrorCode == apperror.ErrUnknownError.ErrorCode {
-			// 		op.Error = fmt.Sprintf("error=%v\n stacktrace=%v", ctx.LogFields.Error.Error(), string(ctx.LogFields.Stack))
-			// 	}
-
-			// 	db.Create(&op)
-			// }(c, operationData)
-
-			return next(c)
-		}
-	}
-}
+const (
+	skipOperationLog    corecontext.Key = "skip_opration_log"
+	OperationLogDataKey corecontext.Key = "operationlog_data"
+)
 
 // EnableOperationLog is a middleware to skip operation logger
 func SkipOperationLog() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			ctx := context.WithValue(c.Request().Context(), OperationLogSkip{}, struct{}{})
-			c.SetRequest(c.Request().WithContext(ctx))
+			corecontext.Set(c.Request().Context(), skipOperationLog, struct{}{})
+			return next(c)
+		}
+	}
+}
+
+func (m *Middleware) OperationLog() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) (err error) {
+			ctx := c.Request().Context()
+
+			hook, err := request.GetHook(ctx)
+			if err != nil {
+				return next(c)
+			}
+
+			now := time.Now()
+			hook.OnBeforeResponse(func(c echo.Context, resp *response.Response) {
+				ctx := c.Request().Context()
+				if _, err := corecontext.Get[struct{}](ctx, skipOperationLog); err == nil {
+					return
+				}
+
+				adminctx, err := admincontext.GetAdminContext(ctx)
+				if err != nil {
+					log.Error("get adminctx failed", zap.Error(err))
+					return
+				}
+
+				method := c.Request().Method
+				operationData, _ := corecontext.SetOrGet(ctx, OperationLogDataKey, model.OperationLogData{})
+
+				switch method {
+				case http.MethodPost, http.MethodPut, http.MethodPatch:
+					var bodyBytes []byte
+					if c.Request().Body != nil {
+						bodyBytes, err = io.ReadAll(c.Request().Body)
+						if err != nil {
+							return
+						}
+						c.Request().Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+					}
+
+					if strings.Contains(c.Request().Header.Get("Content-Type"), "application/json") {
+						operationData["body"] = json.JSON(bodyBytes).Object()
+					} else {
+						operationData["body"] = json.JSON(bodyBytes).String()
+					}
+				default:
+					queries := c.Request().URL.Query()
+					if len(queries) > 0 {
+						operationData["queries"] = flattenQueryParams(queries)
+					}
+				}
+
+				op := &model.OperationLog{
+					Method:    method,
+					Path:      c.Path(),
+					Data:      operationData,
+					IP:        c.RealIP(),
+					AdminId:   adminctx.Admin.ID,
+					RoleIds:   adminctx.Admin.RoleIds,
+					Scope:     strings.Join(adminctx.EndpointScopes, ","),
+					Code:      resp.Code,
+					Msg:       resp.Message,
+					CreatedAt: time.Now(),
+					Latency:   time.Since(now).Milliseconds(),
+				}
+
+				if err := m.db.Create(op).Error; err != nil {
+					log.Error("create operationlog failed", zap.Error(err))
+				}
+			})
+
 			return next(c)
 		}
 	}

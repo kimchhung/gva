@@ -1,9 +1,9 @@
 package adminrole
 
 import (
+	"backend/app/admin/middleware"
 	"backend/app/admin/module/adminrole/dto"
 	"backend/app/share/permission"
-	"backend/app/share/service"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/internal/ctr"
@@ -14,20 +14,26 @@ import (
 var _ interface{ ctr.CTR } = (*AdminRoleController)(nil)
 
 type AdminRoleController struct {
-	service *AdminRoleService
-	jwt_s   *service.JwtService
+	middleware *middleware.Middleware
+	service    *AdminRoleService
 }
 
-func NewAdminRoleController(service *AdminRoleService, jwt_s *service.JwtService) *AdminRoleController {
+func NewAdminRoleController(
+	middleware *middleware.Middleware,
+	service *AdminRoleService,
+) *AdminRoleController {
 	return &AdminRoleController{
-		service: service,
-		jwt_s:   jwt_s,
+		middleware: middleware,
+		service:    service,
 	}
 }
 
 func (con *AdminRoleController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/adminrole", con.jwt_s.RequiredAdmin()),
+		ctr.Group("/adminrole",
+			con.middleware.IpGuard(),
+			con.middleware.JwtGuard(),
+		),
 	)
 }
 

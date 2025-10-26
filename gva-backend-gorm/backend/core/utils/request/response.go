@@ -2,6 +2,7 @@ package request
 
 import (
 	"backend/core/utils/response"
+	"backend/internal/logger"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,5 +36,17 @@ A fuction to return beautiful and structured responses.
 	}
 */
 func Response(c echo.Context, opts ...response.ReponseOption) error {
-	return response.New(opts...).Parse(c)
+	resp := response.New(opts...)
+	hook, err := GetHook(c.Request().Context())
+	if err == nil {
+		for _, callbacks := range hook.onBeforeResponses {
+			callbacks(c, resp)
+		}
+
+		if r := recover(); r != nil {
+			logger.Log("panic", r)
+		}
+	}
+
+	return resp.Parse(c)
 }

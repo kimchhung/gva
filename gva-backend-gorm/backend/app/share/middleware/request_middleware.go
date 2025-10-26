@@ -1,4 +1,4 @@
-package coremiddleware
+package middleware
 
 import (
 	corecontext "backend/core/context"
@@ -8,11 +8,10 @@ import (
 
 func (m *Middleware) RequestContext() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
+		return func(c echo.Context) (returnErr error) {
 			req := c.Request()
 			ctx := corecontext.WithRequestContext(req.Context())
 			c.SetRequest(req.WithContext(ctx))
-
 			return next(c)
 		}
 	}

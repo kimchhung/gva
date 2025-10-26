@@ -28,10 +28,7 @@ func NewOperationLogController(service *OperationLogService, jwt_s *service.JwtS
 
 func (con *OperationLogController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/operation-log",
-			con.jwt_s.RequiredAdmin(),
-			adminmiddleware.SkipOperationLog(),
-		),
+		ctr.Group("/operation-log", adminmiddleware.SkipOperationLog()),
 	)
 }
 

@@ -7,11 +7,10 @@ import (
 	"go.uber.org/fx"
 
 	docs "backend/app/admin/docs"
-	adminmiddleware "backend/app/admin/middleware"
+	"backend/app/admin/middleware"
 	"backend/core/lang"
 	"backend/core/router"
 	coretype "backend/core/type"
-	"backend/core/utils"
 	"backend/core/utils/swagger"
 	"backend/env"
 	"backend/internal/ctr"
@@ -32,33 +31,32 @@ type RouterParam struct {
 	App *echo.Echo
 	Env *env.Config
 
-	Translator      *lang.Translator
-	AdminMiddleware *adminmiddleware.Middleware
-	Controllers     []ctr.CTR `group:"admin-controllers"`
+	Translator  *lang.Translator
+	Middleware  *middleware.Middleware
+	Controllers []ctr.CTR `group:"admin-controllers"`
 }
 
 type Router struct {
 	app *echo.Echo
 	env *env.Config
 
-	translator      *lang.Translator
-	adminMiddleware *adminmiddleware.Middleware
-	controllers     []ctr.CTR
+	translator  *lang.Translator
+	middleware  *middleware.Middleware
+	controllers []ctr.CTR
 }
 
 func NewRouter(p RouterParam) *Router {
 	return &Router{
-		controllers:     p.Controllers,
-		app:             p.App,
-		env:             p.Env,
-		translator:      p.Translator,
-		adminMiddleware: p.AdminMiddleware,
+		controllers: p.Controllers,
+		app:         p.App,
+		env:         p.Env,
+		translator:  p.Translator,
+		middleware:  p.Middleware,
 	}
 }
 
 func (r *Router) Register(ctx context.Context) {
 	//default value if not exist in env config
-	utils.SetIfEmpty(&r.env.Admin.BasePath, "/admin/v1")
 	docs.SwaggerInfoadmin.BasePath = r.env.Admin.BasePath
 	docs.SwaggerInfoadmin.Host = r.env.App.Host
 
@@ -71,7 +69,9 @@ func (r *Router) Register(ctx context.Context) {
 	api := r.app.Group(r.env.Admin.BasePath)
 
 	// register admin middleware
-	r.adminMiddleware.RegisterMiddleware(api)
+	r.middleware.RegisterMiddleware(api)
+
+	// import admin locale
 	r.translator.Import("./app/admin/locale")
 
 	if err := router.RegisterEcho(api, r.controllers); err != nil {

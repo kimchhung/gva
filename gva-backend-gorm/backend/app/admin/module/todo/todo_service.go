@@ -1,12 +1,10 @@
-package module_template
-
-var Service = `package {{.EntityAllLower}}
+package todo
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"backend/app/admin/module/{{.EntityAllLower}}/dto"
+	"backend/app/admin/module/todo/dto"
 	coreerror "backend/core/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
@@ -17,20 +15,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type {{.EntityPascal}}Service struct {
-	repo *repository.{{.EntityPascal}}Repo
+type TodoService struct {
+	repo *repository.TodoRepo
 }
 
-// New{{.EntityPascal}}Service initializes a new {{.EntityPascal}}Service with a JwtService and a UserStore.
-func New{{.EntityPascal}}Service(repo *repository.{{.EntityPascal}}Repo) *{{.EntityPascal}}Service {
-	return &{{.EntityPascal}}Service{
+// NewTodoService initializes a new TodoService with a JwtService and a UserStore.
+func NewTodoService(repo *repository.TodoRepo) *TodoService {
+	return &TodoService{
 		repo: repo,
 	}
 }
 
-// Create{{.EntityPascal}} creates a new {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, p *dto.Create{{.EntityPascal}}Request) (*dto.{{.EntityPascal}}Response, error) {
-	body := utils.MustCopy(new(model.{{.EntityPascal}}), p)
+// CreateTodo creates a new Todo.
+func (s *TodoService) CreateTodo(ctx context.Context, p *dto.CreateTodoRequest) (*dto.TodoResponse, error) {
+	body := utils.MustCopy(new(model.Todo), p)
 	// Default base model
 	body.BaseModel = model.NewBaseModel()
 	created, err := s.repo.Create(ctx, body)
@@ -38,12 +36,12 @@ func (s *{{.EntityPascal}}Service) Create{{.EntityPascal}}(ctx context.Context, 
 		return nil, err
 	}
 
-	return utils.MustCopy(new(dto.{{.EntityPascal}}Response), created), nil
+	return utils.MustCopy(new(dto.TodoResponse), created), nil
 }
 
-// Get{{.EntityPascal}} gets a {{.EntityPascal}} by ID.
-func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id uint) (*dto.{{.EntityPascal}}Response, error) {
-	{{.EntityAllLower}}, err := s.repo.GetById(ctx, id)
+// GetTodo gets a Todo by ID.
+func (s *TodoService) GetTodo(ctx context.Context, id uint) (*dto.TodoResponse, error) {
+	todo, err := s.repo.GetById(ctx, id)
 	if err != nil {
 		// Check if the error is a not found error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -53,11 +51,11 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id 
 		return nil, err
 	}
 
-	return utils.MustCopy(new(dto.{{.EntityPascal}}Response), {{.EntityAllLower}}), nil
+	return utils.MustCopy(new(dto.TodoResponse), todo), nil
 }
 
-// LockForUpdate locks a {{.EntityPascal}} for update.
-func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) gormq.Tx {
+// LockForUpdate locks a Todo for update.
+func (s *TodoService) LockForUpdate(ctx context.Context, id uint) gormq.Tx {
 	return func(tx *gorm.DB) error {
 		_, err := s.repo.Tx(tx).GetById(ctx, id, gormq.WithSelect("id"), gormq.WithLockUpdate())
 		if err != nil {
@@ -73,12 +71,12 @@ func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) g
 	}
 }
 
-// Update{{.EntityPascal}} updates a {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id uint, p *dto.Update{{.EntityPascal}}Request) (updatedRes *dto.{{.EntityPascal}}Response, err error) {
+// UpdateTodo updates a Todo.
+func (s *TodoService) UpdateTodo(ctx context.Context, id uint, p *dto.UpdateTodoRequest) (updatedRes *dto.TodoResponse, err error) {
 	err = s.repo.MultiTransaction(
 		s.LockForUpdate(ctx, id),
 		func(tx *gorm.DB) error {
-			body := utils.MustCopy(new(model.{{.EntityPascal}}), p)
+			body := utils.MustCopy(new(model.Todo), p)
 			body.ID = id
 
 			updated, err := s.repo.Tx(tx).Update(ctx, body)
@@ -86,7 +84,7 @@ func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, 
 				return err
 			}
 
-			updatedRes = utils.MustCopy(new(dto.{{.EntityPascal}}Response), updated)
+			updatedRes = utils.MustCopy(new(dto.TodoResponse), updated)
 			return nil
 		},
 	)
@@ -94,11 +92,11 @@ func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, 
 		return nil, err
 	}
 
-	return s.Get{{.EntityPascal}}(ctx, id)
+	return s.GetTodo(ctx, id)
 }
 
-// Update{{.EntityPascal}} updates a {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Context, id uint, p *dto.UpdatePatch{{.EntityPascal}}Request) (resp map[string]any, err error) {
+// UpdateTodo updates a Todo.
+func (s *TodoService) UpdatePatchTodo(ctx context.Context, id uint, p *dto.UpdatePatchTodoRequest) (resp map[string]any, err error) {
 	err = s.repo.MultiTransaction(
 		s.LockForUpdate(ctx, id),
 		func(tx *gorm.DB) error {
@@ -114,7 +112,7 @@ func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Cont
 				))
 			}
 
-			return tx.Model(&model.{{.EntityPascal}}{}).
+			return tx.Model(&model.Todo{}).
 				Scopes(gormq.Equal("id", id)).
 				Updates(dbCols).Error
 		},
@@ -122,8 +120,8 @@ func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Cont
 	return
 }
 
-// Delete{{.EntityPascal}} deletes a {{.EntityPascal}} by ID.
-func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id uint) error {
+// DeleteTodo deletes a Todo by ID.
+func (s *TodoService) DeleteTodo(ctx context.Context, id uint) error {
 	err := s.repo.DeleteById(ctx, id)
 	if err != nil {
 		// Check if the error is a not found error
@@ -135,8 +133,8 @@ func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, 
 	return nil
 }
 
-// Get{{.EntityPascal}}s gets all {{.EntityPascal}}s.
-func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, query *dto.GetManyQuery) ([]dto.{{.EntityPascal}}Response, *pagi.MetaDto, error) {
+// GetTodos gets all Todos.
+func (s *TodoService) GetTodos(ctx context.Context, query *dto.GetManyQuery) ([]dto.TodoResponse, *pagi.MetaDto, error) {
 	columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
 		"id":        gormq.Ignore(),
 		"createdAt": gormq.ToSnake(),
@@ -146,7 +144,7 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, qu
 		"id",
 	).Values()
 
-	resp, respMeta := pagi.PrepareResponse[dto.{{.EntityPascal}}Response](&query.QueryDto)
+	resp, respMeta := pagi.PrepareResponse[dto.TodoResponse](&query.QueryDto)
 	err := s.repo.GetManyAndCount(ctx, &resp, respMeta.TotalCount,
 		gormq.WithPageAndLimit(query.Page, query.Limit),
 		gormq.WithFilters(query.Filters, columnMap),
@@ -159,4 +157,3 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}s(ctx context.Context, qu
 	}
 	return resp, respMeta, nil
 }
-`

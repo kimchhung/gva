@@ -8,5 +8,6 @@ const (
 	Configuration string = "configurations"
 	Permission    string = "permissions"
 	OperationLog  string = "operation_logs"
+	Todo          string = "todos"
 	// #inject:tableName (do not remove or change position this comment, it is used by the code generator)
 )

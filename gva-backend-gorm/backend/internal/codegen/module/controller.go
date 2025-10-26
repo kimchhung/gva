@@ -10,9 +10,9 @@ import (
 var Controller = strings.ReplaceAll(`package {{.EntityAllLower}}
 
 import (
+	"backend/app/admin/middleware"
 	"backend/app/admin/module/{{.EntityAllLower}}/dto"
 	"backend/app/share/permission"
-	"backend/app/share/service"
 	"backend/internal/ctr"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
@@ -23,20 +23,23 @@ import (
 var _ interface{ ctr.CTR } = (*{{.EntityPascal}}Controller)(nil)
 
 type {{.EntityPascal}}Controller struct {
+	middleware *middleware.Middleware
 	service *{{.EntityPascal}}Service
-	jwt_s   *service.JwtService
 }
 
-func New{{.EntityPascal}}Controller(service *{{.EntityPascal}}Service, jwt_s *service.JwtService) *{{.EntityPascal}}Controller {
+func New{{.EntityPascal}}Controller(
+	middleware *middleware.Middleware,
+	service *{{.EntityPascal}}Service,
+) *{{.EntityPascal}}Controller {
 	return &{{.EntityPascal}}Controller{
+		middleware: middleware,
 		service: service,
-		jwt_s:   jwt_s,
 	}
 }
 
 func (con *{{.EntityPascal}}Controller) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/{{.EntityKebab}}", con.jwt_s.RequiredAdmin()),
+		ctr.Group("/{{.EntityKebab}}"),
 	)
 }
 

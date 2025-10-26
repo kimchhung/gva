@@ -1,7 +1,6 @@
 package service
 
 import (
-	admincontext "backend/app/admin/context"
 	apperror "backend/app/share/error"
 	"backend/env"
 	"net"
@@ -58,20 +57,6 @@ func (s *IPService) VerifyWhiteListIP(currentIP string, IPWhiteList []string) er
 		}
 	}
 	return apperror.ErrAdminWhitelistInvalid
-}
-
-func (s *IPService) RequiredWhiteListIP() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			admin := admincontext.MustAdminContext(c.Request().Context()).Admin
-			if admin.IpWhiteList != nil {
-				if err := s.VerifyWhiteListIP(s.GetCurrentIP(c), admin.IpWhiteList); err != nil {
-					return err
-				}
-			}
-			return next(c)
-		}
-	}
 }
 
 func (s *IPService) GetIPRecord(currentIP string) (*geoip2.Country, error) {

@@ -9,7 +9,6 @@ import (
 	docs "backend/app/web/docs"
 	"backend/core/router"
 	coretype "backend/core/type"
-	"backend/core/utils"
 	"backend/core/utils/swagger"
 	"backend/env"
 	"backend/internal/ctr"
@@ -48,7 +47,6 @@ func NewRouter(p RouterParam) *Router {
 
 func (r *Router) Register(ctx context.Context) {
 	//default value if not exist in env config
-	utils.SetIfEmpty(&r.env.Web.BasePath, "/web/v1")
 	docs.SwaggerInfoweb.BasePath = r.env.Web.BasePath
 	docs.SwaggerInfoweb.Host = r.env.App.Host
 

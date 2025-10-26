@@ -44,9 +44,10 @@ type Error struct {
 	ErrorCode int    `json:"errorCode"`
 	Message   string `json:"message"`
 
-	subErrs            []error
-	isDisableTranslate bool
-	isPublic           bool
+	subErrs []*Error
+
+	isTranslated bool
+	isPublic     bool
 }
 
 type Option func(*Error)
@@ -67,6 +68,10 @@ func (e *Error) Copy(updators ...Option) *Error {
 	return NewError(e, updators...)
 }
 
+func (e *Error) IsTranslated() bool {
+	return e.isTranslated
+}
+
 func (e *Error) IsPublic() bool {
 	return e.isPublic
 }
@@ -84,11 +89,7 @@ func (e *Error) Error() string {
 	return strings.Join(msgs, seperator)
 }
 
-func (e Error) IsDisableTranslate() bool {
-	return e.isDisableTranslate
-}
-
-func Join(err error) Option {
+func Join(err *Error) Option {
 	return func(_err *Error) {
 		_err.subErrs = append(_err.subErrs, err)
 	}
@@ -101,6 +102,12 @@ func Message(text string) Option {
 	}
 }
 
+func AppendMessage(text string) Option {
+	return func(err *Error) {
+		err.Message += text
+	}
+}
+
 // overwrite original message with raw message
 func MessageFunc(fn func(prev string) string) Option {
 	return func(err *Error) {
@@ -110,11 +117,11 @@ func MessageFunc(fn func(prev string) string) Option {
 
 func Translate(fn func(prev string) string) Option {
 	return func(err *Error) {
-		if err.isDisableTranslate {
+		if err.isTranslated {
 			return
 		}
 		err.Message = fn(err.Message)
-		err.isDisableTranslate = true
+		err.isTranslated = true
 	}
 }
 
@@ -131,6 +138,6 @@ func NewError(err *Error, opts ...Option) *Error {
 
 func DisableTranslate() Option {
 	return func(err *Error) {
-		err.isDisableTranslate = true
+		err.isTranslated = true
 	}
 }

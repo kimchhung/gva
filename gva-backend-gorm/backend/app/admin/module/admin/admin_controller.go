@@ -1,9 +1,9 @@
 package admin
 
 import (
+	"backend/app/admin/middleware"
 	"backend/app/admin/module/admin/dto"
 	"backend/app/share/permission"
-	"backend/app/share/service"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/internal/ctr"
@@ -14,22 +14,26 @@ import (
 var _ interface{ ctr.CTR } = (*AdminController)(nil)
 
 type AdminController struct {
-	service *AdminService
-	jwt_s   *service.JwtService
-	ip_s    *service.IPService
+	middleware *middleware.Middleware
+	service    *AdminService
 }
 
-func NewAdminController(service *AdminService, jwt_s *service.JwtService, ip_s *service.IPService) *AdminController {
+func NewAdminController(
+	middleware *middleware.Middleware,
+	service *AdminService,
+) *AdminController {
 	return &AdminController{
-		service: service,
-		jwt_s:   jwt_s,
-		ip_s:    ip_s,
+		middleware: middleware,
+		service:    service,
 	}
 }
 
 func (con *AdminController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/admin", con.jwt_s.RequiredAdmin(), con.ip_s.RequiredWhiteListIP()),
+		ctr.Group("/admin",
+			con.middleware.IpGuard(),
+			con.middleware.JwtGuard(),
+		),
 	)
 }
 

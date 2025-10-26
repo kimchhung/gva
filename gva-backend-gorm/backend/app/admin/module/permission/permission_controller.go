@@ -1,7 +1,7 @@
 package permission
 
 import (
-	adminmiddleware "backend/app/admin/middleware"
+	"backend/app/admin/middleware"
 	"backend/app/admin/module/permission/dto"
 	"backend/app/share/service"
 	"backend/core/utils/request"
@@ -14,22 +14,32 @@ import (
 var _ interface{ ctr.CTR } = (*PermissionController)(nil)
 
 type PermissionController struct {
-	service *PermissionService
-	jwt_s   *service.JwtService
-	ip_s    *service.IPService
+	middleware *middleware.Middleware
+	service    *PermissionService
+	jwt_s      *service.JwtService
+	ip_s       *service.IPService
 }
 
-func NewPermissionController(service *PermissionService, jwt_s *service.JwtService, ip_s *service.IPService) *PermissionController {
+func NewPermissionController(
+	middleware *middleware.Middleware,
+	service *PermissionService,
+	jwt_s *service.JwtService,
+	ip_s *service.IPService,
+) *PermissionController {
 	return &PermissionController{
-		service: service,
-		jwt_s:   jwt_s,
-		ip_s:    ip_s,
+		middleware: middleware,
+		service:    service,
+		jwt_s:      jwt_s,
+		ip_s:       ip_s,
 	}
 }
 
 func (con *PermissionController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/permission", con.jwt_s.RequiredAdmin(), con.ip_s.RequiredWhiteListIP()),
+		ctr.Group("/permission",
+			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
+		),
 	)
 }
 
@@ -114,7 +124,7 @@ func (con *PermissionController) Get() *ctr.Route {
 // @Success			200		{object}	response.Response{data=[]dto.PermissionResponse}	"Successfully get Permissions"
 // @Router			/permission/ [get]
 func (con *PermissionController) GetMany() *ctr.Route {
-	return ctr.GET("/").Use(adminmiddleware.SkipOperationLog()).Do(func() []ctr.H {
+	return ctr.GET("/").Do(func() []ctr.H {
 		query := new(dto.GetManyQuery)
 
 		return []ctr.H{

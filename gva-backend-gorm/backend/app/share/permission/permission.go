@@ -114,8 +114,10 @@ func (p PermissionAction) Valid() error {
 	return fmt.Errorf("invalid permission key %s", p)
 }
 
-func RequireAnys(permissions ...permissionScope) echo.HandlerFunc {
-	requireds := make(map[string]struct{}, len(permissions))
+func RequireAny(permissions ...permissionScope) echo.HandlerFunc {
+	perms := WithSuper(permissions...)
+
+	requireds := make(map[string]struct{}, len(perms))
 
 	return func(c echo.Context) error {
 		// rctx, rerr := corecontext.Must(c.Request().Context())
@@ -125,22 +127,24 @@ func RequireAnys(permissions ...permissionScope) echo.HandlerFunc {
 		// rctx.LogFields.Scopes = scopes
 
 		adminCtx := admincontext.MustAdminContext(c.Request().Context())
+
+		for _, endpointScope := range permissions {
+			adminCtx.EndpointScopes = append(adminCtx.EndpointScopes, string(endpointScope))
+		}
+
 		if adminCtx.IsSuperAdmin() {
 			return nil
 		}
 
 		for _, adminScope := range adminCtx.PermissionScopes() {
 			if _, hasScope := requireds[adminScope]; hasScope {
+
 				return nil
 			}
 		}
 
 		return apperror.ErrUnauthorized // None of the required permissions were found
 	}
-}
-
-func RequireAny(permissions ...permissionScope) echo.HandlerFunc {
-	return RequireAnys(WithSuper(permissions...)...)
 }
 
 // only supper admin can access

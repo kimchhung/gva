@@ -1,9 +1,9 @@
 package configuration
 
 import (
+	"backend/app/admin/middleware"
 	"backend/app/admin/module/configuration/dto"
 	"backend/app/share/permission"
-	"backend/app/share/service"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/internal/ctr"
@@ -14,20 +14,26 @@ import (
 var _ interface{ ctr.CTR } = (*ConfigurationController)(nil)
 
 type ConfigurationController struct {
-	service *ConfigurationService
-	jwt_s   *service.JwtService
+	middleware *middleware.Middleware
+	service    *ConfigurationService
 }
 
-func NewConfigurationController(service *ConfigurationService, jwt_s *service.JwtService) *ConfigurationController {
+func NewConfigurationController(
+	middleware *middleware.Middleware,
+	service *ConfigurationService,
+) *ConfigurationController {
 	return &ConfigurationController{
-		service: service,
-		jwt_s:   jwt_s,
+		middleware: middleware,
+		service:    service,
 	}
 }
 
 func (con *ConfigurationController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/configuration", con.jwt_s.RequiredAdmin()),
+		ctr.Group("/configuration",
+			con.middleware.IpGuard(),
+			con.middleware.JwtGuard(),
+		),
 	)
 }
 

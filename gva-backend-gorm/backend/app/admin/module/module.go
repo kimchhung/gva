@@ -7,6 +7,7 @@ import (
 	"backend/app/admin/module/configuration"
 	"backend/app/admin/module/index"
 	"backend/app/admin/module/operationlog"
+	"backend/app/admin/module/todo"
 	adminrouter "backend/app/admin/router"
 	"backend/core/router"
 
@@ -26,6 +27,7 @@ var NewAdminModules = fx.Module("admin-module",
 	permission.PermissionModule,
 	configuration.ConfigurationModule,
 	operationlog.OperationLogModule,
+	todo.TodoModule,
 	// #inject:module (do not remove this comment, it is used by the code generator)
 
 	// middleware

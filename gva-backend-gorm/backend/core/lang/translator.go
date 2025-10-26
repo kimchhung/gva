@@ -55,6 +55,9 @@ func (t *Translator) UTranslator() *ut.UniversalTranslator {
 }
 
 func (t *Translator) Import(paths ...string) {
+	if !t.IsInitialized() {
+		return
+	}
 
 	for _, path := range paths {
 		t.log.Info("importing translations", zap.String("path", path))

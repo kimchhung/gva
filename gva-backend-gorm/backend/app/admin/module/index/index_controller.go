@@ -9,6 +9,7 @@ import (
 	"time"
 
 	admincontext "backend/app/admin/context"
+	middleware "backend/app/admin/middleware"
 	"backend/app/admin/module/configuration"
 	"backend/app/admin/module/index/dto"
 	apperror "backend/app/share/error"
@@ -28,26 +29,34 @@ import (
 var _ interface{ ctr.CTR } = (*IndexController)(nil)
 
 type IndexController struct {
-	cfg      *env.Config
-	index_s  *IndexService
-	s3_s     *service.S3Service
-	ip_s     *service.IPService
-	jwt_s    *service.JwtService
-	config_s *configuration.ConfigurationService
+	cfg        *env.Config
+	index_s    *IndexService
+	s3_s       *service.S3Service
+	ip_s       *service.IPService
+	config_s   *configuration.ConfigurationService
+	middleware *middleware.Middleware
 }
 
 func (con *IndexController) Init() *ctr.Ctr {
 	return ctr.New()
 }
 
-func NewIndexController(cfg *env.Config, index_s *IndexService, s3_s *service.S3Service, ip_s *service.IPService, jwt_s *service.JwtService, config_s *configuration.ConfigurationService) *IndexController {
+func NewIndexController(
+	cfg *env.Config,
+	index_s *IndexService,
+	s3_s *service.S3Service,
+	ip_s *service.IPService,
+	jwt_s *service.JwtService,
+	config_s *configuration.ConfigurationService,
+	middleware *middleware.Middleware,
+) *IndexController {
 	return &IndexController{
-		index_s:  index_s,
-		ip_s:     ip_s,
-		s3_s:     s3_s,
-		cfg:      cfg,
-		jwt_s:    jwt_s,
-		config_s: config_s,
+		index_s:    index_s,
+		ip_s:       ip_s,
+		s3_s:       s3_s,
+		cfg:        cfg,
+		config_s:   config_s,
+		middleware: middleware,
 	}
 }
 
@@ -79,7 +88,6 @@ func (con *IndexController) Now() *ctr.Route {
 // @Produce     json
 // @Success     200 {object} response.Response{data=dto.ConfigResponse}
 // @Router      /config [get]
-// @Security    Bearer
 func (con *IndexController) Config() *ctr.Route {
 	return ctr.GET("/config").Do(func() []ctr.H {
 		return []ctr.H{
@@ -135,30 +143,35 @@ func (con *IndexController) PermissionScope() *ctr.Route {
 // @Router      /upload/image [post]
 // @Security    Bearer
 func (con *IndexController) Upload() *ctr.Route {
-	return ctr.POST("/upload/image").Use(con.jwt_s.RequiredAdmin()).Do(func() []ctr.H {
-		return []ctr.H{
-			func(c echo.Context) error {
-				file, err := c.FormFile("file")
-				if err != nil {
-					return err
-				}
+	return ctr.POST("/upload/image").
+		Use(
+			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
+		).
+		Do(func() []ctr.H {
+			return []ctr.H{
+				func(c echo.Context) error {
+					file, err := c.FormFile("file")
+					if err != nil {
+						return err
+					}
 
-				uploadObject, err := con.s3_s.UploadFile(file)
-				if err != nil {
-					return err
-				}
+					uploadObject, err := con.s3_s.UploadFile(file)
+					if err != nil {
+						return err
+					}
 
-				// appctx.SetRequestParams(c.Request().Context(), map[string]interface{}{
-				// 	"filename":    uploadObject.Filename,
-				// 	"size":        file.Size,
-				// 	"mime":        file.Header.Get("Content-Type"),
-				// 	"uploadedURL": uploadObject.URL,
-				// })
+					// appctx.SetRequestParams(c.Request().Context(), map[string]interface{}{
+					// 	"filename":    uploadObject.Filename,
+					// 	"size":        file.Size,
+					// 	"mime":        file.Header.Get("Content-Type"),
+					// 	"uploadedURL": uploadObject.URL,
+					// })
 
-				return request.Response(c, response.Data(uploadObject))
-			},
-		}
-	})
+					return request.Response(c, response.Data(uploadObject))
+				},
+			}
+		})
 }
 
 // @Tags        Index
@@ -240,7 +253,7 @@ func (con *IndexController) Static() *ctr.Route {
 // @Success			200		{object}	response.Response{data=[]dto.ConfigurationResponse}	"Successfully get Docs Configuration"
 // @Router			/config/docs [get]
 func (con *IndexController) GetDocs() *ctr.Route {
-	return ctr.GET("/config/docs").Use(con.jwt_s.RequiredAdmin()).Do(func() []ctr.H {
+	return ctr.GET("/config/docs").Use(con.middleware.JwtGuard()).Do(func() []ctr.H {
 		return []ctr.H{
 			func(c echo.Context) error {
 				adminCtx := admincontext.MustAdminContext(c.Request().Context())

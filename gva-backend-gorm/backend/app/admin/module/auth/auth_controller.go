@@ -2,7 +2,7 @@ package auth
 
 import (
 	admincontext "backend/app/admin/context"
-	adminmiddleware "backend/app/admin/middleware"
+	"backend/app/admin/middleware"
 	"backend/app/admin/module/auth/dto"
 	"backend/app/share/service"
 
@@ -17,16 +17,22 @@ import (
 var _ interface{ ctr.CTR } = (*AuthController)(nil)
 
 type AuthController struct {
-	service *AuthService
-	jwt_s   *service.JwtService
-	ip_s    *service.IPService
+	middleware *middleware.Middleware
+	service    *AuthService
+	ip_s       *service.IPService
 }
 
-func NewAuthController(service *AuthService, jwt_s *service.JwtService, ip_s *service.IPService) *AuthController {
+func NewAuthController(
+	service *AuthService,
+	middleware *middleware.Middleware,
+	jwt_s *service.JwtService,
+	ip_s *service.IPService,
+
+) *AuthController {
 	return &AuthController{
-		service: service,
-		jwt_s:   jwt_s,
-		ip_s:    ip_s,
+		middleware: middleware,
+		service:    service,
+		ip_s:       ip_s,
 	}
 }
 
@@ -82,13 +88,13 @@ func (con *AuthController) Login() *ctr.Route {
 // @Produce		json
 // @Success		200	{object}	response.Response{data=model.Admin}	"Successfully registered admin"
 // @Router			/auth/me [get]
+// @Security		Bearer
 func (con *AuthController) Me() *ctr.Route {
-	return ctr.GET("/me").Use(
-		con.jwt_s.RequiredAdmin(),
-		con.ip_s.RequiredWhiteListIP(),
-		adminmiddleware.SkipOperationLog(),
-	).Do(func() []ctr.H {
-
+	return ctr.GET("/me").
+		Use(
+			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
+		).Do(func() []ctr.H {
 		return []ctr.H{
 			// handler
 			func(c echo.Context) error {

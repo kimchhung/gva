@@ -1,4 +1,4 @@
-package coremiddleware
+package middleware
 
 import (
 	"time"
@@ -35,6 +35,7 @@ func NewMiddleware(
 	db *database.Database,
 	translator *lang.Translator,
 	validator *validator.Validator,
+
 ) *Middleware {
 	return &Middleware{
 		app:        app,
@@ -51,18 +52,17 @@ func (m *Middleware) RegisterMiddleware(mr coretype.MiddlewareRouter) {
 
 	mr.Use(
 		middleware.RemoveTrailingSlash(),
-		m.RequestContext(),
-		m.ErrorHandler(),
-		m.Translation(),
 		m.CORS(),
-		m.RateLimit(),
 		m.Compress(),
-		m.Debug(),
+	)
 
-		middleware.GzipWithConfig(middleware.GzipConfig{
-			Level:   mdCfg.Compress.Level,
-			Skipper: utils.IsEnabled(mdCfg.Compress.Enable),
-		}),
+	mr.Use(
+		m.RequestContext(),
+		m.ResponseHook(),
+		middleware.Recover(),
+		m.RateLimit(),
+		m.Translation(),
+		m.Debug(),
 	)
 
 	// monitor
