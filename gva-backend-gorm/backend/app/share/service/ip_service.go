@@ -2,8 +2,9 @@ package service
 
 import (
 	adminerror "backend/app/admin/error"
-	coreerror "backend/core/error"
-	"backend/env"
+	apperror "backend/app/share/error"
+	"backend/core/env"
+
 	"net"
 	"path/filepath"
 
@@ -64,7 +65,7 @@ func (s *IPService) GetIPRecord(currentIP string) (*geoip2.Country, error) {
 	parseIP := net.ParseIP(currentIP)
 
 	if parseIP == nil {
-		return nil, coreerror.ErrInvalidIP
+		return nil, apperror.ErrInvalidIP
 	}
 
 	return s.db.Country(net.ParseIP(currentIP))

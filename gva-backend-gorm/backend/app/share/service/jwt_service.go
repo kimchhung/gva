@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"backend/app/share/repository"
-	"backend/env"
+	"backend/core/env"
 
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"

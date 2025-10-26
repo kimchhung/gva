@@ -12,7 +12,7 @@ var Controller = strings.ReplaceAll(`package {{.EntityAllLower}}
 import (
 	"backend/app/admin/middleware"
 	"backend/app/admin/module/{{.EntityAllLower}}/dto"
-	"backend/app/share/permission"
+	"backend/app/admin/permission"
 	"backend/internal/ctr"
 	"backend/core/utils/request"
 	"backend/core/utils/response"

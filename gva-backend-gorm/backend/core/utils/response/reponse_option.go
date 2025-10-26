@@ -1,7 +1,7 @@
 package response
 
 import (
-	coreerror "backend/core/error"
+	apperror "backend/app/share/error"
 	"encoding/json"
 	"reflect"
 )
@@ -100,7 +100,7 @@ func Status(status int) ReponseOption {
 	}
 }
 
-func Error(err *coreerror.Error) ReponseOption {
+func Error(err *apperror.Error) ReponseOption {
 	return func(resp *Response) {
 		resp.Code = err.ErrorCode
 		resp.Message = err.Error()

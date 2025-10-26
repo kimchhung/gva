@@ -1,7 +1,7 @@
 package service
 
 import (
-	"backend/env"
+	"backend/core/env"
 
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"

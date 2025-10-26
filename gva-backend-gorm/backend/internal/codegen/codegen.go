@@ -48,7 +48,7 @@ func GenerateFiles(params CodeGenParams, opts ...string) {
 		case "repository":
 			GenerateModuleChildNoFolder(params, "repository", "app/share", "repository", module_template.Repository)
 		case "permission":
-			GenerateModuleChildNoFolder(params, "permission", "app/share", "permission", module_template.Permission)
+			GenerateModuleChildNoFolder(params, "permission", "app/admin", "permission", module_template.Permission)
 		case "dto":
 			GenerateModuleChild(params, "dto", "app/admin/module", "request", module_template.DtoRequest)
 			GenerateModuleChild(params, "dto", "app/admin/module", "response", module_template.DtoResponse)

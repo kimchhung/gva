@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"backend/env"
+	"backend/core/env"
 	"backend/internal/report"
 	"context"
 	"fmt"

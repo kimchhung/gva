@@ -2,9 +2,9 @@ package main
 
 import (
 	"backend/app/share/app"
+	"backend/core/env"
 
 	web "backend/app/web/module"
-	"backend/env"
 
 	_ "github.com/swaggo/swag"
 )

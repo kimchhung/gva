@@ -1,4 +1,4 @@
-package coreerror
+package apperror
 
 import (
 	"fmt"
@@ -65,7 +65,9 @@ func (e *Error) Update(updators ...Option) *Error {
 
 // same as update but always new instance
 func (e *Error) Copy(updators ...Option) *Error {
-	return NewError(e, updators...)
+	newErr := new(Error)
+	*newErr = *e
+	return newErr.Update(updators...)
 }
 
 func (e *Error) IsTranslated() bool {
@@ -123,17 +125,6 @@ func Translate(fn func(prev string) string) Option {
 		err.Message = fn(err.Message)
 		err.isTranslated = true
 	}
-}
-
-func NewError(err *Error, opts ...Option) *Error {
-	nErr := new(Error)
-	*nErr = *err
-
-	for _, op := range opts {
-		op(nErr)
-	}
-
-	return nErr
 }
 
 func DisableTranslate() Option {

@@ -3,13 +3,13 @@ package middleware
 import (
 	"time"
 
+	apperror "backend/app/share/error"
 	"backend/core/database"
-	coreerror "backend/core/error"
+	"backend/core/env"
 	"backend/core/lang"
 	coretype "backend/core/type"
 	"backend/core/utils"
 	"backend/core/validator"
-	"backend/env"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -104,11 +104,8 @@ func (m *Middleware) RateLimit() echo.MiddlewareFunc {
 				id := ctx.RealIP()
 				return id, nil
 			},
-			ErrorHandler: func(context echo.Context, err error) error {
-				return coreerror.NewError(coreerror.ErrUnknownError, coreerror.AppendMessage(err.Error()))
-			},
 			DenyHandler: func(context echo.Context, identifier string, err error) error {
-				return coreerror.ErrTooManyRetries
+				return apperror.ErrTooManyRetries
 			},
 		},
 	)

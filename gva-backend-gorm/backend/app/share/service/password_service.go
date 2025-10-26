@@ -1,7 +1,7 @@
 package service
 
 import (
-	"backend/env"
+	"backend/core/env"
 
 	"golang.org/x/crypto/bcrypt"
 )

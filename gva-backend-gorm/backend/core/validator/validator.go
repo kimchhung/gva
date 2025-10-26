@@ -3,11 +3,11 @@ package validator
 import (
 	"strings"
 
+	"backend/core/env"
 	"backend/core/lang"
 	validateEnTranslation "backend/core/validator/translations/en"
 	validateKmTranslation "backend/core/validator/translations/km"
 	validateZhTranslation "backend/core/validator/translations/zh"
-	"backend/env"
 
 	"github.com/go-playground/validator/v10"
 )

@@ -4,9 +4,9 @@ import (
 	adminmodule "backend/app/admin/module"
 	botmodule "backend/app/bot/module"
 	"backend/app/share/app"
+	"backend/core/env"
 
 	webmodule "backend/app/web/module"
-	"backend/env"
 
 	"go.uber.org/fx"
 )

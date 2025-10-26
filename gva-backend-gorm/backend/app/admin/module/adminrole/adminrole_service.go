@@ -5,9 +5,9 @@ import (
 	adminerror "backend/app/admin/error"
 	"backend/app/admin/module/adminrole/dto"
 	"backend/app/share/constant"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
-	coreerror "backend/core/error"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
@@ -85,7 +85,7 @@ func (s *AdminRoleService) lockTargetForUpdate(ctx context.Context, id uint, out
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				panic(coreerror.ErrNotFound)
+				panic(apperror.ErrNotFound)
 			}
 
 			return err
@@ -103,7 +103,7 @@ func (s *AdminRoleService) lockTargetForUpdate(ctx context.Context, id uint, out
 func (s *AdminRoleService) UpdateAdminRole(ctx context.Context, id uint, dtoReq *dto.UpdateAdminRoleRequest) (res *dto.AdminRoleResponse, err error) {
 	// super admin cannot be updated
 	if id == constant.RoleIdSuperAdmin {
-		return nil, coreerror.ErrForbidden
+		return nil, apperror.ErrForbidden
 	}
 
 	var (
@@ -139,7 +139,7 @@ func (s *AdminRoleService) UpdateAdminRole(ctx context.Context, id uint, dtoReq 
 func (s *AdminRoleService) UpdatePatchAdminRole(ctx context.Context, id uint, p *dto.UpdatePatchAdminRoleRequest) (resp map[string]any, err error) {
 	// super admin cannot be updated
 	if id == constant.RoleIdSuperAdmin {
-		return nil, coreerror.ErrForbidden
+		return nil, apperror.ErrForbidden
 	}
 
 	var (
@@ -172,7 +172,7 @@ func (s *AdminRoleService) UpdatePatchAdminRole(ctx context.Context, id uint, p 
 // DeleteAdminRole deletes a AdminRole by ID.
 func (s *AdminRoleService) DeleteAdminRole(ctx context.Context, id uint) error {
 	if id == constant.RoleIdSuperAdmin {
-		return coreerror.ErrForbidden
+		return apperror.ErrForbidden
 	}
 
 	// check if role is in use

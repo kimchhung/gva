@@ -3,13 +3,13 @@ package cmd
 import (
 	"context"
 
-	"backend/app/share/permission"
+	"backend/app/admin/permission"
 	"backend/app/share/seeds"
 	"backend/app/share/service"
+	"backend/core/env"
 
 	"backend/core/database"
 	"backend/core/utils/ctxutil"
-	"backend/env"
 	"backend/internal/logger"
 
 	"github.com/labstack/gommon/log"

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	share "backend/app/share"
+	"backend/core/env"
 	"backend/core/router"
-	"backend/env"
 	"backend/internal/bootstrap"
 	"backend/internal/logger"
 

@@ -3,7 +3,7 @@ package main
 import (
 	admin "backend/app/admin/module"
 	"backend/app/share/app"
-	"backend/env"
+	"backend/core/env"
 
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 

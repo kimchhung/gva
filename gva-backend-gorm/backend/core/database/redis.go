@@ -1,10 +1,9 @@
 package database
 
 import (
+	"backend/core/env"
 	"context"
 	"fmt"
-
-	"backend/env"
 
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"

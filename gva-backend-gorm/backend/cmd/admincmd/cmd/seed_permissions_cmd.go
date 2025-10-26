@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 
-	"backend/app/share/permission"
+	"backend/app/admin/permission"
 	"backend/app/share/service"
 	"backend/core/database"
-	"backend/env"
+	"backend/core/env"
 	"backend/internal/logger"
 
 	"github.com/spf13/cobra"

@@ -2,9 +2,9 @@ package middleware
 
 import (
 	admincontext "backend/app/admin/context"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	"backend/app/share/service"
-	coreerror "backend/core/error"
 	"context"
 	"errors"
 	"strings"
@@ -19,20 +19,20 @@ func (m *Middleware) jwtAdminValidator(ctx context.Context, out *model.Admin) se
 	return func(claims jwt.MapClaims) error {
 		id, ok := claims["id"].(float64)
 		if !ok || id <= 0 {
-			return coreerror.ErrUnauthorized
+			return apperror.ErrUnauthorized
 		}
 
 		admin, err := m.admin_r.GetById(ctx, uint(id))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return coreerror.ErrNotFound
+				return apperror.ErrNotFound
 			}
 
 			return err
 		}
 
 		if admin.Status == 0 {
-			return coreerror.ErrValidationError
+			return apperror.ErrValidationError
 		}
 
 		err = m.admin_r.GetRolesByID(admin.ID, admin)
@@ -50,7 +50,7 @@ func (m *Middleware) JwtGuard() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			token := strings.TrimSpace(strings.Replace(c.Request().Header.Get(echo.HeaderAuthorization), "Bearer ", "", 1))
 			if token == "" {
-				return coreerror.ErrUnauthorized
+				return apperror.ErrUnauthorized
 			}
 
 			ctx := c.Request().Context()
@@ -58,7 +58,7 @@ func (m *Middleware) JwtGuard() echo.MiddlewareFunc {
 
 			if _, err := m.jwt_s.ValidateToken(token, m.jwtAdminValidator(ctx, admin)); err != nil {
 				m.log.Debug("s.ValidateToken", zap.Error(err))
-				return coreerror.ErrUnauthorized
+				return apperror.ErrUnauthorized
 			}
 
 			adminctx := admincontext.NewAdminContext(admincontext.WithAdmin(admin))

@@ -7,10 +7,10 @@ import (
 
 	adminerror "backend/app/admin/error"
 	"backend/app/admin/module/auth/dto"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
 	"backend/app/share/service"
-	coreerror "backend/core/error"
 	"backend/internal/datetime"
 	"backend/internal/gormq"
 
@@ -48,14 +48,14 @@ func (s *AuthService) LoginAdmin(ctx context.Context, p *dto.LoginRequest, curre
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, coreerror.ErrNotFound
+			return nil, apperror.ErrNotFound
 		}
 
 		return nil, err
 	}
 
 	if err := s.password_s.VerifyPassword(admin.PasswordHash, p.Password); err != nil {
-		panic(coreerror.ErrInvalidCredentials)
+		panic(apperror.ErrInvalidCredentials)
 	}
 
 	if admin.IpWhiteList != nil {
@@ -65,7 +65,7 @@ func (s *AuthService) LoginAdmin(ctx context.Context, p *dto.LoginRequest, curre
 	}
 
 	if !s.totop_s.VerifyTOTP(admin.GoogleSecretKey, p.TOTP) {
-		panic(coreerror.ErrInvalidTOTP)
+		panic(apperror.ErrInvalidTOTP)
 	}
 
 	token, err := s.jwt_s.GenerateToken(
@@ -74,7 +74,7 @@ func (s *AuthService) LoginAdmin(ctx context.Context, p *dto.LoginRequest, curre
 	)
 
 	if err != nil {
-		panic(coreerror.ErrInvalidCredentials)
+		panic(apperror.ErrInvalidCredentials)
 	}
 
 	err = s.admin_r.GetRolesByID(admin.ID, admin)

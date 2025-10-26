@@ -3,7 +3,7 @@ package adminrole
 import (
 	"backend/app/admin/middleware"
 	"backend/app/admin/module/adminrole/dto"
-	"backend/app/share/permission"
+	"backend/app/admin/permission"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/internal/ctr"

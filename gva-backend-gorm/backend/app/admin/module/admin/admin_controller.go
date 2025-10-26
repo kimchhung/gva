@@ -3,7 +3,7 @@ package admin
 import (
 	"backend/app/admin/middleware"
 	"backend/app/admin/module/admin/dto"
-	"backend/app/share/permission"
+	"backend/app/admin/permission"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/internal/ctr"
@@ -199,7 +199,6 @@ func (con *AdminController) Patch() *ctr.Route {
 
 		return []ctr.H{
 			permission.RequireAny(permission.AdminEdit),
-
 			request.Validate(
 				request.ParamsParser(params),
 				request.BodyParser(body),

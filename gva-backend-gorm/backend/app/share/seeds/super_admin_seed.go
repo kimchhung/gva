@@ -3,9 +3,9 @@ package seeds
 import (
 	"backend/app/share/model"
 	"backend/app/share/service"
+	"backend/core/env"
 	coretype "backend/core/type"
 	"backend/core/utils/ctxutil"
-	"backend/env"
 	"context"
 	"fmt"
 

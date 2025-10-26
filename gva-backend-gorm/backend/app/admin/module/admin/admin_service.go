@@ -8,10 +8,10 @@ import (
 	adminerror "backend/app/admin/error"
 	"backend/app/admin/module/admin/dto"
 	"backend/app/share/constant"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
 	"backend/app/share/service"
-	coreerror "backend/core/error"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
@@ -80,7 +80,7 @@ func (s *AdminService) lockTargetForUpdate(ctx context.Context, id uint, out *mo
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				panic(coreerror.ErrNotFound)
+				panic(apperror.ErrNotFound)
 			}
 
 			return err
@@ -173,7 +173,7 @@ func (s *AdminService) SetAdminTOTP(ctx context.Context, id uint, p *dto.SetTOTP
 			// validate requester admin otp first before proceed
 			requester := admincontext.MustAdminContext(ctx).Admin
 			if !s.totp_s.VerifyTOTP(requester.GoogleSecretKey, p.TOTP) {
-				return coreerror.ErrInvalidTOTP
+				return apperror.ErrInvalidTOTP
 			}
 
 			totpKey := s.totp_s.GenerateSecretKey(target.Username)
@@ -222,7 +222,7 @@ func (s *AdminService) verifySuperAdminRoleUsage(ctx context.Context, roles []*m
 
 	for _, role := range roles {
 		if role.ID == constant.RoleIdSuperAdmin {
-			panic(coreerror.ErrUnauthorized)
+			panic(apperror.ErrUnauthorized)
 		}
 	}
 

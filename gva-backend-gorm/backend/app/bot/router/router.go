@@ -7,10 +7,10 @@ import (
 	"go.uber.org/fx"
 
 	docs "backend/app/bot/docs"
+	"backend/core/env"
 	"backend/core/router"
 	coretype "backend/core/type"
 	"backend/core/utils/swagger"
-	"backend/env"
 	"backend/internal/ctr"
 
 	echoSwagger "github.com/swaggo/echo-swagger"

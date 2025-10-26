@@ -4,10 +4,10 @@ import (
 	"backend/app/admin/module/configuration/dto"
 	"backend/app/share/constant/cache"
 
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
 	"backend/app/share/service"
-	coreerror "backend/core/error"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
@@ -39,7 +39,7 @@ func (s *ConfigurationService) CreateConfiguration(ctx context.Context, p *dto.C
 	created, err := s.repo.Create(ctx, body)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, coreerror.ErrDuplicatedRecord
+			return nil, apperror.ErrDuplicatedRecord
 		}
 
 		return nil, err
@@ -64,7 +64,7 @@ func (s *ConfigurationService) GetConfiguration(ctx context.Context, id uint) (*
 	if err != nil {
 		// Check if the error is a not found error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, coreerror.ErrNotFound
+			return nil, apperror.ErrNotFound
 		}
 
 		return nil, err
@@ -87,7 +87,7 @@ func (s *ConfigurationService) LockForUpdate(ctx context.Context, id uint) func(
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				panic(coreerror.ErrNotFound)
+				panic(apperror.ErrNotFound)
 			}
 
 			return err
@@ -139,9 +139,11 @@ func (s *ConfigurationService) UpdatePatchConfiguration(ctx context.Context, id 
 					Updates(dbCols).Error
 			}
 
-			return coreerror.NewError(coreerror.ErrBadRequest, coreerror.AppendMessage(
-				fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys()),
-			))
+			return apperror.ErrBadRequest.Copy(
+				apperror.DisableTranslate(),
+				apperror.Message(fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys())),
+			)
+
 		},
 	)
 	return
@@ -219,7 +221,7 @@ func (s *ConfigurationService) GetConfigurationByKey(ctx context.Context, key st
 	if err != nil {
 		// Check if the error is a not found error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, coreerror.ErrNotFound
+			return nil, apperror.ErrNotFound
 		}
 
 		return nil, err

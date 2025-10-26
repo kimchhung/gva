@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	admincontext "backend/app/admin/context"
-	coreerror "backend/core/error"
+	apperror "backend/app/share/error"
 
 	"github.com/labstack/echo/v4"
 )
@@ -142,7 +142,7 @@ func RequireAny(permissions ...permissionScope) echo.HandlerFunc {
 			}
 		}
 
-		return coreerror.ErrUnauthorized // None of the required permissions were found
+		return apperror.ErrUnauthorized // None of the required permissions were found
 	}
 }
 
@@ -154,7 +154,7 @@ func OnlySuperAdmin() echo.HandlerFunc {
 			return nil
 		}
 
-		return coreerror.ErrUnauthorized // None of the required permissions were found
+		return apperror.ErrUnauthorized // None of the required permissions were found
 	}
 }
 

@@ -1,13 +1,13 @@
 package bootstrap
 
 import (
+	"backend/app/admin/permission"
 	"backend/app/share/middleware"
-	"backend/app/share/permission"
 	"backend/app/share/seeds"
 	"backend/app/share/service"
+	"backend/core/env"
 	"backend/core/router"
 	"backend/core/utils/ctxutil"
-	"backend/env"
 
 	"backend/core/database"
 	"backend/internal/logger"

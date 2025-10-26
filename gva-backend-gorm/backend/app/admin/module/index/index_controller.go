@@ -13,13 +13,13 @@ import (
 	"backend/app/admin/module/configuration"
 	"backend/app/admin/module/index/dto"
 
+	"backend/app/admin/permission"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
-	"backend/app/share/permission"
 	"backend/app/share/service"
-	coreerror "backend/core/error"
+	"backend/core/env"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
-	"backend/env"
 	"backend/internal/ctr"
 
 	"github.com/gomarkdown/markdown"
@@ -128,7 +128,7 @@ func (con *IndexController) PermissionScope() *ctr.Route {
 		return []ctr.H{
 			func(c echo.Context) error {
 				if con.cfg.IsProd() {
-					return coreerror.ErrNotFound
+					return apperror.ErrNotFound
 				}
 
 				return request.Response(c,
@@ -236,12 +236,12 @@ func (con *IndexController) Static() *ctr.Route {
 				filePath := fmt.Sprintf("storage/docs/%s", name)
 
 				if !strings.HasSuffix(filePath, ".md") {
-					return coreerror.NewError(coreerror.ErrUnsupportedFileFormat, nil)
+					return apperror.ErrUnsupportedFileFormat
 				}
 
 				data, err := os.ReadFile(filePath)
 				if err != nil {
-					return coreerror.NewError(coreerror.ErrUnknownError, coreerror.AppendMessage(err.Error()))
+					return err
 				}
 
 				output := mdToHtml(data)

@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"backend/app/admin/module/{{.EntityAllLower}}/dto"
-	coreerror "backend/core/error"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
 	"backend/internal/gormq"
@@ -47,7 +47,7 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id 
 	if err != nil {
 		// Check if the error is a not found error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, coreerror.ErrNotFound
+			return nil, apperror.ErrNotFound
 		}
 
 		return nil, err
@@ -63,7 +63,7 @@ func (s *{{.EntityPascal}}Service) lockForUpdate(ctx context.Context, id uint, o
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return coreerror.ErrNotFound
+				return apperror.ErrNotFound
 			}
 
 			return err
@@ -116,7 +116,7 @@ func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Cont
 
 			dbCols, res := utils.StructToMap(dtoReq, columnMap)
 			if len(dbCols) == 0 {
-				return coreerror.NewError(coreerror.ErrBadRequest, coreerror.AppendMessage(
+				return apperror.NewError(apperror.ErrBadRequest, apperror.AppendMessage(
 					fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys()),
 				))
 			}

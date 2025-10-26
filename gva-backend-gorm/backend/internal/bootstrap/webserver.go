@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	coreerror "backend/core/error"
+	apperror "backend/app/share/error"
+	"backend/core/env"
 	"backend/core/lang"
 	"backend/core/utils/color"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
-	"backend/env"
 
 	in_validator "backend/core/validator"
 
@@ -47,7 +47,7 @@ func NewEcho(cfg *env.Config, logger *zap.Logger) *echo.Echo {
 }
 
 // Default error handler
-func tranformError(ctx context.Context, err error) (resErr *coreerror.Error) {
+func tranformError(ctx context.Context, err error) (resErr *apperror.Error) {
 	translator := func(message string) string {
 		if lang.IsInitialized() {
 			return lang.DefaultTranslator().T(lang.ForContext(ctx), message)
@@ -65,27 +65,27 @@ func tranformError(ctx context.Context, err error) (resErr *coreerror.Error) {
 			return message
 		}
 
-		resErr = coreerror.ErrValidationError.Copy(coreerror.Translate(translator))
+		resErr = apperror.ErrValidationError.Copy(apperror.Translate(translator))
 
-	case *coreerror.Error:
+	case *apperror.Error:
 		// throw from logical error for user to see
 		if e.IsTranslated() {
 			resErr = e
 		} else if lang.IsInitialized() {
-			resErr = coreerror.NewError(e, coreerror.Translate(translator))
+			resErr = e.Copy(apperror.Translate(translator))
 		}
 
 	case *echo.HTTPError:
 		// wrong routing .....
-		resErr = coreerror.ErrBadRequest.Copy(
-			coreerror.Translate(translator),
-			coreerror.AppendMessage(e.Error()),
+		resErr = apperror.ErrBadRequest.Copy(
+			apperror.Translate(translator),
+			apperror.AppendMessage(e.Error()),
 		)
 
 	default:
 
 		// unexpected error, crashed etc...
-		resErr = coreerror.ErrUnknownError.Copy(coreerror.Translate(translator))
+		resErr = apperror.ErrUnknownError.Copy(apperror.Translate(translator))
 
 	}
 

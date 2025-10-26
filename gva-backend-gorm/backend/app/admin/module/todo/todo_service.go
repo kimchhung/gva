@@ -2,9 +2,9 @@ package todo
 
 import (
 	"backend/app/admin/module/todo/dto"
+	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
-	coreerror "backend/core/error"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
@@ -45,7 +45,7 @@ func (s *TodoService) GetTodo(ctx context.Context, id uint) (*dto.TodoResponse, 
 	if err != nil {
 		// Check if the error is a not found error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, coreerror.ErrNotFound
+			return nil, apperror.ErrNotFound
 		}
 
 		return nil, err
@@ -61,7 +61,7 @@ func (s *TodoService) lockForUpdate(ctx context.Context, id uint, out *model.Tod
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return coreerror.ErrNotFound
+				return apperror.ErrNotFound
 			}
 
 			return err
@@ -114,9 +114,10 @@ func (s *TodoService) UpdatePatchTodo(ctx context.Context, id uint, dtoReq *dto.
 
 			dbCols, res := utils.StructToMap(dtoReq, columnMap)
 			if len(dbCols) == 0 {
-				return coreerror.NewError(coreerror.ErrBadRequest, coreerror.AppendMessage(
-					fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys()),
-				))
+				return apperror.ErrBadRequest.Copy(
+					apperror.DisableTranslate(),
+					apperror.AppendMessage(fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys())),
+				)
 			}
 
 			if err := tx.Model(&target).

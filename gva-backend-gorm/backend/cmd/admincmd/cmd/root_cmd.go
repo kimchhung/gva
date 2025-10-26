@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"backend/env"
+	"backend/core/env"
 	"fmt"
 	"os"
 

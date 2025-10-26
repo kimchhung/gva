@@ -3,8 +3,7 @@ package main
 import (
 	bot "backend/app/bot/module"
 	"backend/app/share/app"
-
-	"backend/env"
+	"backend/core/env"
 
 	_ "github.com/swaggo/swag"
 )
