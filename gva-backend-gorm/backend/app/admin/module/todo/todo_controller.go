@@ -30,7 +30,10 @@ func NewTodoController(
 
 func (con *TodoController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/todo"),
+		ctr.Group("/todo",
+			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
+		),
 	)
 }
 

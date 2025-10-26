@@ -1,7 +1,7 @@
 package service
 
 import (
-	apperror "backend/app/share/error"
+	coreerror "backend/core/error"
 	"backend/env"
 	"bytes"
 	"context"
@@ -112,7 +112,7 @@ type Image struct {
 func validateImage(file *multipart.FileHeader, maxFileSizeMB int64) (*Image, error) {
 	fileData, err := file.Open()
 	if err != nil {
-		return nil, apperror.ErrWhileUploading
+		return nil, coreerror.ErrWhileUploading
 	}
 	defer fileData.Close()
 
@@ -121,19 +121,19 @@ func validateImage(file *multipart.FileHeader, maxFileSizeMB int64) (*Image, err
 
 	// Check if file extension is allowed
 	if !slices.Contains(allowedExtensions, ext) {
-		return nil, apperror.ErrUnsupportedFileFormat
+		return nil, coreerror.ErrUnsupportedFileFormat
 	}
 
 	// Check if file size limit
 	if file.Size > maxFileSizeMB*1024*1024 {
-		return nil, apperror.ErrImageTooLarge
+		return nil, coreerror.ErrImageTooLarge
 	}
 
 	// Read the first 512 bytes of file to check mimetype
 	buf := make([]byte, 512)
 	_, err = fileData.Read(buf)
 	if err != nil {
-		return nil, apperror.ErrWhileUploading
+		return nil, coreerror.ErrWhileUploading
 	}
 
 	mimeType := http.DetectContentType(buf)
@@ -144,7 +144,7 @@ func validateImage(file *multipart.FileHeader, maxFileSizeMB int64) (*Image, err
 	// Rewind the file pointer to the beginning of the file
 	_, err = fileData.Seek(0, io.SeekStart)
 	if err != nil {
-		return nil, apperror.ErrWhileUploading
+		return nil, coreerror.ErrWhileUploading
 	}
 
 	return &Image{

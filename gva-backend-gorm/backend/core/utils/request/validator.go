@@ -1,10 +1,17 @@
 package request
 
 import (
+	"github.com/creasty/defaults"
 	"github.com/labstack/echo/v4"
 
 	"backend/core/validator"
 )
+
+func SetDefaultValue(v any) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return defaults.Set(v)
+	}
+}
 
 // use as middleware Validate(BodyParser(&body),ParamsParser(out))
 func Validate(parser Parser, parsers ...Parser) echo.HandlerFunc {

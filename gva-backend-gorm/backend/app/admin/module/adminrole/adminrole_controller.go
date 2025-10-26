@@ -31,8 +31,8 @@ func NewAdminRoleController(
 func (con *AdminRoleController) Init() *ctr.Ctr {
 	return ctr.New(
 		ctr.Group("/adminrole",
-			con.middleware.IpGuard(),
 			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
 		),
 	)
 }

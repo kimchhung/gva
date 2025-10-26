@@ -1,10 +1,10 @@
 package operationlog
 
 import (
+	"backend/app/admin/middleware"
 	adminmiddleware "backend/app/admin/middleware"
 	"backend/app/admin/module/operationlog/dto"
 	"backend/app/share/permission"
-	"backend/app/share/service"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/internal/ctr"
@@ -15,20 +15,27 @@ import (
 var _ interface{ ctr.CTR } = (*OperationLogController)(nil)
 
 type OperationLogController struct {
-	service *OperationLogService
-	jwt_s   *service.JwtService
+	middleware middleware.Middleware
+	service    *OperationLogService
 }
 
-func NewOperationLogController(service *OperationLogService, jwt_s *service.JwtService) *OperationLogController {
+func NewOperationLogController(
+	middleware *middleware.Middleware,
+	service *OperationLogService,
+) *OperationLogController {
 	return &OperationLogController{
-		service: service,
-		jwt_s:   jwt_s,
+		service:    service,
+		middleware: *middleware,
 	}
 }
 
 func (con *OperationLogController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/operation-log", adminmiddleware.SkipOperationLog()),
+		ctr.Group("/operation-log",
+			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
+			adminmiddleware.SkipOperationLog(),
+		),
 	)
 }
 

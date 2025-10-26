@@ -12,9 +12,11 @@ import (
 	middleware "backend/app/admin/middleware"
 	"backend/app/admin/module/configuration"
 	"backend/app/admin/module/index/dto"
-	apperror "backend/app/share/error"
+
+	"backend/app/share/model"
 	"backend/app/share/permission"
 	"backend/app/share/service"
+	coreerror "backend/core/error"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"backend/env"
@@ -38,7 +40,11 @@ type IndexController struct {
 }
 
 func (con *IndexController) Init() *ctr.Ctr {
-	return ctr.New()
+	return ctr.New(
+		ctr.Group("/",
+			middleware.SkipOperationLog(),
+		),
+	)
 }
 
 func NewIndexController(
@@ -122,7 +128,7 @@ func (con *IndexController) PermissionScope() *ctr.Route {
 		return []ctr.H{
 			func(c echo.Context) error {
 				if con.cfg.IsProd() {
-					return apperror.ErrNotFound
+					return coreerror.ErrNotFound
 				}
 
 				return request.Response(c,
@@ -161,12 +167,14 @@ func (con *IndexController) Upload() *ctr.Route {
 						return err
 					}
 
-					// appctx.SetRequestParams(c.Request().Context(), map[string]interface{}{
-					// 	"filename":    uploadObject.Filename,
-					// 	"size":        file.Size,
-					// 	"mime":        file.Header.Get("Content-Type"),
-					// 	"uploadedURL": uploadObject.URL,
-					// })
+					middleware.AddOperationLogData(c.Request().Context(), model.OperationLogData{
+						"image": map[string]interface{}{
+							"filename":    uploadObject.Filename,
+							"size":        file.Size,
+							"mime":        file.Header.Get("Content-Type"),
+							"uploadedURL": uploadObject.URL,
+						},
+					})
 
 					return request.Response(c, response.Data(uploadObject))
 				},
@@ -228,12 +236,12 @@ func (con *IndexController) Static() *ctr.Route {
 				filePath := fmt.Sprintf("storage/docs/%s", name)
 
 				if !strings.HasSuffix(filePath, ".md") {
-					return apperror.NewError(apperror.ErrUnsupportedFileFormat, nil)
+					return coreerror.NewError(coreerror.ErrUnsupportedFileFormat, nil)
 				}
 
 				data, err := os.ReadFile(filePath)
 				if err != nil {
-					return apperror.NewError(apperror.ErrUnknownError, apperror.Join(err))
+					return coreerror.NewError(coreerror.ErrUnknownError, coreerror.AppendMessage(err.Error()))
 				}
 
 				output := mdToHtml(data)

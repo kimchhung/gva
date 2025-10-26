@@ -8,6 +8,7 @@ import (
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -33,6 +34,14 @@ func SkipOperationLog() echo.MiddlewareFunc {
 	}
 }
 
+func AddOperationLogData(ctx context.Context, data model.OperationLogData) model.OperationLogData {
+	operationData, _ := corecontext.SetOrGet(ctx, OperationLogDataKey, model.OperationLogData{})
+	for k, v := range data {
+		operationData[k] = v
+	}
+	return operationData
+}
+
 func (m *Middleware) OperationLog() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
@@ -44,6 +53,35 @@ func (m *Middleware) OperationLog() echo.MiddlewareFunc {
 			}
 
 			now := time.Now()
+
+			switch c.Request().Method {
+			case http.MethodPost, http.MethodPut, http.MethodPatch:
+				if c.Request().Body != nil {
+					bodyBytes, _ := io.ReadAll(c.Request().Body)
+
+					if strings.Contains(c.Request().Header.Get("Content-Type"), "json") {
+						AddOperationLogData(ctx, model.OperationLogData{
+							"body": json.JSON(bodyBytes).Object(),
+						})
+
+					} else {
+						AddOperationLogData(ctx, model.OperationLogData{
+							"body": json.JSON(bodyBytes).String(),
+						})
+					}
+
+					c.Request().Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+				}
+
+			default:
+				queries := c.Request().URL.Query()
+				if len(queries) > 0 {
+					AddOperationLogData(ctx, model.OperationLogData{
+						"queries": flattenQueryParams(queries),
+					})
+				}
+			}
+
 			hook.OnBeforeResponse(func(c echo.Context, resp *response.Response) {
 				ctx := c.Request().Context()
 				if _, err := corecontext.Get[struct{}](ctx, skipOperationLog); err == nil {
@@ -52,41 +90,20 @@ func (m *Middleware) OperationLog() echo.MiddlewareFunc {
 
 				adminctx, err := admincontext.GetAdminContext(ctx)
 				if err != nil {
-					log.Error("get adminctx failed", zap.Error(err))
+					log.Error("get adminctx failed", zap.Error(err), zap.String("path", c.Path()))
 					return
 				}
 
-				method := c.Request().Method
-				operationData, _ := corecontext.SetOrGet(ctx, OperationLogDataKey, model.OperationLogData{})
-
-				switch method {
-				case http.MethodPost, http.MethodPut, http.MethodPatch:
-					var bodyBytes []byte
-					if c.Request().Body != nil {
-						bodyBytes, err = io.ReadAll(c.Request().Body)
-						if err != nil {
-							return
-						}
-						c.Request().Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-					}
-
-					if strings.Contains(c.Request().Header.Get("Content-Type"), "application/json") {
-						operationData["body"] = json.JSON(bodyBytes).Object()
-					} else {
-						operationData["body"] = json.JSON(bodyBytes).String()
-					}
-				default:
-					queries := c.Request().URL.Query()
-					if len(queries) > 0 {
-						operationData["queries"] = flattenQueryParams(queries)
-					}
+				data := AddOperationLogData(ctx, model.OperationLogData{})
+				if c.Request().Method != http.MethodGet {
+					data["response"] = resp
 				}
 
 				op := &model.OperationLog{
-					Method:    method,
+					Method:    c.Request().Method,
 					Path:      c.Path(),
-					Data:      operationData,
 					IP:        c.RealIP(),
+					Data:      data,
 					AdminId:   adminctx.Admin.ID,
 					RoleIds:   adminctx.Admin.RoleIds,
 					Scope:     strings.Join(adminctx.EndpointScopes, ","),

@@ -7,7 +7,6 @@ import (
 	"backend/app/admin/module/configuration"
 	"backend/app/admin/module/index"
 	"backend/app/admin/module/operationlog"
-	"backend/app/admin/module/todo"
 	adminrouter "backend/app/admin/router"
 	"backend/core/router"
 
@@ -15,6 +14,7 @@ import (
 
 	"backend/app/admin/module/permission"
 
+	"backend/app/admin/module/todo"
 	"go.uber.org/fx"
 	// #inject:moduleImport (do not remove this comment, it is used by the code generator)
 )

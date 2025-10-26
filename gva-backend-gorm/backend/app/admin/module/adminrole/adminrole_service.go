@@ -5,20 +5,21 @@ import (
 	adminerror "backend/app/admin/error"
 	"backend/app/admin/module/adminrole/dto"
 	"backend/app/share/constant"
-	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
+	coreerror "backend/core/error"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
 	"context"
+	"errors"
 	"strings"
 
 	"gorm.io/gorm"
 )
 
 type AdminRoleService struct {
-	adminRole_r  *repository.AdminRoleRepo
+	repo         *repository.AdminRoleRepo
 	admin_r      *repository.AdminRepo
 	permission_r *repository.PermissionRepo
 }
@@ -30,7 +31,7 @@ func NewAdminRoleService(
 	permissionRepo *repository.PermissionRepo,
 ) *AdminRoleService {
 	return &AdminRoleService{
-		adminRole_r:  repo,
+		repo:         repo,
 		admin_r:      adminRepo,
 		permission_r: permissionRepo,
 	}
@@ -58,7 +59,7 @@ func (s *AdminRoleService) CreateAdminRole(ctx context.Context, p *dto.CreateAdm
 
 	body.Permissions = s.getPermissionsByScope(ctx, p.Permissions)
 
-	created, err := s.adminRole_r.Create(ctx, body)
+	created, err := s.repo.Create(ctx, body)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,7 @@ func (s *AdminRoleService) CreateAdminRole(ctx context.Context, p *dto.CreateAdm
 
 // GetAdminRole gets a AdminRole by ID.
 func (s *AdminRoleService) GetAdminRole(ctx context.Context, id uint) (*dto.AdminRoleResponse, error) {
-	adminrole, err := s.adminRole_r.GetById(ctx, id, func(q *gorm.DB) *gorm.DB {
+	adminrole, err := s.repo.GetById(ctx, id, func(q *gorm.DB) *gorm.DB {
 		return q.Preload("Permissions")
 	})
 	if err != nil {
@@ -78,69 +79,105 @@ func (s *AdminRoleService) GetAdminRole(ctx context.Context, id uint) (*dto.Admi
 	return utils.MustCopy(new(dto.AdminRoleResponse), adminrole), nil
 }
 
-// UpdateAdminRole updates a AdminRole.
-func (s *AdminRoleService) UpdateAdminRole(ctx context.Context, id uint, p *dto.UpdateAdminRoleRequest) (res *dto.AdminRoleResponse, err error) {
+func (s *AdminRoleService) lockTargetForUpdate(ctx context.Context, id uint, out *model.AdminRole, selects ...gormq.Option) gormq.Tx {
+	return func(tx *gorm.DB) error {
+		found, err := s.repo.Tx(tx).GetById(ctx, id, gormq.Multi(selects...), gormq.WithLockUpdate())
+		if err != nil {
+			// Check if the error is a not found error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				panic(coreerror.ErrNotFound)
+			}
 
+			return err
+		}
+
+		if out != nil && found != nil {
+			*out = *found
+		}
+
+		return nil
+	}
+}
+
+// UpdateAdminRole updates a AdminRole.
+func (s *AdminRoleService) UpdateAdminRole(ctx context.Context, id uint, dtoReq *dto.UpdateAdminRoleRequest) (res *dto.AdminRoleResponse, err error) {
 	// super admin cannot be updated
 	if id == constant.RoleIdSuperAdmin {
-		return nil, apperror.ErrForbidden
+		return nil, coreerror.ErrForbidden
 	}
 
-	err = s.adminRole_r.DB().Transaction(func(tx *gorm.DB) error {
-		body := utils.MustCopy(new(model.AdminRole), p)
-		body.ID = id
-		body.Permissions = s.getPermissionsByScope(ctx, p.Permissions)
+	var (
+		target model.AdminRole
+	)
 
-		err := tx.Model(body).Association("Permissions").Replace(body.Permissions)
-		if err != nil {
-			return err
-		}
+	err = s.repo.MultiTransaction(
+		s.lockTargetForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			body := utils.MustCopy(&target, dtoReq)
+			body.ID = target.ID
+			body.Permissions = s.getPermissionsByScope(ctx, dtoReq.Permissions)
 
-		updated, err := s.adminRole_r.Tx(tx).UpdateById(ctx, id, body)
-		if err != nil {
-			return err
-		}
+			err := tx.Model(body).Association("Permissions").Replace(body.Permissions)
+			if err != nil {
+				return err
+			}
 
-		res = utils.MustCopy(new(dto.AdminRoleResponse), updated)
-		return nil
-	})
+			updated, err := s.repo.Tx(tx).UpdateById(ctx, target.ID, body, gormq.WithSelect("name", "description"))
+			if err != nil {
+				return err
+			}
+
+			res = utils.MustCopy(new(dto.AdminRoleResponse), updated)
+			return nil
+		},
+	)
 
 	return
 }
 
 // UpdateAdminRole updates a AdminRole.
-func (s *AdminRoleService) UpdatePatchAdminRole(ctx context.Context, id uint, p *dto.UpdatePatchAdminRoleRequest) (map[string]any, error) {
+func (s *AdminRoleService) UpdatePatchAdminRole(ctx context.Context, id uint, p *dto.UpdatePatchAdminRoleRequest) (resp map[string]any, err error) {
 	// super admin cannot be updated
 	if id == constant.RoleIdSuperAdmin {
-		return nil, apperror.ErrForbidden
+		return nil, coreerror.ErrForbidden
 	}
 
-	columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
-		"status": gormq.Ignore(),
-	})
+	var (
+		target model.AdminRole
+	)
 
-	dbCols, resp := utils.StructToMap(p, columnMap)
-	err := s.adminRole_r.DB().Model(&model.AdminRole{}).
-		Scopes(
-			gormq.Where(gormq.Equal("id", id)),
-		).
-		Updates(dbCols).Error
-	if err != nil {
-		return nil, err
-	}
+	err = s.repo.MultiTransaction(
+		s.lockTargetForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
+				"status": gormq.Ignore(),
+			})
 
-	return resp, nil
+			dbCols, res := utils.StructToMap(p, columnMap)
+			if err := s.repo.DB().Model(&target).
+				Scopes(
+					gormq.Where(gormq.Equal("id", id)),
+				).
+				Updates(dbCols).Error; err != nil {
+				return err
+			}
+
+			resp = res
+			return nil
+		})
+
+	return
 }
 
 // DeleteAdminRole deletes a AdminRole by ID.
 func (s *AdminRoleService) DeleteAdminRole(ctx context.Context, id uint) error {
 	if id == constant.RoleIdSuperAdmin {
-		return apperror.ErrForbidden
+		return coreerror.ErrForbidden
 	}
 
 	// check if role is in use
 	var count int64 = 0
-	err := s.adminRole_r.DB().Table("admin_admin_roles").
+	err := s.repo.DB().Table("admin_admin_roles").
 		Joins("inner join admins on admins.id = admin_admin_roles.admin_id").
 		Where("admin_admin_roles.admin_role_id = ?", id).
 		Where("admins.deleted_at = 0").
@@ -154,7 +191,7 @@ func (s *AdminRoleService) DeleteAdminRole(ctx context.Context, id uint) error {
 		return adminerror.ErrAdminRoleIsInUse
 	}
 
-	return s.adminRole_r.DeleteById(ctx, id)
+	return s.repo.DeleteById(ctx, id)
 }
 
 // GetAdminRoles gets all AdminRoles.
@@ -173,7 +210,7 @@ func (s *AdminRoleService) GetAdminRoles(ctx context.Context, query *dto.GetMany
 
 	resp, respMeta := pagi.PrepareResponse[dto.AdminRoleResponse](&query.QueryDto)
 
-	err := s.adminRole_r.GetManyAndCount(ctx, &resp, respMeta.TotalCount,
+	err := s.repo.GetManyAndCount(ctx, &resp, respMeta.TotalCount,
 		gormq.WithPageAndLimit(query.Page, query.Limit),
 		gormq.Where(gormq.WithFilters(query.Filters, columnMap)),
 		gormq.WithSorts(query.Sorts, columnMap),

@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
-	apperror "backend/app/share/error"
 	"backend/core/database"
+	coreerror "backend/core/error"
 	"backend/core/lang"
 	coretype "backend/core/type"
 	"backend/core/utils"
@@ -62,7 +62,7 @@ func (m *Middleware) RegisterMiddleware(mr coretype.MiddlewareRouter) {
 		middleware.Recover(),
 		m.RateLimit(),
 		m.Translation(),
-		m.Debug(),
+		// m.Debug(),
 	)
 
 	// monitor
@@ -105,10 +105,10 @@ func (m *Middleware) RateLimit() echo.MiddlewareFunc {
 				return id, nil
 			},
 			ErrorHandler: func(context echo.Context, err error) error {
-				return apperror.NewError(apperror.ErrUnknownError, apperror.Join(err))
+				return coreerror.NewError(coreerror.ErrUnknownError, coreerror.AppendMessage(err.Error()))
 			},
 			DenyHandler: func(context echo.Context, identifier string, err error) error {
-				return apperror.ErrTooManyRetries
+				return coreerror.ErrTooManyRetries
 			},
 		},
 	)

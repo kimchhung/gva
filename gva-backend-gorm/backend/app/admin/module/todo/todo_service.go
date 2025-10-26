@@ -1,16 +1,16 @@
 package todo
 
 import (
+	"backend/app/admin/module/todo/dto"
+	"backend/app/share/model"
+	repository "backend/app/share/repository"
+	coreerror "backend/core/error"
+	"backend/core/utils"
+	"backend/internal/gormq"
+	"backend/internal/pagi"
 	"context"
 	"errors"
 	"fmt"
-	"backend/app/admin/module/todo/dto"
-	coreerror "backend/core/error"
-	"backend/app/share/model"
-	repository "backend/app/share/repository"
-	"backend/internal/gormq"
-	"backend/internal/pagi"
-	"backend/core/utils"
 
 	"gorm.io/gorm"
 )
@@ -54,17 +54,21 @@ func (s *TodoService) GetTodo(ctx context.Context, id uint) (*dto.TodoResponse, 
 	return utils.MustCopy(new(dto.TodoResponse), todo), nil
 }
 
-// LockForUpdate locks a Todo for update.
-func (s *TodoService) LockForUpdate(ctx context.Context, id uint) gormq.Tx {
+// lockForUpdate locks a Todo for update.
+func (s *TodoService) lockForUpdate(ctx context.Context, id uint, out *model.Todo, opts ...gormq.Option) gormq.Tx {
 	return func(tx *gorm.DB) error {
-		_, err := s.repo.Tx(tx).GetById(ctx, id, gormq.WithSelect("id"), gormq.WithLockUpdate())
+		target, err := s.repo.Tx(tx).GetById(ctx, id, gormq.Multi(opts...), gormq.WithLockUpdate())
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				panic(coreerror.ErrNotFound)
+				return coreerror.ErrNotFound
 			}
 
 			return err
+		}
+
+		if out != nil && target != nil {
+			*out = *target
 		}
 
 		return nil
@@ -72,13 +76,15 @@ func (s *TodoService) LockForUpdate(ctx context.Context, id uint) gormq.Tx {
 }
 
 // UpdateTodo updates a Todo.
-func (s *TodoService) UpdateTodo(ctx context.Context, id uint, p *dto.UpdateTodoRequest) (updatedRes *dto.TodoResponse, err error) {
-	err = s.repo.MultiTransaction(
-		s.LockForUpdate(ctx, id),
-		func(tx *gorm.DB) error {
-			body := utils.MustCopy(new(model.Todo), p)
-			body.ID = id
+func (s *TodoService) UpdateTodo(ctx context.Context, id uint, dtoReq *dto.UpdateTodoRequest) (updatedRes *dto.TodoResponse, err error) {
+	var (
+		target model.Todo
+	)
 
+	err = s.repo.MultiTransaction(
+		s.lockForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			body := utils.MustCopy(&target, dtoReq)
 			updated, err := s.repo.Tx(tx).Update(ctx, body)
 			if err != nil {
 				return err
@@ -88,49 +94,56 @@ func (s *TodoService) UpdateTodo(ctx context.Context, id uint, p *dto.UpdateTodo
 			return nil
 		},
 	)
-	if err != nil {
-		return nil, err
-	}
 
-	return s.GetTodo(ctx, id)
+	return
 }
 
 // UpdateTodo updates a Todo.
-func (s *TodoService) UpdatePatchTodo(ctx context.Context, id uint, p *dto.UpdatePatchTodoRequest) (resp map[string]any, err error) {
+func (s *TodoService) UpdatePatchTodo(ctx context.Context, id uint, dtoReq *dto.UpdatePatchTodoRequest) (resp map[string]any, err error) {
+	var (
+		target model.Todo
+	)
+
 	err = s.repo.MultiTransaction(
-		s.LockForUpdate(ctx, id),
+		s.lockForUpdate(ctx, id, &target),
 		func(tx *gorm.DB) error {
 			columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
 				// allow update status in partial
 				"status": gormq.Ignore(),
 			})
-			dbCols, res := utils.StructToMap(p, columnMap)
-			resp = res
+
+			dbCols, res := utils.StructToMap(dtoReq, columnMap)
 			if len(dbCols) == 0 {
 				return coreerror.NewError(coreerror.ErrBadRequest, coreerror.AppendMessage(
 					fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys()),
 				))
 			}
 
-			return tx.Model(&model.Todo{}).
+			if err := tx.Model(&target).
 				Scopes(gormq.Equal("id", id)).
-				Updates(dbCols).Error
+				Updates(dbCols).Error; err != nil {
+				return err
+			}
+
+			resp = res
+			return nil
 		},
 	)
+
 	return
 }
 
 // DeleteTodo deletes a Todo by ID.
 func (s *TodoService) DeleteTodo(ctx context.Context, id uint) error {
-	err := s.repo.DeleteById(ctx, id)
-	if err != nil {
-		// Check if the error is a not found error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return coreerror.ErrNotFound
-		}
-	}
+	var (
+		target model.Todo
+	)
 
-	return nil
+	return s.repo.MultiTransaction(s.lockForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			return s.repo.DeleteById(ctx, id)
+		},
+	)
 }
 
 // GetTodos gets all Todos.

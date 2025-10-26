@@ -8,10 +8,10 @@ import (
 	adminerror "backend/app/admin/error"
 	"backend/app/admin/module/admin/dto"
 	"backend/app/share/constant"
-	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	repository "backend/app/share/repository"
 	"backend/app/share/service"
+	coreerror "backend/core/error"
 	"backend/core/utils"
 	"backend/internal/gormq"
 	"backend/internal/pagi"
@@ -74,23 +74,46 @@ func (s *AdminService) GetAdmin(ctx context.Context, id uint) (*dto.AdminRespons
 	return utils.MustCopy(new(dto.AdminResponse), admin), nil
 }
 
+func (s *AdminService) lockTargetForUpdate(ctx context.Context, id uint, out *model.Admin, selects ...gormq.Option) gormq.Tx {
+	return func(tx *gorm.DB) error {
+		found, err := s.repo.Tx(tx).GetById(ctx, id, gormq.Multi(selects...), gormq.WithLockUpdate())
+		if err != nil {
+			// Check if the error is a not found error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				panic(coreerror.ErrNotFound)
+			}
+
+			return err
+		}
+
+		if out != nil && found != nil {
+			*out = *found
+		}
+		return nil
+	}
+}
+
 // UpdateAdmin updates a Admin.
-func (s *AdminService) UpdateAdmin(ctx context.Context, id uint, p *dto.UpdateAdminRequest) (resp *dto.AdminResponse, err error) {
+func (s *AdminService) UpdateAdmin(ctx context.Context, id uint, dtoReq *dto.UpdateAdminRequest) (resp *dto.AdminResponse, err error) {
+	var (
+		target model.Admin
+	)
+
 	err = s.repo.MultiTransaction(
+		s.lockTargetForUpdate(ctx, id, &target),
 		func(tx *gorm.DB) error {
-			body := utils.MustCopy(new(model.Admin), p)
-			body.ID = id
+			body := utils.MustCopy(&target, dtoReq)
 
 			s.verifySuperAdminRoleUsage(ctx, body.Roles)
 
-			if p.Roles != nil {
+			if dtoReq.Roles != nil {
 				err := tx.Model(body).Association("Roles").Replace(body.Roles)
 				if err != nil {
 					return err
 				}
 			}
 
-			updated, err := s.repo.Tx(tx).UpdateById(ctx, id, body)
+			updated, err := s.repo.Tx(tx).UpdateById(ctx, id, body, gormq.WithSelect("name", "username"))
 			if err != nil {
 				return err
 			}
@@ -103,7 +126,12 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, id uint, p *dto.UpdateAd
 
 // UpdateAdmin updates a Admin.
 func (s *AdminService) UpdatePatchAdmin(ctx context.Context, id uint, p *dto.UpdatePatchAdminRequest) (resp map[string]any, err error) {
+	var (
+		target model.Admin
+	)
+
 	err = s.repo.MultiTransaction(
+		s.lockTargetForUpdate(ctx, id, &target),
 		func(tx *gorm.DB) error {
 			columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
 				"name":        gormq.Ignore(),
@@ -114,7 +142,6 @@ func (s *AdminService) UpdatePatchAdmin(ctx context.Context, id uint, p *dto.Upd
 			})
 
 			dbCols, res := utils.StructToMap(p, columnMap)
-
 			if p.Password != nil {
 				passwordHash, err := s.password_s.HashPassword(*p.Password)
 				if err != nil {
@@ -123,12 +150,11 @@ func (s *AdminService) UpdatePatchAdmin(ctx context.Context, id uint, p *dto.Upd
 				dbCols["password_hash"] = passwordHash
 			}
 
-			err = tx.Model(&model.Admin{}).Scopes(gormq.Equal("id", id)).Updates(dbCols).Error
+			err = tx.Model(target).Scopes(gormq.Equal("id", target.ID)).Updates(dbCols).Error
 			if err != nil {
 				return err
 			}
 			resp = res
-
 			return nil
 		},
 	)
@@ -137,43 +163,53 @@ func (s *AdminService) UpdatePatchAdmin(ctx context.Context, id uint, p *dto.Upd
 }
 
 // SetAdminTOTP sets a Admin's TOTP.
-func (s *AdminService) SetAdminTOTP(ctx context.Context, id uint, p *dto.SetTOTPAdminRequest) (*dto.SetTOTPAdminResponse, error) {
-	// validate requester admin otp first before proceed
-	requester := admincontext.MustAdminContext(ctx).Admin
-	if !s.totp_s.VerifyTOTP(requester.GoogleSecretKey, p.TOTP) {
-		return nil, apperror.ErrInvalidTOTP
-	}
+func (s *AdminService) SetAdminTOTP(ctx context.Context, id uint, p *dto.SetTOTPAdminRequest) (resp *dto.SetTOTPAdminResponse, err error) {
+	var (
+		target model.Admin
+	)
 
-	// generate new secret key for the target targetAdmin
-	targetAdmin, err := s.repo.GetById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
+	err = s.repo.MultiTransaction(s.lockTargetForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			// validate requester admin otp first before proceed
+			requester := admincontext.MustAdminContext(ctx).Admin
+			if !s.totp_s.VerifyTOTP(requester.GoogleSecretKey, p.TOTP) {
+				return coreerror.ErrInvalidTOTP
+			}
 
-	totpKey := s.totp_s.GenerateSecretKey(targetAdmin.Username)
-	_, err = s.repo.UpdateById(ctx, id, &model.Admin{
-		GoogleSecretKey: totpKey.Secret(),
-	}, gormq.WithSelect("google_secret_key"))
+			totpKey := s.totp_s.GenerateSecretKey(target.Username)
+			_, err = s.repo.UpdateById(ctx, id, &model.Admin{
+				GoogleSecretKey: totpKey.Secret(),
+			}, gormq.WithSelect("google_secret_key"))
 
-	return &dto.SetTOTPAdminResponse{
-		TOTPKey: totpKey.Secret(),
-		TOTPURL: totpKey.URL(),
-	}, err
+			resp = &dto.SetTOTPAdminResponse{
+				TOTPKey: totpKey.Secret(),
+				TOTPURL: totpKey.URL(),
+			}
+
+			return nil
+		},
+	)
+
+	return
 }
 
 // DeleteAdmin deletes a Admin by ID.
 func (s *AdminService) DeleteAdmin(ctx context.Context, id uint) error {
-	admin, err := s.repo.GetById(ctx, id, func(q *gorm.DB) *gorm.DB {
-		return q.Select("id").Preload("Roles")
-	})
+	var (
+		target model.Admin
+	)
 
-	if err != nil {
-		return err
-	}
-
-	s.verifySuperAdminRoleUsage(ctx, admin.Roles)
-
-	return s.repo.DeleteById(ctx, id)
+	return s.repo.MultiTransaction(
+		s.lockTargetForUpdate(ctx, id, &target,
+			func(q *gorm.DB) *gorm.DB {
+				return q.Select("id").Preload("Roles")
+			},
+		),
+		func(tx *gorm.DB) error {
+			s.verifySuperAdminRoleUsage(ctx, target.Roles)
+			return s.repo.Tx(tx).DeleteById(ctx, id)
+		},
+	)
 }
 
 // validate only super admin can be modify by other super admin
@@ -186,7 +222,7 @@ func (s *AdminService) verifySuperAdminRoleUsage(ctx context.Context, roles []*m
 
 	for _, role := range roles {
 		if role.ID == constant.RoleIdSuperAdmin {
-			panic(apperror.ErrUnauthorized)
+			panic(coreerror.ErrUnauthorized)
 		}
 	}
 

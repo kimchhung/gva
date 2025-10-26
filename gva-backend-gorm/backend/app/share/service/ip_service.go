@@ -1,7 +1,8 @@
 package service
 
 import (
-	apperror "backend/app/share/error"
+	adminerror "backend/app/admin/error"
+	coreerror "backend/core/error"
 	"backend/env"
 	"net"
 	"path/filepath"
@@ -56,14 +57,14 @@ func (s *IPService) VerifyWhiteListIP(currentIP string, IPWhiteList []string) er
 			return nil
 		}
 	}
-	return apperror.ErrAdminWhitelistInvalid
+	return adminerror.ErrAdminWhitelistInvalid
 }
 
 func (s *IPService) GetIPRecord(currentIP string) (*geoip2.Country, error) {
 	parseIP := net.ParseIP(currentIP)
 
 	if parseIP == nil {
-		return nil, apperror.ErrInvalidIP
+		return nil, coreerror.ErrInvalidIP
 	}
 
 	return s.db.Country(net.ParseIP(currentIP))

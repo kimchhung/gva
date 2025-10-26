@@ -22,4 +22,11 @@ var (
 	ErrInvalidIP          = NewPublicError(http.StatusForbidden, -18, "invalid_ip")
 	ErrDuplicatedRecord   = NewPublicError(http.StatusConflict, -19, "duplicated_record")
 	ErrKeyExists          = NewPublicError(http.StatusConflict, -20, "key_already_exists")
+
+	// image upload errors (300 - 399)
+	ErrUnsupportedFileFormat = NewPublicError(http.StatusBadRequest, -300, "unsupported_file_format")
+	ErrWhileUploading        = NewPublicError(http.StatusInternalServerError, -301, "error_while_uploading")
+	ErrImageTooLarge         = NewPublicError(http.StatusBadRequest, -302, "image_too_large")
+	ErrImageInvalid          = NewPublicError(http.StatusBadRequest, -303, "image_invalid")
+	ErrMIMETypeInvalid       = NewPublicError(http.StatusBadRequest, -304, "mime_type_invalid")
 )

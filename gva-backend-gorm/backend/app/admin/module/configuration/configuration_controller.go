@@ -31,8 +31,8 @@ func NewConfigurationController(
 func (con *ConfigurationController) Init() *ctr.Ctr {
 	return ctr.New(
 		ctr.Group("/configuration",
-			con.middleware.IpGuard(),
 			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
 		),
 	)
 }

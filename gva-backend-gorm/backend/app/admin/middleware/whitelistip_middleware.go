@@ -10,7 +10,7 @@ func (m *Middleware) IpGuard() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			adminctx, err := admincontext.GetAdminContext(c.Request().Context())
-			if err == nil {
+			if err != nil {
 				return next(c)
 			}
 

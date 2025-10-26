@@ -56,17 +56,21 @@ func (s *{{.EntityPascal}}Service) Get{{.EntityPascal}}(ctx context.Context, id 
 	return utils.MustCopy(new(dto.{{.EntityPascal}}Response), {{.EntityAllLower}}), nil
 }
 
-// LockForUpdate locks a {{.EntityPascal}} for update.
-func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) gormq.Tx {
+// lockForUpdate locks a {{.EntityPascal}} for update.
+func (s *{{.EntityPascal}}Service) lockForUpdate(ctx context.Context, id uint, out *model.{{.EntityPascal}}, opts ...gormq.Option) gormq.Tx {
 	return func(tx *gorm.DB) error {
-		_, err := s.repo.Tx(tx).GetById(ctx, id, gormq.WithSelect("id"), gormq.WithLockUpdate())
+		target, err := s.repo.Tx(tx).GetById(ctx, id, gormq.Multi(opts...), gormq.WithLockUpdate())
 		if err != nil {
 			// Check if the error is a not found error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				panic(coreerror.ErrNotFound)
+				return coreerror.ErrNotFound
 			}
 
 			return err
+		}
+
+		if out != nil && target != nil {
+			*out = *target
 		}
 
 		return nil
@@ -74,13 +78,15 @@ func (s *{{.EntityPascal}}Service) LockForUpdate(ctx context.Context, id uint) g
 }
 
 // Update{{.EntityPascal}} updates a {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id uint, p *dto.Update{{.EntityPascal}}Request) (updatedRes *dto.{{.EntityPascal}}Response, err error) {
-	err = s.repo.MultiTransaction(
-		s.LockForUpdate(ctx, id),
-		func(tx *gorm.DB) error {
-			body := utils.MustCopy(new(model.{{.EntityPascal}}), p)
-			body.ID = id
+func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, id uint, dtoReq *dto.Update{{.EntityPascal}}Request) (updatedRes *dto.{{.EntityPascal}}Response, err error) {
+	var (
+		target model.{{.EntityPascal}}
+	)
 
+	err = s.repo.MultiTransaction(
+		s.lockForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			body := utils.MustCopy(&target, dtoReq)
 			updated, err := s.repo.Tx(tx).Update(ctx, body)
 			if err != nil {
 				return err
@@ -90,49 +96,56 @@ func (s *{{.EntityPascal}}Service) Update{{.EntityPascal}}(ctx context.Context, 
 			return nil
 		},
 	)
-	if err != nil {
-		return nil, err
-	}
 
-	return s.Get{{.EntityPascal}}(ctx, id)
+	return
 }
 
 // Update{{.EntityPascal}} updates a {{.EntityPascal}}.
-func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Context, id uint, p *dto.UpdatePatch{{.EntityPascal}}Request) (resp map[string]any, err error) {
+func (s *{{.EntityPascal}}Service) UpdatePatch{{.EntityPascal}}(ctx context.Context, id uint, dtoReq *dto.UpdatePatch{{.EntityPascal}}Request) (resp map[string]any, err error) {
+	var (
+		target model.{{.EntityPascal}}
+	)
+
 	err = s.repo.MultiTransaction(
-		s.LockForUpdate(ctx, id),
+		s.lockForUpdate(ctx, id, &target),
 		func(tx *gorm.DB) error {
 			columnMap := gormq.MapTableColumn(map[string]gormq.MapOption{
 				// allow update status in partial
 				"status": gormq.Ignore(),
 			})
-			dbCols, res := utils.StructToMap(p, columnMap)
-			resp = res
+
+			dbCols, res := utils.StructToMap(dtoReq, columnMap)
 			if len(dbCols) == 0 {
 				return coreerror.NewError(coreerror.ErrBadRequest, coreerror.AppendMessage(
 					fmt.Sprintf("required at least one field to update, support fields: %s", columnMap.Keys()),
 				))
 			}
 
-			return tx.Model(&model.{{.EntityPascal}}{}).
+			if err := tx.Model(&target).
 				Scopes(gormq.Equal("id", id)).
-				Updates(dbCols).Error
+				Updates(dbCols).Error; err != nil {
+				return err
+			}
+
+			resp = res
+			return nil
 		},
 	)
+
 	return
 }
 
 // Delete{{.EntityPascal}} deletes a {{.EntityPascal}} by ID.
 func (s *{{.EntityPascal}}Service) Delete{{.EntityPascal}}(ctx context.Context, id uint) error {
-	err := s.repo.DeleteById(ctx, id)
-	if err != nil {
-		// Check if the error is a not found error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return coreerror.ErrNotFound
-		}
-	}
+	var (
+		target model.{{.EntityPascal}}
+	)
 
-	return nil
+	return s.repo.MultiTransaction(s.lockForUpdate(ctx, id, &target),
+		func(tx *gorm.DB) error {
+			return s.repo.DeleteById(ctx, id)
+		},
+	)
 }
 
 // Get{{.EntityPascal}}s gets all {{.EntityPascal}}s.

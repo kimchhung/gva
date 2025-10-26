@@ -96,9 +96,9 @@ func Empty[T any]() T {
 	return zero
 }
 
-func StructToMap(p any, columnMap gormq.ColumnMap) (map[string]any, map[string]any) {
-	dbCols := make(map[string]any)
-	resp := make(map[string]any)
+func StructToMap(p any, columnMap gormq.ColumnMap) (dbCols map[string]any, resp map[string]any) {
+	dbCols = make(map[string]any)
+	resp = make(map[string]any)
 
 	// Use reflection to populate the payload with non-nil values from p
 	v := reflect.ValueOf(p).Elem()

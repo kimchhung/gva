@@ -16,6 +16,7 @@ import (
 )
 
 func New(cfg *env.Config, opts ...fx.Option) *fx.App {
+
 	return fx.New(
 
 		// Provide config

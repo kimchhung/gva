@@ -31,8 +31,8 @@ func NewAdminController(
 func (con *AdminController) Init() *ctr.Ctr {
 	return ctr.New(
 		ctr.Group("/admin",
-			con.middleware.IpGuard(),
 			con.middleware.JwtGuard(),
+			con.middleware.IpGuard(),
 		),
 	)
 }
@@ -199,6 +199,7 @@ func (con *AdminController) Patch() *ctr.Route {
 
 		return []ctr.H{
 			permission.RequireAny(permission.AdminEdit),
+
 			request.Validate(
 				request.ParamsParser(params),
 				request.BodyParser(body),

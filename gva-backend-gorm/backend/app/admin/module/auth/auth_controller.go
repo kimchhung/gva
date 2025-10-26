@@ -38,7 +38,9 @@ func NewAuthController(
 
 func (con *AuthController) Init() *ctr.Ctr {
 	return ctr.New(
-		ctr.Group("/auth"),
+		ctr.Group("/auth",
+			middleware.SkipOperationLog(),
+		),
 	)
 }
 
@@ -52,7 +54,7 @@ func (con *AuthController) Init() *ctr.Ctr {
 // @Success			200		{object}	response.Response{data=dto.LoginResponse}	"Successfully created Auth"
 // @Router			/auth/login [post]
 func (con *AuthController) Login() *ctr.Route {
-	return ctr.POST("/login").Do(func() []ctr.H {
+	return ctr.POST("/login").Use(middleware.SkipOperationLog()).Do(func() []ctr.H {
 		body := new(dto.LoginRequest)
 
 		return []ctr.H{
