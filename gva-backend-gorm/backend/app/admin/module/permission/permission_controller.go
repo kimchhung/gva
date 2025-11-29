@@ -4,9 +4,9 @@ import (
 	"backend/app/admin/middleware"
 	"backend/app/admin/module/permission/dto"
 	"backend/app/share/service"
+	"backend/core/ctr"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
-	"backend/internal/ctr"
 
 	"github.com/labstack/echo/v4"
 )

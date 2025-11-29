@@ -17,10 +17,10 @@ import (
 	apperror "backend/app/share/error"
 	"backend/app/share/model"
 	"backend/app/share/service"
+	"backend/core/ctr"
 	"backend/core/env"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
-	"backend/internal/ctr"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"

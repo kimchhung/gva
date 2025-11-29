@@ -1,7 +1,7 @@
 package router
 
 import (
-	"backend/internal/ctr"
+	"backend/core/ctr"
 	"fmt"
 
 	"go.uber.org/fx"

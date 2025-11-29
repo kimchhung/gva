@@ -1,3 +1,8 @@
+/*
+	Controller to router
+
+Convert controller methods to routes
+*/
 package ctr
 
 import (
@@ -131,10 +136,6 @@ func OPTIONS(path string) *Route {
 func PATCH(path string) *Route {
 	r := NewRoute()
 	return r.Method(http.MethodPatch).Path(path)
-}
-
-type Middleware interface {
-	Name() string
 }
 
 type Ctr struct {

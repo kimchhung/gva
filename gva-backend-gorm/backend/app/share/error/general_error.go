@@ -1,4 +1,4 @@
-package coreerror
+package apperror
 
 import "net/http"
 

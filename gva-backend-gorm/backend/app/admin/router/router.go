@@ -8,12 +8,12 @@ import (
 
 	docs "backend/app/admin/docs"
 	"backend/app/admin/middleware"
+	"backend/core/ctr"
 	"backend/core/env"
 	"backend/core/lang"
 	"backend/core/router"
 	coretype "backend/core/type"
 	"backend/core/utils/swagger"
-	"backend/internal/ctr"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 )

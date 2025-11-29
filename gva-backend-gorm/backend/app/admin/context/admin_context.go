@@ -39,7 +39,6 @@ func MustAdminContext(ctx context.Context) *AdminContext {
 func NewAdminContext(opts ...AdminContextOption) *AdminContext {
 	adminctx := new(AdminContext)
 	adminctx.Modify(opts...)
-
 	return adminctx
 }
 

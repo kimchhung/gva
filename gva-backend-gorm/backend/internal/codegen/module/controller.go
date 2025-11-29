@@ -13,7 +13,7 @@ import (
 	"backend/app/admin/middleware"
 	"backend/app/admin/module/{{.EntityAllLower}}/dto"
 	"backend/app/admin/permission"
-	"backend/internal/ctr"
+	"backend/core/ctr"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
 

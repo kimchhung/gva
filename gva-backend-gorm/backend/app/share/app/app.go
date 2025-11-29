@@ -6,9 +6,9 @@ import (
 	"time"
 
 	share "backend/app/share"
+	"backend/core/bootstrap"
 	"backend/core/env"
 	"backend/core/router"
-	"backend/internal/bootstrap"
 	"backend/internal/logger"
 
 	"go.uber.org/fx"

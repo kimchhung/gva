@@ -1,7 +1,7 @@
 package router
 
 import (
-	"backend/internal/ctr"
+	"backend/core/ctr"
 
 	"github.com/labstack/echo/v4"
 )

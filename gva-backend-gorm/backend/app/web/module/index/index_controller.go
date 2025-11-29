@@ -3,9 +3,9 @@ package index
 import (
 	"time"
 
+	"backend/core/ctr"
 	"backend/core/utils/request"
 	"backend/core/utils/response"
-	"backend/internal/ctr"
 
 	"github.com/labstack/echo/v4"
 )

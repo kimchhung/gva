@@ -6,7 +6,7 @@ import (
 	"backend/app/admin/module/auth/dto"
 	"backend/app/share/service"
 
-	"backend/internal/ctr"
+	"backend/core/ctr"
 
 	"backend/core/utils/request"
 	"backend/core/utils/response"
