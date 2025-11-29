@@ -3,6 +3,7 @@ schema "gva" {
   collate = "utf8mb4_general_ci"
 }
 
+
 table "operation_logs" {
   schema = schema.gva
   column "id" {
@@ -325,7 +326,7 @@ table "admins" {
   }
 }
 
-table "configs" {
+table "configurations" {
   schema = schema.gva
   column "id" {
     null           = false
@@ -385,22 +386,22 @@ table "configs" {
   primary_key {
     columns = [column.id]
   }
-  foreign_key "fk_config_parent_id" {
+  foreign_key "fk_configuration_parent_id" {
     columns     = [column.parent_id]
-    ref_columns = [table.configs.column.id]
+    ref_columns = [table.configurations.column.id]
     on_update   = NO_ACTION
     on_delete   = NO_ACTION
   }
-  foreign_key "fk_config_root_id" {
+  foreign_key "fk_configuration_root_id" {
     columns     = [column.root_id]
-    ref_columns = [table.configs.column.id]
+    ref_columns = [table.configurations.column.id]
     on_update   = NO_ACTION
     on_delete   = NO_ACTION
   }
-  index "fk_config_parent_id" {
+  index "fk_configuration_parent_id" {
     columns = [column.parent_id]
   }
-  index "fk_config_root_id" {
+  index "fk_configuration_root_id" {
     columns = [column.root_id]
   }
   index "key" {
